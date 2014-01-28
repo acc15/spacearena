@@ -23,8 +23,12 @@ public class Engine {
         this.root = engineObject;
     }
 
+    //private Matrix scale = new Matrix();
+
+
     public void init() {
         root.init(frame);
+        //scale.setScale(1/3f, 1/3f);
     }
 
     public void process() {
@@ -44,7 +48,9 @@ public class Engine {
         }
     }
 
+
     public void render(Canvas canvas) {
+        //canvas.setMatrix(scale);
         root.render(canvas);
     }
 
