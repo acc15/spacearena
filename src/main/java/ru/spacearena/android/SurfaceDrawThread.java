@@ -2,16 +2,22 @@ package ru.spacearena.android;
 
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.spacearena.android.engine.Engine;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-28-01
  */
-public class SurfaceDrawThread extends Thread implements SurfaceHolder.Callback {
+public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
+
+    private static final Logger logger = LoggerFactory.getLogger(SurfaceDrawThread.class);
 
     private final Engine engine;
     private final SurfaceHolder surfaceHolder;
+
+    private Thread thread = null;
 
     private volatile boolean running = false;
 
@@ -29,44 +35,57 @@ public class SurfaceDrawThread extends Thread implements SurfaceHolder.Callback 
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
-        finish();
+        stop();
     }
 
     @SuppressWarnings("LoopStatementThatDoesntLoop")
-    private synchronized void finish() {
+    private synchronized void stop() {
         this.running = false;
         while (true) {
             try {
-                join();
+                thread.join();
             } catch (InterruptedException ignored) {
             }
             break;
         }
+        thread = null;
     }
 
-    @Override
-    public synchronized void start() {
+    private synchronized void start() {
         if (this.running) {
             throw new IllegalStateException("Draw thread already running");
         }
         this.running = true;
-        super.start();
+        thread = new Thread(this);
+        thread.start();
     }
 
-    @Override
     public void run() {
         while (running) {
+
             engine.process();
-            Canvas canvas = null;
+
+            final Canvas canvas = surfaceHolder.lockCanvas();
+            if (canvas == null) {
+                logger.info("Canvas can't be locked. Waiting 100ms...");
+                if (!running) {
+                    break;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    logger.error("Canvas wait interrupted");
+                }
+                continue;
+            }
+
             try {
-                canvas = surfaceHolder.lockCanvas();
                 engine.render(canvas);
             } finally {
-                if (canvas != null) {
-                    surfaceHolder.unlockCanvasAndPost(canvas);
-                }
+                surfaceHolder.unlockCanvasAndPost(canvas);
             }
         }
+        logger.info("Drawing thread finished");
     }
 
 }
