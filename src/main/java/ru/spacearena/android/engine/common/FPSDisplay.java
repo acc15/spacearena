@@ -1,15 +1,16 @@
-package ru.spacearena.android.engine;
+package ru.spacearena.android.engine.common;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.view.MotionEvent;
+import ru.spacearena.android.engine.EngineObject;
+import ru.spacearena.android.engine.Frame;
 
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-28-01
 */
-public class FPSDisplay implements EngineObject {
+public class FPSDisplay extends EngineObject {
     private final Paint paint = new Paint();
     private float fps = 0;
 
@@ -18,13 +19,9 @@ public class FPSDisplay implements EngineObject {
         paint.setTextSize(25);
     }
 
-    public boolean process(float timeDelta) {
-        fps = 1/timeDelta;
+    public boolean process(Frame frame) {
+        fps = 1/frame.getTimeDelta();
         return true;
-    }
-
-    public boolean onTouch(MotionEvent motionEvent) {
-        return false;
     }
 
     public void render(Canvas canvas) {

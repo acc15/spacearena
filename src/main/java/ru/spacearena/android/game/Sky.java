@@ -1,9 +1,11 @@
-package ru.spacearena.android.engine;
+package ru.spacearena.android.game;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.view.MotionEvent;
+import ru.spacearena.android.engine.Dimension;
+import ru.spacearena.android.engine.EngineObject;
+import ru.spacearena.android.engine.Frame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,19 +15,16 @@ import java.util.Random;
  * @author Vyacheslav Mayorov
  * @since 2014-28-01
  */
-public class Sky implements EngineObject {
-
-
-    public static final int CANVAS_WIDTH = 800;
-    public static final int CANVAS_HEIGHT = 1000;
+public class Sky extends EngineObject {
 
     private static class Star {
-        private Point position;
+        private float x;
+        private float y;
         private int color;
     }
 
     private static final float LOW_STAR_SPEED = 200f;
-    private static final float HIGH_STAR_SPEED = 700f;
+    private static final float HIGH_STAR_SPEED = 400f;
     private static final int STAR_COUNT = 100;
 
     private final Random random = new Random();
@@ -33,23 +32,19 @@ public class Sky implements EngineObject {
     private final List<Star> lowStars = new ArrayList<Star>();
     private final List<Star> highStars = new ArrayList<Star>();
 
-    public Sky() {
-        initStars(lowStars);
-        initStars(highStars);
+    @Override
+    public void init(Dimension dimension) {
+        initStars(lowStars, dimension);
+        initStars(highStars, dimension);
     }
 
-    public boolean process(float timeDelta) {
-        processStars(lowStars, CANVAS_WIDTH, CANVAS_HEIGHT, LOW_STAR_SPEED * timeDelta);
-        processStars(highStars, CANVAS_WIDTH, CANVAS_HEIGHT, HIGH_STAR_SPEED * timeDelta);
+    public boolean process(Frame frame) {
+        processStars(lowStars, frame, LOW_STAR_SPEED * frame.getTimeDelta());
+        processStars(highStars, frame, HIGH_STAR_SPEED * frame.getTimeDelta());
         return true;
     }
 
-    public boolean onTouch(MotionEvent motionEvent) {
-        return false;
-    }
-
     private static int generateStarColor(Random random) {
-
         final int rnd = random.nextInt(512);
         if (rnd >= 256) {
             final int clr = rnd - 256;
@@ -59,30 +54,34 @@ public class Sky implements EngineObject {
         }
     }
 
-    private void initStars(List<Star> stars) {
+    private void initStars(List<Star> stars, Dimension dimension) {
         for (int i=0; i<STAR_COUNT; i++) {
             final Star star = new Star();
-            star.position = Point.create(CANVAS_WIDTH * random.nextFloat(), CANVAS_HEIGHT * random.nextFloat());
-            star.color = generateStarColor(random);
+            initStar(star, dimension);
             stars.add(star);
         }
     }
 
-    private void processStars(List<Star> stars, int width, int height, float speed) {
+    private void initStar(Star star, Dimension dimension) {
+        star.x = random.nextFloat() * dimension.getWidth();
+        star.y = random.nextFloat() * dimension.getHeight();
+        star.color = generateStarColor(random);
+    }
+
+    private void processStars(List<Star> stars, Dimension dimension, float speed) {
         for (final Star star : stars) {
-            final float newY = star.position.getY() - speed;
-            if (newY < 0) {
-                star.position = Point.create(random.nextFloat() * width, height + random.nextFloat() * height);
-                continue;
+            star.y = star.y - speed;
+            if (star.y < 0) {
+                initStar(star, dimension);
+                star.y += dimension.getHeight();
             }
-            star.position = Point.create(star.position.getX(), newY);
         }
     }
 
     private void renderStars(Canvas canvas, List<Star> stars) {
         for (final Star star: stars) {
             paint.setColor(star.color);
-            canvas.drawCircle(star.position.getX(), star.position.getY(), 3, paint);
+            canvas.drawCircle(star.x, star.y, 3, paint);
         }
     }
 

@@ -12,19 +12,36 @@ public class Engine {
     private long lastTime = -1;
 
     private EngineObject root;
+    private Frame frame = new Frame();
+
+    public void setViewport(int width, int height) {
+        frame.width = width;
+        frame.height = height;
+    }
 
     public Engine(EngineObject engineObject) {
         this.root = engineObject;
+    }
+
+    public void init() {
+        root.init(frame);
     }
 
     public void process() {
         final long currentTime = System.currentTimeMillis();
         if (lastTime >= 0) {
             final long delta = currentTime - lastTime;
-            final float secDelta = (float)delta/1000;
-            root.process(secDelta);
+            frame.timeDelta = (float)delta/1000;
+            root.process(frame);
         }
         lastTime = currentTime;
+    }
+
+    public void onSize(int width, int height) {
+        if (width != frame.width || height != frame.height) {
+            setViewport(width, height);
+            root.onSize(frame);
+        }
     }
 
     public void render(Canvas canvas) {

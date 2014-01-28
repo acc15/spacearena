@@ -11,19 +11,32 @@ import java.util.List;
 * @author Vyacheslav Mayorov
 * @since 2014-28-01
 */
-public class EngineContainer implements EngineObject {
+public class EngineContainer extends EngineObject {
 
     private List<EngineObject> objects = new ArrayList<EngineObject>();
 
-    public boolean process(float timeDelta) {
+    @Override
+    public void init(Dimension dimension) {
+        for (EngineObject obj: objects) {
+            obj.init(dimension);
+        }
+    }
+
+    public boolean process(Frame frame) {
         final Iterator<EngineObject> iter = objects.iterator();
         while (iter.hasNext()) {
             final EngineObject obj = iter.next();
-            if (!obj.process(timeDelta)) {
+            if (!obj.process(frame)) {
                 iter.remove();
             }
         }
         return true;
+    }
+
+    public void onSize(Dimension dimension) {
+        for (EngineObject obj: objects) {
+            obj.onSize(dimension);
+        }
     }
 
     public boolean onTouch(MotionEvent motionEvent) {
@@ -35,14 +48,14 @@ public class EngineContainer implements EngineObject {
         return false;
     }
 
-    public EngineContainer add(EngineObject object) {
-        this.objects.add(object);
-        return this;
-    }
-
     public void render(Canvas canvas) {
         for (EngineObject obj: objects) {
             obj.render(canvas);
         }
+    }
+
+    public EngineContainer add(EngineObject object) {
+        this.objects.add(object);
+        return this;
     }
 }

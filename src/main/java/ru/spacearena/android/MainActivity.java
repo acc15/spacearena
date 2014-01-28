@@ -5,6 +5,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
 import ru.spacearena.android.engine.*;
+import ru.spacearena.android.engine.common.Background;
+import ru.spacearena.android.engine.common.FPSDisplay;
+import ru.spacearena.android.game.Ship;
+import ru.spacearena.android.game.Sky;
 
 /**
  * @author Vyacheslav Mayorov

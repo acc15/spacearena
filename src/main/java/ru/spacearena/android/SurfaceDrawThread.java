@@ -1,6 +1,7 @@
 package ru.spacearena.android;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     private final SurfaceHolder surfaceHolder;
 
     private Thread thread = null;
-
     private volatile boolean running = false;
 
     public SurfaceDrawThread(SurfaceHolder surfaceHolder, Engine engine) {
@@ -28,11 +28,13 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
+        final Rect frame = holder.getSurfaceFrame();
+        engine.setViewport(frame.width(), frame.height());
         start();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+        engine.onSize(width, height);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -62,6 +64,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     }
 
     public void run() {
+        engine.init();
         while (running) {
 
             engine.process();
