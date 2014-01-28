@@ -18,6 +18,8 @@ public class Ship implements EngineObject {
 
     private Point position = Point.zero(2);
     private Point touchPos = null;
+
+
     private Matrix matrix = new Matrix();
     private Matrix moveMatrix = new Matrix();
     private Matrix rotateMatrix = new Matrix();
@@ -50,6 +52,7 @@ public class Ship implements EngineObject {
                 position.getX() - bitmap.getWidth() / 2,
                 position.getY() - bitmap.getHeight() / 2);
         matrix.setConcat(moveMatrix, rotateMatrix);
+
         return true;
     }
 

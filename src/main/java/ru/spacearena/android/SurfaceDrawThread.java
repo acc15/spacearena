@@ -32,6 +32,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {

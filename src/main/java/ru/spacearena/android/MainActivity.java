@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
 
         final Engine engine = new Engine(new EngineContainer().
                 add(new Background()).
+                add(new Sky()).
                 add(new Ship(getResources())).
                 add(new FPSDisplay()));
 
