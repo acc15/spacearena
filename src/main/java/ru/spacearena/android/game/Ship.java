@@ -50,10 +50,11 @@ public class Ship extends EngineObject {
             angle = 360-angle;
         }
 
-        rotateMatrix.setRotate(angle, bitmap.getWidth()/2, bitmap.getHeight()/2);
-        moveMatrix.setTranslate(
-                position.getX() - bitmap.getWidth() / 2,
-                position.getY() - bitmap.getHeight() / 2);
+        final Point pivot = Point.create(bitmap.getWidth()/2, (float)bitmap.getHeight() * 2 / 3);
+        rotateMatrix.setRotate(angle, pivot.getX(), pivot.getY());
+
+        final Point bmPos = position.sub(pivot);
+        moveMatrix.setTranslate(bmPos.getX(), bmPos.getY());
         matrix.setConcat(moveMatrix, rotateMatrix);
 
         return true;

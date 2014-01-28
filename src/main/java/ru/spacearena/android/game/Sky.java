@@ -21,6 +21,7 @@ public class Sky extends EngineObject {
         private float x;
         private float y;
         private int color;
+        public float size;
     }
 
     private static final float LOW_STAR_SPEED = 200f;
@@ -65,6 +66,7 @@ public class Sky extends EngineObject {
     private void initStar(Star star, Dimension dimension) {
         star.x = random.nextFloat() * dimension.getWidth();
         star.y = random.nextFloat() * dimension.getHeight();
+        star.size = random.nextFloat() * 5;
         star.color = generateStarColor(random);
     }
 
@@ -81,7 +83,7 @@ public class Sky extends EngineObject {
     private void renderStars(Canvas canvas, List<Star> stars) {
         for (final Star star: stars) {
             paint.setColor(star.color);
-            canvas.drawCircle(star.x, star.y, 3, paint);
+            canvas.drawCircle(star.x, star.y, star.size, paint);
         }
     }
 
