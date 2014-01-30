@@ -1,8 +1,9 @@
-package ru.spacearena.android.engine;
+package ru.spacearena.engine;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import ru.spacearena.android.engine.events.MotionType;
+import ru.spacearena.engine.input.MotionType;
+import ru.spacearena.engine.graphics.RenderContext;
+import ru.spacearena.engine.primitives.Point2F;
+import ru.spacearena.engine.primitives.RectI;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,13 +52,13 @@ public class EngineContainer extends EngineObject {
         return true;
     }
 
-    public void resize(Rect oldRect) {
+    public void resize(RectI oldRect) {
         for (EngineObject obj: objects) {
             obj.resize(oldRect);
         }
     }
 
-    public boolean touch(MotionType type, List<Point> points) {
+    public boolean touch(MotionType type, List<Point2F> points) {
         for (EngineObject obj: objects) {
             if (obj.touch(type, points)) {
                 return true;
@@ -66,9 +67,9 @@ public class EngineContainer extends EngineObject {
         return false;
     }
 
-    public void render(Canvas canvas) {
+    public void render(RenderContext context) {
         for (EngineObject obj: objects) {
-            obj.render(canvas);
+            obj.render(context);
         }
     }
 

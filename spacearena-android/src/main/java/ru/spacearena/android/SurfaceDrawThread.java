@@ -5,7 +5,8 @@ import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.spacearena.android.engine.Engine;
+import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.primitives.RectI;
 
 /**
  * @author Vyacheslav Mayorov
@@ -29,12 +30,12 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
 
     public void surfaceCreated(SurfaceHolder holder) {
         final Rect frame = holder.getSurfaceFrame();
-        engine.resize(new Rect(frame));
+        engine.resize(new RectI(frame.left, frame.top, frame.right, frame.bottom));
         start();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        engine.resize(new Rect(0, 0, width, height));
+        engine.resize(new RectI(0, 0, width, height));
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -82,9 +83,8 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
                 }
                 continue;
             }
-
             try {
-                engine.render(canvas);
+                engine.render(new AndroidRenderContext(canvas));
             } finally {
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }

@@ -1,10 +1,9 @@
-package ru.spacearena.android.game;
+package ru.spacearena.game;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import ru.spacearena.android.engine.EngineObject;
+import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.RenderContext;
+import ru.spacearena.engine.primitives.RectI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ public class Sky extends EngineObject {
     private static class Star {
         private float x;
         private float y;
-        private int color;
+        private Color color;
         public float size;
     }
 
@@ -28,7 +27,6 @@ public class Sky extends EngineObject {
     private static final int STAR_COUNT = 100;
 
     private final Random random = new Random();
-    private final Paint paint = new Paint();
     private final List<Star> lowStars = new ArrayList<Star>();
     private final List<Star> highStars = new ArrayList<Star>();
 
@@ -44,13 +42,13 @@ public class Sky extends EngineObject {
         return true;
     }
 
-    private static int generateStarColor(Random random) {
+    private static Color generateStarColor(Random random) {
         final int rnd = random.nextInt(512);
         if (rnd >= 256) {
             final int clr = rnd - 256;
-            return Color.argb(0xff, clr, clr, 255);
+            return Color.fromRGB(clr, clr, 255);
         } else {
-            return Color.argb(0xff, 0, 0, rnd);
+            return Color.fromRGB(0, 0, rnd);
         }
     }
 
@@ -63,9 +61,9 @@ public class Sky extends EngineObject {
     }
 
     private void initStar(Star star) {
-        final Rect displayRect = getEngine().getDisplayRect();
-        star.x = random.nextFloat() * displayRect.width() + displayRect.left;
-        star.y = random.nextFloat() * displayRect.height() + displayRect.top;
+        final RectI displayRect = getEngine().getDisplayRect();
+        star.x = random.nextFloat() * displayRect.getWidth() + displayRect.left;
+        star.y = random.nextFloat() * displayRect.getHeight() + displayRect.top;
         star.size = random.nextFloat() * 5;
         star.color = generateStarColor(random);
     }
@@ -75,20 +73,20 @@ public class Sky extends EngineObject {
             star.y = star.y - speed;
             if (star.y < 0) {
                 initStar(star);
-                star.y += getEngine().getDisplayRect().height();
+                star.y += getEngine().getDisplayRect().getHeight();
             }
         }
     }
 
-    private void renderStars(Canvas canvas, List<Star> stars) {
+    private void renderStars(RenderContext canvas, List<Star> stars) {
         for (final Star star: stars) {
-            paint.setColor(star.color);
-            canvas.drawCircle(star.x, star.y, star.size, paint);
+            canvas.setColor(star.color);
+            canvas.drawCircle(star.x, star.y, star.size);
         }
     }
 
-    public void render(Canvas canvas) {
-        renderStars(canvas, lowStars);
-        renderStars(canvas, highStars);
+    public void render(RenderContext context) {
+        renderStars(context, lowStars);
+        renderStars(context, highStars);
     }
 }

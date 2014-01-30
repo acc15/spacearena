@@ -4,17 +4,13 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
-import ru.spacearena.android.engine.Engine;
-import ru.spacearena.android.engine.EngineContainer;
-import ru.spacearena.android.engine.Point;
-import ru.spacearena.android.engine.Viewport;
-import ru.spacearena.android.engine.common.Background;
-import ru.spacearena.android.engine.common.FPSDisplay;
-import ru.spacearena.android.engine.events.MotionType;
-import ru.spacearena.android.game.Ship;
-import ru.spacearena.android.game.Sky;
+import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.input.MotionType;
+import ru.spacearena.engine.primitives.Point2F;
+import ru.spacearena.engine.resources.ResourceManager;
+import ru.spacearena.game.GameFactory;
 
-import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,13 +49,8 @@ public class MainActivity extends Activity {
         final SurfaceView surfaceView = new SurfaceView(this);
         setContentView(surfaceView);
 
-        final Engine engine = new Engine(new EngineContainer().
-                add(new Background()).
-                add(new Viewport().
-                        scale(Point.create(0.33f, 0.33f)).
-                        add(new Sky()).
-                        add(new Ship(getResources()))).
-                add(new FPSDisplay()));
+        final ResourceManager resourceManager = new AndroidResourceManager(getResources(), getPackageName());
+        final Engine engine = GameFactory.createEngine(resourceManager);
 
         surfaceView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
@@ -67,22 +58,14 @@ public class MainActivity extends Activity {
                 if (type == null) {
                     return false;
                 }
-
-                final List<Point> points = new AbstractList<Point>() {
-                    @Override
-                    public Point get(int i) {
-                        return Point.create(event.getX(i), event.getY(i));
-                    }
-
-                    @Override
-                    public int size() {
-                        return event.getPointerCount();
-                    }
-                };
+                final List<Point2F> points = new ArrayList<Point2F>();
+                for (int i=0; i<event.getPointerCount(); i++) {
+                    points.add(new Point2F(event.getX(i), event.getY(i)));
+                }
                 return engine.touch(type, points);
             }
         });
-        new SurfaceDrawThread(surfaceView.getHolder(), engine);
 
+        new SurfaceDrawThread(surfaceView.getHolder(), engine);
     }
 }

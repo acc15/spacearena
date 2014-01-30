@@ -1,12 +1,12 @@
-package ru.spacearena.android.engine;
+package ru.spacearena.engine;
 
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import ru.spacearena.android.engine.events.MotionType;
+import ru.spacearena.engine.input.MotionType;
+import ru.spacearena.engine.graphics.RenderContext;
+import ru.spacearena.engine.primitives.Point2F;
+import ru.spacearena.engine.primitives.RectI;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Vyacheslav Mayorov
@@ -14,16 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Engine {
 
-    private static final AtomicInteger COUNTER = new AtomicInteger();
-
-    public static int nextId() {
-        return COUNTER.getAndIncrement();
-    }
-
     private long lastTime = -1;
 
     private EngineObject root;
-    private Rect displayRect;
+    private RectI displayRect;
     private HashMap<Integer, EngineObject> objects = new HashMap<Integer, EngineObject>();
 
     public Engine(EngineObject engineObject) {
@@ -72,24 +66,24 @@ public class Engine {
         lastTime = currentTime;
     }
 
-    public void resize(Rect newRect) {
+    public void resize(RectI newRect) {
         if (newRect.equals(displayRect)) {
             return;
         }
-        final Rect oldRect = this.displayRect;
+        final RectI oldRect = this.displayRect;
         this.displayRect = newRect;
         root.resize(oldRect);
     }
 
-    public void render(Canvas canvas) {
-        root.render(canvas);
+    public void render(RenderContext context) {
+        root.render(context);
     }
 
-    public boolean touch(MotionType type, List<Point> points) {
+    public boolean touch(MotionType type, List<Point2F> points) {
         return root.touch(type, points);
     }
 
-    public Rect getDisplayRect() {
+    public RectI getDisplayRect() {
         return displayRect;
     }
 }

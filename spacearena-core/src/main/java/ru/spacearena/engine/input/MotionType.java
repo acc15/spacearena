@@ -1,4 +1,4 @@
-package ru.spacearena.android.engine.events;
+package ru.spacearena.engine.input;
 
 /**
  * @author Vyacheslav Mayorov
