@@ -15,9 +15,15 @@ public class EngineObject {
     public static final int ID_NULL = -1;
 
     private Engine engine = null;
+    private int id = ID_NULL;
 
     public int getId() {
-        return ID_NULL;
+        return id;
+    }
+
+    public EngineObject withId(int id) {
+        this.id = id;
+        return this;
     }
 
     public boolean attached() {

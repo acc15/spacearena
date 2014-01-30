@@ -7,6 +7,7 @@ import android.view.*;
 import ru.spacearena.android.engine.Engine;
 import ru.spacearena.android.engine.EngineContainer;
 import ru.spacearena.android.engine.Point;
+import ru.spacearena.android.engine.Viewport;
 import ru.spacearena.android.engine.common.Background;
 import ru.spacearena.android.engine.common.FPSDisplay;
 import ru.spacearena.android.engine.events.MotionType;
@@ -54,8 +55,10 @@ public class MainActivity extends Activity {
 
         final Engine engine = new Engine(new EngineContainer().
                 add(new Background()).
-                add(new Sky()).
-                add(new Ship(getResources())).
+                add(new Viewport().
+                        scale(Point.create(0.33f, 0.33f)).
+                        add(new Sky()).
+                        add(new Ship(getResources()))).
                 add(new FPSDisplay()));
 
         surfaceView.setOnTouchListener(new View.OnTouchListener() {

@@ -11,40 +11,26 @@ import java.util.List;
  * @author Vyacheslav Mayorov
  * @since 2014-29-01
  */
-public class Viewport extends EngineObject {
+public class Viewport extends EngineContainer {
 
-    public static final int ID = Engine.nextId();
-
-    private final Matrix translate = new Matrix();
-    private final Matrix scale = new Matrix();
     private final Matrix concat = new Matrix();
+    private Point scale = Point.zero(2);
 
-    private EngineObject object;
 
-    @Override
-    public int getId() {
-        return ID;
+    public Viewport scale(Point sz) {
+        this.scale = sz;
+        concat.setScale(sz.getX(), sz.getY());
+        return this;
     }
 
-    public void moveTo(Point pt) {
-        translate.setTranslate(pt.getX(), pt.getY());
-        concat.setConcat(translate, scale);
-    }
-
-    public void scaleTo(Point sz) {
-        scale.setScale(sz.getX(), sz.getY());
-        concat.setConcat(translate, scale);
-    }
 
     @Override
     public boolean touch(MotionType type, final List<Point> points) {
-        return object.touch(type, new AbstractList<Point>() {
+        return super.touch(type, new AbstractList<Point>() {
             @Override
             public Point get(int i) {
                 final Point pt = points.get(i);
-                final float[] values = new float[] { pt.getX(), pt.getY() };
-                concat.mapPoints(values);
-                return Point.create(values);
+                return Point.create(pt.getX() / scale.getX(), pt.getY() / scale.getY());
             }
 
             @Override
@@ -59,7 +45,7 @@ public class Viewport extends EngineObject {
         final Matrix oldMatrix = canvas.getMatrix();
         canvas.setMatrix(concat);
         try {
-            object.render(canvas);
+            super.render(canvas);
         } finally {
             canvas.setMatrix(oldMatrix);
         }

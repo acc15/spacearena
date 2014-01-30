@@ -23,9 +23,6 @@ public class Ship extends EngineObject {
     private Point position = Point.zero(2);
     private Point touchPos = null;
 
-
-    private final Matrix matrix = new Matrix();
-    private final Matrix moveMatrix = new Matrix();
     private final Matrix rotateMatrix = new Matrix();
 
     public Ship(Resources resources) {
@@ -52,11 +49,9 @@ public class Ship extends EngineObject {
         }
 
         final Point pivot = Point.create(bitmap.getWidth()/2, (float)bitmap.getHeight() * 2 / 3);
-        rotateMatrix.setRotate(angle, pivot.getX(), pivot.getY());
-
         final Point bmPos = position.sub(pivot);
-        moveMatrix.setTranslate(bmPos.getX(), bmPos.getY());
-        matrix.setConcat(moveMatrix, rotateMatrix);
+        rotateMatrix.setRotate(angle, pivot.getX(), pivot.getY());
+        rotateMatrix.postTranslate(bmPos.getX(), bmPos.getY());
 
         return true;
     }
@@ -77,6 +72,6 @@ public class Ship extends EngineObject {
     }
 
     public void render(Canvas canvas) {
-        canvas.drawBitmap(bitmap, matrix, paint);
+        canvas.drawBitmap(bitmap, rotateMatrix, paint);
     }
 }
