@@ -3,9 +3,8 @@ package ru.spacearena.android.game;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import ru.spacearena.android.engine.Dimension;
+import android.graphics.Rect;
 import ru.spacearena.android.engine.EngineObject;
-import ru.spacearena.android.engine.Frame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +33,14 @@ public class Sky extends EngineObject {
     private final List<Star> highStars = new ArrayList<Star>();
 
     @Override
-    public void init(Dimension dimension) {
-        initStars(lowStars, dimension);
-        initStars(highStars, dimension);
+    public void init() {
+        initStars(lowStars);
+        initStars(highStars);
     }
 
-    public boolean process(Frame frame) {
-        processStars(lowStars, frame, LOW_STAR_SPEED * frame.getTimeDelta());
-        processStars(highStars, frame, HIGH_STAR_SPEED * frame.getTimeDelta());
+    public boolean process(float time) {
+        processStars(lowStars, LOW_STAR_SPEED * time);
+        processStars(highStars, HIGH_STAR_SPEED * time);
         return true;
     }
 
@@ -55,27 +54,28 @@ public class Sky extends EngineObject {
         }
     }
 
-    private void initStars(List<Star> stars, Dimension dimension) {
+    private void initStars(List<Star> stars) {
         for (int i=0; i<STAR_COUNT; i++) {
             final Star star = new Star();
-            initStar(star, dimension);
+            initStar(star);
             stars.add(star);
         }
     }
 
-    private void initStar(Star star, Dimension dimension) {
-        star.x = random.nextFloat() * dimension.getWidth();
-        star.y = random.nextFloat() * dimension.getHeight();
+    private void initStar(Star star) {
+        final Rect displayRect = getEngine().getDisplayRect();
+        star.x = random.nextFloat() * displayRect.width() + displayRect.left;
+        star.y = random.nextFloat() * displayRect.height() + displayRect.top;
         star.size = random.nextFloat() * 5;
         star.color = generateStarColor(random);
     }
 
-    private void processStars(List<Star> stars, Dimension dimension, float speed) {
+    private void processStars(List<Star> stars, float speed) {
         for (final Star star : stars) {
             star.y = star.y - speed;
             if (star.y < 0) {
-                initStar(star, dimension);
-                star.y += dimension.getHeight();
+                initStar(star);
+                star.y += getEngine().getDisplayRect().height();
             }
         }
     }

@@ -29,12 +29,12 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
 
     public void surfaceCreated(SurfaceHolder holder) {
         final Rect frame = holder.getSurfaceFrame();
-        engine.setViewport(frame.width(), frame.height());
+        engine.resize(new Rect(frame));
         start();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        engine.onSize(width, height);
+        engine.resize(new Rect(0, 0, width, height));
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {

@@ -12,6 +12,8 @@ public class Point {
 
     private float[] components;
 
+
+
     private Point(float[] exact) {
         this.components = exact;
     }
@@ -23,6 +25,18 @@ public class Point {
 
     private Point(Point copy) {
         this(copy.components.length, copy.components);
+    }
+
+    public static Point values(int componentCount, float value) {
+        final float[] components = new float[componentCount];
+        for (int i=0; i<componentCount; i++) {
+            components[i] = value;
+        }
+        return new Point(components);
+    }
+
+    public static Point one(int componentCount) {
+        return values(componentCount, 1f);
     }
 
     public static Point zero(int componentCount) {
@@ -298,4 +312,5 @@ public class Point {
         }
         return true;
     }
+
 }

@@ -1,7 +1,8 @@
 package ru.spacearena.android.engine;
 
 import android.graphics.Canvas;
-import android.view.MotionEvent;
+import android.graphics.Rect;
+import ru.spacearena.android.engine.events.MotionType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,32 +17,49 @@ public class EngineContainer extends EngineObject {
     private List<EngineObject> objects = new ArrayList<EngineObject>();
 
     @Override
-    public void init(Dimension dimension) {
+    public void init() {
         for (EngineObject obj: objects) {
-            obj.init(dimension);
+            obj.init();
         }
     }
 
-    public boolean process(Frame frame) {
+    @Override
+    public void attach(Engine engine) {
+        super.attach(engine);
+        for (EngineObject obj: objects) {
+            obj.attach(engine);
+        }
+    }
+
+    @Override
+    public void detach() {
+        for (EngineObject obj: objects) {
+            obj.detach();
+        }
+        super.detach();
+    }
+
+    public boolean process(float time) {
         final Iterator<EngineObject> iter = objects.iterator();
         while (iter.hasNext()) {
             final EngineObject obj = iter.next();
-            if (!obj.process(frame)) {
+            if (!obj.process(time)) {
+                obj.detach();
                 iter.remove();
             }
         }
         return true;
     }
 
-    public void onSize(Dimension dimension) {
+    public void resize(Rect oldRect) {
         for (EngineObject obj: objects) {
-            obj.onSize(dimension);
+            obj.resize(oldRect);
         }
     }
 
-    public boolean onTouch(MotionEvent motionEvent) {
+    public boolean touch(MotionType type, List<Point> points) {
         for (EngineObject obj: objects) {
-            if (obj.onTouch(motionEvent)) {
+            if (obj.touch(type, points)) {
                 return true;
             }
         }
@@ -56,6 +74,10 @@ public class EngineContainer extends EngineObject {
 
     public EngineContainer add(EngineObject object) {
         this.objects.add(object);
+        final Engine engine = getEngineOrNull();
+        if (engine != null) {
+            object.attach(engine);
+        }
         return this;
     }
 }

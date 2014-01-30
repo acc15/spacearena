@@ -2,11 +2,12 @@ package ru.spacearena.android.game;
 
 import android.content.res.Resources;
 import android.graphics.*;
-import android.view.MotionEvent;
 import ru.spacearena.android.R;
 import ru.spacearena.android.engine.EngineObject;
-import ru.spacearena.android.engine.Frame;
 import ru.spacearena.android.engine.Point;
+import ru.spacearena.android.engine.events.MotionType;
+
+import java.util.List;
 
 /**
  * @author Vyacheslav Mayorov
@@ -31,7 +32,7 @@ public class Ship extends EngineObject {
         this.bitmap = BitmapFactory.decodeResource(resources, R.drawable.ship);
     }
 
-    public boolean process(Frame frame) {
+    public boolean process(float time) {
         if (touchPos == null) {
             return true;
         }
@@ -42,7 +43,7 @@ public class Ship extends EngineObject {
         }
 
         final Point direction = vec.identity();
-        position = position.add(direction.mul(MAX_VELOCITY * frame.getTimeDelta()));
+        position = position.add(direction.mul(MAX_VELOCITY * time));
 
         final float cosineOfAngle = direction.cosineOfAngle(Point.create(0, -1));
         float angle = (float)Math.toDegrees(Math.acos(cosineOfAngle));
@@ -60,15 +61,15 @@ public class Ship extends EngineObject {
         return true;
     }
 
-    public boolean onTouch(MotionEvent motionEvent) {
-        switch (motionEvent.getAction()) {
-        case MotionEvent.ACTION_UP:
+    public boolean touch(MotionType type, List<Point> points) {
+        switch (type) {
+        case UP:
             touchPos = null;
             break;
 
-        case MotionEvent.ACTION_DOWN:
-        case MotionEvent.ACTION_MOVE:
-            touchPos = Point.create(motionEvent.getX(), motionEvent.getY());
+        case DOWN:
+        case MOVE:
+            touchPos = points.get(0);
             break;
         }
 

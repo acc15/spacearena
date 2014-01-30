@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import ru.spacearena.android.engine.EngineObject;
-import ru.spacearena.android.engine.Frame;
 
 /**
 * @author Vyacheslav Mayorov
@@ -19,8 +18,8 @@ public class FPSDisplay extends EngineObject {
         paint.setTextSize(25);
     }
 
-    public boolean process(Frame frame) {
-        fps = 1/frame.getTimeDelta();
+    public boolean process(float time) {
+        fps = 1f/time;
         return true;
     }
 

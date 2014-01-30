@@ -1,7 +1,12 @@
 package ru.spacearena.android.engine;
 
 import android.graphics.Canvas;
-import android.view.MotionEvent;
+import android.graphics.Rect;
+import ru.spacearena.android.engine.events.MotionType;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Vyacheslav Mayorov
@@ -9,52 +14,82 @@ import android.view.MotionEvent;
  */
 public class Engine {
 
+    private static final AtomicInteger COUNTER = new AtomicInteger();
+
+    public static int nextId() {
+        return COUNTER.getAndIncrement();
+    }
+
     private long lastTime = -1;
 
     private EngineObject root;
-    private Frame frame = new Frame();
-
-    public void setViewport(int width, int height) {
-        frame.width = width;
-        frame.height = height;
-    }
+    private Rect displayRect;
+    private HashMap<Integer, EngineObject> objects = new HashMap<Integer, EngineObject>();
 
     public Engine(EngineObject engineObject) {
         this.root = engineObject;
+        engineObject.attach(this);
     }
 
-    //private Matrix scale = new Matrix();
+    public void register(int id, EngineObject object) {
+        if (objects.containsKey(id)) {
+            throw new IllegalArgumentException("EngineObject with id " + id + " already registered");
+        }
+        this.objects.put(id, object);
+    }
 
+    public void unregister(int id) {
+        if (!objects.containsKey(id)) {
+            throw notRegistered(id);
+        }
+        this.objects.remove(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(int id) {
+        final T val = (T)objects.get(id);
+        if (val == null) {
+            throw notRegistered(id);
+        }
+        return val;
+    }
+
+    private IllegalArgumentException notRegistered(int id) {
+        return new IllegalArgumentException("EngineObject with id " + id + " isn't registered");
+    }
 
     public void init() {
-        root.init(frame);
-        //scale.setScale(1/3f, 1/3f);
+        root.init();
     }
 
     public void process() {
         final long currentTime = System.currentTimeMillis();
         if (lastTime >= 0) {
             final long delta = currentTime - lastTime;
-            frame.timeDelta = (float)delta/1000;
-            root.process(frame);
+            final float timeDelta = (float)delta/1000;
+            root.process(timeDelta);
         }
         lastTime = currentTime;
     }
 
-    public void onSize(int width, int height) {
-        if (width != frame.width || height != frame.height) {
-            setViewport(width, height);
-            root.onSize(frame);
+    public void resize(Rect newRect) {
+        if (newRect.equals(displayRect)) {
+            return;
         }
+        final Rect oldRect = this.displayRect;
+        this.displayRect = newRect;
+        root.resize(oldRect);
     }
 
-
     public void render(Canvas canvas) {
-        //canvas.setMatrix(scale);
         root.render(canvas);
     }
 
-    public boolean onTouch(MotionEvent event) {
-        return root.onTouch(event);
+    public boolean touch(MotionType type, List<Point> points) {
+        return root.touch(type, points);
+    }
+
+    public Rect getDisplayRect() {
+        return displayRect;
     }
 }
