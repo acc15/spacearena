@@ -2,11 +2,12 @@ package ru.spacearena.swing;
 
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.Image;
+import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.graphics.RenderContext;
-import ru.spacearena.engine.primitives.Matrix2F;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.ImageObserver;
 
 /**
  * @author Vyacheslav Mayorov
@@ -39,23 +40,22 @@ public class Java2DRenderContext implements RenderContext {
         graphics2D.drawString(text, x, y);
     }
 
-    public Matrix2F getMatrix() {
-        final double[] matrix = new double[6];
-        final AffineTransform transform = graphics2D.getTransform();
-        transform.getMatrix(matrix);
-        return new Matrix2F(new float[] {
-                (float)matrix[0], (float)matrix[1], 0,
-                (float)matrix[2], (float)matrix[3], 0,
-                (float)matrix[4], (float)matrix[5], 1});
+    public Matrix getMatrix() {
+        return new Java2DMatrix(graphics2D.getTransform());
     }
 
-    public void setMatrix(Matrix2F matrix) {
-        // todo
+    public void setMatrix(Matrix matrix) {
+        graphics2D.setTransform(matrix.getNativeMatrix(AffineTransform.class));
     }
 
-    public void drawImage(Image image, Matrix2F matrix) {
-        // TODO implement..
-
+    public void drawImage(Image image, Matrix matrix) {
+        graphics2D.drawImage(
+                image.getNativeImage(java.awt.Image.class),
+                matrix.getNativeMatrix(AffineTransform.class), new ImageObserver() {
+            public boolean imageUpdate(java.awt.Image img, int infoflags, int x, int y, int width, int height) {
+                return false;
+            }
+        });
     }
 
     public void drawCircle(float x, float y, float size) {

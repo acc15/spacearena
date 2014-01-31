@@ -5,7 +5,6 @@ import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.graphics.RenderContext;
 import ru.spacearena.engine.input.MotionType;
-import ru.spacearena.engine.primitives.Matrix2F;
 import ru.spacearena.engine.primitives.Point2F;
 
 import java.util.List;
