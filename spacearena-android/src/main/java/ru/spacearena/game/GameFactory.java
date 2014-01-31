@@ -17,14 +17,16 @@ import ru.spacearena.engine.common.TextDisplay;
 public class GameFactory {
 
     public static final int TEXT_DISPLAY = 10;
+    public static final int PLAYER_SHIP = 11;
 
     public static Engine createEngine(Resources resources) {
         return new Engine(new EngineContainer().
                 add(new Background()).
                 add(new Viewport().
                         scale(new PointF(0.5f, 0.5f)).
+                        add(new Player()).
                         add(new Sky()).
-                        add(new Ship(BitmapFactory.decodeResource(resources, R.drawable.ship)))).
+                        add(new Ship(BitmapFactory.decodeResource(resources, R.drawable.ship)).withId(PLAYER_SHIP))).
                 add(new TextDisplay().withId(TEXT_DISPLAY)));
     }
 
