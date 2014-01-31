@@ -1,11 +1,11 @@
 package ru.spacearena.engine;
 
+import android.graphics.Canvas;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.util.SparseArray;
 import ru.spacearena.engine.input.MotionType;
-import ru.spacearena.engine.graphics.RenderContext;
-import ru.spacearena.engine.primitives.Point2F;
-import ru.spacearena.engine.primitives.RectI;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -17,25 +17,23 @@ public class Engine {
     private long lastTime = -1;
 
     private EngineObject root;
-    private RectI displayRect;
-    private PlatformManager platformManager;
-    private HashMap<Integer, EngineObject> objects = new HashMap<Integer, EngineObject>();
+    private Rect displayRect;
+    private SparseArray<EngineObject> objects = new SparseArray<EngineObject>();
 
-    public Engine(PlatformManager platformManager, EngineObject engineObject) {
-        this.platformManager = platformManager;
+    public Engine(EngineObject engineObject) {
         this.root = engineObject;
         engineObject.attach(this);
     }
 
     public void register(int id, EngineObject object) {
-        if (objects.containsKey(id)) {
+        if (objects.get(id) != null) {
             throw new IllegalArgumentException("EngineObject with id " + id + " already registered");
         }
         this.objects.put(id, object);
     }
 
     public void unregister(int id) {
-        if (!objects.containsKey(id)) {
+        if (objects.get(id) == null) {
             throw notRegistered(id);
         }
         this.objects.remove(id);
@@ -68,28 +66,25 @@ public class Engine {
         lastTime = currentTime;
     }
 
-    public void resize(RectI newRect) {
+    public void resize(Rect newRect) {
         if (newRect.equals(displayRect)) {
             return;
         }
-        final RectI oldRect = this.displayRect;
+        final Rect oldRect = this.displayRect;
         this.displayRect = newRect;
         root.resize(oldRect);
     }
 
-    public void render(RenderContext context) {
-        root.render(context);
+    public void render(Canvas canvas) {
+        root.render(canvas);
     }
 
-    public boolean touch(MotionType type, List<Point2F> points) {
+    public boolean touch(MotionType type, List<PointF> points) {
         return root.touch(type, points);
     }
 
-    public RectI getDisplayRect() {
+    public Rect getDisplayRect() {
         return displayRect;
     }
 
-    public PlatformManager getPlatformManager() {
-        return platformManager;
-    }
 }

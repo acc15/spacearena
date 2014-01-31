@@ -1,9 +1,9 @@
 package ru.spacearena.engine;
 
+import android.graphics.Canvas;
+import android.graphics.PointF;
+import android.graphics.Rect;
 import ru.spacearena.engine.input.MotionType;
-import ru.spacearena.engine.graphics.RenderContext;
-import ru.spacearena.engine.primitives.Point2F;
-import ru.spacearena.engine.primitives.RectI;
 
 import java.util.List;
 
@@ -63,10 +63,6 @@ public class EngineObject {
         return engine;
     }
 
-    public PlatformManager getPlatformManager() {
-        return getEngine().getPlatformManager();
-    }
-
     public Engine getEngineOrNull() {
         return engine;
     }
@@ -75,17 +71,16 @@ public class EngineObject {
     }
 
     public boolean process(float time) {
-
         return true;
     }
 
-    public void resize(RectI oldRect) {
+    public void resize(Rect oldRect) {
     }
 
-    public boolean touch(MotionType type, List<Point2F> points) {
+    public boolean touch(MotionType type, List<PointF> points) {
         return false;
     }
 
-    public void render(RenderContext context) {
+    public void render(Canvas canvas) {
     }
 }

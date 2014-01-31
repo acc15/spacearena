@@ -1,9 +1,9 @@
 package ru.spacearena.engine;
 
-import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.graphics.RenderContext;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import ru.spacearena.engine.input.MotionType;
-import ru.spacearena.engine.primitives.Point2F;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,31 +14,31 @@ import java.util.List;
  */
 public class Viewport extends EngineContainer {
 
-    private Matrix concat;
-    private Point2F scale = new Point2F(1,1);
+    private Matrix concat = new Matrix();
+    private PointF scale = new PointF(1,1);
 
-    public Viewport scale(Point2F sz) {
+    public Viewport scale(PointF sz) {
         this.scale.set(sz);
         return this;
     }
 
     @Override
-    public boolean touch(MotionType type, final List<Point2F> points) {
-        final List<Point2F> remappedPoints = new ArrayList<Point2F>();
-        for (final Point2F pt: points) {
-            remappedPoints.add(new Point2F(pt.x / scale.x, pt.y / scale.y));
+    public boolean touch(MotionType type, List<PointF> points) {
+        final List<PointF> remappedPoints = new ArrayList<PointF>();
+        for (final PointF pt: points) {
+            remappedPoints.add(new PointF(pt.x / scale.x, pt.y / scale.y));
         }
         return super.touch(type, remappedPoints);
     }
 
     @Override
-    public void render(RenderContext context) {
-        final Matrix oldMatrix = context.getMatrix();
-        context.setMatrix(concat);
+    public void render(Canvas canvas) {
+        final Matrix oldMatrix = canvas.getMatrix();
+        canvas.setMatrix(concat);
         try {
-            super.render(context);
+            super.render(canvas);
         } finally {
-            context.setMatrix(oldMatrix);
+            canvas.setMatrix(oldMatrix);
         }
     }
 }
