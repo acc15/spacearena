@@ -7,7 +7,6 @@ import ru.spacearena.engine.graphics.RenderContext;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.ImageObserver;
 
 /**
  * @author Vyacheslav Mayorov
@@ -51,11 +50,8 @@ public class Java2DRenderContext implements RenderContext {
     public void drawImage(Image image, Matrix matrix) {
         graphics2D.drawImage(
                 image.getNativeImage(java.awt.Image.class),
-                matrix.getNativeMatrix(AffineTransform.class), new ImageObserver() {
-            public boolean imageUpdate(java.awt.Image img, int infoflags, int x, int y, int width, int height) {
-                return false;
-            }
-        });
+                matrix.getNativeMatrix(AffineTransform.class),
+                Java2DImage.LOAD_OBSERVER);
     }
 
     public void drawCircle(float x, float y, float size) {
