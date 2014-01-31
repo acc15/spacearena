@@ -13,8 +13,6 @@
 
     <modules>
         <module>spacearena-android</module>
-        <module>spacearena-core</module>
-        <module>spacearena-swing</module>
     </modules>
 
     <scm>
