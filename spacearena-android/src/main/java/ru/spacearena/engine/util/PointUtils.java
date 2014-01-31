@@ -25,7 +25,7 @@ public class PointUtils {
     }
 
     public static float scalarProduct(PointF pt1, PointF pt2) {
-        return pt1.x * pt2.x + pt1.y + pt2.y;
+        return pt1.x * pt2.x + pt1.y * pt2.y;
     }
 
     public static float cosineOfAngle(PointF pt1, PointF pt2) {

@@ -5,26 +5,39 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import ru.spacearena.engine.EngineObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-28-01
 */
-public class FPSDisplay extends EngineObject {
-    private float fps = 0;
+public class TextDisplay extends EngineObject {
 
     private final Paint paint = new Paint();
 
-    public FPSDisplay() {
+    private List<String> messages = new ArrayList<String>();
+
+    public TextDisplay() {
         paint.setColor(Color.WHITE);
         paint.setTextSize(25);
     }
 
+    public void printMessage(String message) {
+        messages.add(message);
+    }
+
     public boolean process(float time) {
-        fps = 1f/time;
         return true;
     }
 
     public void render(Canvas canvas) {
-        canvas.drawText("FPS: " + fps, 0, 30, paint);
+        int pos = 0;
+        for (String message: messages) {
+            pos += 30;
+            canvas.drawText(message, 0, pos, paint);
+        }
+        messages.clear();
+
     }
 }

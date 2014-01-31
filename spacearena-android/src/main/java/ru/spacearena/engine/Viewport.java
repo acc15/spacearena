@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Viewport extends EngineContainer {
 
-    private Matrix concat = new Matrix();
+    private Matrix transform = new Matrix();
     private PointF scale = new PointF(1,1);
 
     public Viewport scale(PointF sz) {
@@ -34,7 +34,10 @@ public class Viewport extends EngineContainer {
     @Override
     public void render(Canvas canvas) {
         final Matrix oldMatrix = canvas.getMatrix();
-        canvas.setMatrix(concat);
+
+        transform.reset();
+        transform.setScale(scale.x, scale.y);
+        canvas.setMatrix(transform);
         try {
             super.render(canvas);
         } finally {

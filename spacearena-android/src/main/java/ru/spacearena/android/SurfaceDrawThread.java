@@ -83,7 +83,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
                 continue;
             }
             try {
-                engine.render(new AndroidRenderContext(canvas));
+                engine.render(canvas);
             } finally {
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }

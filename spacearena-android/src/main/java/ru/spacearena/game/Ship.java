@@ -2,6 +2,7 @@ package ru.spacearena.game;
 
 import android.graphics.*;
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.common.TextDisplay;
 import ru.spacearena.engine.input.MotionType;
 import ru.spacearena.engine.util.PointUtils;
 
@@ -20,7 +21,8 @@ public class Ship extends EngineObject {
 
     private Bitmap image;
 
-    private PointF position = new PointF();
+    private PointF position = new PointF(0,0);
+    private float angle = 0;
     private PointF touchPos = null;
 
     private Matrix rotateMatrix = new Matrix();
@@ -35,26 +37,42 @@ public class Ship extends EngineObject {
     public void init() {
     }
 
-    public boolean process(float time) {
+    private float move(float time) {
         if (touchPos == null) {
-            return true;
+            return 0;
         }
 
         final PointF velocity = subtract(copy(touchPos), position);
+        final float distance = velocity.length();
+        if (distance < 20) {
+            return distance;
+        }
+
         add(position, PointUtils.resize(velocity, MAX_VELOCITY * time));
 
         final float cosineOfAngle = cosineOfAngle(velocity, ORIENTATION);
-        float angle = (float)Math.toDegrees(Math.acos(cosineOfAngle));
+
+        angle = (float)Math.toDegrees(Math.acos(cosineOfAngle));
         if (velocity.x < 0) {
             angle = 360 - angle;
         }
 
         final PointF pivot = new PointF(image.getWidth()/2, (float) image.getHeight() * 2 / 3);
-        pivot.negate();
-
-        rotateMatrix.preTranslate(pivot.x, pivot.y);
         rotateMatrix.setRotate(angle);
+        rotateMatrix.preTranslate(-pivot.x, -pivot.y);
         rotateMatrix.postTranslate(position.x, position.y);
+        return distance;
+    }
+
+    public boolean process(float time) {
+        final TextDisplay textDisplay = getEngine().get(GameFactory.TEXT_DISPLAY);
+        textDisplay.printMessage("FPS: " + 1f / time);
+
+        final float distance = move(time);
+        textDisplay.printMessage(String.format("Position: (%.2f;%.2f); Angle: %.2f", position.x, position.y, angle));
+        if (distance != 0) {
+            textDisplay.printMessage(String.format("Distance to finger: %.2f", distance));
+        }
         return true;
     }
 
