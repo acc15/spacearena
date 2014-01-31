@@ -63,6 +63,10 @@ public class EngineObject {
         return engine;
     }
 
+    public PlatformManager getPlatformManager() {
+        return getEngine().getPlatformManager();
+    }
+
     public Engine getEngineOrNull() {
         return engine;
     }

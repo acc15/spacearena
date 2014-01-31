@@ -7,7 +7,7 @@ import android.view.*;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.input.MotionType;
 import ru.spacearena.engine.primitives.Point2F;
-import ru.spacearena.engine.resources.ResourceManager;
+import ru.spacearena.engine.PlatformManager;
 import ru.spacearena.game.GameFactory;
 
 import java.util.ArrayList;
@@ -49,8 +49,8 @@ public class MainActivity extends Activity {
         final SurfaceView surfaceView = new SurfaceView(this);
         setContentView(surfaceView);
 
-        final ResourceManager resourceManager = new AndroidResourceManager(getResources(), getPackageName());
-        final Engine engine = GameFactory.createEngine(resourceManager);
+        final PlatformManager platformManager = new AndroidPlatformManager(getResources(), getPackageName());
+        final Engine engine = GameFactory.createEngine(platformManager);
 
         surfaceView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {

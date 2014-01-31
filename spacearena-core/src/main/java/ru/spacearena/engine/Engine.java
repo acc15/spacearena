@@ -18,9 +18,11 @@ public class Engine {
 
     private EngineObject root;
     private RectI displayRect;
+    private PlatformManager platformManager;
     private HashMap<Integer, EngineObject> objects = new HashMap<Integer, EngineObject>();
 
-    public Engine(EngineObject engineObject) {
+    public Engine(PlatformManager platformManager, EngineObject engineObject) {
+        this.platformManager = platformManager;
         this.root = engineObject;
         engineObject.attach(this);
     }
@@ -85,5 +87,9 @@ public class Engine {
 
     public RectI getDisplayRect() {
         return displayRect;
+    }
+
+    public PlatformManager getPlatformManager() {
+        return platformManager;
     }
 }

@@ -21,6 +21,12 @@ public class Point2F {
         return new Point2F(x, y);
     }
 
+    public Point2F set(Point2F pt) {
+        x = pt.x;
+        y = pt.y;
+        return this;
+    }
+
     public Point2F add(Point2F pt) {
         x += pt.x;
         y += pt.y;
@@ -69,6 +75,12 @@ public class Point2F {
         return this;
     }
 
+    public Point2F negate() {
+        x = -x;
+        y = -y;
+        return this;
+    }
+
     public Point2F length(float newLength) {
         return mul(newLength/length());
     }
@@ -85,8 +97,12 @@ public class Point2F {
         return div(length());
     }
 
+    public float scalarProduct(Point2F pt) {
+        return x * pt.x + y * pt.y;
+    }
+
     public float cosineOfAngle(Point2F pt) {
-        return (x * pt.x + y * pt.y) / (length() * pt.length());
+        return scalarProduct(pt) / (length() * pt.length());
     }
 
 }

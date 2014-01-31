@@ -15,15 +15,19 @@ public class AndroidImage implements Image {
         this.bitmap = bitmap;
     }
 
-    public Bitmap getBitmap() {
-        return bitmap;
-    }
-
     public int getWidth() {
         return bitmap.getWidth();
     }
 
     public int getHeight() {
         return bitmap.getHeight();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getNativeImage(Class<T> clazz) {
+        if (Bitmap.class.isAssignableFrom(clazz)) {
+            return (T)bitmap;
+        }
+        throw new IllegalArgumentException();
     }
 }

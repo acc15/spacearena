@@ -9,4 +9,5 @@ public interface Image {
     int getWidth();
     int getHeight();
 
+    <T> T getNativeImage(Class<T> clazz);
 }

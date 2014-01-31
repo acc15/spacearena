@@ -1,12 +1,12 @@
 package ru.spacearena.android;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.Image;
+import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.graphics.RenderContext;
-import ru.spacearena.engine.primitives.Matrix2F;
 
 /**
  * @author Vyacheslav Mayorov
@@ -36,28 +36,19 @@ public class AndroidRenderContext implements RenderContext {
         canvas.drawText(text, x, y, paint);
     }
 
-    private Matrix toAndroidMatrix(Matrix2F matrix) {
-        final Matrix mx = new Matrix();
-        mx.setValues(matrix.getValues());
-        return mx;
+    public Matrix getMatrix() {
+        return new AndroidMatrix(canvas.getMatrix());
     }
 
-    public Matrix2F getMatrix() {
-        final Matrix mx = canvas.getMatrix();
-        final float[] values = new float[9];
-        mx.getValues(values);
-        return new Matrix2F(values);
+    public void setMatrix(Matrix matrix) {
+        canvas.setMatrix(matrix.getNativeMatrix(android.graphics.Matrix.class));
     }
 
-    public void setMatrix(Matrix2F matrix) {
-        canvas.setMatrix(toAndroidMatrix(matrix));
-    }
-
-    public void drawImage(Image image, Matrix2F matrix) {
-        if (!(image instanceof AndroidImage)) {
-            throw new IllegalArgumentException("Image of unsupported type. AndroidImage expected");
-        }
-        canvas.drawBitmap(((AndroidImage)image).getBitmap(), toAndroidMatrix(matrix), paint);
+    public void drawImage(Image image, Matrix matrix) {
+        canvas.drawBitmap(
+                image.getNativeImage(Bitmap.class),
+                matrix.getNativeMatrix(android.graphics.Matrix.class),
+                paint);
     }
 
     public void drawCircle(float x, float y, float size) {
