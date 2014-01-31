@@ -72,13 +72,13 @@ public class Sky extends EngineObject {
     }
 
     private void processStars(List<Star> stars, float speed) {
-        for (final Star star : stars) {
+        /*for (final Star star : stars) {
             star.y = star.y - speed;
             if (star.y < 0) {
                 initStar(star);
                 star.y += getEngine().getDisplayRect().height();
             }
-        }
+        }*/
     }
 
     private void renderStars(Canvas canvas, List<Star> stars) {

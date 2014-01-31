@@ -18,6 +18,7 @@ public class GameFactory {
 
     public static final int TEXT_DISPLAY = 10;
     public static final int PLAYER_SHIP = 11;
+    public static final int VIEWPORT = 12;
 
     public static Engine createEngine(Resources resources) {
         return new Engine(new EngineContainer().
@@ -26,7 +27,8 @@ public class GameFactory {
                         scale(new PointF(0.5f, 0.5f)).
                         add(new Player()).
                         add(new Sky()).
-                        add(new Ship(BitmapFactory.decodeResource(resources, R.drawable.ship)).withId(PLAYER_SHIP))).
+                        add(new Ship(BitmapFactory.decodeResource(resources, R.drawable.ship)).withId(PLAYER_SHIP)).
+                        withId(VIEWPORT)).
                 add(new TextDisplay().withId(TEXT_DISPLAY)));
     }
 

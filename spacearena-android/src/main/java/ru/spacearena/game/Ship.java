@@ -21,9 +21,6 @@ public class Ship extends EngineObject {
     private PointF position = new PointF(0,0);
     private PointF velocity = new PointF(0,0);
 
-
-
-
     public Ship(Bitmap image) {
         this.image = image;
         this.pivot = new PointF(image.getWidth()/2, (float) image.getHeight() * 2 / 3);

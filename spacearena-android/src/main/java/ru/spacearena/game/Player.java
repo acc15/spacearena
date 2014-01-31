@@ -2,13 +2,14 @@ package ru.spacearena.game;
 
 import android.graphics.PointF;
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.Viewport;
 import ru.spacearena.engine.common.TextDisplay;
 import ru.spacearena.engine.input.MotionType;
 import ru.spacearena.engine.util.PointUtils;
 
 import java.util.List;
 
-import static ru.spacearena.engine.util.PointUtils.*;
+import static ru.spacearena.engine.util.PointUtils.subtract;
 
 /**
  * @author Vyacheslav Mayorov
@@ -45,6 +46,11 @@ public class Player extends EngineObject {
         if (distance < 0) {
             ship.velocity().set(0,0);
         }
+
+        final Viewport viewport = getEngine().get(GameFactory.VIEWPORT);
+        viewport.position(ship.position());
+//        final RectF viewRect = viewport.getViewRect();
+//        viewRect.inset(viewRect.width() * 0.4f, viewRect.height() * 0.4f);
 
         final TextDisplay textDisplay = getEngine().get(GameFactory.TEXT_DISPLAY);
         textDisplay.printMessage(String.format("FPS: %.2f", 1f/time));
