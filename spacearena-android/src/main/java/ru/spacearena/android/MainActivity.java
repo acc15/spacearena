@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
                 }
                 final List<Point2F> points = new ArrayList<Point2F>();
                 for (int i=0; i<event.getPointerCount(); i++) {
-                    points.add(Point2F.to(event.getX(i), event.getY(i)));
+                    points.add(Point2F.cartesian(event.getX(i), event.getY(i)));
                 }
                 return engine.touch(type, points);
             }

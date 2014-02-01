@@ -13,19 +13,18 @@ import ru.spacearena.engine.Point2F;
  */
 public class Ship extends EngineObject {
 
-    public static final Point2F ORIENTATION = Point2F.to(0, -1);
-
     private final Bitmap image;
     private final Point2F pivot;
     private final Matrix rotateMatrix = new Matrix();
     private final Paint paint = new Paint();
 
     private Point2F position = Point2F.ZERO;
-    private Point2F velocity = Point2F.ZERO;
+    private float angle = 0;
+    private float speed = 0;
 
     public Ship(Bitmap image) {
         this.image = image;
-        this.pivot = Point2F.to(image.getWidth()/2, (float) image.getHeight() * 2 / 3);
+        this.pivot = Point2F.cartesian(image.getWidth() / 2, (float) image.getHeight() * 2 / 3);
         rotateMatrix.preTranslate(-pivot.getX(), -pivot.getY());
     }
 
@@ -34,25 +33,14 @@ public class Ship extends EngineObject {
     }
 
     public boolean process(float time) {
-        if (velocity.isZero()) {
-            return true;
-        }
-
-        position = position.add(velocity);
-
-        final float cosineOfAngle = velocity.cosineOfAngle(ORIENTATION);
-        float angle = (float)Math.toDegrees(Math.acos(cosineOfAngle));
-        if (velocity.getX() < 0) {
-            angle = 360 - angle;
-        }
-
-        rotateMatrix.setRotate(angle);
-        rotateMatrix.preTranslate(-pivot.getX(), -pivot.getY());
-        rotateMatrix.postTranslate(position.getX(), position.getY());
+        position = position.add(Point2F.polar(angle, speed));
         return true;
     }
 
     public void render(Canvas canvas) {
+        rotateMatrix.setRotate(angle);
+        rotateMatrix.preTranslate(-pivot.getX(), -pivot.getY());
+        rotateMatrix.postTranslate(position.getX(), position.getY());
         canvas.drawBitmap(image, rotateMatrix, paint);
     }
 
@@ -60,15 +48,23 @@ public class Ship extends EngineObject {
         return position;
     }
 
-    public Point2F getVelocity() {
-        return velocity;
-    }
-
     public void setPosition(Point2F position) {
         this.position = position;
     }
 
-    public void setVelocity(Point2F velocity) {
-        this.velocity = velocity;
+    public float getAngle() {
+        return angle;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 }

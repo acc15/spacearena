@@ -19,39 +19,39 @@ public class Point2F {
     }
 
     public Point2F add(Point2F pt) {
-        return to(x + pt.x, y + pt.y);
+        return cartesian(x + pt.x, y + pt.y);
     }
 
     public Point2F sub(Point2F pt) {
-        return to(x - pt.x, y - pt.y);
+        return cartesian(x - pt.x, y - pt.y);
     }
 
     public Point2F mul(Point2F pt) {
-        return to(x * pt.x, y * pt.y);
+        return cartesian(x * pt.x, y * pt.y);
     }
 
     public Point2F div(Point2F pt) {
-        return to(x / pt.x, y / pt.y);
+        return cartesian(x / pt.x, y / pt.y);
     }
 
     public Point2F add(float v) {
-        return to(x + v, y + v);
+        return cartesian(x + v, y + v);
     }
 
     public Point2F sub(float v) {
-        return to(x - v, y - v);
+        return cartesian(x - v, y - v);
     }
 
     public Point2F mul(float v) {
-        return to(x * v, y * v);
+        return cartesian(x * v, y * v);
     }
 
     public Point2F div(float v) {
-        return to(x / v, y / v);
+        return cartesian(x / v, y / v);
     }
 
     public Point2F negate() {
-        return to(-x, -y);
+        return cartesian(-x, -y);
     }
 
     public float scalarProduct(Point2F pt) {
@@ -86,7 +86,12 @@ public class Point2F {
         return x == 0 && y == 0;
     }
 
-    public static Point2F to(float x, float y) {
+    public static Point2F polar(float angle, float distance) {
+        final float rads = (float)Math.toRadians(angle-90);
+        return cartesian((float) Math.cos(rads) * distance, (float) Math.sin(rads) * distance);
+    }
+
+    public static Point2F cartesian(float x, float y) {
         return new Point2F(x, y);
     }
 }

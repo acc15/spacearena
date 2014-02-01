@@ -28,7 +28,7 @@ public class GameFactory {
         final Player player = new Player(textDisplay, viewport, ship);
         final Sky sky = new Sky();
 
-        viewport.scale(Point2F.to(0.5f, 0.5f)).add(player).add(sky).add(ship);
+        viewport.scale(Point2F.cartesian(0.5f, 0.5f)).add(player).add(sky).add(ship);
 
         return new Engine(new EngineContainer().
                 add(new Background()).

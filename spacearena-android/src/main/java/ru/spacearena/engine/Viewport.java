@@ -26,6 +26,14 @@ public class Viewport extends EngineContainer {
         return this;
     }
 
+    public RectF getViewRect() {
+        final Point2F viewSize = getViewSize();
+        final Point2F halfSize = viewSize.div(2);
+        final Point2F leftTop = position.sub(halfSize);
+        final Point2F rightBottom = leftTop.add(viewSize);
+        return new RectF(leftTop.getX(), leftTop.getY(), rightBottom.getX(), rightBottom.getY());
+    }
+
     public Point2F getViewSize() {
         return getEngine().getDisplaySize().div(scale);
     }

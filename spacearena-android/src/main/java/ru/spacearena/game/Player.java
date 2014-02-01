@@ -16,6 +16,7 @@ import java.util.List;
 public class Player extends EngineObject {
 
     private static final float MAX_VELOCITY = 1000f;
+    private static final Point2F ORIENTATION = Point2F.cartesian(0, -1);
 
     private Point2F touchPos = null;
 
@@ -29,28 +30,48 @@ public class Player extends EngineObject {
         this.ship = ship;
     }
 
-    private Point2F calculateVelocity(float time) {
+    private void calculateAngleAndSpeed(float time) {
         if (touchPos == null) {
-            return Point2F.ZERO;
+            ship.setSpeed(0);
+            return;
         }
+
         final Point2F vec = touchPos.sub(ship.getPosition());
         final float distance = vec.magnitude();
         if (distance < 20) {
-            return Point2F.ZERO;
+            ship.setSpeed(0);
+            return;
         }
-        return vec.resize(MAX_VELOCITY * time);
+
+        final float cosineOfAngle = vec.cosineOfAngle(ORIENTATION);
+        float angle = (float)Math.toDegrees(Math.acos(cosineOfAngle));
+        if (vec.getX() < 0) {
+            angle = 360 - angle;
+        }
+        ship.setAngle(angle);
+        ship.setSpeed(MAX_VELOCITY * time);
     }
 
     @Override
     public boolean process(float time) {
-        ship.setVelocity(calculateVelocity(time));
+        calculateAngleAndSpeed(time);
         textDisplay.printMessage(String.format("FPS: %.2f", 1f/time));
         return true;
     }
-
+/*
+    @Override
+    public void render(Canvas canvas) {
+        canvas.drawCircle();
+    }
+*/
     @Override
     public void postProcess() {
+
+        //final float viewMagnitude = viewport.getViewSize().mul(0.6f/2).magnitude();
+        //final Point2F viewMove = ship.getVelocity().negate().resize(viewMagnitude);
+        //final Point2F pt = ship.getPosition().add(viewMove);
         viewport.position(ship.getPosition());
+
         textDisplay.printMessage(String.format("Position: (%.2f;%.2f)", ship.getPosition().getX(), ship.getPosition().getY()));
     }
 
