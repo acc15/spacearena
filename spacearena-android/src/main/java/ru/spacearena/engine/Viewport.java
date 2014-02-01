@@ -13,41 +13,31 @@ import java.util.List;
 public class Viewport extends EngineContainer {
 
     private Matrix transform = new Matrix();
-    private PointF scale = new PointF(1,1);
-    private PointF position = new PointF(0,0);
+    private Point2F scale = Point2F.ONE;
+    private Point2F position = Point2F.ZERO;
 
-    public Viewport scale(PointF sz) {
-        this.scale.set(sz);
+    public Viewport scale(Point2F sz) {
+        this.scale = sz;
         return this;
     }
 
-    public Viewport position(PointF translate) {
-        this.position.set(translate);
+    public Viewport position(Point2F position) {
+        this.position = position;
         return this;
     }
 
-    private RectF getViewRectFor(PointF pt) {
-        final Rect displayRect = getEngine().getDisplayRect();
-        return new RectF(pt.x, pt.y, displayRect.width() * scale.x, displayRect.height() * scale.y);
+    public Point2F getViewSize() {
+        return getEngine().getDisplaySize().div(scale);
     }
 
-    public RectF getViewRect() {
-        return getViewRectFor(position);
-    }
-
-    public PointF mapPoint(PointF screenPoint) {
-        final Rect displayRect = getEngine().getDisplayRect();
-        final float displayWidth = displayRect.width() / scale.x;
-        final float displayHeight = displayRect.height() / scale.y;
-        final float left = position.x - displayWidth / 2;
-        final float top = position.y - displayHeight / 2;
-        return new PointF(screenPoint.x / scale.x + left, screenPoint.y / scale.y + top);
+    public Point2F mapPoint(Point2F screenPoint) {
+        return screenPoint.div(scale).add(position.sub(getViewSize().div(2)));
     }
 
     @Override
-    public boolean touch(MotionType type, List<PointF> points) {
-        final List<PointF> remappedPoints = new ArrayList<PointF>();
-        for (final PointF pt: points) {
+    public boolean touch(MotionType type, List<Point2F> points) {
+        final List<Point2F> remappedPoints = new ArrayList<Point2F>();
+        for (final Point2F pt: points) {
             remappedPoints.add(mapPoint(pt));
         }
         return super.touch(type, remappedPoints);
@@ -57,12 +47,9 @@ public class Viewport extends EngineContainer {
     public void render(Canvas canvas) {
         final Matrix oldMatrix = canvas.getMatrix();
 
-        final float x = position.x - canvas.getWidth()/(scale.x*2);
-        final float y = position.y - canvas.getHeight()/(scale.y*2);
-
-        final PointF leftTop = mapPoint(new PointF(0,0));
-        transform.setScale(scale.x, scale.y);
-        transform.preTranslate(-leftTop.x, -leftTop.y);
+        final Point2F translate = mapPoint(Point2F.ZERO).negate();
+        transform.setScale(scale.getX(), scale.getY());
+        transform.preTranslate(translate.getX(), translate.getY());
         canvas.setMatrix(transform);
         try {
             super.render(canvas);

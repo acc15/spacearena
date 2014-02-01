@@ -3,8 +3,8 @@ package ru.spacearena.game;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.Point2F;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,9 +64,9 @@ public class Sky extends EngineObject {
     }
 
     private void initStar(Star star) {
-        final Rect displayRect = getEngine().getDisplayRect();
-        star.x = random.nextFloat() * displayRect.width() + displayRect.left;
-        star.y = random.nextFloat() * displayRect.height() + displayRect.top;
+        final Point2F displaySize = getEngine().getDisplaySize();
+        star.x = random.nextFloat() * displaySize.getX();
+        star.y = random.nextFloat() * displaySize.getY();
         star.size = random.nextFloat() * 5;
         star.color = generateStarColor(random);
     }
@@ -76,7 +76,7 @@ public class Sky extends EngineObject {
             star.y = star.y - speed;
             if (star.y < 0) {
                 initStar(star);
-                star.y += getEngine().getDisplayRect().height();
+                star.y += getEngine().getDisplaySize().height();
             }
         }*/
     }

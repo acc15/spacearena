@@ -1,8 +1,6 @@
 package ru.spacearena.engine;
 
 import android.graphics.Canvas;
-import android.graphics.PointF;
-import android.graphics.Rect;
 import ru.spacearena.engine.input.MotionType;
 
 import java.util.List;
@@ -16,16 +14,6 @@ public class EngineObject {
     public static final int ID_NULL = -1;
 
     private Engine engine = null;
-    private int id = ID_NULL;
-
-    public int getId() {
-        return id;
-    }
-
-    public EngineObject withId(int id) {
-        this.id = id;
-        return this;
-    }
 
     public boolean attached() {
         return engine != null;
@@ -36,19 +24,10 @@ public class EngineObject {
             throw new IllegalStateException("Engine already attached");
         }
         this.engine = engine;
-
-        final int id = getId();
-        if (id != ID_NULL) {
-            engine.register(id, this);
-        }
     }
 
     public void detach() {
         checkEngine();
-        final int id = getId();
-        if (id != ID_NULL) {
-            engine.unregister(id);
-        }
         this.engine = null;
     }
 
@@ -74,10 +53,13 @@ public class EngineObject {
         return true;
     }
 
-    public void resize(Rect oldRect) {
+    public void postProcess() {
     }
 
-    public boolean touch(MotionType type, List<PointF> points) {
+    public void resize(Point2F oldSize) {
+    }
+
+    public boolean touch(MotionType type, List<Point2F> points) {
         return false;
     }
 

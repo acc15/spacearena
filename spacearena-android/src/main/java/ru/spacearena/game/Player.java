@@ -1,15 +1,13 @@
 package ru.spacearena.game;
 
-import android.graphics.PointF;
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.Viewport;
 import ru.spacearena.engine.common.TextDisplay;
 import ru.spacearena.engine.input.MotionType;
-import ru.spacearena.engine.util.PointUtils;
 
 import java.util.List;
 
-import static ru.spacearena.engine.util.PointUtils.subtract;
 
 /**
  * @author Vyacheslav Mayorov
@@ -19,47 +17,44 @@ public class Player extends EngineObject {
 
     private static final float MAX_VELOCITY = 1000f;
 
-    private PointF touchPos = null;
+    private Point2F touchPos = null;
 
-    private float move(Ship ship) {
+    private TextDisplay textDisplay;
+    private Viewport viewport;
+    private Ship ship;
+
+    public Player(TextDisplay textDisplay, Viewport viewport, Ship ship) {
+        this.textDisplay = textDisplay;
+        this.viewport = viewport;
+        this.ship = ship;
+    }
+
+    private Point2F calculateVelocity(float time) {
         if (touchPos == null) {
-            return -1f;
+            return Point2F.ZERO;
         }
-
-        final PointF vec = ship.velocity();
-        vec.set(touchPos.x, touchPos.y);
-
-        subtract(vec, ship.position());
-        final float distance = vec.length();
+        final Point2F vec = touchPos.sub(ship.getPosition());
+        final float distance = vec.magnitude();
         if (distance < 20) {
-            return -1f;
+            return Point2F.ZERO;
         }
-
-        PointUtils.resize(vec, MAX_VELOCITY);
-        return distance;
+        return vec.resize(MAX_VELOCITY * time);
     }
 
     @Override
     public boolean process(float time) {
-        final Ship ship = getEngine().get(GameFactory.PLAYER_SHIP);
-        final float distance = move(ship);
-        if (distance < 0) {
-            ship.velocity().set(0,0);
-        }
-
-        final Viewport viewport = getEngine().get(GameFactory.VIEWPORT);
-        viewport.position(ship.position());
-//        final RectF viewRect = viewport.getViewRect();
-//        viewRect.inset(viewRect.width() * 0.4f, viewRect.height() * 0.4f);
-
-        final TextDisplay textDisplay = getEngine().get(GameFactory.TEXT_DISPLAY);
+        ship.setVelocity(calculateVelocity(time));
         textDisplay.printMessage(String.format("FPS: %.2f", 1f/time));
-        textDisplay.printMessage(String.format("Position: (%.2f;%.2f)", ship.position().x, ship.position().y));
         return true;
     }
 
+    @Override
+    public void postProcess() {
+        viewport.position(ship.getPosition());
+        textDisplay.printMessage(String.format("Position: (%.2f;%.2f)", ship.getPosition().getX(), ship.getPosition().getY()));
+    }
 
-    public boolean touch(MotionType type, List<PointF> points) {
+    public boolean touch(MotionType type, List<Point2F> points) {
         switch (type) {
         case UP:
             touchPos = null;
@@ -70,7 +65,6 @@ public class Player extends EngineObject {
             touchPos = points.get(0);
             break;
         }
-
         return true;
     }
 }

@@ -6,6 +6,7 @@ import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.Point2F;
 
 /**
  * @author Vyacheslav Mayorov
@@ -29,12 +30,12 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
 
     public void surfaceCreated(SurfaceHolder holder) {
         final Rect frame = holder.getSurfaceFrame();
-        engine.resize(new Rect(frame.left, frame.top, frame.right, frame.bottom));
+        engine.resize(Point2F.to(frame.right, frame.bottom));
         start();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        engine.resize(new Rect(0, 0, width, height));
+        engine.resize(Point2F.to(width, height));
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {

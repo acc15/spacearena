@@ -1,9 +1,6 @@
 package ru.spacearena.engine;
 
 import android.graphics.Canvas;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.util.SparseArray;
 import ru.spacearena.engine.input.MotionType;
 
 import java.util.List;
@@ -17,39 +14,11 @@ public class Engine {
     private long lastTime = -1;
 
     private EngineObject root;
-    private Rect displayRect;
-    private SparseArray<EngineObject> objects = new SparseArray<EngineObject>();
+    private Point2F displaySize;
 
     public Engine(EngineObject engineObject) {
         this.root = engineObject;
         engineObject.attach(this);
-    }
-
-    public void register(int id, EngineObject object) {
-        if (objects.get(id) != null) {
-            throw new IllegalArgumentException("EngineObject with id " + id + " already registered");
-        }
-        this.objects.put(id, object);
-    }
-
-    public void unregister(int id) {
-        if (objects.get(id) == null) {
-            throw notRegistered(id);
-        }
-        this.objects.remove(id);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T get(int id) {
-        final T val = (T)objects.get(id);
-        if (val == null) {
-            throw notRegistered(id);
-        }
-        return val;
-    }
-
-    private IllegalArgumentException notRegistered(int id) {
-        return new IllegalArgumentException("EngineObject with id " + id + " isn't registered");
     }
 
     public void init() {
@@ -64,27 +33,28 @@ public class Engine {
             root.process(timeDelta);
         }
         lastTime = currentTime;
+        root.postProcess();
     }
 
-    public void resize(Rect newRect) {
-        if (newRect.equals(displayRect)) {
+    public void resize(Point2F newSize) {
+        if (newSize.equals(displaySize)) {
             return;
         }
-        final Rect oldRect = this.displayRect;
-        this.displayRect = newRect;
-        root.resize(oldRect);
+        final Point2F oldSize = this.displaySize;
+        this.displaySize = newSize;
+        root.resize(oldSize);
     }
 
     public void render(Canvas canvas) {
         root.render(canvas);
     }
 
-    public boolean touch(MotionType type, List<PointF> points) {
+    public boolean touch(MotionType type, List<Point2F> points) {
         return root.touch(type, points);
     }
 
-    public Rect getDisplayRect() {
-        return displayRect;
+    public Point2F getDisplaySize() {
+        return displaySize;
     }
 
 }

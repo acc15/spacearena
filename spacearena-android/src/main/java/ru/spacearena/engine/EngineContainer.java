@@ -1,8 +1,6 @@
 package ru.spacearena.engine;
 
 import android.graphics.Canvas;
-import android.graphics.PointF;
-import android.graphics.Rect;
 import ru.spacearena.engine.input.MotionType;
 
 import java.util.ArrayList;
@@ -52,13 +50,20 @@ public class EngineContainer extends EngineObject {
         return true;
     }
 
-    public void resize(Rect oldRect) {
+    @Override
+    public void postProcess() {
         for (EngineObject obj: objects) {
-            obj.resize(oldRect);
+            obj.postProcess();
         }
     }
 
-    public boolean touch(MotionType type, List<PointF> points) {
+    public void resize(Point2F oldSize) {
+        for (EngineObject obj: objects) {
+            obj.resize(oldSize);
+        }
+    }
+
+    public boolean touch(MotionType type, List<Point2F> points) {
         for (EngineObject obj: objects) {
             if (obj.touch(type, points)) {
                 return true;

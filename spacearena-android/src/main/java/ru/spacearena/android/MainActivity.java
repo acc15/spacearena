@@ -1,11 +1,11 @@
 package ru.spacearena.android;
 
 import android.app.Activity;
-import android.graphics.PointF;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
 import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.input.MotionType;
 import ru.spacearena.game.GameFactory;
 
@@ -56,9 +56,9 @@ public class MainActivity extends Activity {
                 if (type == null) {
                     return false;
                 }
-                final List<PointF> points = new ArrayList<PointF>();
+                final List<Point2F> points = new ArrayList<Point2F>();
                 for (int i=0; i<event.getPointerCount(); i++) {
-                    points.add(new PointF(event.getX(i), event.getY(i)));
+                    points.add(Point2F.to(event.getX(i), event.getY(i)));
                 }
                 return engine.touch(type, points);
             }
