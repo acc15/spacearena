@@ -16,6 +16,8 @@ public class Viewport extends EngineContainer {
     private Point2F scale = Point2F.ONE;
     private Point2F position = Point2F.ZERO;
 
+    private RectF viewRect = new RectF();
+
     public Viewport scale(Point2F sz) {
         this.scale = sz;
         return this;
@@ -27,11 +29,10 @@ public class Viewport extends EngineContainer {
     }
 
     public RectF getViewRect() {
-        final Point2F viewSize = getViewSize();
-        final Point2F halfSize = viewSize.div(2);
-        final Point2F leftTop = position.sub(halfSize);
-        final Point2F rightBottom = leftTop.add(viewSize);
-        return new RectF(leftTop.getX(), leftTop.getY(), rightBottom.getX(), rightBottom.getY());
+        final Point2F displaySize = getEngine().getDisplaySize();
+        viewRect.set(0, 0, displaySize.getX()/scale.getX(), displaySize.getY()/scale.getY());
+        viewRect.offset(position.getX() - viewRect.width()/2, position.getY() - viewRect.height()/2);
+        return viewRect;
     }
 
     public Point2F getViewSize() {

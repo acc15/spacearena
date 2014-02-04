@@ -94,4 +94,17 @@ public class Point2F {
     public static Point2F cartesian(float x, float y) {
         return new Point2F(x, y);
     }
+
+    public float min() {
+        return Math.min(x,y);
+    }
+
+    public float max() {
+        return Math.max(x,y);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + x + ";" + y + "]";
+    }
 }

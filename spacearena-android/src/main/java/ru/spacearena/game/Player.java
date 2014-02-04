@@ -67,11 +67,14 @@ public class Player extends EngineObject {
     @Override
     public void postProcess() {
 
-        //final float viewMagnitude = viewport.getViewSize().mul(0.6f/2).magnitude();
+        //final float viewMagnitude = viewport.getViewSize().min() / 2;
+        //final Point2F viewMove = Point2F.polar(ship.getAngle(), viewMagnitude);
+        //final Point2F viewPos = ship.getPosition().add(viewMove);
         //final Point2F viewMove = ship.getVelocity().negate().resize(viewMagnitude);
         //final Point2F pt = ship.getPosition().add(viewMove);
         viewport.position(ship.getPosition());
 
+        textDisplay.printMessage(String.format("Angle: %.2f", ship.getAngle()));
         textDisplay.printMessage(String.format("Position: (%.2f;%.2f)", ship.getPosition().getX(), ship.getPosition().getY()));
     }
 
