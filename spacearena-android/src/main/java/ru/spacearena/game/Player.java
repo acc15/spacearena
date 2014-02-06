@@ -43,12 +43,7 @@ public class Player extends EngineObject {
             return;
         }
 
-        final float cosineOfAngle = vec.cosineOfAngle(ORIENTATION);
-        float angle = (float)Math.toDegrees(Math.acos(cosineOfAngle));
-        if (vec.getX() < 0) {
-            angle = 360 - angle;
-        }
-        ship.setAngle(angle);
+        ship.setAngle(vec.angle());
         ship.setSpeed(MAX_VELOCITY * time);
     }
 

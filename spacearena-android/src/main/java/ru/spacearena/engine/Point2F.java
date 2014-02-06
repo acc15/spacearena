@@ -8,6 +8,8 @@ import android.util.FloatMath;
  */
 public class Point2F {
 
+    public static final float PI = 3.1415927f;
+
     public static final Point2F ZERO = new Point2F(0,0);
     public static final Point2F ONE = new Point2F(1,1);
 
@@ -54,7 +56,7 @@ public class Point2F {
         return cartesian(-x, -y);
     }
 
-    public float scalarProduct(Point2F pt) {
+    public float dot(Point2F pt) {
         return x * pt.x + y * pt.y;
     }
 
@@ -66,12 +68,34 @@ public class Point2F {
         return FloatMath.sqrt(magnitudeSquare());
     }
 
+    /**
+     * Returns angle of vector in degrees.
+     * <pre>
+     *         | 0
+     *        -|-
+     * 270 /   |   \ 90
+     * ---(----o----)-->
+     *     \   |   /  x
+     *        -|-
+     *       y | 180
+     *         V
+     * </pre>
+     * @return angle of vector in degrees.
+     */
+    public float angle() {
+        return degrees((float)Math.atan2(-x, y))+180;
+    }
+
+    public float angle(Point2F pt) {
+        return (float)Math.atan2(x*pt.y - pt.x*y, dot(pt));
+    }
+
     public Point2F resize(float newMagnitude) {
         return mul(newMagnitude / magnitude());
     }
 
     public float cosineOfAngle(Point2F pt) {
-        return scalarProduct(pt) / (magnitude() * pt.magnitude());
+        return dot(pt) / (magnitude() * pt.magnitude());
     }
 
     public float getX() {
@@ -87,7 +111,7 @@ public class Point2F {
     }
 
     public static Point2F polar(float angle, float distance) {
-        final float rads = (float)Math.toRadians(angle-90);
+        final float rads = radians(angle-90);
         return cartesian((float) Math.cos(rads) * distance, (float) Math.sin(rads) * distance);
     }
 
@@ -106,5 +130,13 @@ public class Point2F {
     @Override
     public String toString() {
         return "[" + x + ";" + y + "]";
+    }
+
+    public static float degrees(float radians) {
+        return radians * 180 / PI;
+    }
+
+    public static float radians(float degrees) {
+        return degrees * PI / 180;
     }
 }
