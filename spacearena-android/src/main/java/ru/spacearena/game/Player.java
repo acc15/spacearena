@@ -15,8 +15,7 @@ import java.util.List;
  */
 public class Player extends EngineObject {
 
-    private static final float MAX_VELOCITY = 1000f;
-    private static final Point2F ORIENTATION = Point2F.cartesian(0, -1);
+    private static final float MAX_VELOCITY = 500f;
 
     private Point2F touchPos = null;
 

@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import ru.spacearena.android.R;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.Viewport;
 import ru.spacearena.engine.common.Background;
 import ru.spacearena.engine.common.TextDisplay;
@@ -26,9 +25,9 @@ public class GameFactory {
         final Ship ship = new Ship(shipImage);
         final Viewport viewport = new Viewport();
         final Player player = new Player(textDisplay, viewport, ship);
-        final Sky sky = new Sky(viewport);
+        final Sky sky = new Sky(viewport, textDisplay);
 
-        viewport.setScale(Point2F.cartesian(0.5f, 0.5f)).add(sky).add(ship);
+        viewport.add(sky).add(ship);
 
         return new Engine(new EngineContainer().
                 add(new Background()).
