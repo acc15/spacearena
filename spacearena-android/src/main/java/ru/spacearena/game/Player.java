@@ -36,7 +36,9 @@ public class Player extends EngineObject {
             return;
         }
 
-        final Point2F vec = touchPos.sub(ship.getPosition());
+        final Point2F movePos = viewport.mapPoint(touchPos);
+
+        final Point2F vec = movePos.sub(ship.getPosition());
         final float distance = vec.magnitude();
         if (distance < 20) {
             ship.setSpeed(0);
@@ -53,22 +55,10 @@ public class Player extends EngineObject {
         textDisplay.printMessage(String.format("FPS: %.2f", 1f/time));
         return true;
     }
-/*
-    @Override
-    public void render(Canvas canvas) {
-        canvas.drawCircle();
-    }
-*/
+
     @Override
     public void postProcess() {
-
-        //final float viewMagnitude = viewport.getViewSize().min() / 2;
-        //final Point2F viewMove = Point2F.polar(ship.getAngle(), viewMagnitude);
-        //final Point2F viewPos = ship.getPosition().add(viewMove);
-        //final Point2F viewMove = ship.getVelocity().negate().resize(viewMagnitude);
-        //final Point2F pt = ship.getPosition().add(viewMove);
-        viewport.position(ship.getPosition());
-
+        viewport.setPosition(ship.getPosition());
         textDisplay.printMessage(String.format("Angle: %.2f", ship.getAngle()));
         textDisplay.printMessage(String.format("Position: (%.2f;%.2f)", ship.getPosition().getX(), ship.getPosition().getY()));
     }

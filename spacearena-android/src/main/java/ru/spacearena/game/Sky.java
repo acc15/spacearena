@@ -1,14 +1,9 @@
 package ru.spacearena.game;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.*;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.Viewport;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -17,91 +12,59 @@ import java.util.Random;
  */
 public class Sky extends EngineObject {
 
-    private static final float PIXELS_PER_STAR = 10000;
+    private static final int PIXELS_PER_STAR = 300;
 
-    private static class Star {
-        private float x;
-        private float y;
-        private int color;
-        private float size;
-        private float depth;
-    }
-
-    private static final float FAR_STAR_DEPTH = 5f;
-    private static final float CLOSE_STAR_DEPTH = 1f;
+    private static final float MAX_SIZE = 6f;
+    private static final float MIN_SIZE = 2f;
 
     private final Random random = new Random();
-    private final List<Star> stars = new ArrayList<Star>();
+    private final long seed;
 
-    private RectF lastViewRect;
     private final Viewport viewport;
 
     private final Paint paint = new Paint();
 
     public Sky(Viewport viewport) {
         this.viewport = viewport;
+        this.seed = random.nextLong();
     }
 
-    @Override
-    public void init() {
-        lastViewRect = new RectF(viewport.getViewRect());
-        final int starCount = (int)(lastViewRect.width() * lastViewRect.height() / PIXELS_PER_STAR);
-        for (int i=0; i<starCount; i++) {
-            final Star star = new Star();
-            initStar(star, lastViewRect);
-            stars.add(star);
-        }
+    private int firstVisiblePosition(int i, int grid) {
+        final int v = i > 0 ? i + grid-1 : i;
+        return v - v % grid;
     }
 
-    @Override
-    public void postProcess() {
 
-        final RectF viewRect = viewport.getViewRect();
 
-        final float xOffset = viewRect.centerX() - lastViewRect.centerX();
-        final float yOffset = viewRect.centerY() - lastViewRect.centerY();
-        if (xOffset == 0 && yOffset == 0) {
-            return;
-        }
-        for (final Star star: stars) {
-            star.x += xOffset - xOffset / star.depth;
-            star.y += yOffset - yOffset / star.depth;
-        }
-        lastViewRect = new RectF(viewRect);
-    }
-
-    private static int generateStarColor(Random random) {
-        final int rnd = random.nextInt(512);
-        if (rnd >= 256) {
-            final int clr = rnd - 256;
-            return Color.rgb(clr, clr, 255);
-        } else {
-            return Color.rgb(0, 0, rnd);
-        }
-    }
-
-    private void initStar(Star star, RectF rect) {
-        star.x = rect.left + random.nextFloat() * rect.width();
-        star.y = rect.top + random.nextFloat() * rect.height();
-        star.depth = CLOSE_STAR_DEPTH + random.nextFloat() * (FAR_STAR_DEPTH-CLOSE_STAR_DEPTH);
-        star.color = generateStarColor(random);
-        star.size = 1 + random.nextFloat() * (FAR_STAR_DEPTH / star.depth);
-    }
-
-    private void processStars(List<Star> stars, float speed) {
-        /*for (final Star star : stars) {
-            star.y = star.y - speed;
-            if (star.y < 0) {
-                initStar(star);
-                star.y += getEngine().getDisplaySize().height();
-            }
-        }*/
+    private int randomInt(int v, int offset) {
+        return v - offset + random.nextInt((offset+1)*2);
     }
 
     public void render(Canvas canvas) {
-        for (final Star star: stars) {
-            paint.setColor(star.color);
-            canvas.drawCircle(star.x, star.y, star.size, paint);
+
+        final int gridX = PIXELS_PER_STAR, gridY = PIXELS_PER_STAR;
+
+        final RectF viewRectF = viewport.getViewRect();
+        final Rect viewRect = new Rect((int)viewRectF.left, (int)viewRectF.top, (int)viewRectF.right, (int)viewRectF.bottom);
+        viewRect.inset(-gridX*2, -gridY*2);
+
+        final int startX = firstVisiblePosition(viewRect.left, gridX);
+        final int startY = firstVisiblePosition(viewRect.top, gridY);
+
+        for (int y=startY; y<=viewRect.bottom; y+=gridY) {
+            for (int x=startX; x<=viewRect.right; x+=gridX) {
+                random.setSeed(seed ^ ((long)x << 32 ^ y));
+                final int realX = randomInt(x, gridX*2);
+                final int realY = randomInt(y, gridY*2);
+                final float halfSize = (MIN_SIZE + random.nextFloat() * (MAX_SIZE-MIN_SIZE))/2;
+
+                final int bright = random.nextInt(256);
+                final int color = Color.rgb(bright, bright, 0xff);
+
+                paint.setColor(color);
+                canvas.drawRect(realX-halfSize, realY-halfSize, realX+halfSize, realY+halfSize, paint);
+            }
         }
+
     }
 }

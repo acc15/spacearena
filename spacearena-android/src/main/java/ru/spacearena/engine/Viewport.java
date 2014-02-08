@@ -18,12 +18,12 @@ public class Viewport extends EngineContainer {
 
     private RectF viewRect = new RectF();
 
-    public Viewport scale(Point2F sz) {
+    public Viewport setScale(Point2F sz) {
         this.scale = sz;
         return this;
     }
 
-    public Viewport position(Point2F position) {
+    public Viewport setPosition(Point2F position) {
         this.position = position;
         return this;
     }
