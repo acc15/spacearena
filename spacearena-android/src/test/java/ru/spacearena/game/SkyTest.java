@@ -1,5 +1,6 @@
 package ru.spacearena.game;
 
+import org.fest.assertions.Delta;
 import org.junit.Test;
 
 import java.util.Random;
@@ -17,13 +18,20 @@ public class SkyTest {
     }
 
     @Test
-    public void testMod() throws Exception {
+    public void testFirstVisiblePos() throws Exception {
 
-        final int grid = 5;
-        for (int i=-20; i<=20; i++) {
-            final int v = i > 0 ? i + grid-1 : i;
-            final int x = v - v % grid;
-            System.out.println("Grid " + i + ": " + x);
+        final float[] expected = {
+                -2,
+                0,0,0,0,
+                2,2,2,2,
+                4,4,4,4
+        };
+
+        int e = 0;
+
+        for (float i=-2f; i<=4f; i+=0.5f, e++) {
+            final float pos = Sky.firstVisiblePosition(i, 2);
+            assertThat(pos).describedAs("for value " + i).isEqualTo(expected[e], Delta.delta(0.000001));
         }
 
     }

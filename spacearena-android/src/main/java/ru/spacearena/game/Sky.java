@@ -30,36 +30,53 @@ public class Sky extends EngineObject {
         this.seed = random.nextLong();
     }
 
-    private int firstVisiblePosition(int i, int grid) {
-        final int v = i > 0 ? i + grid-1 : i;
-        return v - v % grid;
+    static float firstVisiblePosition(float i, float grid) {
+        return (float)Math.ceil(i/grid)*grid;
     }
 
-    public void render(Canvas canvas) {
+    private void drawStarLayer(Canvas canvas, RectF viewRect, float pixelsPerStar, float scale) {
 
-        final int twoStarDistance = PIXELS_PER_STAR * 2;
+        final RectF scaledRect = new RectF(viewRect);
 
-        final RectF viewRectF = viewport.getViewRect();
-        final Rect viewRect = new Rect((int)viewRectF.left, (int)viewRectF.top, (int)viewRectF.right, (int)viewRectF.bottom);
-        viewRect.inset(-twoStarDistance, -twoStarDistance);
+        final float twoStarDistance = pixelsPerStar * 2;
 
-        final int startX = firstVisiblePosition(viewRect.left, PIXELS_PER_STAR);
-        final int startY = firstVisiblePosition(viewRect.top, PIXELS_PER_STAR);
+        // inflating rect
+        scaledRect.inset(-(scaledRect.width()*scale + twoStarDistance), -(scaledRect.height()*scale + twoStarDistance));
 
-        for (int y=startY; y<=viewRect.bottom; y+=PIXELS_PER_STAR) {
-            for (int x=startX; x<=viewRect.right; x+=PIXELS_PER_STAR) {
-                random.setSeed(seed ^ ((long)x << 32 ^ y));
-                final int realX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
-                final int realY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
+        final float startX = firstVisiblePosition(scaledRect.left, pixelsPerStar);
+        final float startY = firstVisiblePosition(scaledRect.top, pixelsPerStar);
+
+        for (float y=startY; y<=scaledRect.bottom; y += pixelsPerStar) {
+            for (float x=startX; x<=scaledRect.right; x += pixelsPerStar) {
+                random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x << 24) ^ ((long)y));
+                final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
+                final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float halfSize = (MIN_SIZE + random.nextFloat() * (MAX_SIZE-MIN_SIZE))/2;
 
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);
 
                 paint.setColor(color);
-                canvas.drawRect(realX-halfSize, realY-halfSize, realX+halfSize, realY+halfSize, paint);
+
+                final float translateX = (randX - scaledRect.centerX()) / scale + scaledRect.centerX();
+                final float translateY = (randY - scaledRect.centerY()) / scale + scaledRect.centerY();
+
+                canvas.drawCircle(translateX, translateY, halfSize, paint);
             }
         }
+    }
 
+    public void render(Canvas canvas) {
+
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(30f);
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawRect(-10f,-10f,10f,10f,paint);
+        canvas.drawText("Center of world", 0, 50, paint);
+
+        final RectF viewRectF = viewport.getViewRect();
+        for (float scale=1; scale<=5; scale++) {
+            drawStarLayer(canvas, viewRectF, 300*scale, scale);
+        }
     }
 }
