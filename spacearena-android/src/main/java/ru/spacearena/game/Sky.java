@@ -37,25 +37,25 @@ public class Sky extends EngineObject {
 
 
     private int randomInt(int v, int offset) {
-        return v - offset + random.nextInt((offset+1)*2);
+        return v - offset + random.nextInt(offset*2+1);
     }
 
     public void render(Canvas canvas) {
 
-        final int gridX = PIXELS_PER_STAR, gridY = PIXELS_PER_STAR;
+        final int gridX = PIXELS_PER_STAR * 2, gridY = PIXELS_PER_STAR * 2;
 
         final RectF viewRectF = viewport.getViewRect();
         final Rect viewRect = new Rect((int)viewRectF.left, (int)viewRectF.top, (int)viewRectF.right, (int)viewRectF.bottom);
-        viewRect.inset(-gridX*2, -gridY*2);
+        viewRect.inset(-gridX, -gridY);
 
         final int startX = firstVisiblePosition(viewRect.left, gridX);
         final int startY = firstVisiblePosition(viewRect.top, gridY);
 
-        for (int y=startY; y<=viewRect.bottom; y+=gridY) {
-            for (int x=startX; x<=viewRect.right; x+=gridX) {
+        for (int y=startY; y<=viewRect.bottom; y+=PIXELS_PER_STAR) {
+            for (int x=startX; x<=viewRect.right; x+=PIXELS_PER_STAR) {
                 random.setSeed(seed ^ ((long)x << 32 ^ y));
-                final int realX = randomInt(x, gridX*2);
-                final int realY = randomInt(y, gridY*2);
+                final int realX = randomInt(x, gridX);
+                final int realY = randomInt(y, gridY);
                 final float halfSize = (MIN_SIZE + random.nextFloat() * (MAX_SIZE-MIN_SIZE))/2;
 
                 final int bright = random.nextInt(256);
