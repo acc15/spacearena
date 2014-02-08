@@ -20,7 +20,7 @@ public class Ship extends EngineObject {
 
     private Point2F position = Point2F.ZERO;
     private float angle = 0;
-    private float speed = 0;
+    private Point2F velocity = Point2F.ZERO;
 
     public Ship(Bitmap image) {
         this.image = image;
@@ -33,7 +33,7 @@ public class Ship extends EngineObject {
     }
 
     public boolean process(float time) {
-        position = position.add(Point2F.polar(angle, speed));
+        position = position.add(velocity.mul(time));
         return true;
     }
 
@@ -56,15 +56,15 @@ public class Ship extends EngineObject {
         return angle;
     }
 
-    public float getSpeed() {
-        return speed;
-    }
-
     public void setAngle(float angle) {
         this.angle = angle;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
+    public Point2F getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Point2F velocity) {
+        this.velocity = velocity;
     }
 }

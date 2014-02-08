@@ -16,6 +16,8 @@ import java.util.List;
 public class Player extends EngineObject {
 
     private static final float MAX_VELOCITY = 500f;
+    private static final float SHIP_ACCEL = 500f;
+    private static final float SHIP_DECCEL = 100f;
 
     private Point2F touchPos = null;
 
@@ -29,23 +31,38 @@ public class Player extends EngineObject {
         this.ship = ship;
     }
 
+    private void decelerate(float time) {
+        if (!ship.getVelocity().isZero()) {
+            final Point2F velocity = ship.getVelocity();
+            ship.setVelocity(velocity.sub(velocity.resize(Math.min(SHIP_DECCEL*time, velocity.magnitude()))));
+        }
+    }
+
     private void calculateAngleAndSpeed(float time) {
         if (touchPos == null) {
-            ship.setSpeed(0);
+            decelerate(time);
             return;
         }
 
         final Point2F movePos = viewport.mapPoint(touchPos);
-
         final Point2F vec = movePos.sub(ship.getPosition());
         final float distance = vec.magnitude();
         if (distance < 20) {
-            ship.setSpeed(0);
+            decelerate(time);
             return;
         }
 
-        ship.setAngle(vec.angle());
-        ship.setSpeed(MAX_VELOCITY * time);
+        final float angle = vec.angle();
+        ship.setAngle(angle);
+
+        final float accel = SHIP_ACCEL * time;
+        final Point2F acceleration = Point2F.polar(angle, accel);
+        ship.setVelocity(ship.getVelocity().add(acceleration));
+
+        // TODO consider replacing ship velocity by polar coordinates
+        if (ship.getVelocity().magnitude() > MAX_VELOCITY) {
+            ship.setVelocity(ship.getVelocity().resize(MAX_VELOCITY));
+        }
     }
 
     @Override

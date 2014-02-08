@@ -48,7 +48,7 @@ public class Sky extends EngineObject {
 
         for (float y=startY; y<=scaledRect.bottom; y += pixelsPerStar) {
             for (float x=startX; x<=scaledRect.right; x += pixelsPerStar) {
-                random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x << 24) ^ ((long)y));
+                random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x<<24) ^ ((long)y));
                 final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float halfSize = (MIN_SIZE + random.nextFloat() * (MAX_SIZE-MIN_SIZE))/2;
