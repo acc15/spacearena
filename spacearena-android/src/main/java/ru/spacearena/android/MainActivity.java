@@ -64,8 +64,19 @@ public class MainActivity extends BaseGameActivity {
 
         final RectangularShape rect = new Rectangle(100, 100, 30, 30, getVertexBufferObjectManager());
         rect.setColor(Color.WHITE);
+
+        for (int i=0; i<250; i++) {
+            final Rectangle r = new Rectangle(
+                    MathUtils.random(camera.getXMin(), camera.getXMax()),
+                    MathUtils.random(camera.getYMin(), camera.getYMax()), 5f, 5f, getVertexBufferObjectManager());
+            final Color color = new Color(MathUtils.RANDOM.nextFloat(), MathUtils.RANDOM.nextFloat(), MathUtils.RANDOM.nextFloat());
+            r.setColor(color);
+            scene.attachChild(r);
+        }
+
         scene.attachChild(rect);
         scene.attachChild(ship);
+
 
         scene.setOnSceneTouchListener(new IOnSceneTouchListener() {
             public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {

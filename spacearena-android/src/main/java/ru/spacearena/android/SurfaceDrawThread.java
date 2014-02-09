@@ -67,7 +67,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     }
 
     public void run() {
-        //engine.init();
+        engine.init();
 
         final Paint paint = new Paint();
         paint.setTextSize(40);
@@ -76,7 +76,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
         long prevTime = System.currentTimeMillis();
         while (running) {
 
-            //engine.process();
+            engine.process();
 
             final long currentTime = System.currentTimeMillis();
             final float fps = 1000f / (currentTime - prevTime);
@@ -98,7 +98,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
             try {
                 canvas.drawColor(Color.BLACK);
                 canvas.drawText("FPS: " + fps, 100, 100, paint);
-                //engine.render(canvas);
+                engine.render(canvas);
             } finally {
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
