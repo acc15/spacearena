@@ -1,6 +1,8 @@
 package ru.spacearena.android;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
@@ -65,26 +67,38 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     }
 
     public void run() {
-        engine.init();
+        //engine.init();
+
+        final Paint paint = new Paint();
+        paint.setTextSize(40);
+        paint.setColor(Color.WHITE);
+
+        long prevTime = System.currentTimeMillis();
         while (running) {
 
-            engine.process();
+            //engine.process();
 
-            final Canvas canvas = surfaceHolder.lockCanvas();
+            final long currentTime = System.currentTimeMillis();
+            final float fps = 1000f / (currentTime - prevTime);
+            prevTime = currentTime;
+
+            final Canvas canvas = surfaceHolder.lockCanvas(null);
             if (canvas == null) {
                 logger.info("Canvas can't be locked. Waiting 100ms...");
                 if (!running) {
                     break;
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     logger.error("Canvas wait interrupted");
                 }
                 continue;
             }
             try {
-                engine.render(canvas);
+                canvas.drawColor(Color.BLACK);
+                canvas.drawText("FPS: " + fps, 100, 100, paint);
+                //engine.render(canvas);
             } finally {
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
