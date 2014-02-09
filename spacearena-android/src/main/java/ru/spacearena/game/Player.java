@@ -18,8 +18,8 @@ public class Player extends EngineObject {
     private static final float SHIP_ACCEL = 500f;
     private static final float SHIP_DECCEL = 100f;
 
-    private Point2F flyTo = null;
-    private Point2F lookTo = null;
+    private Point2F movePt = null;
+    private Point2F shootPt = null;
     private boolean hasShot = false;
 
     private TextDisplay textDisplay;
@@ -40,43 +40,46 @@ public class Player extends EngineObject {
     }
 
     private void calculateAngleAndSpeed(float time) {
-        if (flyTo == null) {
+        Point2F movePos = movePt;
+        if (movePos == null) {
             decelerate(time);
             return;
         }
 
-        final Point2F lookPos = lookTo != null ? viewport.mapPoint(lookTo).sub(ship.getPosition()) : null;
-        if (lookPos != null) {
-            ship.setAngle(lookPos.angle());
+        Point2F shootPos = shootPt;
+        if (shootPos != null) {
+            shootPos = viewport.mapPoint(shootPos).sub(ship.getPosition());
+            ship.setAngle(shootPos.angle());
             if (!hasShot) {
-                final Bullet bullet = new Bullet();
-                bullet.setPosition(ship.getPosition());
-                bullet.setVelocity(lookPos.resize(1000f));
-                viewport.add(bullet);
+                for (Point2F gun: ship.getGunPositions()) {
+                    final Bullet bullet = new Bullet();
+                    bullet.setPosition(gun);
+                    bullet.setVelocity(shootPos.resize(1000f));
+                    viewport.add(bullet);
+                }
                 hasShot = true;
             }
         }
 
-        final Point2F vec = viewport.mapPoint(flyTo).sub(ship.getPosition());
-        if (vec.magnitude() < 20) {
+        movePos = viewport.mapPoint(movePos).sub(ship.getPosition());
+        if (movePos.magnitude() < 20) {
             decelerate(time);
             return;
         }
 
-        final float angle = vec.angle();
-        if (lookPos == null) {
-            ship.setAngle(angle);
+        if (shootPos == null) {
+            ship.setAngle(movePos.angle());
         }
 
         final float accel = SHIP_ACCEL * time;
-        final Point2F acceleration = Point2F.polar(angle, accel);
-        ship.setVelocity(ship.getVelocity().add(acceleration));
+        final Point2F acceleration = movePos.resize(accel);
+        Point2F velocity = ship.getVelocity().add(acceleration);
 
-        // TODO consider replace ship velocity to polar coordinates
-        final float speed = ship.getVelocity().magnitude();
+        final float speed = velocity.magnitude();
         if (speed > MAX_VELOCITY) {
-            ship.setVelocity(ship.getVelocity().div(speed).mul(MAX_VELOCITY));
+            velocity = velocity.div(speed).mul(MAX_VELOCITY);
         }
+        ship.setVelocity(velocity);
     }
 
     @Override
@@ -94,15 +97,15 @@ public class Player extends EngineObject {
     }
 
     public boolean touch(Collection<Point2F> points) {
-        flyTo = lookTo = null;
+        movePt = shootPt = null;
         for (Point2F pt: points) {
-            if (flyTo == null) {
-                flyTo = pt;
-            } else if (lookTo == null) {
-                lookTo = pt;
+            if (movePt == null) {
+                movePt = pt;
+            } else if (shootPt == null) {
+                shootPt = pt;
             }
         }
-        if (lookTo == null) {
+        if (shootPt == null) {
             hasShot = false;
         }
         return true;

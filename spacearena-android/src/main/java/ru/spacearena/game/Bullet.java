@@ -2,6 +2,7 @@ package ru.spacearena.game;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.Point2F;
@@ -16,6 +17,7 @@ public class Bullet extends EngineObject {
     private Point2F velocity = Point2F.ZERO;
 
     private final Paint paint = new Paint();
+    private final Matrix matrix = new Matrix();
 
     public Point2F getVelocity() {
         return velocity;
@@ -33,6 +35,12 @@ public class Bullet extends EngineObject {
         this.position = position;
     }
 
+    private void updateMatrix() {
+        matrix.setRotate(velocity.angle());
+        matrix.postTranslate(position.getX(), position.getY());
+
+    }
+
     @Override
     public boolean process(float time) {
         position = position.add(velocity.mul(time));
@@ -42,7 +50,19 @@ public class Bullet extends EngineObject {
 
     @Override
     public void render(Canvas canvas) {
-        paint.setColor(Color.WHITE);
-        canvas.drawCircle(position.getX(), position.getY(), 20f, paint);
+
+        final Matrix oldMx = canvas.getMatrix();
+        try {
+
+            matrix.setTranslate(position.getX(), position.getY());
+            matrix.preRotate(velocity.angle());
+            matrix.postConcat(oldMx);
+
+            paint.setColor(Color.RED);
+            canvas.setMatrix(matrix);
+            canvas.drawRect(-5, -20, 5, 20, paint);
+        } finally {
+            canvas.setMatrix(oldMx);
+        }
     }
 }
