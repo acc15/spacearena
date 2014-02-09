@@ -9,8 +9,7 @@ import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.input.MotionType;
 import ru.spacearena.game.GameFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
 
 /**
  * @author Vyacheslav Mayorov
@@ -50,17 +49,28 @@ public class MainActivity extends Activity {
 
         final Engine engine = GameFactory.createEngine(getResources());
 
+
+        final LinkedHashMap<Integer,Point2F> pointers = new LinkedHashMap<Integer, Point2F>();
         surfaceView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
-                final MotionType type = mapMotionType(event.getAction());
-                if (type == null) {
-                    return false;
+                if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+                    pointers.clear();
+                    return engine.touch(pointers.values());
                 }
-                final List<Point2F> points = new ArrayList<Point2F>();
+
+                final int action = event.getAction() & MotionEvent.ACTION_MASK;
+                final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK)
+                        >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+
                 for (int i=0; i<event.getPointerCount(); i++) {
-                    points.add(Point2F.cartesian(event.getX(i), event.getY(i)));
+                    final int ptrId = event.getPointerId(i);
+                    if (action == MotionEvent.ACTION_POINTER_UP && pointerIndex == i) {
+                        pointers.remove(ptrId);
+                    } else {
+                        pointers.put(ptrId, Point2F.cartesian(event.getX(i), event.getY(i)));
+                    }
                 }
-                return engine.touch(type, points);
+                return engine.touch(pointers.values());
             }
         });
 

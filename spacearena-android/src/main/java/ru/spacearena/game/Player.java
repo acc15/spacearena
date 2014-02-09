@@ -4,9 +4,8 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.Viewport;
 import ru.spacearena.engine.common.TextDisplay;
-import ru.spacearena.engine.input.MotionType;
 
-import java.util.List;
+import java.util.Collection;
 
 
 /**
@@ -19,7 +18,9 @@ public class Player extends EngineObject {
     private static final float SHIP_ACCEL = 500f;
     private static final float SHIP_DECCEL = 100f;
 
-    private Point2F touchPos = null;
+    private Point2F flyTo = null;
+    private Point2F lookTo = null;
+    private boolean hasShot = false;
 
     private TextDisplay textDisplay;
     private Viewport viewport;
@@ -34,41 +35,54 @@ public class Player extends EngineObject {
     private void decelerate(float time) {
         if (!ship.getVelocity().isZero()) {
             final Point2F velocity = ship.getVelocity();
-            ship.setVelocity(velocity.sub(velocity.resize(Math.min(SHIP_DECCEL*time, velocity.magnitude()))));
+            ship.setVelocity(velocity.sub(velocity.resize(Math.min(SHIP_DECCEL * time, velocity.magnitude()))));
         }
     }
 
     private void calculateAngleAndSpeed(float time) {
-        if (touchPos == null) {
+        if (flyTo == null) {
             decelerate(time);
             return;
         }
 
-        final Point2F movePos = viewport.mapPoint(touchPos);
-        final Point2F vec = movePos.sub(ship.getPosition());
-        final float distance = vec.magnitude();
-        if (distance < 20) {
+        final Point2F lookPos = lookTo != null ? viewport.mapPoint(lookTo).sub(ship.getPosition()) : null;
+        if (lookPos != null) {
+            ship.setAngle(lookPos.angle());
+            if (!hasShot) {
+                final Bullet bullet = new Bullet();
+                bullet.setPosition(ship.getPosition());
+                bullet.setVelocity(lookPos.resize(1000f));
+                viewport.add(bullet);
+                hasShot = true;
+            }
+        }
+
+        final Point2F vec = viewport.mapPoint(flyTo).sub(ship.getPosition());
+        if (vec.magnitude() < 20) {
             decelerate(time);
             return;
         }
 
         final float angle = vec.angle();
-        ship.setAngle(angle);
+        if (lookPos == null) {
+            ship.setAngle(angle);
+        }
 
         final float accel = SHIP_ACCEL * time;
         final Point2F acceleration = Point2F.polar(angle, accel);
         ship.setVelocity(ship.getVelocity().add(acceleration));
 
-        // TODO consider replacing ship velocity by polar coordinates
-        if (ship.getVelocity().magnitude() > MAX_VELOCITY) {
-            ship.setVelocity(ship.getVelocity().resize(MAX_VELOCITY));
+        // TODO consider replace ship velocity to polar coordinates
+        final float speed = ship.getVelocity().magnitude();
+        if (speed > MAX_VELOCITY) {
+            ship.setVelocity(ship.getVelocity().div(speed).mul(MAX_VELOCITY));
         }
     }
 
     @Override
     public boolean process(float time) {
         calculateAngleAndSpeed(time);
-        textDisplay.printMessage(String.format("FPS: %.2f", 1f/time));
+        textDisplay.printMessage(String.format("FPS: %.2f", 1f / time));
         return true;
     }
 
@@ -79,16 +93,17 @@ public class Player extends EngineObject {
         textDisplay.printMessage(String.format("Position: (%.2f;%.2f)", ship.getPosition().getX(), ship.getPosition().getY()));
     }
 
-    public boolean touch(MotionType type, List<Point2F> points) {
-        switch (type) {
-        case UP:
-            touchPos = null;
-            break;
-
-        case DOWN:
-        case MOVE:
-            touchPos = points.get(0);
-            break;
+    public boolean touch(Collection<Point2F> points) {
+        flyTo = lookTo = null;
+        for (Point2F pt: points) {
+            if (flyTo == null) {
+                flyTo = pt;
+            } else if (lookTo == null) {
+                lookTo = pt;
+            }
+        }
+        if (lookTo == null) {
+            hasShot = false;
         }
         return true;
     }

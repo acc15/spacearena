@@ -1,8 +1,8 @@
 package ru.spacearena.engine;
 
 import android.graphics.Canvas;
-import ru.spacearena.engine.input.MotionType;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -49,8 +49,8 @@ public class Engine {
         root.render(canvas);
     }
 
-    public boolean touch(MotionType type, List<Point2F> points) {
-        return root.touch(type, points);
+    public boolean touch(Collection<Point2F> points) {
+        return root.touch(points);
     }
 
     public Point2F getDisplaySize() {

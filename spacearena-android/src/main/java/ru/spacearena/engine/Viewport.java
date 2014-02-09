@@ -1,9 +1,11 @@
 package ru.spacearena.engine;
 
-import android.graphics.*;
-import ru.spacearena.engine.input.MotionType;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,12 +46,12 @@ public class Viewport extends EngineContainer {
     }
 
     @Override
-    public boolean touch(MotionType type, List<Point2F> points) {
+    public boolean touch(Collection<Point2F> points) {
         final List<Point2F> remappedPoints = new ArrayList<Point2F>();
         for (final Point2F pt: points) {
             remappedPoints.add(mapPoint(pt));
         }
-        return super.touch(type, remappedPoints);
+        return super.touch(remappedPoints);
     }
 
     @Override

@@ -67,4 +67,10 @@ public class Ship extends EngineObject {
     public void setVelocity(Point2F velocity) {
         this.velocity = velocity;
     }
+
+    public void fire() {
+
+
+
+    }
 }

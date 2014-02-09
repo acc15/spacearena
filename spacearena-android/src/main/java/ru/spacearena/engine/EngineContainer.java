@@ -1,9 +1,9 @@
 package ru.spacearena.engine;
 
 import android.graphics.Canvas;
-import ru.spacearena.engine.input.MotionType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -63,9 +63,9 @@ public class EngineContainer extends EngineObject {
         }
     }
 
-    public boolean touch(MotionType type, List<Point2F> points) {
+    public boolean touch(Collection<Point2F> points) {
         for (EngineObject obj: objects) {
-            if (obj.touch(type, points)) {
+            if (obj.touch(points)) {
                 return true;
             }
         }

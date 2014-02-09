@@ -1,9 +1,8 @@
 package ru.spacearena.engine;
 
 import android.graphics.Canvas;
-import ru.spacearena.engine.input.MotionType;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
 * @author Vyacheslav Mayorov
@@ -59,7 +58,7 @@ public class EngineObject {
     public void resize(Point2F oldSize) {
     }
 
-    public boolean touch(MotionType type, List<Point2F> points) {
+    public boolean touch(Collection<Point2F> points) {
         return false;
     }
 
