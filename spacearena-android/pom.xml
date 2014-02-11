@@ -12,8 +12,8 @@
     </parent>
 
     <properties>
-        <android.version>2.2.1</android.version>
-        <android.platform>8</android.platform>
+        <android.version>2.1.2</android.version>
+        <android.platform>7</android.platform>
     </properties>
 
     <dependencies>
@@ -40,12 +40,6 @@
             <artifactId>fest-assert</artifactId>
             <version>1.4</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.andengine</groupId>
-            <artifactId>andengine</artifactId>
-            <version>1.0</version>
-            <type>apklib</type>
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
