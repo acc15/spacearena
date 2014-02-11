@@ -56,6 +56,10 @@ public class TransformHandler implements DrawHandler {
         return rotationCenter;
     }
 
+    public void setRotationCenter(float px, float py) {
+        setRotationCenter(Point2F.xy(px, py));
+    }
+
     public void setRotationCenter(Point2F rotationCenter) {
         this.rotationCenter = rotationCenter;
         this.isDirty = true;

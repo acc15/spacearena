@@ -1,36 +1,30 @@
 package ru.spacearena.game;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.NewEngineObject;
 import ru.spacearena.engine.Point2F;
-
-import java.util.ArrayList;
-import java.util.List;
+import ru.spacearena.engine.common.TransformHandler;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-28-01
  */
-public class Ship extends EngineObject {
+public class Ship extends NewEngineObject {
 
+    private final TransformHandler transform = new TransformHandler();
     private final Bitmap image;
-    private final Point2F pivot;
-    private final Matrix rotateMatrix = new Matrix();
     private final Paint paint = new Paint();
 
-    private Point2F position = Point2F.ZERO;
-    private float angle = 0;
     private Point2F velocity = Point2F.ZERO;
     private final float[] gunPositions = new float[] {35, 100, 115, 100};
 
     public Ship(Bitmap image) {
         this.image = image;
-        this.pivot = Point2F.cartesian(image.getWidth() / 2, (float) image.getHeight() * 2 / 3);
+        this.transform.setRotationCenter(Point2F.xy(image.getWidth() / 2, image.getHeight() * 2 / 3));
     }
 
+    /*
     @Override
     public void init() {
     }
@@ -51,7 +45,7 @@ public class Ship extends EngineObject {
         rotateMatrix.mapPoints(values, gunPositions);
         final List<Point2F> pts = new ArrayList<Point2F>();
         for (int i=0; i<values.length; i+=2) {
-            pts.add(Point2F.cartesian(values[i], values[i+1]));
+            pts.add(Point2F.xy(values[i], values[i + 1]));
         }
         return pts;
     }
@@ -85,5 +79,5 @@ public class Ship extends EngineObject {
     public void setVelocity(Point2F velocity) {
         this.velocity = velocity;
     }
-
+    */
 }

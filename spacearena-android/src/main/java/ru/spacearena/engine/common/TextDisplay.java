@@ -3,7 +3,7 @@ package ru.spacearena.engine.common;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.handlers.DrawHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 * @author Vyacheslav Mayorov
 * @since 2014-28-01
 */
-public class TextDisplay extends EngineObject {
+public class TextDisplay implements DrawHandler {
 
     private final Paint paint = new Paint();
 
@@ -27,17 +27,18 @@ public class TextDisplay extends EngineObject {
         messages.add(message);
     }
 
-    public boolean process(float time) {
-        return true;
-    }
-
-    public void render(Canvas canvas) {
+    public void onDraw(Canvas canvas) {
         int pos = 0;
         for (String message: messages) {
             pos += 30;
             canvas.drawText(message, 0, pos, paint);
         }
         messages.clear();
+    }
 
+    public void onPreDraw(Canvas canvas) {
+    }
+
+    public void onPostDraw(Canvas canvas) {
     }
 }

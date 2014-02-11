@@ -30,12 +30,12 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
 
     public void surfaceCreated(SurfaceHolder holder) {
         final Rect frame = holder.getSurfaceFrame();
-        engine.resize(Point2F.cartesian(frame.right, frame.bottom));
+        engine.onSize(Point2F.xy(frame.right, frame.bottom));
         start();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        engine.resize(Point2F.cartesian(width, height));
+        engine.onSize(Point2F.xy(width, height));
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -65,10 +65,9 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     }
 
     public void run() {
-        engine.init();
         while (running) {
 
-            engine.process();
+            engine.onUpdate();
 
             final Canvas canvas = surfaceHolder.lockCanvas();
             if (canvas == null) {
@@ -84,7 +83,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
                 continue;
             }
             try {
-                engine.render(canvas);
+                engine.onDraw(canvas);
             } finally {
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }

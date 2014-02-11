@@ -25,6 +25,14 @@ public class NewEngineObject implements EngineEntity {
         return emptyIfNull(children);
     }
 
+    public NewEngineObject add(EngineEntity entity) {
+        if (children == null) {
+            children = new ArrayList<EngineEntity>();
+        }
+        children.add(entity);
+        return this;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> List<T> castList(List<?> list) {
         return (List<T>) list;
@@ -37,18 +45,19 @@ public class NewEngineObject implements EngineEntity {
         return emptyIfNull(NewEngineObject.<T>castList(listeners.get(clazz)));
     }
 
-    private <T> void removeHandler(Class<T> clazz, T listener) {
+    private <T> NewEngineObject removeHandler(Class<T> clazz, T listener) {
         if (listeners == null) {
-            return;
+            return this;
         }
         final List<T> list = castList(listeners.get(clazz));
         if (list == null) {
-            return;
+            return this;
         }
         list.remove(listener);
+        return this;
     }
 
-    private <T> void addHandler(Class<T> clazz, T listener) {
+    private <T> NewEngineObject addHandler(Class<T> clazz, T listener) {
         if (listeners == null) {
             listeners = new HashMap<Class<?>, List<?>>();
         }
@@ -58,38 +67,39 @@ public class NewEngineObject implements EngineEntity {
             listeners.put(clazz, list);
         }
         list.add(listener);
+        return this;
     }
 
-    public void addUpdateHandler(UpdateHandler updateHandler) {
-        addHandler(UpdateHandler.class, updateHandler);
+    public NewEngineObject addUpdateHandler(UpdateHandler updateHandler) {
+        return addHandler(UpdateHandler.class, updateHandler);
     }
 
-    public void addDrawHandler(DrawHandler drawHandler) {
-        addHandler(DrawHandler.class, drawHandler);
+    public NewEngineObject addDrawHandler(DrawHandler drawHandler) {
+        return addHandler(DrawHandler.class, drawHandler);
     }
 
-    public void addSizeHandler(SizeHandler sizeHandler) {
-        addHandler(SizeHandler.class, sizeHandler);
+    public NewEngineObject addSizeHandler(SizeHandler sizeHandler) {
+        return addHandler(SizeHandler.class, sizeHandler);
     }
 
-    public void addTouchHandler(TouchHandler touchHandler) {
-        addHandler(TouchHandler.class, touchHandler);
+    public NewEngineObject addTouchHandler(TouchHandler touchHandler) {
+        return addHandler(TouchHandler.class, touchHandler);
     }
 
-    public void removeUpdateHandler(UpdateHandler updateHandler) {
-        removeHandler(UpdateHandler.class, updateHandler);
+    public NewEngineObject removeUpdateHandler(UpdateHandler updateHandler) {
+        return removeHandler(UpdateHandler.class, updateHandler);
     }
 
-    public void removeDrawHandler(DrawHandler drawHandler) {
-        removeHandler(DrawHandler.class, drawHandler);
+    public NewEngineObject removeDrawHandler(DrawHandler drawHandler) {
+        return removeHandler(DrawHandler.class, drawHandler);
     }
 
-    public void removeSizeHandler(SizeHandler sizeHandler) {
-        removeHandler(SizeHandler.class, sizeHandler);
+    public NewEngineObject removeSizeHandler(SizeHandler sizeHandler) {
+        return removeHandler(SizeHandler.class, sizeHandler);
     }
 
-    public void removeTouchHandler(TouchHandler touchHandler) {
-        removeHandler(TouchHandler.class, touchHandler);
+    public NewEngineObject removeTouchHandler(TouchHandler touchHandler) {
+        return removeHandler(TouchHandler.class, touchHandler);
     }
 
     public void onSize(Point2F newSize) {

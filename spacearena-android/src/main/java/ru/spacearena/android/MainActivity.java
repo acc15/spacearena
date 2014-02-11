@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
             public boolean onTouch(View v, final MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                     pointers.clear();
-                    return engine.touch(pointers.values());
+                    return engine.onTouch(pointers.values());
                 }
 
                 final int action = event.getAction() & MotionEvent.ACTION_MASK;
@@ -57,10 +57,10 @@ public class MainActivity extends Activity {
                     if (action == MotionEvent.ACTION_POINTER_UP && pointerIndex == i) {
                         pointers.remove(ptrId);
                     } else {
-                        pointers.put(ptrId, Point2F.cartesian(event.getX(i), event.getY(i)));
+                        pointers.put(ptrId, Point2F.xy(event.getX(i), event.getY(i)));
                     }
                 }
-                return engine.touch(pointers.values());
+                return engine.onTouch(pointers.values());
             }
         });
 

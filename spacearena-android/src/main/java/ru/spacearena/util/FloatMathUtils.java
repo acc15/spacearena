@@ -38,6 +38,14 @@ public class FloatMathUtils {
         return Math.abs(v1 - v2) < delta;
     }
 
+    public static float floor(float v) {
+        return (float)Math.floor(v);
+    }
+
+    public static float ceil(float v) {
+        return (float)Math.ceil(v);
+    }
+
     public static float sqrt(float v) {
         return (float)Math.sqrt(v);
     }

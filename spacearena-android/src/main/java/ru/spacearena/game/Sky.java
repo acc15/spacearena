@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.NewEngineObject;
 import ru.spacearena.engine.Viewport;
 import ru.spacearena.util.RandomUtils;
 
@@ -14,7 +14,7 @@ import java.util.Random;
  * @author Vyacheslav Mayorov
  * @since 2014-28-01
  */
-public class Sky extends EngineObject {
+public class Sky extends NewEngineObject {
 
     private static final int PIXELS_PER_STAR = 150;
 

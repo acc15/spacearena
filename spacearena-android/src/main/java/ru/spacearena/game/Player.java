@@ -1,23 +1,18 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.Point2F;
-import ru.spacearena.engine.Viewport;
-import ru.spacearena.engine.common.TextDisplay;
-
-import java.util.Collection;
+import ru.spacearena.engine.NewEngineObject;
 
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-01-02
  */
-public class Player extends EngineObject {
+public class Player extends NewEngineObject {
 
     private static final float MAX_VELOCITY = 500f;
     private static final float SHIP_ACCEL = 500f;
     private static final float SHIP_DECCEL = 100f;
-
+/*
     private Point2F movePt = null;
     private Point2F shootPt = null;
     private boolean hasShot = false;
@@ -110,4 +105,5 @@ public class Player extends EngineObject {
         }
         return true;
     }
+*/
 }

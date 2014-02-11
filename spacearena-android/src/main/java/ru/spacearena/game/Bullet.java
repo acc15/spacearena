@@ -4,65 +4,62 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.NewEngineObject;
 import ru.spacearena.engine.Point2F;
+import ru.spacearena.engine.common.PhysicalHandler;
+import ru.spacearena.engine.common.TransformHandler;
+import ru.spacearena.engine.handlers.DrawHandler;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-09-02
  */
-public class Bullet extends EngineObject {
-
-    private Point2F position = Point2F.ZERO;
-    private Point2F velocity = Point2F.ZERO;
+public class Bullet extends NewEngineObject {
 
     private final Paint paint = new Paint();
-    private final Matrix matrix = new Matrix();
 
     public Point2F getVelocity() {
-        return velocity;
+        return physicalHandler.getVelocity();
     }
 
     public void setVelocity(Point2F velocity) {
-        this.velocity = velocity;
+        physicalHandler.setVelocity(velocity);
+        transformHandler.setRotation(velocity.angle());
     }
 
     public Point2F getPosition() {
-        return position;
+        return transformHandler.getTranslate();
     }
 
     public void setPosition(Point2F position) {
-        this.position = position;
+        transformHandler.setTranslate(position);
     }
 
-    private void updateMatrix() {
-        matrix.setRotate(velocity.angle());
-        matrix.postTranslate(position.getX(), position.getY());
+    private TransformHandler transformHandler = new TransformHandler();
+    private PhysicalHandler physicalHandler = new PhysicalHandler(transformHandler);
+
+    public Bullet() {
+        addDrawHandler(transformHandler);
+        addUpdateHandler(physicalHandler);
+        addDrawHandler(new DrawHandler() {
+            public void onDraw(Canvas canvas) {
+                paint.setColor(Color.RED);
+                canvas.drawRect(-5, -20, 5, 20, paint);
+            }
+
+            public void onPreDraw(Canvas canvas) {
+            }
+
+            public void onPostDraw(Canvas canvas) {
+            }
+        });
 
     }
 
-    @Override
     public boolean process(float time) {
-        position = position.add(velocity.mul(time));
-        return position.getX() > -10000f && position.getX() < 10000f &&
-               position.getY() > -10000f && position.getY() < 10000f;
+        return true; // TODO
+        //return position.getX() > -10000f && position.getX() < 10000f &&
+        //       position.getY() > -10000f && position.getY() < 10000f;
     }
 
-    @Override
-    public void render(Canvas canvas) {
-
-        final Matrix oldMx = canvas.getMatrix();
-        try {
-
-            matrix.setTranslate(position.getX(), position.getY());
-            matrix.preRotate(velocity.angle());
-            matrix.postConcat(oldMx);
-
-            paint.setColor(Color.RED);
-            canvas.setMatrix(matrix);
-            canvas.drawRect(-5, -20, 5, 20, paint);
-        } finally {
-            canvas.setMatrix(oldMx);
-        }
-    }
 }

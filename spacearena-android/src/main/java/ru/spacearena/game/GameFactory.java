@@ -5,10 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import ru.spacearena.android.R;
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.Viewport;
-import ru.spacearena.engine.common.Background;
-import ru.spacearena.engine.common.TextDisplay;
+import ru.spacearena.engine.NewEngineObject;
+import ru.spacearena.engine.common.BackgroundHandler;
 
 /**
  * @author Vyacheslav Mayorov
@@ -20,20 +18,8 @@ public class GameFactory {
 
         final Bitmap shipImage = BitmapFactory.decodeResource(resources, R.drawable.ship);
 
-        final TextDisplay textDisplay = new TextDisplay();
-
-        final Ship ship = new Ship(shipImage);
-        final Viewport viewport = new Viewport();
-        final Player player = new Player(textDisplay, viewport, ship);
-        final Sky sky = new Sky(viewport);
-
-        viewport.add(sky).add(ship);
-
-        return new Engine(new EngineContainer().
-                add(new Background()).
-                add(player).
-                add(viewport).
-                add(textDisplay));
+        return new Engine(new NewEngineObject().
+                add(new NewEngineObject().addDrawHandler(new BackgroundHandler())));
     }
 
 }

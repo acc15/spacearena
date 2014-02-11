@@ -3,7 +3,6 @@ package ru.spacearena.engine;
 import android.graphics.Canvas;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Vyacheslav Mayorov
@@ -12,49 +11,37 @@ import java.util.List;
 public class Engine {
 
     private long lastTime = -1;
+    private NewEngineObject root;
 
-    private EngineObject root;
-    private Point2F displaySize;
-
-    public Engine(EngineObject engineObject) {
+    public Engine(NewEngineObject engineObject) {
         this.root = engineObject;
-        engineObject.attach(this);
     }
 
-    public void init() {
-        root.init();
-    }
-
-    public void process() {
+    public void onUpdate() {
         final long currentTime = System.currentTimeMillis();
         if (lastTime >= 0) {
             final long delta = currentTime - lastTime;
             final float timeDelta = (float)delta/1000;
-            root.process(timeDelta);
+            root.onUpdate(timeDelta);
         }
         lastTime = currentTime;
-        root.postProcess();
     }
 
-    public void resize(Point2F newSize) {
-        if (newSize.equals(displaySize)) {
-            return;
+    public void onSize(Point2F newSize) {
+        root.onSize(newSize);
+    }
+
+    public void onDraw(Canvas canvas) {
+        try {
+            root.onPreDraw(canvas);
+            root.onDraw(canvas);
+        } finally {
+            root.onPostDraw(canvas);
         }
-        final Point2F oldSize = this.displaySize;
-        this.displaySize = newSize;
-        root.resize(oldSize);
     }
 
-    public void render(Canvas canvas) {
-        root.render(canvas);
-    }
-
-    public boolean touch(Collection<Point2F> points) {
-        return root.touch(points);
-    }
-
-    public Point2F getDisplaySize() {
-        return displaySize;
+    public boolean onTouch(Collection<Point2F> points) {
+        return root.onTouch(points);
     }
 
 }
