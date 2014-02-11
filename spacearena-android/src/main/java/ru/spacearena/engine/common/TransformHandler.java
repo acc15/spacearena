@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.handlers.DrawHandler;
+import ru.spacearena.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -11,9 +12,9 @@ import ru.spacearena.engine.handlers.DrawHandler;
  */
 public class TransformHandler implements DrawHandler {
 
-    private Matrix matrix = new Matrix();
-    private Matrix canvasMatrix = new Matrix();
-    private Matrix concatMatrix = new Matrix();
+    private final Matrix matrix = new Matrix();
+    private final Matrix concatMatrix = new Matrix();
+    private Matrix canvasMatrix = null;
 
     private Point2F translate = Point2F.ZERO;
     private Point2F scale = Point2F.ONE;
@@ -88,6 +89,9 @@ public class TransformHandler implements DrawHandler {
     }
 
     private Matrix getMatrix() {
+        if (FloatMathUtils.isEqual(rotation, 0f) && scale.isOne() && skew.isZero() && translate.isZero()) {
+            return null;
+        }
         if (!isDirty) {
             return matrix;
         }
@@ -117,12 +121,17 @@ public class TransformHandler implements DrawHandler {
 
     public void onPreDraw(Canvas canvas) {
         final Matrix thisMatrix = getMatrix();
-        canvas.getMatrix(canvasMatrix);
-        concatMatrix.setConcat(canvasMatrix, thisMatrix);
-        canvas.setMatrix(concatMatrix);
+        if (thisMatrix != null) {
+            canvasMatrix = canvas.getMatrix();
+            concatMatrix.setConcat(canvasMatrix, thisMatrix);
+            canvas.setMatrix(concatMatrix);
+        }
     }
 
     public void onPostDraw(Canvas canvas) {
-        canvas.setMatrix(canvasMatrix);
+        if (canvasMatrix != null) {
+            canvas.setMatrix(canvasMatrix);
+            canvasMatrix = null;
+        }
     }
 }
