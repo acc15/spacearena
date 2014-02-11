@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.handlers.DrawHandler;
-import ru.spacearena.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -93,18 +92,10 @@ public class TransformHandler implements DrawHandler {
             return matrix;
         }
         matrix.reset();
-        if (!FloatMathUtils.isEqual(rotation, 0f)) {
-            matrix.postRotate(rotation, rotationCenter.getX(), rotationCenter.getY());
-        }
-        if (!scale.isOne()) {
-            matrix.postScale(scale.getX(), scale.getY(), scaleCenter.getX(), scaleCenter.getY());
-        }
-        if (!skew.isZero()) {
-            matrix.postSkew(skew.getX(), skew.getY(), skewCenter.getX(), skewCenter.getY());
-        }
-        if (!translate.isZero()) {
-            matrix.postTranslate(translate.getX(), translate.getY());
-        }
+        matrix.postRotate(rotation, rotationCenter.getX(), rotationCenter.getY());
+        matrix.postScale(scale.getX(), scale.getY(), scaleCenter.getX(), scaleCenter.getY());
+        matrix.postSkew(skew.getX(), skew.getY(), skewCenter.getX(), skewCenter.getY());
+        matrix.postTranslate(translate.getX(), translate.getY());
         isDirty = false;
         return matrix;
     }
