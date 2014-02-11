@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.*;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.Point2F;
-import ru.spacearena.engine.input.MotionType;
 import ru.spacearena.game.GameFactory;
 
 import java.util.LinkedHashMap;
@@ -20,15 +19,6 @@ public class MainActivity extends Activity {
     // to make sure it compiles using old android SDK jars
     private static final int FLAG_HARDWARE_ACCELERATED = 0x01000000;
     private static final int SDK_VERSION_HONEYCOMB = 11;
-
-    private MotionType mapMotionType(int action) {
-        switch (action) {
-        case MotionEvent.ACTION_UP: return MotionType.UP;
-        case MotionEvent.ACTION_DOWN: return MotionType.DOWN;
-        case MotionEvent.ACTION_MOVE: return MotionType.MOVE;
-        default: return null;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

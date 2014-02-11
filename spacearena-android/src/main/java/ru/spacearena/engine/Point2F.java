@@ -13,7 +13,7 @@ public class Point2F {
     public static final Point2F ZERO = new Point2F(0,0);
     public static final Point2F ONE = new Point2F(1,1);
 
-    private float x, y;
+    private final float x, y;
 
     private Point2F(float x, float y) {
         this.x = x;
@@ -108,6 +108,10 @@ public class Point2F {
 
     public boolean isZero() {
         return x == 0 && y == 0;
+    }
+
+    public boolean isOne() {
+        return x == 1 && y == 1;
     }
 
     public static Point2F polar(float angle, float distance) {
