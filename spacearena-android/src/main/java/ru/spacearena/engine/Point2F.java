@@ -1,14 +1,12 @@
 package ru.spacearena.engine;
 
-import android.util.FloatMath;
+import ru.spacearena.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-01-02
  */
 public class Point2F {
-
-    public static final float PI = 3.1415927f;
 
     public static final Point2F ZERO = new Point2F(0,0);
     public static final Point2F ONE = new Point2F(1,1);
@@ -56,6 +54,10 @@ public class Point2F {
         return cartesian(-x, -y);
     }
 
+    public float cross(Point2F pt) {
+        return x * pt.y - pt.x * y;
+    }
+
     public float dot(Point2F pt) {
         return x * pt.x + y * pt.y;
     }
@@ -65,7 +67,7 @@ public class Point2F {
     }
 
     public float magnitude() {
-        return FloatMath.sqrt(magnitudeSquare());
+        return FloatMathUtils.sqrt(magnitudeSquare());
     }
 
     /**
@@ -83,7 +85,7 @@ public class Point2F {
      * @return angle of vector in degrees.
      */
     public float angle() {
-        return degrees((float)Math.atan2(-x, y))+180;
+        return FloatMathUtils.toDegrees(FloatMathUtils.atan2(-x, y))+180;
     }
 
     public float angle(Point2F pt) {
@@ -106,17 +108,21 @@ public class Point2F {
         return y;
     }
 
+    public boolean is(float v) {
+        return FloatMathUtils.isEqual(x, v) && FloatMathUtils.isEqual(y, v);
+    }
+
     public boolean isZero() {
-        return x == 0 && y == 0;
+        return is(0f);
     }
 
     public boolean isOne() {
-        return x == 1 && y == 1;
+        return is(1f);
     }
 
     public static Point2F polar(float angle, float distance) {
-        final float rads = radians(angle-90);
-        return cartesian((float) Math.cos(rads) * distance, (float) Math.sin(rads) * distance);
+        final float rads = FloatMathUtils.toRadians(angle - 90);
+        return cartesian(FloatMathUtils.cos(rads) * distance, FloatMathUtils.sin(rads) * distance);
     }
 
     public static Point2F cartesian(float x, float y) {
@@ -136,11 +142,4 @@ public class Point2F {
         return "[" + x + ";" + y + "]";
     }
 
-    public static float degrees(float radians) {
-        return radians * 180 / PI;
-    }
-
-    public static float radians(float degrees) {
-        return degrees * PI / 180;
-    }
 }

@@ -1,6 +1,9 @@
 package ru.spacearena.game;
 
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.Viewport;
 import ru.spacearena.util.RandomUtils;
