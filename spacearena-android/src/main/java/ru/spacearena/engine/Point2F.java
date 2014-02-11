@@ -137,6 +137,41 @@ public class Point2F {
         return Math.max(x,y);
     }
 
+    public static float[] toFloatArray(Point2F... points) {
+        final float[] pts = new float[points.length*2];
+        for (int i=0; i<points.length; i++) {
+            points[i].toFloatArray(pts,i*2);
+        }
+        return pts;
+    }
+
+    public void toFloatArray(float[] array, int offset) {
+        array[offset] = x;
+        array[offset+1] = y;
+    }
+
+    public float[] toFloatArray() {
+        final float[] a = new float[] {x,y};
+        toFloatArray(a, 0);
+        return a;
+    }
+
+    public static Point2F toPoint(float[] pts) {
+        return toPoint(pts, 0);
+    }
+
+    public static Point2F toPoint(float[] pts, int offset) {
+        return Point2F.cartesian(pts[offset], pts[offset+1]);
+    }
+
+    public static Point2F[] toPointArray(float... pts) {
+        final Point2F[] points = new Point2F[pts.length/2];
+        for (int i=0; i<points.length; i++) {
+            points[i] = toPoint(pts, i*2);
+        }
+        return points;
+    }
+
     @Override
     public String toString() {
         return "[" + x + ";" + y + "]";

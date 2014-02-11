@@ -13,7 +13,8 @@ import ru.spacearena.util.FloatMathUtils;
 public class TransformHandler implements DrawHandler {
 
     private Matrix matrix = new Matrix();
-    private Matrix oldMatrix;
+    private Matrix canvasMatrix = new Matrix();
+    private Matrix concatMatrix = new Matrix();
 
     private Point2F translate = Point2F.ZERO;
     private Point2F scale = Point2F.ONE;
@@ -88,23 +89,36 @@ public class TransformHandler implements DrawHandler {
     }
 
     private Matrix getMatrix() {
-        if (isDirty) {
-            matrix.reset();
-            if (!FloatMathUtils.isEqual(rotation, 0f)) {
-                matrix.postRotate(rotation, rotationCenter.getX(), rotationCenter.getY());
-            }
-            if (!scale.isOne()) {
-                matrix.postScale(scale.getX(), scale.getY(), scaleCenter.getX(), scaleCenter.getY());
-            }
-            if (!skew.isZero()) {
-                matrix.postSkew(skew.getX(), skew.getY(), skewCenter.getX(), skewCenter.getY());
-            }
-            if (!translate.isZero()) {
-                matrix.postTranslate(translate.getX(), translate.getY());
-            }
-            isDirty = false;
+        if (!isDirty) {
+            return matrix;
         }
+        matrix.reset();
+        if (!FloatMathUtils.isEqual(rotation, 0f)) {
+            matrix.postRotate(rotation, rotationCenter.getX(), rotationCenter.getY());
+        }
+        if (!scale.isOne()) {
+            matrix.postScale(scale.getX(), scale.getY(), scaleCenter.getX(), scaleCenter.getY());
+        }
+        if (!skew.isZero()) {
+            matrix.postSkew(skew.getX(), skew.getY(), skewCenter.getX(), skewCenter.getY());
+        }
+        if (!translate.isZero()) {
+            matrix.postTranslate(translate.getX(), translate.getY());
+        }
+        isDirty = false;
         return matrix;
+    }
+
+    public Point2F mapPoint(Point2F pt) {
+        final float[] pts = pt.toFloatArray();
+        matrix.mapPoints(pts);
+        return Point2F.toPoint(pts);
+    }
+
+    public Point2F[] mapPoints(Point2F... points) {
+        final float[] pts = Point2F.toFloatArray(points);
+        matrix.mapPoints(pts);
+        return Point2F.toPointArray(pts);
     }
 
     public void onDraw(Canvas canvas) {
@@ -112,11 +126,12 @@ public class TransformHandler implements DrawHandler {
 
     public void onPreDraw(Canvas canvas) {
         final Matrix thisMatrix = getMatrix();
-        final Matrix canvasMatrix = canvas.getMatrix();
-
-
+        canvas.getMatrix(canvasMatrix);
+        concatMatrix.setConcat(canvasMatrix, thisMatrix);
+        canvas.setMatrix(concatMatrix);
     }
 
     public void onPostDraw(Canvas canvas) {
+        canvas.setMatrix(canvasMatrix);
     }
 }
