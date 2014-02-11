@@ -12,8 +12,8 @@
     </parent>
 
     <properties>
-        <android.version>2.1.2</android.version>
-        <android.platform>7</android.platform>
+        <android.version>2.2.1</android.version>
+        <android.platform>8</android.platform>
     </properties>
 
     <dependencies>

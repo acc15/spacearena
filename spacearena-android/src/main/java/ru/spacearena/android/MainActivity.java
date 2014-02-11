@@ -5,14 +5,14 @@ import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
-import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
-import org.andengine.entity.shape.RectangularShape;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
@@ -32,13 +32,31 @@ import org.andengine.util.math.MathUtils;
 public class MainActivity extends BaseGameActivity {
 
     public EngineOptions onCreateEngineOptions() {
-        final float w = 1280, h = 720;
-        return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
+        final float w = 720, h = 1280;
+        return new EngineOptions(true, ScreenOrientation.PORTRAIT_FIXED,
                 new RatioResolutionPolicy(w, h), new BoundCamera(0, 0, w, h));
     }
 
     private IFont font;
     private ITextureRegion shipImage;
+
+    public static final class RealFPSCounter implements IUpdateHandler {
+
+        private float fps = 0;
+
+        public float getFps() {
+            return fps;
+        }
+
+        public void onUpdate(float pSecondsElapsed) {
+            fps = 1/pSecondsElapsed;
+        }
+
+        public void reset() {
+            fps = 0;
+
+        }
+    }
 
     public void onCreateResources(OnCreateResourcesCallback pOnCreateResourcesCallback) throws Exception {
         this.font = FontFactory.create(getFontManager(), getTextureManager(), 256, 256,
@@ -62,19 +80,8 @@ public class MainActivity extends BaseGameActivity {
         final Ship ship = new Ship(sprite);
         camera.setChaseEntity(ship);
 
-        final RectangularShape rect = new Rectangle(100, 100, 30, 30, getVertexBufferObjectManager());
-        rect.setColor(Color.WHITE);
-
-        for (int i=0; i<250; i++) {
-            final Rectangle r = new Rectangle(
-                    MathUtils.random(camera.getXMin(), camera.getXMax()),
-                    MathUtils.random(camera.getYMin(), camera.getYMax()), 5f, 5f, getVertexBufferObjectManager());
-            final Color color = new Color(MathUtils.RANDOM.nextFloat(), MathUtils.RANDOM.nextFloat(), MathUtils.RANDOM.nextFloat());
-            r.setColor(color);
-            scene.attachChild(r);
-        }
-
-        scene.attachChild(rect);
+        final Sky sky = new Sky(getVertexBufferObjectManager());
+        scene.attachChild(sky);
         scene.attachChild(ship);
 
 
@@ -94,21 +101,27 @@ public class MainActivity extends BaseGameActivity {
         });
 
         final HUD hud = new HUD();
-        final Text text = new Text(0, 0, this.font, "FPS: XXXXXXXX", getVertexBufferObjectManager());
+        final Text fpsText = new Text(0, 0, this.font, "FPS: XXXXXXXX", getVertexBufferObjectManager());
         final Text positionText = new Text(0, 50, this.font, "Position: XXXXXXXXXXXXXXXXX", getVertexBufferObjectManager());
-        hud.attachChild(text);
+        hud.attachChild(fpsText);
         hud.attachChild(positionText);
         camera.setHUD(hud);
 
-        this.mEngine.registerUpdateHandler(new IUpdateHandler() {
+        final RealFPSCounter fpsCounter = new RealFPSCounter();
+        mEngine.registerUpdateHandler(fpsCounter);
+
+        mEngine.registerUpdateHandler(new TimerHandler(0.5f, true, new ITimerCallback() {
+            public void onTimePassed(TimerHandler pTimerHandler) {
+                fpsText.setText(String.format("FPS: %.2f", fpsCounter.getFps()));
+            }
+        }));
+        mEngine.registerUpdateHandler(new IUpdateHandler() {
             public void onUpdate(float pSecondsElapsed) {
-                text.setText(String.format("FPS: %.2f", 1/pSecondsElapsed));
                 positionText.setText(String.format("Position: %.2f; %.2f", ship.getX(), ship.getY()));
             }
             public void reset() {
             }
         });
-
 
         pOnCreateSceneCallback.onCreateSceneFinished(scene);
     }
