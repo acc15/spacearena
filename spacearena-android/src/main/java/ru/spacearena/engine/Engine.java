@@ -19,12 +19,10 @@ public class Engine {
 
     public void onUpdate() {
         final long currentTime = System.currentTimeMillis();
-        if (lastTime >= 0) {
-            final long delta = currentTime - lastTime;
-            final float timeDelta = (float)delta/1000;
-            root.onUpdate(timeDelta);
+        if (lastTime < 0) {
+            lastTime = currentTime;
         }
-        lastTime = currentTime;
+        root.onUpdate((float)(currentTime-lastTime)/1000);
     }
 
     public void onSize(Point2F newSize) {
