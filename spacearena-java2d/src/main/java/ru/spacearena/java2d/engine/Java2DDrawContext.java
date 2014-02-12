@@ -1,6 +1,7 @@
 package ru.spacearena.java2d.engine;
 
 import ru.spacearena.android.engine.graphics.DrawContext;
+import ru.spacearena.android.engine.graphics.Image;
 import ru.spacearena.android.engine.graphics.Matrix;
 
 import java.awt.*;
@@ -49,6 +50,14 @@ public class Java2DDrawContext implements DrawContext {
 
     public void drawText(String text, float x, float y) {
         graphics2D.drawString(text, x, y + fontOffset);
+    }
+
+    public void drawImage(Image image, Matrix matrix) {
+        graphics2D.drawImage(((Java2DImage)image).image, ((Java2DMatrix)matrix).affineTransform, null);
+    }
+
+    public void drawImage(Image image, float x, float y) {
+        graphics2D.drawImage(((Java2DImage)image).image, (int)x, (int)y, null);
     }
 
     public void setMatrix(Matrix matrix) {

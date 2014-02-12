@@ -7,4 +7,18 @@ import ru.spacearena.android.engine.graphics.Image;
  * @since 2014-12-02
  */
 public class Java2DImage implements Image {
+
+    java.awt.Image image;
+
+    public Java2DImage(java.awt.Image image) {
+        this.image = image;
+    }
+
+    public float getWidth() {
+        return image.getWidth(null);
+    }
+
+    public float getHeight() {
+        return image.getHeight(null);
+    }
 }

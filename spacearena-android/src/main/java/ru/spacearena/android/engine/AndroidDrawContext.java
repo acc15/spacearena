@@ -3,6 +3,7 @@ package ru.spacearena.android.engine;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import ru.spacearena.android.engine.graphics.DrawContext;
+import ru.spacearena.android.engine.graphics.Image;
 import ru.spacearena.android.engine.graphics.Matrix;
 
 /**
@@ -56,6 +57,14 @@ public class AndroidDrawContext implements DrawContext {
 
     public void drawText(String text, float x, float y) {
         canvas.drawText(text, x, y + fontAscent, paint);
+    }
+
+    public void drawImage(Image image, Matrix matrix) {
+        canvas.drawBitmap(((AndroidImage)image).bitmap, ((AndroidMatrix)matrix).matrix, paint);
+    }
+
+    public void drawImage(Image image, float x, float y) {
+        canvas.drawBitmap(((AndroidImage)image).bitmap, x, y, paint);
     }
 
     public void setMatrix(Matrix matrix) {
