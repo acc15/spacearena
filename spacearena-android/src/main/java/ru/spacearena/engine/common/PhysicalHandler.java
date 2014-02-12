@@ -79,8 +79,8 @@ public class PhysicalHandler implements UpdateHandler {
             transformHandler.isDirty = true;
         }
         if (!FloatMathUtils.isZero(angularVelocity)) {
-            float rot = transformHandler.rotation;
-            transformHandler.rotation = FloatMathUtils.normalizeAngle(rot + angularVelocity * seconds);
+            transformHandler.rotation = FloatMathUtils.normalizeDegrees(
+                    transformHandler.rotation + angularVelocity * seconds);
             transformHandler.isDirty = true;
         }
         return true;

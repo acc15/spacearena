@@ -99,7 +99,7 @@ public class FloatMathUtils {
         return ceil(v/grid)*grid;
     }
 
-    public static float normalizeAngle(float degrees) {
+    public static float normalizeDegrees(float degrees) {
         float norm = degrees % CIRCLE_ANGLE;
         if (norm < 0) {
             return CIRCLE_ANGLE + norm;
