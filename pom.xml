@@ -13,6 +13,8 @@
 
     <modules>
         <module>spacearena-android</module>
+        <module>spacearena-core</module>
+        <module>spacearena-java2d</module>
     </modules>
 
     <scm>

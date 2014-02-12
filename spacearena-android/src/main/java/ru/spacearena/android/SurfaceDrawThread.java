@@ -5,8 +5,8 @@ import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.Point2F;
+import ru.spacearena.android.engine.AndroidDrawContext;
+import ru.spacearena.android.engine.Engine;
 
 /**
  * @author Vyacheslav Mayorov
@@ -30,12 +30,12 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
 
     public void surfaceCreated(SurfaceHolder holder) {
         final Rect frame = holder.getSurfaceFrame();
-        engine.onSize(Point2F.xy(frame.right, frame.bottom));
+        engine.onSize(frame.right, frame.bottom);
         start();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        engine.onSize(Point2F.xy(width, height));
+        engine.onSize(width, height);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -65,6 +65,8 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     }
 
     public void run() {
+
+        final AndroidDrawContext drawContext = new AndroidDrawContext();
         while (running) {
 
             engine.onUpdate();
@@ -83,7 +85,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
                 continue;
             }
             try {
-                engine.onDraw(canvas);
+                engine.onDraw(drawContext.wrap(canvas));
             } finally {
                 surfaceHolder.unlockCanvasAndPost(canvas);
             }
