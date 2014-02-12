@@ -1,12 +1,13 @@
 package ru.spacearena.android.engine.common;
 
+import ru.spacearena.android.engine.EngineContainer;
 import ru.spacearena.android.engine.EngineObject;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-12-02
  */
-public class Timer extends EngineObject {
+public class Timer extends EngineContainer<EngineObject> {
 
     private final float timeout;
     private float elapsed;

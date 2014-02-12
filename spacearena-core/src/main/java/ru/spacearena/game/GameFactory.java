@@ -1,11 +1,9 @@
 package ru.spacearena.game;
 
 import ru.spacearena.android.engine.Engine;
+import ru.spacearena.android.engine.EngineContainer;
 import ru.spacearena.android.engine.EngineObject;
-import ru.spacearena.android.engine.common.Background;
-import ru.spacearena.android.engine.common.FPSCounter;
-import ru.spacearena.android.engine.common.Text;
-import ru.spacearena.android.engine.common.Timer;
+import ru.spacearena.android.engine.common.*;
 import ru.spacearena.android.engine.graphics.Color;
 
 /**
@@ -25,22 +23,26 @@ public class GameFactory {
 
         final FPSCounter fpsCounter = new FPSCounter();
 
-        final Text fpsText = new Text() {
+        final MultilineText.Line fpsText = new MultilineText.Line();
+
+        final MultilineText multilineText = new MultilineText();
+        multilineText.add(fpsText);
+        multilineText.add(new MultilineText.Line("TEST"));
+
+        final EngineObject fpsUpdater = new EngineObject() {
             @Override
             public boolean onUpdate(float seconds) {
-                setText(String.format("FPS: %.2f", fpsCounter.getFps()));
+                fpsText.setText(String.format("FPS: %.2f", fpsCounter.getFps()));
                 return true;
             }
         };
-        fpsText.setColor(Color.WHITE);
-        fpsText.setPosition(0, 0);
 
-        return new Engine(new EngineObject().
+        return new Engine(new EngineContainer<EngineObject>().
                 add(fpsCounter).
+                add(new Timer(0.5f, true).add(fpsUpdater)).
                 add(new Background()).
                 add(rect).
-                add(new Timer(1f/10, true).
-                    add(fpsText)));
+                add(multilineText));
     }
 
 }

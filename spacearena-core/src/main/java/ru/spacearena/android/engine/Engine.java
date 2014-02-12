@@ -48,12 +48,7 @@ public class Engine {
     }
 
     public void onDraw(DrawContext context) {
-        try {
-            root.onPreDraw(context);
-            root.onDraw(context);
-        } finally {
-            root.onPostDraw(context);
-        }
+        EngineObject.drawObject(context, root);
     }
 
     public boolean onTouch(Collection<Point2F> points) {

@@ -2,7 +2,7 @@ package ru.spacearena.android.engine;
 
 import ru.spacearena.android.engine.graphics.DrawContext;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * @author Vyacheslav Mayorov
@@ -10,47 +10,14 @@ import java.util.*;
  */
 public class EngineObject {
 
-    private List<EngineObject> children = null;
-
-    public static <T> List<T> emptyIfNull(List<T> entities) {
-        return entities != null ? entities : Collections.<T>emptyList();
-    }
-
-    public List<EngineObject> getChildren() {
-        return emptyIfNull(children);
-    }
-
-    public EngineObject add(EngineObject entity) {
-        if (children == null) {
-            children = new ArrayList<EngineObject>();
-        }
-        children.add(entity);
-        return this;
-    }
-
     public void onSize(float width, float height) {
-        for (EngineObject child : getChildren()) {
-            child.onSize(width, height);
-        }
     }
 
     public boolean onTouch(Collection<Point2F> points) {
-        for (EngineObject child : getChildren()) {
-            if (child.onTouch(points)) {
-                return true;
-            }
-        }
         return false;
     }
 
     public boolean onUpdate(float seconds) {
-        final Iterator<EngineObject> iterator = getChildren().iterator();
-        while (iterator.hasNext()) {
-            final EngineObject child = iterator.next();
-            if (!child.onUpdate(seconds)) {
-                iterator.remove();
-            }
-        }
         return true;
     }
 
@@ -62,15 +29,16 @@ public class EngineObject {
     }
 
     public void onDraw(DrawContext context) {
-        for (EngineObject child : getChildren()) {
-            if (!child.onPreDraw(context)) {
-                continue;
-            }
-            try {
-                child.onDraw(context);
-            } finally {
-                child.onPostDraw(context);
-            }
+    }
+
+    protected static void drawObject(DrawContext context, EngineObject child) {
+        if (!child.onPreDraw(context)) {
+            return;
+        }
+        try {
+            child.onDraw(context);
+        } finally {
+            child.onPostDraw(context);
         }
     }
 

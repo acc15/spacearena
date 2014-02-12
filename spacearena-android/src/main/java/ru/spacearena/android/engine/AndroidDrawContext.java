@@ -13,12 +13,18 @@ public class AndroidDrawContext implements DrawContext {
     public static final int DEFAULT_TEXT_SIZE = 30;
     private Canvas canvas;
     private final Paint paint = new Paint();
+    private float fontAscent;
     private float fontHeight;
+
+    private void enableFill() {
+        paint.setStyle(Paint.Style.FILL);
+    }
 
     public AndroidDrawContext() {
         paint.setTextSize(DEFAULT_TEXT_SIZE);
         final Paint.FontMetrics fm = paint.getFontMetrics();
-        fontHeight = -fm.top;
+        fontAscent = -fm.top;
+        fontHeight = fm.bottom - fm.top;
     }
 
     public DrawContext wrap(Canvas canvas) {
@@ -26,13 +32,22 @@ public class AndroidDrawContext implements DrawContext {
         return this;
     }
 
+    public float getTextHeight() {
+        return fontHeight;
+    }
+
     public void setColor(int color) {
         paint.setColor(color);
     }
 
     public void fillRect(float left, float top, float right, float bottom) {
-        paint.setStyle(Paint.Style.FILL);
+        enableFill();
         canvas.drawRect(left, top, right, bottom, paint);
+    }
+
+    public void fillCircle(float x, float y, float radius) {
+        enableFill();
+        canvas.drawCircle(x, y, radius, paint);
     }
 
     public void fill() {
@@ -40,7 +55,7 @@ public class AndroidDrawContext implements DrawContext {
     }
 
     public void drawText(String text, float x, float y) {
-        canvas.drawText(text, x, y + fontHeight, paint);
+        canvas.drawText(text, x, y + fontAscent, paint);
     }
 
     public void setMatrix(Matrix matrix) {

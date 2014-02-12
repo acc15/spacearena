@@ -14,13 +14,21 @@ public class Java2DDrawContext implements DrawContext {
     private Graphics2D graphics2D;
     private int width, height;
     private int fontOffset;
+    private int fontHeight;
 
     public DrawContext wrap(Graphics2D graphics2D, int width, int height) {
         this.graphics2D = graphics2D;
         this.width = width;
         this.height = height;
-        this.fontOffset = graphics2D.getFontMetrics().getAscent();
+
+        final FontMetrics fm = graphics2D.getFontMetrics();
+        this.fontOffset = fm.getAscent();
+        this.fontHeight = fm.getHeight();
         return this;
+    }
+
+    public float getTextHeight() {
+        return fontHeight;
     }
 
     public void setColor(int color) {
@@ -29,6 +37,10 @@ public class Java2DDrawContext implements DrawContext {
 
     public void fillRect(float left, float top, float right, float bottom) {
         graphics2D.fillRect((int)left, (int)top, (int)(right-left), (int)(bottom-top));
+    }
+
+    public void fillCircle(float x, float y, float radius) {
+        graphics2D.fillOval((int)(x - radius), (int)(y - radius), (int)(x + radius), (int)(y + radius));
     }
 
     public void fill() {

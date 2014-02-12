@@ -1,5 +1,6 @@
 package ru.spacearena.android.engine.common;
 
+import ru.spacearena.android.engine.EngineContainer;
 import ru.spacearena.android.engine.EngineObject;
 import ru.spacearena.android.engine.graphics.Color;
 import ru.spacearena.android.engine.graphics.DrawContext;
@@ -8,11 +9,30 @@ import ru.spacearena.android.engine.graphics.DrawContext;
  * @author Vyacheslav Mayorov
  * @since 2014-13-02
  */
-public class Text extends EngineObject {
+public class MultilineText extends EngineContainer<MultilineText.Line> {
 
-    private String text = "";
+    private float x = 0, y = 0;
     private int color = Color.WHITE;
-    private float x = 0f, y = 0f;
+
+    public static class Line extends EngineObject {
+
+        private String text = "";
+
+        public Line() {
+        }
+
+        public Line(String text) {
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+    }
 
     public float getX() {
         return x;
@@ -43,17 +63,13 @@ public class Text extends EngineObject {
         this.color = color;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text != null ? text : "";
-    }
-
     @Override
     public void onDraw(DrawContext context) {
+        float y = this.y;
         context.setColor(color);
-        context.drawText(text, x, y);
+        for (Line line: getChildren()) {
+            context.drawText(line.text, x, y);
+            y += context.getTextHeight();
+        }
     }
 }
