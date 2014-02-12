@@ -10,8 +10,16 @@ import ru.spacearena.android.engine.graphics.Matrix;
  * @since 2014-12-02
  */
 public class AndroidDrawContext implements DrawContext {
+    public static final int DEFAULT_TEXT_SIZE = 30;
     private Canvas canvas;
-    private Paint paint = new Paint();
+    private final Paint paint = new Paint();
+    private float fontHeight;
+
+    public AndroidDrawContext() {
+        paint.setTextSize(DEFAULT_TEXT_SIZE);
+        final Paint.FontMetrics fm = paint.getFontMetrics();
+        fontHeight = -fm.top;
+    }
 
     public DrawContext wrap(Canvas canvas) {
         this.canvas = canvas;
@@ -32,7 +40,7 @@ public class AndroidDrawContext implements DrawContext {
     }
 
     public void drawText(String text, float x, float y) {
-        canvas.drawText(text, x, y, paint);
+        canvas.drawText(text, x, y + fontHeight, paint);
     }
 
     public void setMatrix(Matrix matrix) {

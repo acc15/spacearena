@@ -75,7 +75,7 @@ public class EngineComponent extends Canvas {
         });
         component.setBackground(null);
         component.setIgnoreRepaint(true);
-
+        component.requestFocus();
         frame.setVisible(true);
 
         component.createBufferStrategy(2);

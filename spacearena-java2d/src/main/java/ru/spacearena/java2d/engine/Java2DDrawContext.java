@@ -13,11 +13,13 @@ public class Java2DDrawContext implements DrawContext {
 
     private Graphics2D graphics2D;
     private int width, height;
+    private int fontOffset;
 
     public DrawContext wrap(Graphics2D graphics2D, int width, int height) {
         this.graphics2D = graphics2D;
         this.width = width;
         this.height = height;
+        this.fontOffset = graphics2D.getFontMetrics().getAscent();
         return this;
     }
 
@@ -34,7 +36,7 @@ public class Java2DDrawContext implements DrawContext {
     }
 
     public void drawText(String text, float x, float y) {
-        graphics2D.drawString(text, x, y);
+        graphics2D.drawString(text, x, y + fontOffset);
     }
 
     public void setMatrix(Matrix matrix) {
