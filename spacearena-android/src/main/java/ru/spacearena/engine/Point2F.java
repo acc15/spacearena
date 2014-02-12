@@ -89,7 +89,7 @@ public class Point2F {
     }
 
     public float angle(Point2F pt) {
-        return (float)Math.atan2(x*pt.y - pt.x*y, dot(pt));
+        return (float)Math.atan2(cross(pt), dot(pt));
     }
 
     public Point2F resize(float newMagnitude) {

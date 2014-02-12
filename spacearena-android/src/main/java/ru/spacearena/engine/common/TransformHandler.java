@@ -2,7 +2,6 @@ package ru.spacearena.engine.common;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.handlers.DrawHandler;
 import ru.spacearena.util.FloatMathUtils;
 
@@ -16,70 +15,156 @@ public class TransformHandler implements DrawHandler {
     private final Matrix concatMatrix = new Matrix();
     private Matrix canvasMatrix = null;
 
-    private Point2F translate = Point2F.ZERO;
-    private Point2F scale = Point2F.ONE;
-    private Point2F skew = Point2F.ZERO;
-    private Point2F rotationCenter = Point2F.ZERO;
-    private Point2F scaleCenter = Point2F.ZERO;
-    private Point2F skewCenter = Point2F.ZERO;
-    private float rotation = 0f;
-    private boolean isDirty = false;
+    float x = 0f, y = 0f;
+    float scaleX = 1f, scaleY = 1f;
+    float skewX = 0f, skewY = 0f;
+    float rotationCenterX = 0f, rotationCenterY = 0f;
+    float scaleCenterX = 0f, scaleCenterY = 0f;
+    float skewCenterX = 0f, skewCenterY = 0f;
+    float rotation = 0f;
+    boolean isDirty = false;
 
-    public Point2F getTranslate() {
-        return translate;
+    public float getX() {
+        return x;
     }
 
-    public void setTranslate(Point2F translate) {
-        this.translate = translate;
+    public void setX(float x) {
+        this.x = x;
         this.isDirty = true;
     }
 
-    public Point2F getScale() {
-        return scale;
+    public float getY() {
+        return y;
     }
 
-    public void setScale(Point2F scale) {
-        this.scale = scale;
+    public void setY(float y) {
+        this.y = y;
         this.isDirty = true;
     }
 
-    public Point2F getSkew() {
-        return skew;
-    }
-
-    public void setSkew(Point2F skew) {
-        this.skew = skew;
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
         this.isDirty = true;
     }
 
-    public Point2F getRotationCenter() {
-        return rotationCenter;
+    public float getScaleX() {
+        return scaleX;
     }
 
-    public void setRotationCenter(float px, float py) {
-        setRotationCenter(Point2F.xy(px, py));
-    }
-
-    public void setRotationCenter(Point2F rotationCenter) {
-        this.rotationCenter = rotationCenter;
+    public void setScaleX(float scaleX) {
+        this.scaleX = scaleX;
         this.isDirty = true;
     }
 
-    public Point2F getScaleCenter() {
-        return scaleCenter;
+    public float getScaleY() {
+        return scaleY;
     }
 
-    public void setScaleCenter(Point2F scaleCenter) {
-        this.scaleCenter = scaleCenter;
+    public void setScaleY(float scaleY) {
+        this.scaleY = scaleY;
         this.isDirty = true;
     }
 
-    public Point2F getSkewCenter() {
-        return skewCenter;
+    public void setScale(float scaleX, float scaleY) {
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
+        this.isDirty = true;
     }
 
-    public void setSkewCenter(Point2F skewCenter) {
-        this.skewCenter = skewCenter;
+    public float getSkewX() {
+        return skewX;
+    }
+
+    public void setSkewX(float skewX) {
+        this.skewX = skewX;
+        this.isDirty = true;
+    }
+
+    public float getSkewY() {
+        return skewY;
+    }
+
+    public void setSkewY(float skewY) {
+        this.skewY = skewY;
+        this.isDirty = true;
+    }
+
+    public void setSkew(float skewX, float skewY) {
+        this.skewX = skewX;
+        this.skewY = skewY;
+        this.isDirty = true;
+    }
+
+    public float getRotationCenterX() {
+        return rotationCenterX;
+    }
+
+    public void setRotationCenterX(float rotationCenterX) {
+        this.rotationCenterX = rotationCenterX;
+        this.isDirty = true;
+    }
+
+    public float getRotationCenterY() {
+        return rotationCenterY;
+    }
+
+    public void setRotationCenterY(float rotationCenterY) {
+        this.rotationCenterY = rotationCenterY;
+        this.isDirty = true;
+    }
+
+    public void setRotationCenter(float x, float y) {
+        this.rotationCenterX = x;
+        this.rotationCenterY = y;
+        this.isDirty = true;
+    }
+
+    public float getScaleCenterX() {
+        return scaleCenterX;
+    }
+
+    public void setScaleCenterX(float scaleCenterX) {
+        this.scaleCenterX = scaleCenterX;
+        this.isDirty = true;
+    }
+
+    public float getScaleCenterY() {
+        return scaleCenterY;
+    }
+
+    public void setScaleCenterY(float scaleCenterY) {
+        this.scaleCenterY = scaleCenterY;
+        this.isDirty = true;
+    }
+
+    public void setScaleCenter(float x, float y) {
+        this.scaleCenterX = x;
+        this.scaleCenterY = y;
+        this.isDirty = true;
+    }
+
+    public float getSkewCenterX() {
+        return skewCenterX;
+    }
+
+    public void setSkewCenterX(float skewCenterX) {
+        this.skewCenterX = skewCenterX;
+        this.isDirty = true;
+    }
+
+    public float getSkewCenterY() {
+        return skewCenterY;
+    }
+
+    public void setSkewCenterY(float skewCenterY) {
+        this.skewCenterY = skewCenterY;
+        this.isDirty = true;
+    }
+
+    public void setSkewCenter(float x, float y) {
+        this.skewCenterX = x;
+        this.skewCenterY = y;
         this.isDirty = true;
     }
 
@@ -89,35 +174,56 @@ public class TransformHandler implements DrawHandler {
 
     public void setRotation(float rotation) {
         this.rotation = rotation;
+    }
+
+    public void setPivotX(float x) {
+        this.rotationCenterX = x;
+        this.scaleCenterX = x;
+        this.skewCenterX = x;
+        this.isDirty = true;
+    }
+
+    public void setPivotY(float y) {
+        this.rotationCenterY = y;
+        this.scaleCenterY = y;
+        this.skewCenterY = y;
+        this.isDirty = true;
+    }
+
+    public void setPivot(float x, float y) {
+        this.rotationCenterX = x;
+        this.rotationCenterY = y;
+        this.scaleCenterX = x;
+        this.scaleCenterY = y;
+        this.skewCenterX = x;
+        this.skewCenterY = y;
         this.isDirty = true;
     }
 
     private Matrix getMatrix() {
-        if (FloatMathUtils.isEqual(rotation, 0f) && scale.isOne() && skew.isZero() && translate.isZero()) {
+        if (FloatMathUtils.isZero(rotation) &&
+            FloatMathUtils.isOne(scaleX, scaleY) &&
+            FloatMathUtils.isZero(skewX, skewY) &&
+            FloatMathUtils.isZero(x, y)) {
             return null;
         }
         if (!isDirty) {
             return matrix;
         }
         matrix.reset();
-        matrix.postRotate(rotation, rotationCenter.getX(), rotationCenter.getY());
-        matrix.postScale(scale.getX(), scale.getY(), scaleCenter.getX(), scaleCenter.getY());
-        matrix.postSkew(skew.getX(), skew.getY(), skewCenter.getX(), skewCenter.getY());
-        matrix.postTranslate(translate.getX(), translate.getY());
+        matrix.postRotate(rotation, rotationCenterX, rotationCenterY);
+        matrix.postScale(scaleX, scaleY, scaleCenterX, scaleCenterY);
+        matrix.postSkew(skewX, skewY, skewCenterX, skewCenterY);
+        matrix.postTranslate(x, y);
         isDirty = false;
         return matrix;
     }
 
-    public Point2F mapPoint(Point2F pt) {
-        final float[] pts = pt.toFloatArray();
-        matrix.mapPoints(pts);
-        return Point2F.toPoint(pts);
-    }
-
-    public Point2F[] mapPoints(Point2F... points) {
-        final float[] pts = Point2F.toFloatArray(points);
-        matrix.mapPoints(pts);
-        return Point2F.toPointArray(pts);
+    public void mapPoints(float[] pts) {
+        final Matrix mx = getMatrix();
+        if (mx != null) {
+            mx.mapPoints(pts);
+        }
     }
 
     public void onDraw(Canvas canvas) {

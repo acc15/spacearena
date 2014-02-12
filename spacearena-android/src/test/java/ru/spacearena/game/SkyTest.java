@@ -2,6 +2,7 @@ package ru.spacearena.game;
 
 import org.fest.assertions.Delta;
 import org.junit.Test;
+import ru.spacearena.util.FloatMathUtils;
 
 import java.util.Random;
 
@@ -30,7 +31,7 @@ public class SkyTest {
         int e = 0;
 
         for (float i=-2f; i<=4f; i+=0.5f, e++) {
-            final float pos = Sky.firstVisiblePosition(i, 2);
+            final float pos = FloatMathUtils.firstVisiblePosition(i, 2);
             assertThat(pos).describedAs("for value " + i).isEqualTo(expected[e], Delta.delta(0.000001));
         }
 

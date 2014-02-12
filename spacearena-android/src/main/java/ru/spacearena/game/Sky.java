@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import ru.spacearena.engine.NewEngineObject;
 import ru.spacearena.engine.Viewport;
+import ru.spacearena.util.FloatMathUtils;
 import ru.spacearena.util.RandomUtils;
 
 import java.util.Random;
@@ -33,10 +34,6 @@ public class Sky extends NewEngineObject {
         this.seed = random.nextLong();
     }
 
-    static float firstVisiblePosition(float i, float grid) {
-        return (float)Math.ceil(i/grid)*grid;
-    }
-
     private void drawStarLayer(Canvas canvas, RectF viewRect, float pixelsPerStar, float scale) {
 
         final RectF scaledRect = new RectF(viewRect);
@@ -46,8 +43,8 @@ public class Sky extends NewEngineObject {
         // inflating rect
         scaledRect.inset(-(scaledRect.width()*scale + twoStarDistance), -(scaledRect.height()*scale + twoStarDistance));
 
-        final float startX = firstVisiblePosition(scaledRect.left, pixelsPerStar);
-        final float startY = firstVisiblePosition(scaledRect.top, pixelsPerStar);
+        final float startX = FloatMathUtils.firstVisiblePosition(scaledRect.left, pixelsPerStar);
+        final float startY = FloatMathUtils.firstVisiblePosition(scaledRect.top, pixelsPerStar);
 
         for (float y=startY; y<=scaledRect.bottom; y += pixelsPerStar) {
             for (float x=startX; x<=scaledRect.right; x += pixelsPerStar) {

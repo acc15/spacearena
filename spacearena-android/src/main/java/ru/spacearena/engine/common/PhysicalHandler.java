@@ -1,7 +1,7 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.Point2F;
 import ru.spacearena.engine.handlers.UpdateHandler;
+import ru.spacearena.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -10,8 +10,8 @@ import ru.spacearena.engine.handlers.UpdateHandler;
 public class PhysicalHandler implements UpdateHandler {
 
     private TransformHandler transformHandler;
-    private Point2F velocity = Point2F.ZERO;
-    private Point2F acceleration = Point2F.ZERO;
+    private float velocityX = 0f, velocityY = 0f;
+    private float accelerationX = 0f, accelerationY = 0f;
     private float angularVelocity = 0f;
 
     // TODO add min/max speed
@@ -20,20 +20,46 @@ public class PhysicalHandler implements UpdateHandler {
         this.transformHandler = transformHandler;
     }
 
-    public Point2F getVelocity() {
-        return velocity;
+    public float getVelocityX() {
+        return velocityX;
     }
 
-    public void setVelocity(Point2F velocity) {
-        this.velocity = velocity;
+    public void setVelocityX(float velocityX) {
+        this.velocityX = velocityX;
     }
 
-    public Point2F getAcceleration() {
-        return acceleration;
+    public float getVelocityY() {
+        return velocityY;
     }
 
-    public void setAcceleration(Point2F acceleration) {
-        this.acceleration = acceleration;
+    public void setVelocityY(float velocityY) {
+        this.velocityY = velocityY;
+    }
+
+    public void setVelocity(float velocityX, float velocityY) {
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+    }
+
+    public float getAccelerationX() {
+        return accelerationX;
+    }
+
+    public void setAccelerationX(float accelerationX) {
+        this.accelerationX = accelerationX;
+    }
+
+    public float getAccelerationY() {
+        return accelerationY;
+    }
+
+    public void setAccelerationY(float accelerationY) {
+        this.accelerationY = accelerationY;
+    }
+
+    public void setAcceleration(float accelerationX, float accelerationY) {
+        this.accelerationX = accelerationX;
+        this.accelerationY = accelerationY;
     }
 
     public float getAngularVelocity() {
@@ -45,11 +71,18 @@ public class PhysicalHandler implements UpdateHandler {
     }
 
     public boolean onUpdate(float seconds) {
-        transformHandler.setRotation((transformHandler.getRotation() + angularVelocity * seconds) % 360);
-        if (!acceleration.isZero()) {
-            velocity = velocity.add(acceleration.mul(seconds));
+        velocityX += accelerationX * seconds;
+        velocityY += accelerationY * seconds;
+        if (!FloatMathUtils.isZero(velocityX, velocityY)) {
+            transformHandler.x += velocityX * seconds;
+            transformHandler.y += velocityY * seconds;
+            transformHandler.isDirty = true;
         }
-        transformHandler.setTranslate(transformHandler.getTranslate().add(velocity.mul(seconds)));
+        if (!FloatMathUtils.isZero(angularVelocity)) {
+            float rot = transformHandler.rotation;
+            transformHandler.rotation = FloatMathUtils.normalizeAngle(rot + angularVelocity * seconds);
+            transformHandler.isDirty = true;
+        }
         return true;
     }
 }
