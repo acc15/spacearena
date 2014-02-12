@@ -24,7 +24,6 @@ public class GameFactory {
         final FPSCounter fpsCounter = new FPSCounter();
 
         final MultilineText.Line fpsText = new MultilineText.Line();
-
         final MultilineText multilineText = new MultilineText();
         multilineText.add(fpsText);
         multilineText.add(new MultilineText.Line("TEST"));
