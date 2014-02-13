@@ -9,7 +9,7 @@ import ru.spacearena.android.engine.input.InputEvent;
  */
 public class EngineObject {
 
-    public void onInit(EngineFactory factory) {
+    public void onInit(EngineEnvironment factory) {
     }
 
     public void onSize(float width, float height) {

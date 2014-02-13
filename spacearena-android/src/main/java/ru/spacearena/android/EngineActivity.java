@@ -1,15 +1,23 @@
 package ru.spacearena.android;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
+import ru.spacearena.android.engine.AndroidImage;
 import ru.spacearena.android.engine.AndroidMatrix;
 import ru.spacearena.android.engine.Engine;
-import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.android.engine.EngineEnvironment;
+import ru.spacearena.android.engine.graphics.Image;
 import ru.spacearena.android.engine.graphics.Matrix;
 import ru.spacearena.android.engine.input.InputType;
+import ru.spacearena.android.engine.util.IOUtils;
 import ru.spacearena.game.GameFactory;
+
+import java.io.InputStream;
 
 /**
  * @author Vyacheslav Mayorov
@@ -38,23 +46,69 @@ public class EngineActivity extends Activity {
         final SurfaceView surfaceView = new SurfaceView(this);
         setContentView(surfaceView);
 
-        final Engine engine = GameFactory.createEngine(new EngineFactory() {
-            public Matrix createMatrix() {
-                return new AndroidMatrix();
-            }
+        final SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.addCallback(new SurfaceHolder.Callback() {
 
-            public void enableInput(InputType inputType) {
-                if (inputType == InputType.TOUCH) {
-                    surfaceView.setOnTouchListener(new View.OnTouchListener() {
-                        public boolean onTouch(View v, MotionEvent event) {
-                            // TODO call engine.onInput()
-                            return false;
+            private SurfaceDrawThread surfaceDrawThread = null;
+
+            public void surfaceCreated(SurfaceHolder holder) {
+                final Rect r = holder.getSurfaceFrame();
+                if (surfaceDrawThread == null) {
+
+                    final Engine engine = GameFactory.createEngine(new EngineEnvironment() {
+                        public Matrix createMatrix() {
+                            return new AndroidMatrix();
+                        }
+
+                        public float getWidth() {
+                            return r.right;
+                        }
+
+                        public float getHeight() {
+                            return r.bottom;
+                        }
+
+                        public Image loadImage(String resource) {
+                            final InputStream inputStream = EngineActivity.this.getClass().getResourceAsStream(resource);
+                            try {
+                                final Bitmap bm = BitmapFactory.decodeStream(inputStream);
+                                return new AndroidImage(bm);
+                            } finally {
+                                IOUtils.closeQuietly(inputStream);
+                            }
+                        }
+
+                        public void enableInput(InputType inputType) {
+                            if (inputType == InputType.TOUCH) {
+                                surfaceView.setOnTouchListener(new View.OnTouchListener() {
+                                    public boolean onTouch(View v, MotionEvent event) {
+                                        // TODO call engine.onInput()
+                                        return false;
+                                    }
+                                });
+                            }
                         }
                     });
-                }
 
+                    surfaceDrawThread = new SurfaceDrawThread(holder, engine);
+                } else {
+                    surfaceDrawThread.engine.onSize(r.right, r.bottom);
+                }
+                surfaceDrawThread.start();
+            }
+
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                surfaceDrawThread.engine.onSize(width, height);
+            }
+
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                surfaceDrawThread.stop();
             }
         });
+
+
+    }
+
 
         /*
         final LinkedHashMap<Integer,Point2F> pointers = new LinkedHashMap<Integer, Point2F>();
@@ -81,6 +135,4 @@ public class EngineActivity extends Activity {
             }
         });
         */
-        new SurfaceDrawThread(surfaceView.getHolder(), engine);
-    }
 }

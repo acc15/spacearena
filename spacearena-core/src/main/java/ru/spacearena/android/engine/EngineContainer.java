@@ -19,7 +19,7 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
     }
 
     @Override
-    public void onInit(EngineFactory factory) {
+    public void onInit(EngineEnvironment factory) {
         for (T child : children) {
             child.onInit(factory);
         }

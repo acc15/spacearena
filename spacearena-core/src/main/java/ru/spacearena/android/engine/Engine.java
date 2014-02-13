@@ -16,7 +16,7 @@ public class Engine {
         this.root = engineObject;
     }
 
-    public void onInit(EngineFactory factory) {
+    public void onInit(EngineEnvironment factory) {
         root.onInit(factory);
     }
 

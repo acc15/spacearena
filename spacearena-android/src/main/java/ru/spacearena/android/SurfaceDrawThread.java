@@ -1,7 +1,6 @@
 package ru.spacearena.android;
 
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +11,12 @@ import ru.spacearena.android.engine.Engine;
  * @author Vyacheslav Mayorov
  * @since 2014-28-01
  */
-public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
+public class SurfaceDrawThread implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(SurfaceDrawThread.class);
 
-    private final Engine engine;
-    private final SurfaceHolder surfaceHolder;
+    final Engine engine;
+    final SurfaceHolder surfaceHolder;
 
     private Thread thread = null;
     private volatile boolean running = false;
@@ -25,25 +24,10 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
     public SurfaceDrawThread(SurfaceHolder surfaceHolder, Engine engine) {
         this.surfaceHolder = surfaceHolder;
         this.engine = engine;
-        this.surfaceHolder.addCallback(this);
-    }
-
-    public void surfaceCreated(SurfaceHolder holder) {
-        final Rect frame = holder.getSurfaceFrame();
-        engine.onSize(frame.right, frame.bottom);
-        start();
-    }
-
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        engine.onSize(width, height);
-    }
-
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        stop();
     }
 
     @SuppressWarnings("LoopStatementThatDoesntLoop")
-    private synchronized void stop() {
+    public synchronized void stop() {
         this.running = false;
         while (true) {
             try {
@@ -55,7 +39,7 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
         thread = null;
     }
 
-    private synchronized void start() {
+    public synchronized void start() {
         if (this.running) {
             throw new IllegalStateException("Draw thread already running");
         }

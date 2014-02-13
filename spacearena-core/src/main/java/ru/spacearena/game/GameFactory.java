@@ -2,7 +2,7 @@ package ru.spacearena.game;
 
 import ru.spacearena.android.engine.Engine;
 import ru.spacearena.android.engine.EngineContainer;
-import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.android.engine.EngineEnvironment;
 import ru.spacearena.android.engine.EngineObject;
 import ru.spacearena.android.engine.common.Background;
 import ru.spacearena.android.engine.common.FPSCounter;
@@ -17,7 +17,7 @@ import ru.spacearena.android.engine.input.InputType;
  */
 public class GameFactory {
 
-    public static Engine createEngine(EngineFactory engineFactory) {
+    public static Engine createEngine(EngineEnvironment environment) {
 
         final EngineContainer<EngineObject> root = new EngineContainer<EngineObject>();
 
@@ -42,7 +42,7 @@ public class GameFactory {
 
             final Rectangle rect = new Rectangle();
             rect.setColor(Color.rgb((float)Math.random(), (float)Math.random(), (float)Math.random()));
-            rect.setPosition(320, 240);
+            rect.setPosition(environment.getWidth()/2, environment.getHeight()/2);
             rect.setScale((float)(Math.random() * 50), (float)(Math.random() * 50));
             rect.setPivot(.5f, .5f);
             rect.setVelocity((float)(Math.random() * 200)-100, (float)(Math.random() * 200)-100);
@@ -54,10 +54,10 @@ public class GameFactory {
 
 
         final Engine engine = new Engine(root);
-        engine.onInit(engineFactory);
-        engineFactory.enableInput(InputType.KEYBOARD);
-        engineFactory.enableInput(InputType.MOUSE);
-        engineFactory.enableInput(InputType.TOUCH);
+        engine.onInit(environment);
+        environment.enableInput(InputType.KEYBOARD);
+        environment.enableInput(InputType.MOUSE);
+        environment.enableInput(InputType.TOUCH);
         return engine;
     }
 

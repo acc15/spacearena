@@ -1,6 +1,6 @@
 package ru.spacearena.android.engine.common;
 
-import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.android.engine.EngineEnvironment;
 import ru.spacearena.android.engine.EngineObject;
 import ru.spacearena.android.engine.graphics.DrawContext;
 import ru.spacearena.android.engine.graphics.Matrix;
@@ -169,9 +169,9 @@ public class TransformObject extends EngineObject {
         }
     }
 
-    public void onInit(EngineFactory engineFactory) {
-        this.concatMatrix = engineFactory.createMatrix();
-        this.matrix = engineFactory.createMatrix();
+    public void onInit(EngineEnvironment environment) {
+        this.concatMatrix = environment.createMatrix();
+        this.matrix = environment.createMatrix();
     }
 
     public void onDraw(DrawContext context) {

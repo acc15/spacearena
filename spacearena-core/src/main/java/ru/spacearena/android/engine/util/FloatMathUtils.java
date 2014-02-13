@@ -6,7 +6,6 @@ package ru.spacearena.android.engine.util;
  */
 public class FloatMathUtils {
 
-
     public static final float PI = 3.1415927f;
     public static final float TWO_PI = PI * 2;
     public static final float EPSILON = 0.00001f;
@@ -110,5 +109,9 @@ public class FloatMathUtils {
             return CIRCLE_ANGLE + norm;
         }
         return norm;
+    }
+
+    public static float random() {
+        return (float)Math.random();
     }
 }
