@@ -1,8 +1,7 @@
 package ru.spacearena.android.engine;
 
 import ru.spacearena.android.engine.graphics.DrawContext;
-
-import java.util.Collection;
+import ru.spacearena.android.engine.input.InputEvent;
 
 /**
  * @author Vyacheslav Mayorov
@@ -10,27 +9,15 @@ import java.util.Collection;
  */
 public class Engine {
 
-    private static EngineFactory factory = null;
-
-    public static EngineFactory getFactory() {
-        if (factory == null) {
-            throw new IllegalStateException("Engine wasn't initialized. Call Engine.init() before use");
-        }
-        return factory;
-    }
-
-    public static synchronized void init(EngineFactory factory) {
-        if (factory == null) {
-            throw new IllegalArgumentException("Engine factory can't be null");
-        }
-        Engine.factory = factory;
-    }
-
     private long lastTime = -1;
     private EngineObject root;
 
     public Engine(EngineObject engineObject) {
         this.root = engineObject;
+    }
+
+    public void onInit(EngineFactory factory) {
+        root.onInit(factory);
     }
 
     public boolean onUpdate() {
@@ -51,8 +38,8 @@ public class Engine {
         EngineObject.drawObject(context, root);
     }
 
-    public boolean onTouch(Collection<Point2F> points) {
-        return root.onTouch(points);
+    public boolean onInput(InputEvent event) {
+        return root.onInput(event);
     }
 
 }

@@ -1,6 +1,6 @@
 package ru.spacearena.android.engine.common;
 
-import ru.spacearena.android.engine.Engine;
+import ru.spacearena.android.engine.EngineFactory;
 import ru.spacearena.android.engine.EngineObject;
 import ru.spacearena.android.engine.graphics.DrawContext;
 import ru.spacearena.android.engine.graphics.Matrix;
@@ -12,8 +12,8 @@ import ru.spacearena.android.engine.util.FloatMathUtils;
  */
 public class TransformObject extends EngineObject {
 
-    private final Matrix matrix = Engine.getFactory().createMatrix();
-    private final Matrix concatMatrix = Engine.getFactory().createMatrix();
+    private Matrix matrix;
+    private Matrix concatMatrix;
     private Matrix oldMatrix = null;
 
     float x = 0f, y = 0f;
@@ -167,6 +167,11 @@ public class TransformObject extends EngineObject {
         if (mx != null) {
             mx.mapPoints(pts);
         }
+    }
+
+    public void onInit(EngineFactory engineFactory) {
+        this.concatMatrix = engineFactory.createMatrix();
+        this.matrix = engineFactory.createMatrix();
     }
 
     public void onDraw(DrawContext context) {

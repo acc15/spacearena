@@ -69,7 +69,9 @@ public class SurfaceDrawThread implements Runnable, SurfaceHolder.Callback {
         final AndroidDrawContext drawContext = new AndroidDrawContext();
         while (running) {
 
-            engine.onUpdate();
+            if (!engine.onUpdate()) {
+                break;
+            }
 
             final Canvas canvas = surfaceHolder.lockCanvas();
             if (canvas == null) {

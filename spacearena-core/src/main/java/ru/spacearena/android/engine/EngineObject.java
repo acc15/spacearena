@@ -1,8 +1,7 @@
 package ru.spacearena.android.engine;
 
 import ru.spacearena.android.engine.graphics.DrawContext;
-
-import java.util.Collection;
+import ru.spacearena.android.engine.input.InputEvent;
 
 /**
  * @author Vyacheslav Mayorov
@@ -10,10 +9,13 @@ import java.util.Collection;
  */
 public class EngineObject {
 
+    public void onInit(EngineFactory factory) {
+    }
+
     public void onSize(float width, float height) {
     }
 
-    public boolean onTouch(Collection<Point2F> points) {
+    public boolean onInput(InputEvent inputEvent) {
         return false;
     }
 

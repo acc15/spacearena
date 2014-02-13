@@ -1,6 +1,7 @@
 package ru.spacearena.android.engine;
 
 import ru.spacearena.android.engine.graphics.DrawContext;
+import ru.spacearena.android.engine.input.InputEvent;
 
 import java.util.*;
 
@@ -10,33 +11,29 @@ import java.util.*;
  */
 public class EngineContainer<T extends EngineObject> extends EngineObject {
 
-    private List<T> children = new ArrayList<T>();
-
-    public static <T> List<T> emptyIfNull(List<T> entities) {
-        return entities != null ? entities : Collections.<T>emptyList();
-    }
-
-    public List<T> getChildren() {
-        return emptyIfNull(children);
-    }
+    protected final List<T> children = new ArrayList<T>();
 
     public EngineContainer<T> add(T entity) {
-        if (children == null) {
-            children = new ArrayList<T>();
-        }
         children.add(entity);
         return this;
     }
 
+    @Override
+    public void onInit(EngineFactory factory) {
+        for (T child : children) {
+            child.onInit(factory);
+        }
+    }
+
     public void onSize(float width, float height) {
-        for (T child : getChildren()) {
+        for (T child : children) {
             child.onSize(width, height);
         }
     }
 
-    public boolean onTouch(Collection<Point2F> points) {
-        for (T child : getChildren()) {
-            if (child.onTouch(points)) {
+    public boolean onInput(InputEvent inputEvent) {
+        for (T child : children) {
+            if (child.onInput(inputEvent)) {
                 return true;
             }
         }
@@ -44,7 +41,7 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
     }
 
     public boolean onUpdate(float seconds) {
-        final Iterator<T> iterator = getChildren().iterator();
+        final Iterator<T> iterator = children.iterator();
         while (iterator.hasNext()) {
             final T child = iterator.next();
             if (!child.onUpdate(seconds)) {
@@ -62,7 +59,7 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
     }
 
     public void onDraw(DrawContext context) {
-        for (T child : getChildren()) {
+        for (T child : children) {
             if (!child.onPreDraw(context)) {
                 continue;
             }

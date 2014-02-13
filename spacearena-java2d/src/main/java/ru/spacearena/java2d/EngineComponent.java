@@ -3,14 +3,16 @@ package ru.spacearena.java2d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.spacearena.android.engine.Engine;
+import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.android.engine.graphics.Matrix;
+import ru.spacearena.android.engine.input.InputType;
 import ru.spacearena.game.GameFactory;
 import ru.spacearena.java2d.engine.Java2DDrawContext;
-import ru.spacearena.java2d.engine.Java2DEngineFactory;
+import ru.spacearena.java2d.engine.Java2DMatrix;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
 
 /**
@@ -21,21 +23,10 @@ public class EngineComponent extends Canvas {
 
     private static final Logger logger = LoggerFactory.getLogger(EngineComponent.class);
 
-    private Java2DDrawContext drawContext = new Java2DDrawContext();
-    private Engine engine;
+    void gameLoop(final Engine engine) {
 
-    public EngineComponent(Engine engine) {
-        this.engine = engine;
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        final Graphics2D graphics2D = (Graphics2D) g;
-        engine.onDraw(drawContext.wrap(graphics2D, getWidth(), getHeight()));
-    }
-
-    void gameLoop() {
         final BufferStrategy strategy = getBufferStrategy();
+        final Java2DDrawContext drawContext = new Java2DDrawContext();
         while (true) {
             if (!engine.onUpdate()) {
                 return;
@@ -57,16 +48,88 @@ public class EngineComponent extends Canvas {
 
     public static void main(String[] args) {
 
-        Engine.init(new Java2DEngineFactory());
+        final EngineComponent component = new EngineComponent();
+        final Engine engine = GameFactory.createEngine(new EngineFactory() {
+            public Matrix createMatrix() {
+                return new Java2DMatrix();
+            }
 
-        final Engine engine = GameFactory.createEngine();
-        final EngineComponent component = new EngineComponent(engine);
+            public void enableInput(InputType inputType) {
+                switch (inputType) {
+                case KEYBOARD:
+                    component.addKeyListener(new KeyListener() {
+                        public void keyTyped(KeyEvent e) {
+                            // TODO implement..
+
+                        }
+
+                        public void keyPressed(KeyEvent e) {
+                            // TODO implement..
+
+                        }
+
+                        public void keyReleased(KeyEvent e) {
+                            // TODO implement..
+
+                        }
+                    });
+                    break;
+
+                case MOUSE:
+                    component.addMouseListener(new MouseListener() {
+                        public void mouseClicked(MouseEvent e) {
+                            // TODO implement..
+
+                        }
+
+                        public void mousePressed(MouseEvent e) {
+                            // TODO implement..
+
+                        }
+
+                        public void mouseReleased(MouseEvent e) {
+                            // TODO implement..
+
+                        }
+
+                        public void mouseEntered(MouseEvent e) {
+                            // TODO implement..
+
+                        }
+
+                        public void mouseExited(MouseEvent e) {
+                            // TODO implement..
+
+                        }
+                    });
+                    component.addMouseMotionListener(new MouseMotionListener() {
+                        public void mouseDragged(MouseEvent e) {
+                            // TODO implement..
+
+                        }
+
+                        public void mouseMoved(MouseEvent e) {
+                            // TODO implement..
+
+                        }
+                    });
+                    component.addMouseWheelListener(new MouseWheelListener() {
+                        public void mouseWheelMoved(MouseWheelEvent e) {
+                            // TODO implement..
+
+                        }
+                    });
+                    break;
+                }
+            }
+        });
 
         final JFrame frame = new JFrame("SpaceArena");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(640, 480));
         frame.setLocationRelativeTo(null);
         frame.getContentPane().add(component);
+        frame.setVisible(true);
 
         component.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -76,10 +139,8 @@ public class EngineComponent extends Canvas {
         component.setBackground(null);
         component.setIgnoreRepaint(true);
         component.requestFocus();
-        frame.setVisible(true);
-
         component.createBufferStrategy(2);
-        component.gameLoop();
+        component.gameLoop(engine);
 
     }
 

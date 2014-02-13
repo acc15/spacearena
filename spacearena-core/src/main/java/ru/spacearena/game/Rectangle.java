@@ -3,6 +3,7 @@ package ru.spacearena.game;
 import ru.spacearena.android.engine.common.PhysicalObject;
 import ru.spacearena.android.engine.graphics.Color;
 import ru.spacearena.android.engine.graphics.DrawContext;
+import ru.spacearena.android.engine.input.InputEvent;
 
 /**
  * @author Vyacheslav Mayorov
@@ -18,6 +19,12 @@ public class Rectangle extends PhysicalObject {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    @Override
+    public boolean onInput(InputEvent inputEvent) {
+
+        return true;
     }
 
     @Override

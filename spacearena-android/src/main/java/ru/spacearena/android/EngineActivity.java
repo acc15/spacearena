@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
-import ru.spacearena.android.engine.AndroidEngineFactory;
+import ru.spacearena.android.engine.AndroidMatrix;
 import ru.spacearena.android.engine.Engine;
-import ru.spacearena.android.engine.Point2F;
+import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.android.engine.graphics.Matrix;
+import ru.spacearena.android.engine.input.InputType;
 import ru.spacearena.game.GameFactory;
-
-import java.util.LinkedHashMap;
 
 /**
  * @author Vyacheslav Mayorov
@@ -38,15 +38,31 @@ public class EngineActivity extends Activity {
         final SurfaceView surfaceView = new SurfaceView(this);
         setContentView(surfaceView);
 
-        Engine.init(new AndroidEngineFactory());
-        final Engine engine = GameFactory.createEngine();
+        final Engine engine = GameFactory.createEngine(new EngineFactory() {
+            public Matrix createMatrix() {
+                return new AndroidMatrix();
+            }
 
+            public void enableInput(InputType inputType) {
+                if (inputType == InputType.TOUCH) {
+                    surfaceView.setOnTouchListener(new View.OnTouchListener() {
+                        public boolean onTouch(View v, MotionEvent event) {
+                            // TODO call engine.onInput()
+                            return false;
+                        }
+                    });
+                }
+
+            }
+        });
+
+        /*
         final LinkedHashMap<Integer,Point2F> pointers = new LinkedHashMap<Integer, Point2F>();
         surfaceView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                     pointers.clear();
-                    return engine.onTouch(pointers.values());
+                    return engine.onInput(pointers.values());
                 }
 
                 final int action = event.getAction() & MotionEvent.ACTION_MASK;
@@ -61,10 +77,10 @@ public class EngineActivity extends Activity {
                         pointers.put(ptrId, Point2F.xy(event.getX(i), event.getY(i)));
                     }
                 }
-                return engine.onTouch(pointers.values());
+                return engine.onInput(pointers.values());
             }
         });
-
+        */
         new SurfaceDrawThread(surfaceView.getHolder(), engine);
     }
 }
