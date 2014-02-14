@@ -1,23 +1,24 @@
 package ru.spacearena.game;
 
-import ru.spacearena.android.engine.Engine;
-import ru.spacearena.android.engine.EngineContainer;
-import ru.spacearena.android.engine.EngineEnvironment;
-import ru.spacearena.android.engine.EngineObject;
-import ru.spacearena.android.engine.common.Background;
-import ru.spacearena.android.engine.common.FPSCounter;
-import ru.spacearena.android.engine.common.MultilineText;
-import ru.spacearena.android.engine.common.Timer;
-import ru.spacearena.android.engine.graphics.Color;
-import ru.spacearena.android.engine.input.InputType;
+import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.EngineContainer;
+import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.graphics.Image;
+import ru.spacearena.engine.input.InputType;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-30-01
  */
-public class GameFactory {
+public class GameFactory implements EngineFactory {
 
-    public static Engine createEngine(EngineEnvironment environment) {
+    public EngineObject createRoot(Engine engine) {
+
+        engine.enableInput(InputType.KEYBOARD);
+        engine.enableInput(InputType.MOUSE);
+        engine.enableInput(InputType.TOUCH);
 
         final EngineContainer<EngineObject> root = new EngineContainer<EngineObject>();
 
@@ -34,31 +35,24 @@ public class GameFactory {
             }
         };
 
-        root.add(fpsCounter).
+
+        final Image image = engine.loadImage("ship.png");
+        final Sprite ship = new Sprite(image);
+
+        final float w = image.getWidth(), h = image.getHeight();
+
+        ship.setPivot(w/2, h/2);
+        ship.setPosition(300, 300);
+        final PhysicsHandler physicsHandler = new PhysicsHandler(ship);
+
+        physicsHandler.setAngularVelocity(100);
+
+        return root.add(fpsCounter).
              add(new Timer(0.5f, true).add(fpsUpdater)).
-             add(new Background());
-
-        for (int i=0; i<5000; i++) {
-
-            final Rectangle rect = new Rectangle();
-            rect.setColor(Color.rgb((float)Math.random(), (float)Math.random(), (float)Math.random()));
-            rect.setPosition(environment.getWidth()/2, environment.getHeight()/2);
-            rect.setScale((float)(Math.random() * 50), (float)(Math.random() * 50));
-            rect.setPivot(.5f, .5f);
-            rect.setVelocity((float)(Math.random() * 200)-100, (float)(Math.random() * 200)-100);
-            rect.setAngularVelocity((float)(Math.random() * 360));
-            root.add(rect);
-
-        }
-        root.add(multilineText);
-
-
-        final Engine engine = new Engine(root);
-        engine.onInit(environment);
-        environment.enableInput(InputType.KEYBOARD);
-        environment.enableInput(InputType.MOUSE);
-        environment.enableInput(InputType.TOUCH);
-        return engine;
+             add(new Background()).
+             add(ship).
+             add(physicsHandler).
+             add(multilineText);
     }
 
 }

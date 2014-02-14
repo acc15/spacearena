@@ -1,9 +1,9 @@
 package ru.spacearena.game;
 
-import ru.spacearena.android.engine.common.PhysicalObject;
-import ru.spacearena.android.engine.graphics.Color;
-import ru.spacearena.android.engine.graphics.DrawContext;
-import ru.spacearena.android.engine.input.InputEvent;
+import ru.spacearena.engine.common.PhysicalObject;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.input.InputEvent;
 
 /**
  * @author Vyacheslav Mayorov

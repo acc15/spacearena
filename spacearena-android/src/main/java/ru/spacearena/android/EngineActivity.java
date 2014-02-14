@@ -1,23 +1,16 @@
 package ru.spacearena.android;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.*;
-import ru.spacearena.android.engine.AndroidImage;
-import ru.spacearena.android.engine.AndroidMatrix;
-import ru.spacearena.android.engine.Engine;
-import ru.spacearena.android.engine.EngineEnvironment;
-import ru.spacearena.android.engine.graphics.Image;
-import ru.spacearena.android.engine.graphics.Matrix;
-import ru.spacearena.android.engine.input.InputType;
-import ru.spacearena.android.engine.util.IOUtils;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.Window;
+import android.view.WindowManager;
+import ru.spacearena.engine.AndroidEngine;
+import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.game.GameFactory;
-
-import java.io.InputStream;
 
 /**
  * @author Vyacheslav Mayorov
@@ -47,6 +40,8 @@ public class EngineActivity extends Activity {
         setContentView(surfaceView);
 
         final SurfaceHolder surfaceHolder = surfaceView.getHolder();
+
+        final EngineFactory factory = new GameFactory();
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
 
             private SurfaceDrawThread surfaceDrawThread = null;
@@ -54,43 +49,8 @@ public class EngineActivity extends Activity {
             public void surfaceCreated(SurfaceHolder holder) {
                 final Rect r = holder.getSurfaceFrame();
                 if (surfaceDrawThread == null) {
-
-                    final Engine engine = GameFactory.createEngine(new EngineEnvironment() {
-                        public Matrix createMatrix() {
-                            return new AndroidMatrix();
-                        }
-
-                        public float getWidth() {
-                            return r.right;
-                        }
-
-                        public float getHeight() {
-                            return r.bottom;
-                        }
-
-                        public Image loadImage(String resource) {
-                            final InputStream inputStream = EngineActivity.this.getClass().getResourceAsStream(resource);
-                            try {
-                                final Bitmap bm = BitmapFactory.decodeStream(inputStream);
-                                return new AndroidImage(bm);
-                            } finally {
-                                IOUtils.closeQuietly(inputStream);
-                            }
-                        }
-
-                        public void enableInput(InputType inputType) {
-                            if (inputType == InputType.TOUCH) {
-                                surfaceView.setOnTouchListener(new View.OnTouchListener() {
-                                    public boolean onTouch(View v, MotionEvent event) {
-                                        // TODO call engine.onInput()
-                                        return false;
-                                    }
-                                });
-                            }
-                        }
-                    });
-
-                    surfaceDrawThread = new SurfaceDrawThread(holder, engine);
+                    surfaceDrawThread = new SurfaceDrawThread(holder,
+                            new AndroidEngine(factory, surfaceView, r.right, r.bottom));
                 } else {
                     surfaceDrawThread.engine.onSize(r.right, r.bottom);
                 }
