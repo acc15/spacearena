@@ -51,23 +51,10 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
         return true;
     }
 
-    public boolean onPreDraw(DrawContext context) {
-        return true;
-    }
-
-    public void onPostDraw(DrawContext context) {
-    }
 
     public void onDraw(DrawContext context) {
         for (T child : children) {
-            if (!child.onPreDraw(context)) {
-                continue;
-            }
-            try {
-                child.onDraw(context);
-            } finally {
-                child.onPostDraw(context);
-            }
+            child.onDraw(context);
         }
     }
 }

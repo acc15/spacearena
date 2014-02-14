@@ -28,25 +28,7 @@ public class EngineObject {
         return true;
     }
 
-    public boolean onPreDraw(DrawContext context) {
-        return true;
-    }
-
-    public void onPostDraw(DrawContext context) {
-    }
-
     public void onDraw(DrawContext context) {
-    }
-
-    protected static void drawObject(DrawContext context, EngineObject child) {
-        if (!child.onPreDraw(context)) {
-            return;
-        }
-        try {
-            child.onDraw(context);
-        } finally {
-            child.onPostDraw(context);
-        }
     }
 
 }

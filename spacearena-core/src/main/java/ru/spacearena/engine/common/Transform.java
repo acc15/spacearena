@@ -1,27 +1,18 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-11-02
  */
-public class Transform extends EngineContainer<EngineObject> {
-
-    private Matrix matrix;
-    private Matrix concatMatrix;
-    private Matrix oldMatrix = null;
+public class Transform extends AbstractTransformation {
 
     float x = 0f, y = 0f;
     float scaleX = 1f, scaleY = 1f;
     float skewX = 0f, skewY = 0f;
     float pivotX = 0f, pivotY = 0f;
     float rotation = 0f;
-    boolean isDirty = false;
 
     public float getX() {
         return x;
@@ -29,7 +20,7 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setX(float x) {
         this.x = x;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getY() {
@@ -38,13 +29,13 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setY(float y) {
         this.y = y;
-        this.isDirty = true;
+        markDirty();
     }
 
     public void setPosition(float x, float y) {
         this.x = x;
         this.y = y;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getScaleX() {
@@ -53,7 +44,7 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setScaleX(float scaleX) {
         this.scaleX = scaleX;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getScaleY() {
@@ -62,13 +53,13 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setScaleY(float scaleY) {
         this.scaleY = scaleY;
-        this.isDirty = true;
+        markDirty();
     }
 
     public void setScale(float scaleX, float scaleY) {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getSkewX() {
@@ -77,7 +68,7 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setSkewX(float skewX) {
         this.skewX = skewX;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getSkewY() {
@@ -86,13 +77,13 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setSkewY(float skewY) {
         this.skewY = skewY;
-        this.isDirty = true;
+        markDirty();
     }
 
     public void setSkew(float skewX, float skewY) {
         this.skewX = skewX;
         this.skewY = skewY;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getPivotX() {
@@ -101,7 +92,7 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setPivotX(float pivotX) {
         this.pivotX = pivotX;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getPivotY() {
@@ -110,13 +101,13 @@ public class Transform extends EngineContainer<EngineObject> {
 
     public void setPivotY(float pivotY) {
         this.pivotY = pivotY;
-        this.isDirty = true;
+        markDirty();
     }
 
     public void setPivot(float pivotX, float pivotY) {
         this.pivotX = pivotX;
         this.pivotY = pivotY;
-        this.isDirty = true;
+        markDirty();
     }
 
     public float getRotation() {
@@ -127,49 +118,12 @@ public class Transform extends EngineContainer<EngineObject> {
         this.rotation = rotation;
     }
 
-    public Matrix getMatrix() {
-        if (!isDirty) {
-            return matrix;
-        }
-        matrix.identity();
+    public void applyTransformations(Matrix matrix) {
         matrix.translate(x, y);
         matrix.rotate(rotation);
         matrix.skew(skewX, skewY);
         matrix.scale(scaleX, scaleY);
         matrix.translate(-pivotX, -pivotY);
-        isDirty = false;
-        return matrix;
     }
 
-    public void mapPoints(float[] pts) {
-        final Matrix mx = getMatrix();
-        if (mx != null) {
-            mx.mapPoints(pts);
-        }
-    }
-
-    public void onInit(Engine engine) {
-        this.concatMatrix = engine.createMatrix();
-        this.matrix = engine.createMatrix();
-    }
-
-    public boolean onPreDraw(DrawContext context) {
-        final Matrix thisMatrix = getMatrix();
-        if (thisMatrix.isIdentity()) {
-            return true;
-        }
-        oldMatrix = context.getMatrix();
-        concatMatrix.identity();
-        concatMatrix.multiply(oldMatrix);
-        concatMatrix.multiply(thisMatrix);
-        context.setMatrix(concatMatrix);
-        return true;
-    }
-
-    public void onPostDraw(DrawContext context) {
-        if (oldMatrix != null) {
-            context.setMatrix(oldMatrix);
-            oldMatrix = null;
-        }
-    }
 }

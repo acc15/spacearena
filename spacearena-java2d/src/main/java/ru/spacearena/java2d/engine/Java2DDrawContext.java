@@ -60,7 +60,7 @@ public class Java2DDrawContext implements DrawContext {
         graphics2D.setTransform(((Java2DMatrix)matrix).affineTransform);
     }
 
-    public Matrix getMatrix() {
+    public Matrix getMatrixCopy() {
         return new Java2DMatrix(graphics2D.getTransform());
     }
 }

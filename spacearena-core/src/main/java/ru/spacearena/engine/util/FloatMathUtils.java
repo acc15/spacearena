@@ -103,6 +103,10 @@ public class FloatMathUtils {
         return ceil(v/grid)*grid;
     }
 
+    public static float divOrZero(float v, float d) {
+        return isZero(v) ? 0f : v/d;
+    }
+
     public static float normalizeDegrees(float degrees) {
         float norm = degrees % CIRCLE_ANGLE;
         if (norm < 0) {

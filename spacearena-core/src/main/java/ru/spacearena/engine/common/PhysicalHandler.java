@@ -70,11 +70,11 @@ public class PhysicalHandler extends Transform {
         if (!FloatMathUtils.isZero(velocityX, velocityY)) {
             x += velocityX * seconds;
             y += velocityY * seconds;
-            isDirty = true;
+            markDirty();
         }
         if (!FloatMathUtils.isZero(angularVelocity)) {
             rotation = FloatMathUtils.normalizeDegrees(rotation + angularVelocity * seconds);
-            isDirty = true;
+            markDirty();
         }
         return true;
     }

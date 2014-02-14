@@ -40,7 +40,7 @@ public abstract class Engine {
     }
 
     public void onDraw(DrawContext context) {
-        EngineObject.drawObject(context, root);
+        root.onDraw(context);
     }
 
     public boolean onInput(InputEvent event) {
