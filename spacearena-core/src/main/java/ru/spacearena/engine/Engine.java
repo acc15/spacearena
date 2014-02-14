@@ -44,7 +44,6 @@ public abstract class Engine {
     }
 
     public boolean onInput(InputEvent event) {
-        event.setEventTime(currentTime());
         return root.onInput(event);
     }
 

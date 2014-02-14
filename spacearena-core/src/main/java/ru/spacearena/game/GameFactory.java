@@ -7,6 +7,8 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.input.KeyCode;
+import ru.spacearena.engine.input.KeyTracker;
 
 /**
  * @author Vyacheslav Mayorov
@@ -39,15 +41,38 @@ public class GameFactory implements EngineFactory {
         final Image image = engine.loadImage("ship.png");
         final PhysicalHandler ship = new PhysicalHandler();
         ship.add(new Sprite(image));
+        ship.pivot().set(image.getWidth()/2, image.getHeight()/2);
+        ship.position().set(engine.getWidth() / 2, engine.getHeight() / 2);
 
-        final float w = image.getWidth(), h = image.getHeight();
-        ship.setPivot(w/2, h/2);
-        ship.setPosition(engine.getWidth() / 2, engine.getHeight() / 2);
-        ship.setAngularVelocity(360/10);
+        final KeyTracker keyTracker = new KeyTracker() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                float xVelocity = 0;
+                float yVelocity = 0;
+                if (isKeyPressed(KeyCode.VK_LEFT)) {
+                    xVelocity -= 500;
+                }
+                if (isKeyPressed(KeyCode.VK_RIGHT)) {
+                    xVelocity += 500;
+                }
+                if (isKeyPressed(KeyCode.VK_UP)) {
+                    yVelocity -= 500;
+                }
+                if (isKeyPressed(KeyCode.VK_DOWN)) {
+                    yVelocity += 500;
+                }
+                ship.velocity.set(xVelocity, yVelocity);
+                ship.velocity.resize(500);
+                ship.setVelocity(xVelocity, yVelocity);
+                return true;
+            }
+        };
+
 
         return root.add(fpsCounter).
              add(new Timer(0.5f, true).add(fpsUpdater)).
              add(new Background()).
+             add(keyTracker).
              add(ship).
              add(multilineText);
     }

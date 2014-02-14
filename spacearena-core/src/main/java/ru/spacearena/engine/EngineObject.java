@@ -15,6 +15,11 @@ public class EngineObject {
     public void onSize(float width, float height) {
     }
 
+    /**
+     * Called when some input event occurs
+     * @param inputEvent input event
+     * @return {@code true} if event was consumed
+     */
     public boolean onInput(InputEvent inputEvent) {
         return false;
     }

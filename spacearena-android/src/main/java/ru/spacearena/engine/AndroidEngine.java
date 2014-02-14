@@ -7,7 +7,6 @@ import android.view.View;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.input.InputType;
-import ru.spacearena.engine.input.TouchEvent;
 import ru.spacearena.engine.util.IOUtils;
 
 import java.io.InputStream;
@@ -63,29 +62,10 @@ public class AndroidEngine extends Engine {
 
     public void enableInput(InputType inputType) {
         if (inputType == InputType.TOUCH) {
-            final TouchEvent touchEvent = new TouchEvent();
             view.setOnTouchListener(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
-                    final int action = event.getAction() & MotionEvent.ACTION_MASK;
-                    final int pointerId = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK)
-                            >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-                    switch (action) {
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        touchEvent.setAction(TouchEvent.Action.DOWN);
-                        break;
-
-                    case MotionEvent.ACTION_POINTER_UP:
-                        touchEvent.setAction(TouchEvent.Action.UP);
-                        break;
-
-                    default:
-                        touchEvent.setAction(TouchEvent.Action.MOVE);
-                        break;
-                    }
-                    touchEvent.setPointerId(pointerId);
-                    touchEvent.setX(event.getX(pointerId));
-                    touchEvent.setY(event.getY(pointerId));
-                    return onInput(touchEvent);
+                    return false;
+                    //return onInput(touchEvent);
                 }
             });
         }

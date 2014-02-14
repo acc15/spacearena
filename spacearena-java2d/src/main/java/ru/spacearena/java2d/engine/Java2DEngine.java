@@ -5,11 +5,12 @@ import ru.spacearena.engine.EngineException;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.input.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 /**
@@ -52,20 +53,20 @@ public class Java2DEngine extends Engine {
     public void enableInput(InputType inputType) {
         switch (inputType) {
         case KEYBOARD:
-            component.addKeyListener(new KeyListener() {
-                public void keyTyped(KeyEvent e) {
-                    // TODO implement..
 
+            component.addKeyListener(new KeyListener() {
+                final Java2DKeyEvent keyEvent = new Java2DKeyEvent();
+
+                public void keyTyped(KeyEvent e) {
+                    onInput(keyEvent.init(e, ru.spacearena.engine.input.KeyEvent.Action.TYPED));
                 }
 
                 public void keyPressed(KeyEvent e) {
-                    // TODO implement..
-
+                    onInput(keyEvent.init(e, ru.spacearena.engine.input.KeyEvent.Action.DOWN));
                 }
 
                 public void keyReleased(KeyEvent e) {
-                    // TODO implement..
-
+                    onInput(keyEvent.init(e, ru.spacearena.engine.input.KeyEvent.Action.UP));
                 }
             });
             break;
