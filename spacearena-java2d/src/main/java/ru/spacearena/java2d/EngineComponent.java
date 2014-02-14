@@ -76,7 +76,7 @@ public class EngineComponent extends Canvas {
 
             public Image loadImage(String resource) {
                 try {
-                    return new Java2DImage(ImageIO.read(component.getClass().getResource(resource));
+                    return new Java2DImage(ImageIO.read(component.getClass().getResource(resource)));
                 } catch (IOException e) {
                     throw new EngineException("Can't read image " + resource, e);
                 }
