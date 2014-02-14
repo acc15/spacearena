@@ -9,6 +9,7 @@ import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
 import ru.spacearena.engine.input.KeyTracker;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -41,8 +42,10 @@ public class GameFactory implements EngineFactory {
         final Image image = engine.loadImage("ship.png");
         final PhysicalHandler ship = new PhysicalHandler();
         ship.add(new Sprite(image));
-        ship.pivot().set(image.getWidth()/2, image.getHeight()/2);
-        ship.position().set(engine.getWidth() / 2, engine.getHeight() / 2);
+        ship.setPivot(image.getWidth() / 2, image.getHeight() / 2);
+        ship.setPosition(engine.getWidth() / 2, engine.getHeight() / 2);
+
+        //ship.setAngularVelocity(100f);
 
         final KeyTracker keyTracker = new KeyTracker() {
             @Override
@@ -50,20 +53,24 @@ public class GameFactory implements EngineFactory {
                 float xVelocity = 0;
                 float yVelocity = 0;
                 if (isKeyPressed(KeyCode.VK_LEFT)) {
-                    xVelocity -= 500;
+                    xVelocity -= 1;
                 }
                 if (isKeyPressed(KeyCode.VK_RIGHT)) {
-                    xVelocity += 500;
+                    xVelocity += 1;
                 }
                 if (isKeyPressed(KeyCode.VK_UP)) {
-                    yVelocity -= 500;
+                    yVelocity -= 1;
                 }
                 if (isKeyPressed(KeyCode.VK_DOWN)) {
-                    yVelocity += 500;
+                    yVelocity += 1;
                 }
-                ship.velocity.set(xVelocity, yVelocity);
-                ship.velocity.resize(500);
-                ship.setVelocity(xVelocity, yVelocity);
+                if (FloatMathUtils.isZero(xVelocity, yVelocity)) {
+                    ship.setVelocity(0, 0);
+                    return true;
+                }
+                final float length = 500f/FloatMathUtils.length(xVelocity, yVelocity);
+                ship.setVelocity(xVelocity * length, yVelocity * length);
+                ship.setRotation(FloatMathUtils.angle(xVelocity, yVelocity));
                 return true;
             }
         };

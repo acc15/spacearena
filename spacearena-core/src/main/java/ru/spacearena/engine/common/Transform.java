@@ -5,7 +5,6 @@ import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -23,15 +22,6 @@ public class Transform extends EngineContainer<EngineObject> {
     float pivotX = 0f, pivotY = 0f;
     float rotation = 0f;
     boolean isDirty = false;
-    boolean visible = true;
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
 
     public float getX() {
         return x;
@@ -138,12 +128,6 @@ public class Transform extends EngineContainer<EngineObject> {
     }
 
     public Matrix getMatrix() {
-        if (FloatMathUtils.isZero(rotation) &&
-            FloatMathUtils.isOne(scaleX, scaleY) &&
-            FloatMathUtils.isZero(skewX, skewY) &&
-            FloatMathUtils.isZero(x, y)) {
-            return null;
-        }
         if (!isDirty) {
             return matrix;
         }
@@ -170,12 +154,8 @@ public class Transform extends EngineContainer<EngineObject> {
     }
 
     public boolean onPreDraw(DrawContext context) {
-        if (!visible) {
-            return false;
-        }
-
         final Matrix thisMatrix = getMatrix();
-        if (thisMatrix == null) {
+        if (thisMatrix.isIdentity()) {
             return true;
         }
         oldMatrix = context.getMatrix();

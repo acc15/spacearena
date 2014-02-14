@@ -11,51 +11,121 @@ public class Point2F {
     public static final Point2F ZERO = new Point2F(0,0);
     public static final Point2F ONE = new Point2F(1,1);
 
-    private final float x, y;
+    public float x = 0, y = 0;
 
-    private Point2F(float x, float y) {
+    public Point2F() {
+    }
+
+    public Point2F(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
+    public Point2F(Point2F copy) {
+        this(copy.x, copy.y);
+    }
+
+    public Point2F copy() {
+        return new Point2F(x, y);
+    }
+
+    public Point2F x(float x) {
+        this.x = x;
+        return this;
+    }
+
+    public Point2F y(float y) {
+        this.y = y;
+        return this;
+    }
+
+    public Point2F set(float x, float y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
+
+    public Point2F polar(float angle, float distance) {
+        final float rads = FloatMathUtils.toRadians(angle - 90);
+        return set(FloatMathUtils.cos(rads) * distance, FloatMathUtils.sin(rads) * distance);
+    }
+
+    public Point2F xy(float x, float y) {
+        return set(x, y);
+    }
+
+    public Point2F add(float x, float y) {
+        this.x += x;
+        this.y += y;
+        return this;
+    }
+
+    public Point2F sub(float x, float y) {
+        this.x -= x;
+        this.y -= y;
+        return this;
+    }
+
+    public Point2F mul(float x, float y) {
+        this.x *= x;
+        this.y *= y;
+        return this;
+    }
+
+    public Point2F div(float x, float y) {
+        this.x /= x;
+        this.y /= y;
+        return this;
+    }
+
     public Point2F add(Point2F pt) {
-        return xy(x + pt.x, y + pt.y);
+        return add(pt.x, pt.y);
     }
 
     public Point2F sub(Point2F pt) {
-        return xy(x - pt.x, y - pt.y);
+        return sub(pt.x, pt.y);
     }
 
     public Point2F mul(Point2F pt) {
-        return xy(x * pt.x, y * pt.y);
+        return mul(pt.x, pt.y);
     }
 
     public Point2F div(Point2F pt) {
-        return xy(x / pt.x, y / pt.y);
+        return div(pt.x, pt.y);
     }
 
     public Point2F add(float v) {
-        return xy(x + v, y + v);
+        return add(v, v);
     }
 
     public Point2F sub(float v) {
-        return xy(x - v, y - v);
+        return sub(v, v);
     }
 
     public Point2F mul(float v) {
-        return xy(x * v, y * v);
+        return mul(v, v);
     }
 
     public Point2F div(float v) {
-        return xy(x / v, y / v);
+        return div(v, v);
     }
 
     public Point2F negate() {
-        return xy(-x, -y);
+        this.x = -x;
+        this.y = -y;
+        return this;
+    }
+
+    public float cross(float x, float y) {
+        return FloatMathUtils.cross(this.x, this.y, x, y);
     }
 
     public float cross(Point2F pt) {
         return FloatMathUtils.cross(x, y, pt.x, pt.y);
+    }
+
+    public float dot(float x, float y) {
+        return FloatMathUtils.dot(this.x, this.y, x, y);
     }
 
     public float dot(Point2F pt) {
@@ -88,6 +158,10 @@ public class Point2F {
         return FloatMathUtils.angle(x, y);
     }
 
+    public float angle(float x, float y) {
+        return FloatMathUtils.angle(this.x, this.y, x, y);
+    }
+
     public float angle(Point2F pt) {
         return FloatMathUtils.angle(x, y, pt.x, pt.y);
     }
@@ -96,16 +170,19 @@ public class Point2F {
         return mul(newMagnitude / length());
     }
 
+    public Point2F resizeIf(float newMagnitude) {
+        if (isZero()) {
+            return this;
+        }
+        return resize(newMagnitude);
+    }
+
+    public float cosineOfAngle(float x, float y) {
+        return dot(x, y) / (length() * FloatMathUtils.length(x, y));
+    }
+
     public float cosineOfAngle(Point2F pt) {
-        return dot(pt) / (length() * pt.length());
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
+        return cosineOfAngle(pt.x, pt.y);
     }
 
     public boolean is(float v) {
@@ -120,17 +197,8 @@ public class Point2F {
         return is(1f);
     }
 
-    public static Point2F polar(float angle, float distance) {
-        final float rads = FloatMathUtils.toRadians(angle - 90);
-        return xy(FloatMathUtils.cos(rads) * distance, FloatMathUtils.sin(rads) * distance);
-    }
-
-    public static Point2F xy(float x, float y) {
-        return new Point2F(x, y);
-    }
-
     public float min() {
-        return Math.min(x,y);
+        return Math.min(x, y);
     }
 
     public float max() {
@@ -161,7 +229,7 @@ public class Point2F {
     }
 
     public static Point2F toPoint(float[] pts, int offset) {
-        return Point2F.xy(pts[offset], pts[offset + 1]);
+        return new Point2F(pts[offset], pts[offset + 1]);
     }
 
     public static Point2F[] toPointArray(float... pts) {
@@ -170,6 +238,20 @@ public class Point2F {
             points[i] = toPoint(pts, i*2);
         }
         return points;
+    }
+
+    @Override
+    public int hashCode() {
+        return Float.floatToRawIntBits(x) ^ Float.floatToRawIntBits(y);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Point2F && equals((Point2F) obj);
+    }
+
+    public boolean equals(Point2F pt) {
+        return FloatMathUtils.isEqual(x, y, pt.x, pt.y);
     }
 
     @Override

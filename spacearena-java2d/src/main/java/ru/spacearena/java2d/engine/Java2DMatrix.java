@@ -48,4 +48,8 @@ public class Java2DMatrix implements Matrix {
     public void mapPoints(float[] pts) {
         affineTransform.transform(pts, 0, pts, 0, pts.length/2);
     }
+
+    public boolean isIdentity() {
+        return affineTransform.isIdentity();
+    }
 }

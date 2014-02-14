@@ -44,4 +44,8 @@ public class AndroidMatrix implements Matrix {
     public void mapPoints(float[] pts) {
         matrix.mapPoints(pts);
     }
+
+    public boolean isIdentity() {
+        return matrix.isIdentity();
+    }
 }
