@@ -38,7 +38,7 @@ public class GameFactory {
              add(new Timer(0.5f, true).add(fpsUpdater)).
              add(new Background());
 
-        for (int i=0; i<200; i++) {
+        for (int i=0; i<5000; i++) {
 
             final Rectangle rect = new Rectangle();
             rect.setColor(Color.rgb((float)Math.random(), (float)Math.random(), (float)Math.random()));
