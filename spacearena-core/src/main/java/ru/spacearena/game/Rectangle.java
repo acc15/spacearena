@@ -1,6 +1,6 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.common.PhysicalObject;
+import ru.spacearena.engine.common.PhysicalHandler;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.input.InputEvent;
@@ -9,7 +9,7 @@ import ru.spacearena.engine.input.InputEvent;
  * @author Vyacheslav Mayorov
  * @since 2014-13-02
  */
-public class Rectangle extends PhysicalObject {
+public class Rectangle extends PhysicalHandler {
 
     private int color = Color.WHITE;
 

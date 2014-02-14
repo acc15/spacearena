@@ -59,10 +59,6 @@ public class AndroidDrawContext implements DrawContext {
         canvas.drawText(text, x, y + fontAscent, paint);
     }
 
-    public void drawImage(Image image, Matrix matrix) {
-        canvas.drawBitmap(((AndroidImage)image).bitmap, ((AndroidMatrix)matrix).matrix, paint);
-    }
-
     public void drawImage(Image image, float x, float y) {
         canvas.drawBitmap(((AndroidImage)image).bitmap, x, y, paint);
     }

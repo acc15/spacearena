@@ -11,7 +11,7 @@ import ru.spacearena.engine.util.FloatMathUtils;
  * @author Vyacheslav Mayorov
  * @since 2014-11-02
  */
-public class TransformObject extends EngineContainer<EngineObject> {
+public class Transform extends EngineContainer<EngineObject> {
 
     private Matrix matrix;
     private Matrix concatMatrix;
@@ -129,12 +129,6 @@ public class TransformObject extends EngineContainer<EngineObject> {
         this.isDirty = true;
     }
 
-    public void setRotationCenter(float x, float y) {
-        this.pivotX = x;
-        this.pivotY = y;
-        this.isDirty = true;
-    }
-
     public float getRotation() {
         return rotation;
     }
@@ -158,6 +152,7 @@ public class TransformObject extends EngineContainer<EngineObject> {
         matrix.rotate(rotation);
         matrix.skew(skewX, skewY);
         matrix.scale(scaleX, scaleY);
+        matrix.translate(-pivotX, -pivotY);
         isDirty = false;
         return matrix;
     }
@@ -172,9 +167,6 @@ public class TransformObject extends EngineContainer<EngineObject> {
     public void onInit(Engine engine) {
         this.concatMatrix = engine.createMatrix();
         this.matrix = engine.createMatrix();
-    }
-
-    public void onDraw(DrawContext context) {
     }
 
     public boolean onPreDraw(DrawContext context) {

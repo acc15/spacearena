@@ -1,20 +1,18 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
- * @since 2014-14-02
+ * @since 2014-12-02
  */
-public class PhysicsHandler extends EngineObject {
-
-    private TransformObject transformObject;
+public class PhysicalHandler extends Transform {
 
     private float velocityX = 0f, velocityY = 0f;
     private float accelerationX = 0f, accelerationY = 0f;
     private float angularVelocity = 0f;
 
+    // TODO add min/max speed
 
     public float getVelocityX() {
         return velocityX;
@@ -66,24 +64,17 @@ public class PhysicsHandler extends EngineObject {
         this.angularVelocity = angularVelocity;
     }
 
-
-    public PhysicsHandler(TransformObject transformObject) {
-        this.transformObject = transformObject;
-    }
-
-    @Override
     public boolean onUpdate(float seconds) {
         velocityX += accelerationX * seconds;
         velocityY += accelerationY * seconds;
         if (!FloatMathUtils.isZero(velocityX, velocityY)) {
-            transformObject.x += velocityX * seconds;
-            transformObject.y += velocityY * seconds;
-            transformObject.isDirty = true;
+            x += velocityX * seconds;
+            y += velocityY * seconds;
+            isDirty = true;
         }
         if (!FloatMathUtils.isZero(angularVelocity)) {
-            transformObject.rotation = FloatMathUtils.normalizeDegrees(
-                    transformObject.rotation + angularVelocity * seconds);
-            transformObject.isDirty = true;
+            rotation = FloatMathUtils.normalizeDegrees(rotation + angularVelocity * seconds);
+            isDirty = true;
         }
         return true;
     }

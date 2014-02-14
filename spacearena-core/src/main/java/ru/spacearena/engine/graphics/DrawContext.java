@@ -11,7 +11,6 @@ public interface DrawContext {
     void fillCircle(float x, float y, float radius);
     void fill();
 
-    void drawImage(Image image, Matrix matrix);
     void drawImage(Image image, float x, float y);
     void drawText(String text, float x, float y);
     float getTextHeight();

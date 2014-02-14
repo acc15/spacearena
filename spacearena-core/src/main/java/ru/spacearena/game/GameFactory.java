@@ -37,21 +37,18 @@ public class GameFactory implements EngineFactory {
 
 
         final Image image = engine.loadImage("ship.png");
-        final Sprite ship = new Sprite(image);
+        final PhysicalHandler ship = new PhysicalHandler();
+        ship.add(new Sprite(image));
 
         final float w = image.getWidth(), h = image.getHeight();
-
         ship.setPivot(w/2, h/2);
-        ship.setPosition(300, 300);
-        final PhysicsHandler physicsHandler = new PhysicsHandler(ship);
-
-        physicsHandler.setAngularVelocity(100);
+        ship.setPosition(engine.getWidth() / 2, engine.getHeight() / 2);
+        ship.setAngularVelocity(360/10);
 
         return root.add(fpsCounter).
              add(new Timer(0.5f, true).add(fpsUpdater)).
              add(new Background()).
              add(ship).
-             add(physicsHandler).
              add(multilineText);
     }
 

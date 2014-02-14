@@ -1,28 +1,41 @@
 package ru.spacearena.engine.common;
 
+import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
-import ru.spacearena.engine.graphics.Matrix;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-14-02
  */
-public class Sprite extends TransformObject {
+public class Sprite extends EngineObject {
 
     Image image;
+
+    float x, y;
 
     public Sprite(Image image) {
         this.image = image;
     }
 
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
     @Override
     public void onDraw(DrawContext context) {
-        final Matrix matrix = getMatrix();
-        if (matrix != null) {
-            context.drawImage(image, matrix);
-        } else {
-            context.drawImage(image, 0, 0);
-        }
+        context.drawImage(image, x, y);
     }
 }
