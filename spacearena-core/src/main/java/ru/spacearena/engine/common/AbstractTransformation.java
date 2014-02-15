@@ -37,6 +37,7 @@ public abstract class AbstractTransformation extends EngineContainer<EngineObjec
 
     public void onInit(Engine engine) {
         this.matrix = engine.createMatrix();
+        super.onInit(engine);
     }
 
     @Override

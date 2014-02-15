@@ -27,8 +27,9 @@ public class GameFactory implements EngineFactory {
 
         final FPSCounter fpsCounter = new FPSCounter();
         final MultilineText.Line fpsText = new MultilineText.Line();
+        final MultilineText.Line positionText = new MultilineText.Line();
         final MultilineText multilineText = new MultilineText();
-        multilineText.add(fpsText);
+        multilineText.add(fpsText).add(positionText);
 
         final EngineObject fpsUpdater = new EngineObject() {
             @Override
@@ -40,30 +41,24 @@ public class GameFactory implements EngineFactory {
 
 
         final Image image = engine.loadImage("ship.png");
-        final PhysicalHandler ship = new PhysicalHandler();
+        final PhysicalHandler ship = new PhysicalHandler() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                boolean v = super.onUpdate(seconds);
+                positionText.setText(String.format("Position: %.2f, %.2f", getX(), getY()));
+                return v;
+            }
+        };
         ship.add(new Sprite(image));
-        ship.setPivot(image.getWidth() / 2, image.getHeight() / 2);
-        ship.setPosition(engine.getWidth() / 2, engine.getHeight() / 2);
+        ship.setPivot(image.getWidth() / 2, image.getHeight() * 2 / 3);
 
         //ship.setAngularVelocity(100f);
 
         final KeyTracker keyTracker = new KeyTracker() {
             @Override
             public boolean onUpdate(float seconds) {
-                float xVelocity = 0;
-                float yVelocity = 0;
-                if (isKeyPressed(KeyCode.VK_LEFT)) {
-                    xVelocity -= 1;
-                }
-                if (isKeyPressed(KeyCode.VK_RIGHT)) {
-                    xVelocity += 1;
-                }
-                if (isKeyPressed(KeyCode.VK_UP)) {
-                    yVelocity -= 1;
-                }
-                if (isKeyPressed(KeyCode.VK_DOWN)) {
-                    yVelocity += 1;
-                }
+                final float xVelocity = getDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT);
+                final float yVelocity = getDirection(KeyCode.VK_UP, KeyCode.VK_DOWN);
                 if (FloatMathUtils.isZero(xVelocity, yVelocity)) {
                     ship.setVelocity(0, 0);
                     return true;
@@ -75,12 +70,18 @@ public class GameFactory implements EngineFactory {
             }
         };
 
+        final Rectangle r = new Rectangle(-5, -5, 5, 5);
+
+
+        final Viewport gameView = new Viewport(new Viewport.LargestSideResolutionStrategy(2000f));
+        gameView.setChaseObject(ship);
+        gameView.add(r).add(keyTracker).add(ship);
+        gameView.lookAt(0f, 0f);
 
         return root.add(fpsCounter).
              add(new Timer(0.5f, true).add(fpsUpdater)).
              add(new Background()).
-             add(keyTracker).
-             add(ship).
+             add(gameView).
              add(multilineText);
     }
 

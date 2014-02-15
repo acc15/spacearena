@@ -13,6 +13,17 @@ public class KeyTracker extends EngineObject {
     private HashSet<Integer> pressedKeys = new HashSet<Integer>();
     private boolean consumeEvent = false;
 
+    public float getDirection(int negativeKeyCode, int positiveKeyCode) {
+        float value = 0f;
+        if (isKeyPressed(negativeKeyCode)) {
+            value -= 1f;
+        }
+        if (isKeyPressed(positiveKeyCode)) {
+            value += 1f;
+        }
+        return value;
+    }
+
     public boolean isKeyPressed(int keyCode) {
         return pressedKeys.contains(keyCode);
     }
