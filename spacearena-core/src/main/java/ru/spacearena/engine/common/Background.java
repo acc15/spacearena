@@ -9,9 +9,19 @@ import ru.spacearena.engine.graphics.DrawContext;
  * @since 2014-28-01
  */
 public class Background extends EngineObject {
+    private final int color;
+
+    public Background() {
+        this(Color.BLACK);
+    }
+
+    public Background(int color) {
+        this.color = color;
+    }
+
     public void onDraw(DrawContext context) {
         super.onDraw(context);
-        context.setColor(Color.BLACK);
+        context.setColor(color);
         context.fill();
     }
 

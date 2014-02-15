@@ -25,8 +25,9 @@ public class Ship extends GenericContainer {
     @Override
     public void onInit(Engine engine) {
         final Image image = engine.loadImage("ship.png");
-        getTransform().add(new Sprite(image));
-        getTransform().setPivot(image.getWidth() / 2, image.getHeight() / 2);
+        final Transform transform = getTransform();
+        transform.add(new Sprite(image));
+        transform.setPivot(image.getWidth() / 2, image.getHeight() / 2);
         super.onInit(engine);
     }
 
