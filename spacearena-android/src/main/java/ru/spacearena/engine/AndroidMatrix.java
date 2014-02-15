@@ -46,7 +46,7 @@ public class AndroidMatrix implements Matrix {
     }
 
     public boolean inverse(Matrix matrix) {
-        return androidMatrix.invert(((AndroidMatrix) matrix).androidMatrix);
+        return ((AndroidMatrix) matrix).androidMatrix.invert(androidMatrix);
     }
 
     public boolean isIdentity() {
