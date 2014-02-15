@@ -4,6 +4,7 @@ import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 
 /**
  * @author Vyacheslav Mayorov
@@ -47,6 +48,19 @@ public class Java2DMatrix implements Matrix {
 
     public void mapPoints(float[] pts) {
         affineTransform.transform(pts, 0, pts, 0, pts.length/2);
+    }
+
+    public boolean inverse(Matrix matrix) {
+        final AffineTransform anotherTransform = ((Java2DMatrix)matrix).affineTransform;
+        if (anotherTransform != affineTransform) {
+            affineTransform.setTransform(anotherTransform);
+        }
+        try {
+            affineTransform.invert();
+        } catch (NoninvertibleTransformException e) {
+            return false;
+        }
+        return true;
     }
 
     public boolean isIdentity() {

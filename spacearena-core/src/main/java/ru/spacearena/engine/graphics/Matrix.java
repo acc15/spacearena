@@ -12,6 +12,7 @@ public interface Matrix {
     void scale(float x, float y);
     void skew(float x, float y);
     void mapPoints(float[] pts);
+    boolean inverse(Matrix matrix);
 
     boolean isIdentity();
 }

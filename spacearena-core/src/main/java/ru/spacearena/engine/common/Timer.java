@@ -1,13 +1,10 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.EngineObject;
-
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-12-02
  */
-public class Timer extends EngineContainer<EngineObject,Timer> {
+public class Timer extends GenericContainer {
 
     private final float timeout;
     private float elapsed;

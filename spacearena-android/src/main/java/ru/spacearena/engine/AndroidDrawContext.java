@@ -64,7 +64,7 @@ public class AndroidDrawContext implements DrawContext {
     }
 
     public void setMatrix(Matrix matrix) {
-        canvas.setMatrix(((AndroidMatrix)matrix).matrix);
+        canvas.setMatrix(((AndroidMatrix)matrix).androidMatrix);
     }
 
     public Matrix getMatrixCopy() {

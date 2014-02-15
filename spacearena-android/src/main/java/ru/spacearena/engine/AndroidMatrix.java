@@ -7,45 +7,49 @@ import ru.spacearena.engine.graphics.Matrix;
  * @since 2014-12-02
  */
 public class AndroidMatrix implements Matrix {
-    final android.graphics.Matrix matrix;
+    final android.graphics.Matrix androidMatrix;
 
     public AndroidMatrix() {
-        this.matrix = new android.graphics.Matrix();
+        this.androidMatrix = new android.graphics.Matrix();
     }
 
-    public AndroidMatrix(android.graphics.Matrix matrix) {
-        this.matrix = matrix;
+    public AndroidMatrix(android.graphics.Matrix androidMatrix) {
+        this.androidMatrix = androidMatrix;
     }
 
     public void identity() {
-        matrix.reset();
+        androidMatrix.reset();
     }
 
     public void multiply(Matrix transform) {
-        matrix.preConcat(((AndroidMatrix)transform).matrix);
+        androidMatrix.preConcat(((AndroidMatrix) transform).androidMatrix);
     }
 
     public void translate(float x, float y) {
-        matrix.preTranslate(x, y);
+        androidMatrix.preTranslate(x, y);
     }
 
     public void rotate(float degrees) {
-        matrix.preRotate(degrees);
+        androidMatrix.preRotate(degrees);
     }
 
     public void scale(float x, float y) {
-        matrix.preScale(x, y);
+        androidMatrix.preScale(x, y);
     }
 
     public void skew(float x, float y) {
-        matrix.preSkew(x, y);
+        androidMatrix.preSkew(x, y);
     }
 
     public void mapPoints(float[] pts) {
-        matrix.mapPoints(pts);
+        androidMatrix.mapPoints(pts);
+    }
+
+    public boolean inverse(Matrix matrix) {
+        return androidMatrix.invert(((AndroidMatrix) matrix).androidMatrix);
     }
 
     public boolean isIdentity() {
-        return matrix.isIdentity();
+        return androidMatrix.isIdentity();
     }
 }

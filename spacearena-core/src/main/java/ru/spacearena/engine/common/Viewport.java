@@ -7,89 +7,64 @@ import ru.spacearena.engine.graphics.Matrix;
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Viewport extends AbstractTransformation<Viewport> {
+public class Viewport extends Transform {
 
-    private Transform chaseObject;
-
-    private float width, height;
-
-    private ViewportResolutionStrategy resolutionStrategy;
+    ViewportAdjustStrategy adjustStrategy;
+    Matrix inverseMatrix;
 
     public Viewport() {
-        this(new DefaultResolutionStrategy());
+        this(new DefaultAdjustStrategy());
     }
 
-    public Viewport(ViewportResolutionStrategy resolutionStrategy) {
-        this.resolutionStrategy = resolutionStrategy;
+    public Viewport(ViewportAdjustStrategy adjustStrategy) {
+        this.adjustStrategy = adjustStrategy;
     }
 
-    public static interface ViewportResolutionStrategy {
-        void resolveDimension(float width, float height, Viewport viewport);
+    public static interface ViewportAdjustStrategy {
+        void adjustViewport(float width, float height, Viewport viewport);
     }
 
-    public static class DefaultResolutionStrategy implements ViewportResolutionStrategy {
-        public void resolveDimension(float width, float height, Viewport viewport) {
+    public static class DefaultAdjustStrategy implements ViewportAdjustStrategy {
+        public void adjustViewport(float width, float height, Viewport viewport) {
         }
     }
 
-    public static class LargestSideResolutionStrategy implements ViewportResolutionStrategy {
+    public static class LargestSideAdjustStrategy implements ViewportAdjustStrategy {
 
         private float largestDimension;
 
-        public LargestSideResolutionStrategy(float largestDimension) {
+        public LargestSideAdjustStrategy(float largestDimension) {
             this.largestDimension = largestDimension;
         }
 
-        public void resolveDimension(float width, float height, Viewport viewport) {
-            final float scale = width > height ? width / largestDimension : height / largestDimension;
+        public void adjustViewport(float width, float height, Viewport viewport) {
+            final float scale = width > height ? largestDimension/width : largestDimension/height;
             viewport.setScale(scale, scale);
         }
     }
 
     @Override
     public void onInit(Engine engine) {
+        inverseMatrix = engine.createMatrix();
+        adjustViewport(engine.getWidth(), engine.getHeight());
         super.onInit(engine);
-        onSize(engine.getWidth(), engine.getHeight());
+    }
+
+    void adjustViewport(float width, float height) {
+        setPivot(width / 2, height / 2);
+        this.adjustStrategy.adjustViewport(width, height, this);
     }
 
     @Override
     public void onSize(float width, float height) {
         super.onSize(width, height);
-        this.width = width;
-        this.height = height;
-        this.resolutionStrategy.resolveDimension(width, height, this);
-        this.markDirty();
+        adjustViewport(width, height);
     }
 
-    public Transform getChaseObject() {
-        return chaseObject;
+    protected Matrix applyTransformations(Matrix matrix) {
+        super.applyTransformations(matrix);
+        inverseMatrix.inverse(matrix);
+        return inverseMatrix;
     }
 
-    public void setChaseObject(Transform chaseObject) {
-        this.chaseObject = chaseObject;
-    }
-
-    public void lookAt(float x, float y) {
-        this.x = x;
-        this.y = y;
-        markDirty();
-    }
-
-    protected void applyTransformations(Matrix matrix) {
-        matrix.translate(width/2, height/2);
-        matrix.rotate(rotation);
-        matrix.skew(skewX, skewY);
-        matrix.scale(scaleX, scaleY);
-        matrix.translate(-x, -y);
-        //matrix.rotate(rotation);
-    }
-
-    @Override
-    public boolean onUpdate(float seconds) {
-        super.onUpdate(seconds);
-        if (chaseObject != null) {
-            lookAt(chaseObject.x, chaseObject.y);
-        }
-        return true;
-    }
 }

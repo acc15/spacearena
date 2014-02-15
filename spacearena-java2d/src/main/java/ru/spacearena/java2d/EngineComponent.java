@@ -45,17 +45,16 @@ public class EngineComponent extends Canvas {
         }
     }
 
-    public static void main(String[] args) {
-
+    public static void start(EngineFactory factory, String title) {
         final EngineComponent component = new EngineComponent();
-        final JFrame frame = new JFrame("SpaceArena");
+        final JFrame frame = new JFrame(title);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(640, 480));
         frame.setLocationRelativeTo(null);
         frame.getContentPane().add(component);
+        frame.setBackground(null);
         frame.setVisible(true);
 
-        final EngineFactory factory = new GameFactory();
         final Engine engine = new Java2DEngine(factory, component);
         component.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -68,6 +67,10 @@ public class EngineComponent extends Canvas {
         component.createBufferStrategy(2);
         component.gameLoop(engine);
 
+    }
+
+    public static void main(String[] args) {
+        start(new GameFactory(), "SpaceArena");
     }
 
 }
