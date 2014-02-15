@@ -61,8 +61,7 @@ public class Viewport extends Transform {
         adjustViewport(width, height);
     }
 
-    protected Matrix applyTransformations(Matrix matrix) {
-        super.applyTransformations(matrix);
+    protected Matrix calculateViewMatrix(Matrix matrix) {
         inverseMatrix.inverse(matrix);
         return inverseMatrix;
     }

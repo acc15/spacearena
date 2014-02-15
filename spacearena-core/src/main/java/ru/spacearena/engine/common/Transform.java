@@ -126,12 +126,15 @@ public class Transform extends EngineContainer<EngineObject> {
         markDirty();
     }
 
-    protected Matrix applyTransformations(Matrix matrix) {
+    private void applyTransformations(Matrix matrix) {
         matrix.translate(x, y);
         matrix.rotate(rotation);
         matrix.skew(skewX, skewY);
         matrix.scale(scaleX, scaleY);
         matrix.translate(-pivotX, -pivotY);
+    }
+
+    protected Matrix calculateViewMatrix(Matrix matrix) {
         return matrix;
     }
 
@@ -144,9 +147,9 @@ public class Transform extends EngineContainer<EngineObject> {
             return matrix;
         }
         matrix.identity();
-        final Matrix viewMatrix = applyTransformations(matrix);
+        applyTransformations(matrix);
         isDirty = false;
-        return viewMatrix;
+        return calculateViewMatrix(matrix);
     }
 
     public void mapPoints(float[] pts) {
