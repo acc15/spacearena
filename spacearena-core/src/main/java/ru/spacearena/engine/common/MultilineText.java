@@ -9,7 +9,7 @@ import ru.spacearena.engine.graphics.DrawContext;
  * @author Vyacheslav Mayorov
  * @since 2014-13-02
  */
-public class MultilineText extends EngineContainer<MultilineText.Line> {
+public class MultilineText extends EngineContainer<MultilineText.Line, MultilineText> {
 
     private float x = 0, y = 0;
     private int color = Color.WHITE;

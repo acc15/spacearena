@@ -1,12 +1,13 @@
 package ru.spacearena.engine.common;
 
+import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-12-02
  */
-public class PhysicalHandler extends Transform {
+public class PhysicalHandler extends EngineContainer<AbstractTransformation<?>, PhysicalHandler> {
 
     private float velocityX = 0f, velocityY = 0f;
     private float accelerationX = 0f, accelerationY = 0f;
@@ -67,14 +68,17 @@ public class PhysicalHandler extends Transform {
     public boolean onUpdate(float seconds) {
         velocityX += accelerationX * seconds;
         velocityY += accelerationY * seconds;
-        if (!FloatMathUtils.isZero(velocityX, velocityY)) {
-            x += velocityX * seconds;
-            y += velocityY * seconds;
-            markDirty();
-        }
-        if (!FloatMathUtils.isZero(angularVelocity)) {
-            rotation = FloatMathUtils.normalizeDegrees(rotation + angularVelocity * seconds);
-            markDirty();
+        for (AbstractTransformation<?> child: children) {
+            child.onUpdate(seconds);
+            if (!FloatMathUtils.isZero(velocityX, velocityY)) {
+                child.x += velocityX * seconds;
+                child.y += velocityY * seconds;
+                child.markDirty();
+            }
+            if (!FloatMathUtils.isZero(angularVelocity)) {
+                child.rotation = FloatMathUtils.normalizeDegrees(child.rotation + angularVelocity * seconds);
+                child.markDirty();
+            }
         }
         return true;
     }

@@ -9,13 +9,13 @@ import java.util.*;
  * @author Vyacheslav Mayorov
  * @since 2014-13-02
  */
-public class EngineContainer<T extends EngineObject> extends EngineObject {
+public class EngineContainer<T extends EngineObject, E extends EngineContainer<T,E>> extends EngineObject {
 
     protected final List<T> children = new ArrayList<T>();
 
-    public EngineContainer<T> add(T entity) {
+    public E add(T entity) {
         children.add(entity);
-        return this;
+        return (E)this;
     }
 
     @Override

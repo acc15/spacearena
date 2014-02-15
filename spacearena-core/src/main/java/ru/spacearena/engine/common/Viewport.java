@@ -7,14 +7,9 @@ import ru.spacearena.engine.graphics.Matrix;
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Viewport extends AbstractTransformation {
+public class Viewport extends AbstractTransformation<Viewport> {
 
     private Transform chaseObject;
-
-    private float x, y;
-    private float scaleX, scaleY;
-    private float skewX, skewY;
-    private float rotation;
 
     private float width, height;
 
@@ -51,47 +46,6 @@ public class Viewport extends AbstractTransformation {
         }
     }
 
-
-    public float getX() {
-        return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-    public float getScaleX() {
-        return scaleX;
-    }
-
-    public void setScaleX(float scaleX) {
-        this.scaleX = scaleX;
-        markDirty();
-    }
-
-    public float getScaleY() {
-        return scaleY;
-    }
-
-    public void setScaleY(float scaleY) {
-        this.scaleY = scaleY;
-        markDirty();
-    }
-
-    public void setScale(float scaleX, float scaleY) {
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        markDirty();
-    }
-
     @Override
     public void onInit(Engine engine) {
         super.onInit(engine);
@@ -122,10 +76,12 @@ public class Viewport extends AbstractTransformation {
     }
 
     protected void applyTransformations(Matrix matrix) {
-        //matrix.rotate(rotation);
-        //matrix.skew(skewX, skewY);
+        matrix.translate(width/2, height/2);
+        matrix.rotate(rotation);
+        matrix.skew(skewX, skewY);
         matrix.scale(scaleX, scaleY);
-        matrix.translate(-x + width/(scaleX*2), -y + height/(scaleY*2));
+        matrix.translate(-x, -y);
+        //matrix.rotate(rotation);
     }
 
     @Override
