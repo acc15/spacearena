@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public class Sky extends EngineObject {
 
-    private static final int PIXELS_PER_STAR = 150;
+    private static final int PIXELS_PER_STAR = 300;
 
     private static final float MAX_SIZE = 6f;
     private static final float MIN_SIZE = 2f;

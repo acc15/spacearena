@@ -17,6 +17,7 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
         children.add(entity);
     }
 
+    @SuppressWarnings("unchecked")
     public <X extends EngineObject> X get(int index) {
         return (X)children.get(index);
     }

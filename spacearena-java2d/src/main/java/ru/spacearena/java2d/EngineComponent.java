@@ -46,14 +46,24 @@ public class EngineComponent extends Canvas {
     }
 
     public static void start(EngineFactory factory, String title) {
-        final EngineComponent component = new EngineComponent();
         final JFrame frame = new JFrame(title);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(640, 480));
         frame.setLocationRelativeTo(null);
-        frame.getContentPane().add(component);
         frame.setBackground(null);
+
+        // TODO add ability to switch between windowed and full-screen
+        /*GraphicsDevice d = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        if (d.isFullScreenSupported()) {
+            frame.setUndecorated(true);
+            frame.setResizable(false);
+            d.setFullScreenWindow(frame);
+        }*/
+
+        final EngineComponent component = new EngineComponent();
+        frame.getContentPane().add(component);
         frame.setVisible(true);
+
 
         final Engine engine = new Java2DEngine(factory, component);
         component.addComponentListener(new ComponentAdapter() {

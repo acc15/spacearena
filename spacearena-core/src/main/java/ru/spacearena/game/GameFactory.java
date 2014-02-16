@@ -25,23 +25,28 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.TOUCH);
 
         final GenericContainer root = new GenericContainer();
+        root.add(new Background());
 
         final FPSCounter fpsCounter = new FPSCounter();
         final MultilineText.Line fpsText = new MultilineText.Line();
+        root.add(fpsCounter);
+
+        final Timer timer = new Timer(0.5f, true);
+        root.add(timer);
+        timer.add(new EngineObject() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                fpsText.setText(String.format("FPS: %.2f", fpsCounter.getFps()));
+                return true;
+            }
+        });
+
         final MultilineText.Line positionText = new MultilineText.Line();
         final MultilineText.Line viewportText = new MultilineText.Line();
         final MultilineText multilineText = new MultilineText();
         multilineText.add(fpsText);
         multilineText.add(positionText);
         multilineText.add(viewportText);
-
-        final EngineObject fpsUpdater = new EngineObject() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                fpsText.setText(String.format("FPS: %.2f", fpsCounter.getFps()));
-                return true;
-            }
-        };
 
         final Ship ship = new Ship();
         ship.add(new EngineObject() {
@@ -53,7 +58,7 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final KeyTracker keyTracker = new KeyTracker() {
+        root.add(new KeyTracker() {
             @Override
             public boolean onUpdate(float seconds) {
                 final float xVelocity = getDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT, 1f);
@@ -67,21 +72,18 @@ public class GameFactory implements EngineFactory {
                 ship.getTransform().setRotation(FloatMathUtils.angle(xVelocity, yVelocity));
                 return true;
             }
-        };
-
-        final Rectangle r = new Rectangle(-5, -5, 5, 5);
-
+        });
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
-        //viewport.setRotation(45);
+        root.add(viewport);
 
         viewport.add(new Sky(viewport, new Random()));
-        viewport.add(r);
+        viewport.add(new Rectangle(-5, -5, 5, 5));
         viewport.add(ship);
         viewport.setPosition(0f, 0f);
 
-        final PositionHandler viewportPosition = new PositionHandler(ship.getTransform(), viewport);
-        final EngineObject viewportPositionUpdater = new EngineObject() {
+        root.add(new PositionHandler(ship.getTransform(), viewport));
+        root.add(new EngineObject() {
 
             final AABB viewRect = new AABB();
 
@@ -92,18 +94,8 @@ public class GameFactory implements EngineFactory {
                         viewRect.minX, viewRect.minY, viewRect.maxX, viewRect.maxY));
                 return true;
             }
-        };
+        });
 
-        root.add(new Background());
-        root.add(fpsCounter);
-
-        final Timer timer = new Timer(0.5f, true);
-        timer.add(fpsUpdater);
-        root.add(timer);
-        root.add(keyTracker);
-        root.add(viewport);
-        root.add(viewportPosition);
-        root.add(viewportPositionUpdater);
         root.add(multilineText);
         return root;
     }

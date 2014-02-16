@@ -1,8 +1,6 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
 
@@ -10,7 +8,7 @@ import ru.spacearena.engine.graphics.Matrix;
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Transform extends EngineContainer<EngineObject> {
+public class Transform extends GenericContainer {
 
     Matrix matrix;
     boolean isDirty = false;

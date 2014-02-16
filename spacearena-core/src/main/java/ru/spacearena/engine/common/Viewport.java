@@ -75,6 +75,14 @@ public class Viewport extends Transform {
         return inverseMatrix;
     }
 
+    public float getScreenWidth() {
+        return width;
+    }
+
+    public float getScreenHeight() {
+        return height;
+    }
+
     public void calculateBounds(AABB aabb) {
         final float[] pts = new float[] {0,0, 0,height, width,height, width,0}; // anticlockwise
         mapPoints(pts);
