@@ -1,9 +1,10 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.common.GenericContainer;
-import ru.spacearena.engine.common.PhysicsHandler;
-import ru.spacearena.engine.common.Transform;
-import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.android.engine.common.GenericContainer;
+import ru.spacearena.android.engine.common.PhysicsHandler;
+import ru.spacearena.android.engine.common.Transform;
+import ru.spacearena.android.engine.graphics.Color;
+import ru.spacearena.android.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -25,6 +26,16 @@ public class Bullet extends GenericContainer {
 
         add(transform);
         add(physicsHandler);
+    }
+
+    @Override
+    public boolean onUpdate(float seconds) {
+        if (!super.onUpdate(seconds)) {
+            return false;
+        }
+        final Transform transform = getTransform();
+        return FloatMathUtils.inRange(transform.getX(), -5000f, 5000f) &&
+               FloatMathUtils.inRange(transform.getY(), -5000f, 5000f);
     }
 
     public Transform getTransform() {

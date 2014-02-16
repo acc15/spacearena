@@ -1,14 +1,14 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.AABB;
-import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.EngineFactory;
-import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.common.*;
-import ru.spacearena.engine.input.InputType;
-import ru.spacearena.engine.input.KeyCode;
-import ru.spacearena.engine.input.trackers.KeyTracker;
-import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.android.engine.AABB;
+import ru.spacearena.android.engine.Engine;
+import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.android.engine.EngineObject;
+import ru.spacearena.android.engine.common.*;
+import ru.spacearena.android.engine.input.InputType;
+import ru.spacearena.android.engine.input.KeyCode;
+import ru.spacearena.android.engine.input.trackers.KeyTracker;
+import ru.spacearena.android.engine.util.FloatMathUtils;
 
 import java.util.Random;
 
@@ -80,21 +80,24 @@ public class GameFactory implements EngineFactory {
         viewport.add(new Sky(viewport, new Random()));
         viewport.add(new Rectangle(-5, -5, 5, 5));
         viewport.add(ship);
-
-        final Timer bulletTimer = new Timer(1f);
+/*
+        final Timer bulletTimer = new Timer(1/100f);
         viewport.add(bulletTimer);
 
         final GenericContainer bullets = new GenericContainer();
         viewport.add(bullets);
 
+        final MultilineText.Line bulletCount = new MultilineText.Line();
+        multilineText.add(bulletCount);
         bulletTimer.add(new EngineObject() {
             @Override
             public boolean onUpdate(float seconds) {
                 bullets.add(new Bullet(0,0,FloatMathUtils.random() * FloatMathUtils.CIRCLE_ANGLE));
+                bulletCount.setText("Bullts: " + bullets.getChildrenCount());
                 return true;
             }
         });
-
+*/
         viewport.setPosition(0f, 0f);
 
         root.add(new PositionHandler(ship.getTransform(), viewport));

@@ -8,8 +8,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
-import ru.spacearena.engine.AndroidEngine;
-import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.android.engine.AndroidEngine;
+import ru.spacearena.android.engine.EngineFactory;
 import ru.spacearena.game.GameFactory;
 
 /**

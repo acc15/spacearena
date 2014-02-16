@@ -4,8 +4,8 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.spacearena.engine.AndroidDrawContext;
-import ru.spacearena.engine.Engine;
+import ru.spacearena.android.engine.AndroidDrawContext;
+import ru.spacearena.android.engine.Engine;
 
 /**
  * @author Vyacheslav Mayorov

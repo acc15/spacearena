@@ -1,11 +1,11 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.common.GenericContainer;
-import ru.spacearena.engine.common.PhysicsHandler;
-import ru.spacearena.engine.common.Sprite;
-import ru.spacearena.engine.common.Transform;
-import ru.spacearena.engine.graphics.Image;
+import ru.spacearena.android.engine.Engine;
+import ru.spacearena.android.engine.common.GenericContainer;
+import ru.spacearena.android.engine.common.PhysicsHandler;
+import ru.spacearena.android.engine.common.Sprite;
+import ru.spacearena.android.engine.common.Transform;
+import ru.spacearena.android.engine.graphics.Image;
 
 /**
  * @author Vyacheslav Mayorov
@@ -13,8 +13,7 @@ import ru.spacearena.engine.graphics.Image;
  */
 public class Ship extends GenericContainer {
 
-    public static int TRANSFORM_INDEX = 0;
-    public static int PHYSICS_INDEX = 1;
+    private static final float[] GUN_POSITIONS = {};
 
     public Ship() {
         final Transform transform = new Transform();
@@ -32,10 +31,10 @@ public class Ship extends GenericContainer {
     }
 
     public Transform getTransform() {
-        return get(TRANSFORM_INDEX);
+        return get(0);
     }
 
     public PhysicsHandler getPhysics() {
-        return get(PHYSICS_INDEX);
+        return get(1);
     }
 }

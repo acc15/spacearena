@@ -1,12 +1,12 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.AABB;
-import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.common.Viewport;
-import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.RandomUtils;
+import ru.spacearena.android.engine.AABB;
+import ru.spacearena.android.engine.EngineObject;
+import ru.spacearena.android.engine.common.Viewport;
+import ru.spacearena.android.engine.graphics.Color;
+import ru.spacearena.android.engine.graphics.DrawContext;
+import ru.spacearena.android.engine.util.FloatMathUtils;
+import ru.spacearena.android.engine.util.RandomUtils;
 
 import java.util.Random;
 

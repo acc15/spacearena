@@ -1,19 +1,16 @@
 package ru.spacearena.java2d.engine;
 
-import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.EngineException;
-import ru.spacearena.engine.EngineFactory;
-import ru.spacearena.engine.graphics.Image;
-import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.input.*;
-import ru.spacearena.java2d.engine.input.Java2DKeyEvent;
-import ru.spacearena.java2d.engine.input.Java2DMouseEvent;
+import ru.spacearena.android.engine.Engine;
+import ru.spacearena.android.engine.EngineException;
+import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.android.engine.graphics.Image;
+import ru.spacearena.android.engine.graphics.Matrix;
+import ru.spacearena.android.engine.input.InputType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.image.BufferStrategy;
 import java.io.IOException;
 
 /**
@@ -22,11 +19,13 @@ import java.io.IOException;
  */
 public class Java2DEngine extends Engine {
 
-    private Component component;
+    private Canvas component;
 
-    public Java2DEngine(EngineFactory factory, Component component) {
+    public Java2DEngine(EngineFactory factory, Canvas component) {
         super(factory);
         this.component = component;
+        this.width = component.getWidth();
+        this.height = component.getHeight();
         init();
     }
 
@@ -43,73 +42,89 @@ public class Java2DEngine extends Engine {
         }
     }
 
-    @Override
-    public float getWidth() {
-        return component.getWidth();
+    public void gameLoop() {
+
+        final BufferStrategy strategy = component.getBufferStrategy();
+        final Java2DDrawContext drawContext = new Java2DDrawContext();
+        while (true) {
+            if (!onUpdate()) {
+                return;
+            }
+            final Graphics2D graphics2D = (Graphics2D)strategy.getDrawGraphics();
+            try {
+                onDraw(drawContext.wrap(graphics2D));
+            } finally {
+                graphics2D.dispose();
+            }
+            strategy.show();
+            Thread.yield();
+        }
     }
 
-    @Override
-    public float getHeight() {
-        return component.getHeight();
+    private void addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action action, KeyEvent keyEvent) {
+        onInput(new ru.spacearena.android.engine.input.KeyEvent(action, keyEvent.getKeyCode(), keyEvent.getKeyChar()));
     }
+
+    private void addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action action, MouseEvent mouseEvent) {
+        onInput(new ru.spacearena.android.engine.input.MouseEvent(
+                action, mouseEvent.getButton(), mouseEvent.getX(), mouseEvent.getY()));
+    }
+
 
     public void enableInput(InputType inputType) {
         switch (inputType) {
         case KEYBOARD:
-
-            final Java2DKeyEvent keyEvent = new Java2DKeyEvent();
             component.addKeyListener(new KeyListener() {
                 public void keyTyped(KeyEvent e) {
-                    onInput(keyEvent.init(e, ru.spacearena.engine.input.KeyEvent.Action.TYPED));
+                    addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action.TYPED, e);
                 }
 
                 public void keyPressed(KeyEvent e) {
-                    onInput(keyEvent.init(e, ru.spacearena.engine.input.KeyEvent.Action.DOWN));
+                    addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action.DOWN, e);
                 }
 
                 public void keyReleased(KeyEvent e) {
-                    onInput(keyEvent.init(e, ru.spacearena.engine.input.KeyEvent.Action.UP));
+                    addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action.UP, e);
                 }
             });
             break;
 
         case MOUSE:
 
-            final Java2DMouseEvent mouseEvent = new Java2DMouseEvent();
             component.addMouseListener(new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
-                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.CLICK));
+                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.CLICK, e);
                 }
 
                 public void mousePressed(MouseEvent e) {
-                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.DOWN));
+                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.DOWN, e);
                 }
 
                 public void mouseReleased(MouseEvent e) {
-                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.UP));
+                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.UP, e);
                 }
 
                 public void mouseEntered(MouseEvent e) {
-                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.ENTER));
+                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.ENTER, e);
                 }
 
                 public void mouseExited(MouseEvent e) {
-                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.LEAVE));
+                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.LEAVE, e);
                 }
             });
             component.addMouseMotionListener(new MouseMotionListener() {
                 public void mouseDragged(MouseEvent e) {
-                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.DRAG));
+                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.DRAG, e);
                 }
 
                 public void mouseMoved(MouseEvent e) {
-                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.MOVE));
+                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.MOVE, e);
                 }
             });
             component.addMouseWheelListener(new MouseWheelListener() {
                 public void mouseWheelMoved(MouseWheelEvent e) {
                     // TODO add wheel support
-                    //onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.WHEEL));
+                    //onInput(mouseEvent.init(e, ru.spacearena.android.engine.input.MouseEvent.Action.WHEEL));
                 }
             });
             break;
