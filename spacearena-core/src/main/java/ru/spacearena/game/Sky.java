@@ -39,9 +39,8 @@ public class Sky extends EngineObject {
         final float pixelsPerStar = PIXELS_PER_STAR * scale;
         final float twoStarDistance = pixelsPerStar * 2;
 
-        final float cx = bounds.getWidth();
-        final float cy = bounds.getHeight();
-        bounds.inflate(((cx * scale) - cx)/2 + twoStarDistance, ((cy * scale) - cy)/2 + twoStarDistance);
+        bounds.scale(scale, scale);
+        bounds.inflate(twoStarDistance, twoStarDistance);
 
         final float startX = FloatMathUtils.firstVisiblePosition(bounds.minX, pixelsPerStar);
         final float startY = FloatMathUtils.firstVisiblePosition(bounds.minY, pixelsPerStar);
@@ -49,6 +48,7 @@ public class Sky extends EngineObject {
         for (float y=startY; y<=bounds.maxY; y += pixelsPerStar) {
             for (float x=startX; x<=bounds.maxX; x += pixelsPerStar) {
                 random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x << 24) ^ ((long)y));
+
                 final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float halfSize = (MIN_SIZE + random.nextFloat() * (MAX_SIZE-MIN_SIZE))/2;

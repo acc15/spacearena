@@ -63,6 +63,11 @@ public class AABB {
         }
     }
 
+    public void scale(float scaleX, float scaleY) {
+        final float cx = getWidth(), cy = getHeight();
+        inflate((cx*scaleX-cx)/2, (cy*scaleY-cy)/2);
+    }
+
     public void inflate(float dx, float dy) {
         this.minX -= dx;
         this.maxX += dx;
