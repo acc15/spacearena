@@ -13,8 +13,6 @@ import ru.spacearena.engine.graphics.Image;
  */
 public class Ship extends GenericContainer {
 
-    private static final float[] GUN_POSITIONS = {};
-
     public Ship() {
         final Transform transform = new Transform();
         add(transform);
@@ -22,7 +20,7 @@ public class Ship extends GenericContainer {
     }
 
     public float[] getGunPositions() {
-        final float[] positions = new float[] {30, 100, 115, 100};
+        final float[] positions = new float[] {35, 100, 110, 100};
         getTransform().mapPoints(positions);
         return positions;
     }
