@@ -1,5 +1,6 @@
 package ru.spacearena.engine.common;
 
+import ru.spacearena.engine.AABB;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.Matrix;
 
@@ -11,6 +12,7 @@ public class Viewport extends Transform {
 
     ViewportAdjustStrategy adjustStrategy;
     Matrix inverseMatrix;
+    float width, height;
 
     public Viewport() {
         this(new DefaultAdjustStrategy());
@@ -53,6 +55,8 @@ public class Viewport extends Transform {
     void adjustViewport(float width, float height) {
         setPivot(width / 2, height / 2);
         this.adjustStrategy.adjustViewport(width, height, this);
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -61,9 +65,20 @@ public class Viewport extends Transform {
         adjustViewport(width, height);
     }
 
-    protected Matrix calculateViewMatrix(Matrix matrix) {
+    protected void calculateViewMatrix(Matrix matrix) {
         inverseMatrix.inverse(matrix);
+    }
+
+    @Override
+    public Matrix getViewMatrix() {
+        updateMatrices();
         return inverseMatrix;
+    }
+
+    public void calculateBounds(AABB aabb) {
+        final float[] pts = new float[] {0,0, 0,height, width,height, width,0}; // anticlockwise
+        mapPoints(pts);
+        aabb.calculate(pts);
     }
 
 }

@@ -1,5 +1,6 @@
 package ru.spacearena.game;
 
+import ru.spacearena.engine.AABB;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
@@ -8,6 +9,8 @@ import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
 import ru.spacearena.engine.input.KeyTracker;
 import ru.spacearena.engine.util.FloatMathUtils;
+
+import java.util.Random;
 
 /**
  * @author Vyacheslav Mayorov
@@ -26,9 +29,11 @@ public class GameFactory implements EngineFactory {
         final FPSCounter fpsCounter = new FPSCounter();
         final MultilineText.Line fpsText = new MultilineText.Line();
         final MultilineText.Line positionText = new MultilineText.Line();
+        final MultilineText.Line viewportText = new MultilineText.Line();
         final MultilineText multilineText = new MultilineText();
         multilineText.add(fpsText);
         multilineText.add(positionText);
+        multilineText.add(viewportText);
 
         final EngineObject fpsUpdater = new EngineObject() {
             @Override
@@ -70,11 +75,24 @@ public class GameFactory implements EngineFactory {
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
         //viewport.setRotation(45);
 
+        viewport.add(new Sky(viewport, new Random()));
         viewport.add(r);
         viewport.add(ship);
         viewport.setPosition(0f, 0f);
 
         final PositionHandler viewportPosition = new PositionHandler(ship.getTransform(), viewport);
+        final EngineObject viewportPositionUpdater = new EngineObject() {
+
+            final AABB viewRect = new AABB();
+
+            @Override
+            public boolean onUpdate(float seconds) {
+                viewport.calculateBounds(viewRect);
+                viewportText.setText(String.format("Viewport: (%.2f,%.2f)(%.2f,%.2f)",
+                        viewRect.minX, viewRect.minY, viewRect.maxX, viewRect.maxY));
+                return true;
+            }
+        };
 
         root.add(new Background());
         root.add(fpsCounter);
@@ -85,6 +103,7 @@ public class GameFactory implements EngineFactory {
         root.add(keyTracker);
         root.add(viewport);
         root.add(viewportPosition);
+        root.add(viewportPositionUpdater);
         root.add(multilineText);
         return root;
     }

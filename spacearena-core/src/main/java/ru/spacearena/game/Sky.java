@@ -1,8 +1,12 @@
 package ru.spacearena.game;
 
+import ru.spacearena.engine.AABB;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
+import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.RandomUtils;
 
 import java.util.Random;
 
@@ -19,8 +23,8 @@ public class Sky extends EngineObject {
 
     private final Random random;
     private final long seed;
-
     private final Viewport viewport;
+    private final AABB bounds = new AABB();
 
     public Sky(Viewport viewport, Random random) {
         this.viewport = viewport;
@@ -28,22 +32,22 @@ public class Sky extends EngineObject {
         this.seed = random.nextLong();
     }
 
-    static float firstVisiblePosition(float i, float grid) {
-        return (float)Math.ceil(i/grid)*grid;
-    }
-
     private void drawStarLayer(DrawContext context, float scale) {
-        /*
-        final RectF scaledRect = new RectF(viewRect);
+
+        viewport.calculateBounds(bounds);
+
+        final float pixelsPerStar = PIXELS_PER_STAR * scale;
         final float twoStarDistance = pixelsPerStar * 2;
-        // inflating rect
-        scaledRect.inset(-(scaledRect.width()*scale + twoStarDistance), -(scaledRect.height()*scale + twoStarDistance));
 
-        final float startX = firstVisiblePosition(scaledRect.left, pixelsPerStar);
-        final float startY = firstVisiblePosition(scaledRect.top, pixelsPerStar);
+        final float cx = bounds.getWidth();
+        final float cy = bounds.getHeight();
+        bounds.inflate(((cx * scale) - cx)/2 + twoStarDistance, ((cy * scale) - cy)/2 + twoStarDistance);
 
-        for (float y=startY; y<=scaledRect.bottom; y += pixelsPerStar) {
-            for (float x=startX; x<=scaledRect.right; x += pixelsPerStar) {
+        final float startX = FloatMathUtils.firstVisiblePosition(bounds.minX, pixelsPerStar);
+        final float startY = FloatMathUtils.firstVisiblePosition(bounds.minY, pixelsPerStar);
+
+        for (float y=startY; y<=bounds.maxY; y += pixelsPerStar) {
+            for (float x=startX; x<=bounds.maxX; x += pixelsPerStar) {
                 random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x << 24) ^ ((long)y));
                 final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
@@ -52,15 +56,14 @@ public class Sky extends EngineObject {
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);
 
-                paint.setColor(color);
+                context.setColor(color);
 
-                final float translateX = (randX - scaledRect.centerX()) / scale + scaledRect.centerX();
-                final float translateY = (randY - scaledRect.centerY()) / scale + scaledRect.centerY();
+                final float translateX = (randX - bounds.getCenterX()) / scale + bounds.getCenterX();
+                final float translateY = (randY - bounds.getCenterY()) / scale + bounds.getCenterY();
 
-                canvas.drawCircle(translateX, translateY, halfSize, paint);
+                context.fillCircle(translateX, translateY, halfSize);
             }
         }
-        */
     }
 
     @Override

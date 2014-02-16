@@ -126,7 +126,8 @@ public class Transform extends EngineContainer<EngineObject> {
         markDirty();
     }
 
-    private void applyTransformations(Matrix matrix) {
+    private void calculateMatrix() {
+        matrix.identity();
         matrix.translate(x, y);
         matrix.rotate(rotation);
         matrix.skew(skewX, skewY);
@@ -134,26 +135,33 @@ public class Transform extends EngineContainer<EngineObject> {
         matrix.translate(-pivotX, -pivotY);
     }
 
-    protected Matrix calculateViewMatrix(Matrix matrix) {
-        return matrix;
+    protected void calculateViewMatrix(Matrix matrix) {
     }
 
     public void markDirty() {
         this.isDirty = true;
     }
 
-    public Matrix getViewMatrix() {
-        if (!isDirty) {
-            return matrix;
+    protected void updateMatrices() {
+        if (isDirty) {
+            calculateMatrix();
+            calculateViewMatrix(matrix);
+            isDirty = false;
         }
-        matrix.identity();
-        applyTransformations(matrix);
-        isDirty = false;
-        return calculateViewMatrix(matrix);
+    }
+
+    public Matrix getViewMatrix() {
+        updateMatrices();
+        return matrix;
+    }
+
+    public Matrix getMatrix() {
+        updateMatrices();
+        return matrix;
     }
 
     public void mapPoints(float[] pts) {
-        getViewMatrix().mapPoints(pts);
+        getMatrix().mapPoints(pts);
     }
 
     public void onInit(Engine engine) {

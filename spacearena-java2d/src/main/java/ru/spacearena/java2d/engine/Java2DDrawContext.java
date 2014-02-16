@@ -41,7 +41,7 @@ public class Java2DDrawContext implements DrawContext {
     }
 
     public void fillCircle(float x, float y, float radius) {
-        graphics2D.fillOval((int)(x - radius), (int)(y - radius), (int)(x + radius), (int)(y + radius));
+        graphics2D.fillOval((int)(x - radius), (int)(y - radius), (int)(radius*2), (int)(radius*2));
     }
 
     public void fill() {
