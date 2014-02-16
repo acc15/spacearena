@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class GameFactory implements EngineFactory {
 
-    public EngineObject createRoot(Engine engine) {
+    public EngineObject createRoot(final Engine engine) {
 
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
@@ -80,6 +80,21 @@ public class GameFactory implements EngineFactory {
         viewport.add(new Sky(viewport, new Random()));
         viewport.add(new Rectangle(-5, -5, 5, 5));
         viewport.add(ship);
+
+        final Timer bulletTimer = new Timer(1f);
+        viewport.add(bulletTimer);
+
+        final GenericContainer bullets = new GenericContainer();
+        viewport.add(bullets);
+
+        bulletTimer.add(new EngineObject() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                bullets.add(new Bullet(0,0,FloatMathUtils.random() * FloatMathUtils.CIRCLE_ANGLE));
+                return true;
+            }
+        });
+
         viewport.setPosition(0f, 0f);
 
         root.add(new PositionHandler(ship.getTransform(), viewport));

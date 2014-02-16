@@ -42,6 +42,12 @@ public class PhysicsHandler extends EngineObject {
         this.velocityY = velocityY;
     }
 
+    public void setVelocityPolar(float angle, float speed) {
+        final float radians = FloatMathUtils.toRadians(angle-90);
+        this.velocityX = FloatMathUtils.cos(radians) * speed;
+        this.velocityY = FloatMathUtils.sin(radians) * speed;
+    }
+
     public float getAngularVelocity() {
         return angularVelocity;
     }

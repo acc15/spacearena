@@ -12,7 +12,6 @@ public class Viewport extends Transform {
 
     ViewportAdjustStrategy adjustStrategy;
     Matrix inverseMatrix;
-    Engine engine;
 
     public Viewport() {
         this(new DefaultAdjustStrategy());
@@ -47,10 +46,9 @@ public class Viewport extends Transform {
 
     @Override
     public void onInit(Engine engine) {
-        this.engine = engine;
+        super.onInit(engine);
         inverseMatrix = engine.createMatrix();
         adjustViewport(engine.getWidth(), engine.getHeight());
-        super.onInit(engine);
     }
 
     @Override

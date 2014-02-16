@@ -12,8 +12,12 @@ import java.util.*;
 public class EngineContainer<T extends EngineObject> extends EngineObject {
 
     protected final List<T> children = new ArrayList<T>();
+    protected Engine engine = null;
 
     public void add(T entity) {
+        if (engine != null) {
+            entity.onInit(engine);
+        }
         children.add(entity);
     }
 
@@ -24,6 +28,10 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
 
     @Override
     public void onInit(Engine engine) {
+        if (this.engine != null) {
+            throw new IllegalStateException("Already initialized");
+        }
+        this.engine = engine;
         for (T child : children) {
             child.onInit(engine);
         }
