@@ -16,10 +16,9 @@ public abstract class Engine {
 
     protected final EngineFactory factory;
     protected EngineObject root;
-
+    protected float width, height;
 
     long lastTime = -1;
-    protected float width, height;
 
     final ConcurrentLinkedQueue<InputEvent> pendingEvents = new ConcurrentLinkedQueue<InputEvent>();
 

@@ -4,11 +4,11 @@ import ru.spacearena.engine.AABB;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.android.engine.common.*;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
-import ru.spacearena.engine.input.trackers.KeyTracker;
+import ru.spacearena.engine.input.MouseEvent;
+import ru.spacearena.engine.input.trackers.InputTracker;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.Random;
@@ -26,6 +26,53 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.TOUCH);
 
         final GenericContainer root = new GenericContainer();
+        final Ship ship = new Ship();
+        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
+
+        root.add(new InputTracker() {
+
+            boolean canShot = true;
+
+            @Override
+            public boolean onUpdate(float seconds) {
+                final float xVelocity = getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT, 1f);
+                final float yVelocity = getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN, 1f);
+                if (!FloatMathUtils.isZero(xVelocity, yVelocity)) {
+                    final float length = 500f/FloatMathUtils.length(xVelocity, yVelocity);
+                    ship.getPhysics().setVelocity(xVelocity * length, yVelocity * length);
+                } else {
+                    ship.getPhysics().setVelocity(0, 0);
+                }
+
+                final Transform shipTx = ship.getTransform();
+                final float shipX = shipTx.getX(), shipY = shipTx.getY();
+                if (isMouseKeyPressed(MouseEvent.LEFT_BUTTON)) {
+                    final float[] pt = new float[] {getMouseX(), getMouseY()};
+                    viewport.mapPoints(pt);
+
+                    final float dx = pt[0] - shipX, dy = pt[1] - shipY;
+                    if (!FloatMathUtils.isZero(dx, dy)) {
+                        final float angle = FloatMathUtils.angle(dx, dy);
+                        ship.getTransform().setRotation(angle);
+                        if (canShot) {
+                            final float[] gunPositions = ship.getGunPositions();
+                            for (int i=0; i<gunPositions.length; i+=2) {
+                                viewport.add(new Bullet(gunPositions[i], gunPositions[i+1], angle));
+                            }
+                            canShot = false;
+                        }
+                    }
+
+                } else {
+                    canShot = true;
+                    if (!FloatMathUtils.isZero(xVelocity, yVelocity)) {
+                        ship.getTransform().setRotation(FloatMathUtils.angle(xVelocity, yVelocity));
+                    }
+                }
+                return true;
+            }
+        });
+
         root.add(new Background());
 
         final FPSCounter fpsCounter = new FPSCounter();
@@ -49,7 +96,7 @@ public class GameFactory implements EngineFactory {
         multilineText.add(positionText);
         multilineText.add(viewportText);
 
-        final Ship ship = new Ship();
+
         ship.add(new EngineObject() {
             @Override
             public boolean onUpdate(float seconds) {
@@ -58,24 +105,6 @@ public class GameFactory implements EngineFactory {
                 return true;
             }
         });
-
-        root.add(new KeyTracker() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                final float xVelocity = getDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT, 1f);
-                final float yVelocity = getDirection(KeyCode.VK_UP, KeyCode.VK_DOWN, 1f);
-                if (FloatMathUtils.isZero(xVelocity, yVelocity)) {
-                    ship.getPhysics().setVelocity(0, 0);
-                    return true;
-                }
-                final float length = 500f/FloatMathUtils.length(xVelocity, yVelocity);
-                ship.getPhysics().setVelocity(xVelocity * length, yVelocity * length);
-                ship.getTransform().setRotation(FloatMathUtils.angle(xVelocity, yVelocity));
-                return true;
-            }
-        });
-
-        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
         root.add(viewport);
 
         viewport.add(new Sky(viewport, new Random()));

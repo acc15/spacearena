@@ -21,6 +21,12 @@ public class Ship extends GenericContainer {
         add(new PhysicsHandler(transform));
     }
 
+    public float[] getGunPositions() {
+        final float[] positions = new float[] {30, 100, 115, 100};
+        getTransform().mapPoints(positions);
+        return positions;
+    }
+
     @Override
     public void onInit(Engine engine) {
         final Image image = engine.loadImage("ship.png");
