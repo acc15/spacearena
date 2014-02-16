@@ -18,7 +18,6 @@ import java.io.InputStream;
 public class AndroidEngine extends Engine {
 
     private View view;
-    private float width, height;
 
     public AndroidEngine(EngineFactory factory, View view, float initialWidth, float initialHeight) {
         super(factory);

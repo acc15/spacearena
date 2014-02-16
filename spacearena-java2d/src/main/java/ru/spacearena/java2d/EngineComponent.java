@@ -32,7 +32,7 @@ public class EngineComponent extends Canvas {
             }
             final Graphics2D graphics2D = (Graphics2D)strategy.getDrawGraphics();
             try {
-                engine.onDraw(drawContext.wrap(graphics2D, getWidth(), getHeight()));
+                engine.onDraw(drawContext.wrap(graphics2D));
             } finally {
                 graphics2D.dispose();
             }

@@ -51,10 +51,6 @@ public class AndroidDrawContext implements DrawContext {
         canvas.drawCircle(x, y, radius, paint);
     }
 
-    public void fill() {
-        canvas.drawColor(paint.getColor());
-    }
-
     public void drawText(String text, float x, float y) {
         canvas.drawText(text, x, y + fontAscent, paint);
     }

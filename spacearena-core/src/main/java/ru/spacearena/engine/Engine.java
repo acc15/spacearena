@@ -12,9 +12,11 @@ import ru.spacearena.engine.input.InputType;
  */
 public abstract class Engine {
 
-    private long lastTime = -1;
-    protected EngineObject root;
     protected final EngineFactory factory;
+    protected EngineObject root;
+
+    long lastTime = -1;
+    protected float width, height;
 
     protected Engine(EngineFactory factory) {
         this.factory = factory;
@@ -37,6 +39,8 @@ public abstract class Engine {
 
     public void onSize(float width, float height) {
         root.onSize(width, height);
+        this.width = width;
+        this.height = height;
     }
 
     public void onDraw(DrawContext context) {
@@ -51,10 +55,17 @@ public abstract class Engine {
         return System.currentTimeMillis();
     }
 
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
     public abstract Matrix createMatrix();
     public abstract Image loadImage(String resource);
     public abstract void enableInput(InputType inputType);
-    public abstract float getWidth();
-    public abstract float getHeight();
+
 
 }

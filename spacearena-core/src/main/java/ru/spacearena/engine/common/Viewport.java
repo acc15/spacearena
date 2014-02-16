@@ -12,7 +12,7 @@ public class Viewport extends Transform {
 
     ViewportAdjustStrategy adjustStrategy;
     Matrix inverseMatrix;
-    float width, height;
+    Engine engine;
 
     public Viewport() {
         this(new DefaultAdjustStrategy());
@@ -47,22 +47,21 @@ public class Viewport extends Transform {
 
     @Override
     public void onInit(Engine engine) {
+        this.engine = engine;
         inverseMatrix = engine.createMatrix();
         adjustViewport(engine.getWidth(), engine.getHeight());
         super.onInit(engine);
-    }
-
-    void adjustViewport(float width, float height) {
-        setPivot(width / 2, height / 2);
-        this.adjustStrategy.adjustViewport(width, height, this);
-        this.width = width;
-        this.height = height;
     }
 
     @Override
     public void onSize(float width, float height) {
         super.onSize(width, height);
         adjustViewport(width, height);
+    }
+
+    void adjustViewport(float width, float height) {
+        setPivot(width / 2, height / 2);
+        this.adjustStrategy.adjustViewport(width, height, this);
     }
 
     protected void calculateViewMatrix(Matrix matrix) {
@@ -75,16 +74,16 @@ public class Viewport extends Transform {
         return inverseMatrix;
     }
 
-    public float getScreenWidth() {
-        return width;
+    public float getWidth() {
+        return engine.getWidth();
     }
 
-    public float getScreenHeight() {
-        return height;
+    public float getHeight() {
+        return engine.getHeight();
     }
 
     public void calculateBounds(AABB aabb) {
-        final float[] pts = new float[] {0,0, 0,height, width,height, width,0}; // anticlockwise
+        final float[] pts = new float[] {0,0, 0, getHeight(), getWidth(), getHeight(), getWidth(),0}; // anticlockwise
         mapPoints(pts);
         aabb.calculate(pts);
     }
