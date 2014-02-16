@@ -8,7 +8,8 @@ public interface KeyEvent extends InputEvent {
 
     public static enum Action {
         UP,
-        TYPED, DOWN
+        TYPED,
+        DOWN
     }
 
     int getKeyCode();

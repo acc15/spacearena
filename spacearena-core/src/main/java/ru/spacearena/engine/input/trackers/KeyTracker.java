@@ -1,6 +1,9 @@
-package ru.spacearena.engine.input;
+package ru.spacearena.engine.input.trackers;
 
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.input.InputEvent;
+import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.input.KeyEvent;
 
 import java.util.HashSet;
 
@@ -10,16 +13,17 @@ import java.util.HashSet;
  */
 public class KeyTracker extends EngineObject {
 
+    // TODO consider replacing this with more fast primitive collection (colt or trove)
     private HashSet<Integer> pressedKeys = new HashSet<Integer>();
     private boolean consumeEvent = false;
 
-    public float getDirection(int negativeKeyCode, int positiveKeyCode) {
+    public float getDirection(int negativeKeyCode, int positiveKeyCode, float amount) {
         float value = 0f;
         if (isKeyPressed(negativeKeyCode)) {
-            value -= 1f;
+            value -= amount;
         }
         if (isKeyPressed(positiveKeyCode)) {
-            value += 1f;
+            value += amount;
         }
         return value;
     }

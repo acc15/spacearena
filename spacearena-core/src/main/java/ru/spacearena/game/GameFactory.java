@@ -7,7 +7,7 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
-import ru.spacearena.engine.input.KeyTracker;
+import ru.spacearena.engine.input.trackers.KeyTracker;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.Random;
@@ -56,8 +56,8 @@ public class GameFactory implements EngineFactory {
         final KeyTracker keyTracker = new KeyTracker() {
             @Override
             public boolean onUpdate(float seconds) {
-                final float xVelocity = getDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT);
-                final float yVelocity = getDirection(KeyCode.VK_UP, KeyCode.VK_DOWN);
+                final float xVelocity = getDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT, 1f);
+                final float yVelocity = getDirection(KeyCode.VK_UP, KeyCode.VK_DOWN, 1f);
                 if (FloatMathUtils.isZero(xVelocity, yVelocity)) {
                     ship.getPhysics().setVelocity(0, 0);
                     return true;

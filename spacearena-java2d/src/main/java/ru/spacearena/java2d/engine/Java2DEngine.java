@@ -6,11 +6,14 @@ import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.input.*;
+import ru.spacearena.java2d.engine.input.Java2DKeyEvent;
+import ru.spacearena.java2d.engine.input.Java2DMouseEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 /**
@@ -54,9 +57,8 @@ public class Java2DEngine extends Engine {
         switch (inputType) {
         case KEYBOARD:
 
+            final Java2DKeyEvent keyEvent = new Java2DKeyEvent();
             component.addKeyListener(new KeyListener() {
-                final Java2DKeyEvent keyEvent = new Java2DKeyEvent();
-
                 public void keyTyped(KeyEvent e) {
                     onInput(keyEvent.init(e, ru.spacearena.engine.input.KeyEvent.Action.TYPED));
                 }
@@ -72,47 +74,42 @@ public class Java2DEngine extends Engine {
             break;
 
         case MOUSE:
+
+            final Java2DMouseEvent mouseEvent = new Java2DMouseEvent();
             component.addMouseListener(new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
-                    // TODO implement..
-
+                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.CLICK));
                 }
 
                 public void mousePressed(MouseEvent e) {
-                    // TODO implement..
-
+                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.DOWN));
                 }
 
                 public void mouseReleased(MouseEvent e) {
-                    // TODO implement..
-
+                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.UP));
                 }
 
                 public void mouseEntered(MouseEvent e) {
-                    // TODO implement..
-
+                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.ENTER));
                 }
 
                 public void mouseExited(MouseEvent e) {
-                    // TODO implement..
-
+                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.LEAVE));
                 }
             });
             component.addMouseMotionListener(new MouseMotionListener() {
                 public void mouseDragged(MouseEvent e) {
-                    // TODO implement..
-
+                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.DRAG));
                 }
 
                 public void mouseMoved(MouseEvent e) {
-                    // TODO implement..
-
+                    onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.MOVE));
                 }
             });
             component.addMouseWheelListener(new MouseWheelListener() {
                 public void mouseWheelMoved(MouseWheelEvent e) {
-                    // TODO implement..
-
+                    // TODO add wheel support
+                    //onInput(mouseEvent.init(e, ru.spacearena.engine.input.MouseEvent.Action.WHEEL));
                 }
             });
             break;

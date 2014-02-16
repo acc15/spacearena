@@ -1,4 +1,4 @@
-package ru.spacearena.java2d.engine;
+package ru.spacearena.java2d.engine.input;
 
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyEvent;
