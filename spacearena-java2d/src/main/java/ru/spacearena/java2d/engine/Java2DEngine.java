@@ -1,15 +1,17 @@
 package ru.spacearena.java2d.engine;
 
-import ru.spacearena.android.engine.Engine;
-import ru.spacearena.android.engine.EngineException;
-import ru.spacearena.android.engine.EngineFactory;
-import ru.spacearena.android.engine.graphics.Image;
-import ru.spacearena.android.engine.graphics.Matrix;
-import ru.spacearena.android.engine.input.InputType;
+import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.EngineException;
+import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.graphics.Image;
+import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.input.*;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
 
@@ -61,12 +63,12 @@ public class Java2DEngine extends Engine {
         }
     }
 
-    private void addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action action, KeyEvent keyEvent) {
-        onInput(new ru.spacearena.android.engine.input.KeyEvent(action, keyEvent.getKeyCode(), keyEvent.getKeyChar()));
+    private void addKeyEvent(ru.spacearena.engine.input.KeyEvent.Action action, KeyEvent keyEvent) {
+        onInput(new ru.spacearena.engine.input.KeyEvent(action, keyEvent.getKeyCode(), keyEvent.getKeyChar()));
     }
 
-    private void addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action action, MouseEvent mouseEvent) {
-        onInput(new ru.spacearena.android.engine.input.MouseEvent(
+    private void addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action action, MouseEvent mouseEvent) {
+        onInput(new ru.spacearena.engine.input.MouseEvent(
                 action, mouseEvent.getButton(), mouseEvent.getX(), mouseEvent.getY()));
     }
 
@@ -76,15 +78,15 @@ public class Java2DEngine extends Engine {
         case KEYBOARD:
             component.addKeyListener(new KeyListener() {
                 public void keyTyped(KeyEvent e) {
-                    addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action.TYPED, e);
+                    addKeyEvent(ru.spacearena.engine.input.KeyEvent.Action.TYPED, e);
                 }
 
                 public void keyPressed(KeyEvent e) {
-                    addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action.DOWN, e);
+                    addKeyEvent(ru.spacearena.engine.input.KeyEvent.Action.DOWN, e);
                 }
 
                 public void keyReleased(KeyEvent e) {
-                    addKeyEvent(ru.spacearena.android.engine.input.KeyEvent.Action.UP, e);
+                    addKeyEvent(ru.spacearena.engine.input.KeyEvent.Action.UP, e);
                 }
             });
             break;
@@ -93,38 +95,38 @@ public class Java2DEngine extends Engine {
 
             component.addMouseListener(new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
-                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.CLICK, e);
+                    addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action.CLICK, e);
                 }
 
                 public void mousePressed(MouseEvent e) {
-                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.DOWN, e);
+                    addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action.DOWN, e);
                 }
 
                 public void mouseReleased(MouseEvent e) {
-                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.UP, e);
+                    addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action.UP, e);
                 }
 
                 public void mouseEntered(MouseEvent e) {
-                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.ENTER, e);
+                    addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action.ENTER, e);
                 }
 
                 public void mouseExited(MouseEvent e) {
-                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.LEAVE, e);
+                    addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action.LEAVE, e);
                 }
             });
             component.addMouseMotionListener(new MouseMotionListener() {
                 public void mouseDragged(MouseEvent e) {
-                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.DRAG, e);
+                    addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action.DRAG, e);
                 }
 
                 public void mouseMoved(MouseEvent e) {
-                    addMouseEvent(ru.spacearena.android.engine.input.MouseEvent.Action.MOVE, e);
+                    addMouseEvent(ru.spacearena.engine.input.MouseEvent.Action.MOVE, e);
                 }
             });
             component.addMouseWheelListener(new MouseWheelListener() {
                 public void mouseWheelMoved(MouseWheelEvent e) {
                     // TODO add wheel support
-                    //onInput(mouseEvent.init(e, ru.spacearena.android.engine.input.MouseEvent.Action.WHEEL));
+                    //onInput(mouseEvent.init(e, MouseEvent.Action.WHEEL));
                 }
             });
             break;

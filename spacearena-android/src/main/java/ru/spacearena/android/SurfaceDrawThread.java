@@ -5,7 +5,7 @@ import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.spacearena.android.engine.AndroidDrawContext;
-import ru.spacearena.android.engine.Engine;
+import ru.spacearena.engine.Engine;
 
 /**
  * @author Vyacheslav Mayorov

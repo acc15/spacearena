@@ -1,14 +1,15 @@
 package ru.spacearena.game;
 
-import ru.spacearena.android.engine.AABB;
-import ru.spacearena.android.engine.Engine;
-import ru.spacearena.android.engine.EngineFactory;
-import ru.spacearena.android.engine.EngineObject;
+import ru.spacearena.engine.AABB;
+import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.EngineObject;
 import ru.spacearena.android.engine.common.*;
-import ru.spacearena.android.engine.input.InputType;
-import ru.spacearena.android.engine.input.KeyCode;
-import ru.spacearena.android.engine.input.trackers.KeyTracker;
-import ru.spacearena.android.engine.util.FloatMathUtils;
+import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.input.KeyCode;
+import ru.spacearena.engine.input.trackers.KeyTracker;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.Random;
 

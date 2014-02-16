@@ -1,8 +1,8 @@
 package ru.spacearena.game;
 
-import ru.spacearena.android.engine.EngineObject;
-import ru.spacearena.android.engine.graphics.Color;
-import ru.spacearena.android.engine.graphics.DrawContext;
+import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov

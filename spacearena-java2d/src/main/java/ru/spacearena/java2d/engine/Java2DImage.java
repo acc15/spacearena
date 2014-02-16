@@ -1,6 +1,6 @@
 package ru.spacearena.java2d.engine;
 
-import ru.spacearena.android.engine.graphics.Image;
+import ru.spacearena.engine.graphics.Image;
 
 /**
  * @author Vyacheslav Mayorov

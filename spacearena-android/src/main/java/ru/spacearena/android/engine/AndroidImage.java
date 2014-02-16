@@ -1,7 +1,7 @@
 package ru.spacearena.android.engine;
 
 import android.graphics.Bitmap;
-import ru.spacearena.android.engine.graphics.Image;
+import ru.spacearena.engine.graphics.Image;
 
 /**
  * @author Vyacheslav Mayorov

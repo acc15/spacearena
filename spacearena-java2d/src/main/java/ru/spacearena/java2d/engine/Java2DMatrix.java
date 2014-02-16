@@ -1,7 +1,7 @@
 package ru.spacearena.java2d.engine;
 
-import ru.spacearena.android.engine.graphics.Matrix;
-import ru.spacearena.android.engine.util.FloatMathUtils;
+import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;

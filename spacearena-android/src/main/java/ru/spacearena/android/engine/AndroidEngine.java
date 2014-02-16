@@ -4,10 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.MotionEvent;
 import android.view.View;
-import ru.spacearena.android.engine.graphics.Image;
-import ru.spacearena.android.engine.graphics.Matrix;
-import ru.spacearena.android.engine.input.InputType;
-import ru.spacearena.android.engine.util.IOUtils;
+import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.graphics.Image;
+import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.util.IOUtils;
 
 import java.io.InputStream;
 

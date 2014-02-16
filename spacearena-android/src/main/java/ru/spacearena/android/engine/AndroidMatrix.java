@@ -1,6 +1,6 @@
 package ru.spacearena.android.engine;
 
-import ru.spacearena.android.engine.graphics.Matrix;
+import ru.spacearena.engine.graphics.Matrix;
 
 /**
  * @author Vyacheslav Mayorov

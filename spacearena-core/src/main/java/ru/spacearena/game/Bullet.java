@@ -1,10 +1,10 @@
 package ru.spacearena.game;
 
-import ru.spacearena.android.engine.common.GenericContainer;
-import ru.spacearena.android.engine.common.PhysicsHandler;
-import ru.spacearena.android.engine.common.Transform;
-import ru.spacearena.android.engine.graphics.Color;
-import ru.spacearena.android.engine.util.FloatMathUtils;
+import ru.spacearena.engine.common.GenericContainer;
+import ru.spacearena.engine.common.PhysicsHandler;
+import ru.spacearena.engine.common.Transform;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov

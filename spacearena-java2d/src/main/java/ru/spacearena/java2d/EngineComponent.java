@@ -1,6 +1,6 @@
 package ru.spacearena.java2d;
 
-import ru.spacearena.android.engine.EngineFactory;
+import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.game.GameFactory;
 import ru.spacearena.java2d.engine.Java2DEngine;
 
