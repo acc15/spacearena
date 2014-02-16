@@ -1,6 +1,7 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -15,7 +16,10 @@ public class FPSCounter extends EngineObject {
     }
 
     public boolean onUpdate(float seconds) {
-        fps = 1/seconds;
+        if (!FloatMathUtils.isZero(seconds)) {
+            final float alpha = 0.6f;
+            fps = fps * (1-alpha) + alpha/seconds;
+        }
         return true;
     }
 }

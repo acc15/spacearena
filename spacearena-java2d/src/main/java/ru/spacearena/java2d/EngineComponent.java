@@ -37,11 +37,7 @@ public class EngineComponent extends Canvas {
                 graphics2D.dispose();
             }
             strategy.show();
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                logger.error("Engine thread was interrupted", e);
-            }
+            Thread.yield();
         }
     }
 
