@@ -83,6 +83,23 @@ public class FloatMathUtils {
         return sqrt(lengthSquare(x,y));
     }
 
+    /**
+     * Calculates shortest difference between two angles.
+     * @param a first angle in degrees (0..360)
+     * @param b second angle in degrees (0..360)
+     * @return difference which {@code a - diff = b}
+     */
+    public static float angleDiff(float a, float b) {
+        final float d = a - b;
+        return d >= HALF_CIRCLE_ANGLE ? d - CIRCLE_ANGLE :
+               d <= -HALF_CIRCLE_ANGLE ? CIRCLE_ANGLE + d :
+               d;
+    }
+
+    public static float abs(float v) {
+        return v < 0 ? -v : v;
+    }
+
     public static float angle(float x, float y) {
         return toDegrees(atan2(-x,y))+HALF_CIRCLE_ANGLE;
     }
@@ -117,5 +134,13 @@ public class FloatMathUtils {
 
     public static float random() {
         return (float)Math.random();
+    }
+
+    public static float copySign(float magnitude, float sign) {
+        return Math.copySign(magnitude, sign);
+    }
+
+    public static float signum(float diff) {
+        return Math.signum(diff);
     }
 }

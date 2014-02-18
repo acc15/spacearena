@@ -15,8 +15,13 @@ public class Ship extends GenericContainer {
 
     public Ship() {
         final Transform transform = new Transform();
+        final PhysicsHandler physics = new PhysicsHandler(transform);
+        physics.setSpeed(1000f);
+        physics.setAcceleration(1000f);
+        physics.setAngularSpeed(720f);
+
         add(transform);
-        add(new PhysicsHandler(transform));
+        add(physics);
     }
 
     public float[] getGunPositions() {

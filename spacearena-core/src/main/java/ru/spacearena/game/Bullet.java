@@ -12,17 +12,16 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class Bullet extends GenericContainer {
 
-    public static final float SPEED = 1000f;
-
     public Bullet(float x, float y, float angle) {
         final Transform transform = new Transform();
         transform.add(new Rectangle(Color.RED, -5, -20, 5, 20));
 
         transform.setPosition(x, y);
-        transform.setRotation(angle);
+        transform.setAngle(angle);
 
         final PhysicsHandler physicsHandler = new PhysicsHandler(transform);
-        physicsHandler.setVelocityPolar(angle, SPEED);
+        physicsHandler.setSpeed(1500f);
+        physicsHandler.setVelocityByAngle(angle);
 
         add(transform);
         add(physicsHandler);

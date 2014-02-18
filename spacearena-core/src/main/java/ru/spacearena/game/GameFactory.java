@@ -7,7 +7,6 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
-import ru.spacearena.engine.input.MouseEvent;
 import ru.spacearena.engine.input.trackers.InputTracker;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -38,36 +37,25 @@ public class GameFactory implements EngineFactory {
                 final float xVelocity = getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT, 1f);
                 final float yVelocity = getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN, 1f);
                 if (!FloatMathUtils.isZero(xVelocity, yVelocity)) {
-                    final float length = 500f/FloatMathUtils.length(xVelocity, yVelocity);
-                    ship.getPhysics().setVelocity(xVelocity * length, yVelocity * length);
+                    final float length = FloatMathUtils.length(xVelocity, yVelocity);
+                    ship.getPhysics().setTargetVelocity(xVelocity/length, yVelocity/length);
+
+                    final float angle = FloatMathUtils.angle(xVelocity, yVelocity);
+                    ship.getPhysics().setTargetAngle(angle);
                 } else {
-                    ship.getPhysics().setVelocity(0, 0);
+                    ship.getPhysics().setTargetVelocity(0, 0);
                 }
 
-                final Transform shipTx = ship.getTransform();
-                final float shipX = shipTx.getX(), shipY = shipTx.getY();
-                if (isMouseKeyPressed(MouseEvent.LEFT_BUTTON)) {
-                    final float[] pt = new float[] {getMouseX(), getMouseY()};
-                    viewport.mapPoints(pt);
-
-                    final float dx = pt[0] - shipX, dy = pt[1] - shipY;
-                    if (!FloatMathUtils.isZero(dx, dy)) {
-                        final float angle = FloatMathUtils.angle(dx, dy);
-                        ship.getTransform().setRotation(angle);
-                        if (canShot) {
-                            final float[] gunPositions = ship.getGunPositions();
-                            for (int i=0; i<gunPositions.length; i+=2) {
-                                viewport.add(new Bullet(gunPositions[i], gunPositions[i+1], angle));
-                            }
-                            canShot = false;
-                        }
-                    }
-
-                } else {
+                if (!isKeyboardKeyPressed(KeyCode.VK_SPACE)) {
                     canShot = true;
-                    if (!FloatMathUtils.isZero(xVelocity, yVelocity)) {
-                        ship.getTransform().setRotation(FloatMathUtils.angle(xVelocity, yVelocity));
+                    return true;
+                }
+                if (canShot) {
+                    final float[] gunPositions = ship.getGunPositions();
+                    for (int i=0; i<gunPositions.length; i+=2) {
+                        viewport.add(new Bullet(gunPositions[i], gunPositions[i+1], ship.getTransform().getAngle()));
                     }
+                    canShot = false;
                 }
                 return true;
             }
@@ -111,6 +99,7 @@ public class GameFactory implements EngineFactory {
         viewport.add(new Rectangle(-5, -5, 5, 5));
         viewport.add(ship);
 
+        /*
         final int count = 9;
         for (int i=0; i<count; i++) {
             final Ship bird = new Ship();
@@ -135,25 +124,7 @@ public class GameFactory implements EngineFactory {
             });
             viewport.add(bird);
         }
-
-/*
-        final Timer bulletTimer = new Timer(1/100f);
-        viewport.add(bulletTimer);
-
-        final GenericContainer bullets = new GenericContainer();
-        viewport.add(bullets);
-
-        final MultilineText.Line bulletCount = new MultilineText.Line();
-        multilineText.add(bulletCount);
-        bulletTimer.add(new EngineObject() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                bullets.add(new Bullet(0,0,FloatMathUtils.random() * FloatMathUtils.CIRCLE_ANGLE));
-                bulletCount.setText("Bullts: " + bullets.getChildrenCount());
-                return true;
-            }
-        });
-*/
+        */
         viewport.setPosition(0f, 0f);
 
         root.add(new PositionHandler(ship.getTransform(), viewport));

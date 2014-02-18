@@ -3,6 +3,7 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -17,7 +18,7 @@ public class Transform extends GenericContainer {
     float scaleX = 1f, scaleY = 1f;
     float skewX = 0f, skewY = 0f;
     float pivotX = 0f, pivotY = 0f;
-    float rotation = 0f;
+    float angle = 0f;
 
     public float getX() {
         return x;
@@ -115,19 +116,19 @@ public class Transform extends GenericContainer {
         markDirty();
     }
 
-    public float getRotation() {
-        return rotation;
+    public float getAngle() {
+        return angle;
     }
 
-    public void setRotation(float rotation) {
-        this.rotation = rotation;
+    public void setAngle(float angle) {
+        this.angle = FloatMathUtils.normalizeDegrees(angle);
         markDirty();
     }
 
     private void calculateMatrix() {
         matrix.identity();
         matrix.translate(x, y);
-        matrix.rotate(rotation);
+        matrix.rotate(angle);
         matrix.skew(skewX, skewY);
         matrix.scale(scaleX, scaleY);
         matrix.translate(-pivotX, -pivotY);
