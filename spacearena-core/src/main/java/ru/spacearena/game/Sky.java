@@ -34,7 +34,7 @@ public class Sky extends EngineObject {
 
     private void drawStarLayer(DrawContext context, float scale) {
 
-        viewport.calculateBounds(bounds);
+        bounds.set(viewport.getMinX(), viewport.getMinY(), viewport.getMaxX(), viewport.getMaxY());
 
         final float pixelsPerStar = PIXELS_PER_STAR * scale;
         final float twoStarDistance = pixelsPerStar * 2;

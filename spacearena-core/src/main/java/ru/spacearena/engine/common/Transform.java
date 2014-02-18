@@ -143,9 +143,9 @@ public class Transform extends GenericContainer {
 
     protected void updateMatrices() {
         if (isDirty) {
+            isDirty = false;
             calculateMatrix();
             calculateViewMatrix(matrix);
-            isDirty = false;
         }
     }
 

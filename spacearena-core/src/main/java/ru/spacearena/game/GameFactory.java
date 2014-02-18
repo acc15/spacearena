@@ -53,7 +53,7 @@ public class GameFactory implements EngineFactory {
                 if (canShot) {
                     final float[] gunPositions = ship.getGunPositions();
                     for (int i=0; i<gunPositions.length; i+=2) {
-                        viewport.add(new Bullet(gunPositions[i], gunPositions[i+1], ship.getTransform().getAngle()));
+                        viewport.add(new Bullet(gunPositions[i], gunPositions[i+1], ship.getAngle()));
                     }
                     canShot = false;
                 }
@@ -84,15 +84,8 @@ public class GameFactory implements EngineFactory {
         multilineText.add(positionText);
         multilineText.add(viewportText);
 
-
-        ship.add(new EngineObject() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                positionText.setText(String.format("Position: %.2f, %.2f",
-                        ship.getTransform().getX(), ship.getTransform().getY()));
-                return true;
-            }
-        });
+        final AABB mapBounds = new AABB();
+        mapBounds.set(-2000f, -2000f, 2000f, 2000f);
         root.add(viewport);
 
         viewport.add(new Sky(viewport, new Random()));
@@ -127,16 +120,17 @@ public class GameFactory implements EngineFactory {
         */
         viewport.setPosition(0f, 0f);
 
-        root.add(new PositionHandler(ship.getTransform(), viewport));
+        root.add(new PositionHandler(ship, viewport));
+        root.add(new BoundChecker(mapBounds, ship));
+        root.add(new BoundChecker(mapBounds, viewport));
         root.add(new EngineObject() {
-
-            final AABB viewRect = new AABB();
 
             @Override
             public boolean onUpdate(float seconds) {
-                viewport.calculateBounds(viewRect);
                 viewportText.setText(String.format("Viewport: (%.2f,%.2f)(%.2f,%.2f)",
-                        viewRect.minX, viewRect.minY, viewRect.maxX, viewRect.maxY));
+                        viewport.getMinX(), viewport.getMinY(), viewport.getMaxX(), viewport.getMaxY()));
+                positionText.setText(String.format("Position: %.2f, %.2f",
+                        ship.getX(), ship.getY()));
                 return true;
             }
         });

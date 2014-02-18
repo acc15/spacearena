@@ -18,7 +18,7 @@ public class AABB {
         this.maxY = maxY;
     }
 
-    public void set(float minX, float maxX, float minY, float maxY) {
+    public void set(float minX, float minY, float maxX, float maxY) {
         this.minX = minX;
         this.maxX = maxX;
         this.minY = minY;

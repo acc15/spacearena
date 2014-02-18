@@ -15,11 +15,11 @@ public class AndroidImage implements Image {
         this.bitmap = bitmap;
     }
 
-    public float getWidth() {
+    public int getWidth() {
         return bitmap.getWidth();
     }
 
-    public float getHeight() {
+    public int getHeight() {
         return bitmap.getHeight();
     }
 }

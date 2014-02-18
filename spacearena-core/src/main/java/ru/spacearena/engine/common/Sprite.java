@@ -11,12 +11,7 @@ import ru.spacearena.engine.graphics.Image;
 public class Sprite extends EngineObject {
 
     Image image;
-
     float x, y;
-
-    public Sprite(Image image) {
-        this.image = image;
-    }
 
     public float getX() {
         return x;
@@ -32,6 +27,22 @@ public class Sprite extends EngineObject {
 
     public void setY(float y) {
         this.y = y;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public float getWidth() {
+        return image.getWidth();
+    }
+
+    public float getHeight() {
+        return image.getHeight();
     }
 
     @Override

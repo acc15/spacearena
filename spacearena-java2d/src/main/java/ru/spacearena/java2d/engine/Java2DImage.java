@@ -14,11 +14,11 @@ public class Java2DImage implements Image {
         this.image = image;
     }
 
-    public float getWidth() {
+    public int getWidth() {
         return image.getWidth(null);
     }
 
-    public float getHeight() {
+    public int getHeight() {
         return image.getHeight(null);
     }
 }

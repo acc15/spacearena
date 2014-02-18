@@ -1,49 +1,70 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.common.GenericContainer;
-import ru.spacearena.engine.common.PhysicsHandler;
-import ru.spacearena.engine.common.Sprite;
-import ru.spacearena.engine.common.Transform;
+import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.graphics.Image;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Ship extends GenericContainer {
+public class Ship extends Transform implements BoundChecker.Bounded {
 
     public Ship() {
-        final Transform transform = new Transform();
-        final PhysicsHandler physics = new PhysicsHandler(transform);
+        final PhysicsHandler physics = new PhysicsHandler(this);
         physics.setSpeed(1000f);
         physics.setAcceleration(1000f);
         physics.setAngularSpeed(720f);
-
-        add(transform);
         add(physics);
+        add(new Sprite());
     }
 
     public float[] getGunPositions() {
         final float[] positions = new float[] {35, 100, 110, 100};
-        getTransform().mapPoints(positions);
+        mapPoints(positions);
         return positions;
     }
 
     @Override
     public void onInit(Engine engine) {
         final Image image = engine.loadImage("ship.png");
-        final Transform transform = getTransform();
-        transform.add(new Sprite(image));
-        transform.setPivot(image.getWidth() / 2, image.getHeight() / 2);
+        getSprite().setImage(image);
+        setPivot(image.getWidth() / 2, image.getHeight() / 2);
         super.onInit(engine);
     }
 
-    public Transform getTransform() {
+    public PhysicsHandler getPhysics() {
         return get(0);
     }
 
-    public PhysicsHandler getPhysics() {
+    private Sprite getSprite() {
         return get(1);
+    }
+
+    public float getMinX() {
+        return getX() - getPivotX();
+    }
+
+    public float getMaxX() {
+        return getX() + getPivotX();
+    }
+
+    public float getMinY() {
+        return getY() - getPivotY();
+    }
+
+    public float getMaxY() {
+        return getY() + getPivotY();
+    }
+
+    public void offset(float dx, float dy) {
+        setPosition(getX() + dx, getY() + dy);
+        if (!FloatMathUtils.isZero(dx)) {
+            getPhysics().setVelocityX(0);
+        }
+        if (!FloatMathUtils.isZero(dy)) {
+            getPhysics().setVelocityY(0);
+        }
     }
 }

@@ -6,7 +6,7 @@ package ru.spacearena.engine.graphics;
  */
 public interface Image {
 
-    float getWidth();
-    float getHeight();
+    int getWidth();
+    int getHeight();
 
 }

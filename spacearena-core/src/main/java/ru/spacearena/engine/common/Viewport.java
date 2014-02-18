@@ -1,6 +1,5 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.AABB;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.Matrix;
 
@@ -8,7 +7,7 @@ import ru.spacearena.engine.graphics.Matrix;
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Viewport extends Transform {
+public class Viewport extends AbstractBoundedTransform {
 
     ViewportAdjustStrategy adjustStrategy;
     Matrix inverseMatrix;
@@ -63,6 +62,7 @@ public class Viewport extends Transform {
     }
 
     protected void calculateViewMatrix(Matrix matrix) {
+        super.calculateViewMatrix(matrix);
         inverseMatrix.inverse(matrix);
     }
 
@@ -78,12 +78,6 @@ public class Viewport extends Transform {
 
     public float getHeight() {
         return engine.getHeight();
-    }
-
-    public void calculateBounds(AABB aabb) {
-        final float[] pts = new float[] {0,0, 0, getHeight(), getWidth(), getHeight(), getWidth(),0}; // anticlockwise
-        mapPoints(pts);
-        aabb.calculate(pts);
     }
 
 }
