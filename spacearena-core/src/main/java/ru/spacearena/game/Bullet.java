@@ -1,8 +1,8 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.common.GenericContainer;
 import ru.spacearena.engine.common.PhysicsHandler;
 import ru.spacearena.engine.common.Transform;
+import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -10,39 +10,31 @@ import ru.spacearena.engine.util.FloatMathUtils;
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Bullet extends GenericContainer {
+public class Bullet extends Transform {
 
-    public Bullet(float x, float y, float angle) {
-        final Transform transform = new Transform();
-        transform.add(new Rectangle(Color.RED, -5, -20, 5, 20));
+    private Bounds bounds;
 
-        transform.setPosition(x, y);
-        transform.setAngle(angle);
+    public Bullet(Bounds bounds, float x, float y, float angle) {
+        this.bounds = bounds;
+        setPosition(x, y);
+        setAngle(angle);
 
-        final PhysicsHandler physicsHandler = new PhysicsHandler(transform);
+        final PhysicsHandler physicsHandler = new PhysicsHandler(this);
         physicsHandler.setSpeed(1500f);
         physicsHandler.setVelocityByAngle(angle);
-
-        add(transform);
         add(physicsHandler);
+        add(new Rectangle(Color.RED, -5, -20, 5, 20));
     }
 
     @Override
     public boolean onUpdate(float seconds) {
-        if (!super.onUpdate(seconds)) {
-            return false;
-        }
-        final Transform transform = getTransform();
-        return FloatMathUtils.inRange(transform.getX(), -5000f, 5000f) &&
-               FloatMathUtils.inRange(transform.getY(), -5000f, 5000f);
-    }
-
-    public Transform getTransform() {
-        return get(0);
+        return super.onUpdate(seconds) &&
+               FloatMathUtils.inRange(getX(), bounds.getMinX(), bounds.getMaxX()) &&
+               FloatMathUtils.inRange(getY(), bounds.getMinY(), bounds.getMaxY());
     }
 
     public PhysicsHandler getPhysics() {
-        return get(1);
+        return get(0);
     }
 
 }

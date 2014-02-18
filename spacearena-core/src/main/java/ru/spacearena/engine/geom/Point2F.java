@@ -1,4 +1,4 @@
-package ru.spacearena.engine;
+package ru.spacearena.engine.geom;
 
 import ru.spacearena.engine.util.FloatMathUtils;
 

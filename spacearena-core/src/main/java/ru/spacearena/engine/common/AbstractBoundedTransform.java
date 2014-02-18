@@ -1,6 +1,6 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.AABB;
+import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.ShapeUtils;
 

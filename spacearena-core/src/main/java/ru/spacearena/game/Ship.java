@@ -11,6 +11,8 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class Ship extends Transform implements BoundChecker.Bounded {
 
+    private float boundDistance = 120f;
+
     public Ship() {
         final PhysicsHandler physics = new PhysicsHandler(this);
         physics.setSpeed(1000f);
@@ -30,7 +32,9 @@ public class Ship extends Transform implements BoundChecker.Bounded {
     public void onInit(Engine engine) {
         final Image image = engine.loadImage("ship.png");
         getSprite().setImage(image);
-        setPivot(image.getWidth() / 2, image.getHeight() / 2);
+
+        final float px = image.getWidth() / 2, py = image.getHeight() * 2 / 3;
+        setPivot(px, py);
         super.onInit(engine);
     }
 
@@ -43,19 +47,19 @@ public class Ship extends Transform implements BoundChecker.Bounded {
     }
 
     public float getMinX() {
-        return getX() - getPivotX();
+        return getX() - boundDistance;
     }
 
     public float getMaxX() {
-        return getX() + getPivotX();
+        return getX() + boundDistance;
     }
 
     public float getMinY() {
-        return getY() - getPivotY();
+        return getY() - boundDistance;
     }
 
     public float getMaxY() {
-        return getY() + getPivotY();
+        return getY() + boundDistance;
     }
 
     public void offset(float dx, float dy) {

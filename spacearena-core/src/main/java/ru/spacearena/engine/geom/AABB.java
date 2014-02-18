@@ -1,12 +1,22 @@
-package ru.spacearena.engine;
+package ru.spacearena.engine.geom;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class AABB {
+public class AABB implements Bounds {
 
     public float minX, maxX, minY, maxY;
+
+    public AABB() {
+    }
+
+    public AABB(float minX, float minY, float maxX, float maxY) {
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minY = minY;
+        this.maxY = maxY;
+    }
 
     public void setX(float minX, float maxX) {
         this.minX = minX;
@@ -39,6 +49,22 @@ public class AABB {
 
     public float getHeight() {
         return maxY - minY;
+    }
+
+    public float getMinX() {
+        return minX;
+    }
+
+    public float getMaxX() {
+        return maxX;
+    }
+
+    public float getMinY() {
+        return minY;
+    }
+
+    public float getMaxY() {
+        return maxY;
     }
 
     public void calculate(float[] points) {

@@ -143,4 +143,12 @@ public class FloatMathUtils {
     public static float signum(float diff) {
         return Math.signum(diff);
     }
+
+    public static float min(float a, float b) {
+        return Math.min(a, b);
+    }
+
+    public static float max(float a, float b) {
+        return Math.max(a, b);
+    }
 }

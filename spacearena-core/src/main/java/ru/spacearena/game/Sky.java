@@ -1,6 +1,6 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.AABB;
+import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.graphics.Color;

@@ -1,6 +1,6 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.AABB;
+import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
@@ -25,6 +25,9 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.TOUCH);
 
         final GenericContainer root = new GenericContainer();
+
+        final AABB mapBounds = new AABB(-10000f, -10000f, 10000f, 10000f);
+
         final Ship ship = new Ship();
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
 
@@ -53,7 +56,7 @@ public class GameFactory implements EngineFactory {
                 if (canShot) {
                     final float[] gunPositions = ship.getGunPositions();
                     for (int i=0; i<gunPositions.length; i+=2) {
-                        viewport.add(new Bullet(gunPositions[i], gunPositions[i+1], ship.getAngle()));
+                        viewport.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getAngle()));
                     }
                     canShot = false;
                 }
@@ -84,8 +87,6 @@ public class GameFactory implements EngineFactory {
         multilineText.add(positionText);
         multilineText.add(viewportText);
 
-        final AABB mapBounds = new AABB();
-        mapBounds.set(-2000f, -2000f, 2000f, 2000f);
         root.add(viewport);
 
         viewport.add(new Sky(viewport, new Random()));
