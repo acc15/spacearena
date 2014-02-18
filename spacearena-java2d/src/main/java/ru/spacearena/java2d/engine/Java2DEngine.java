@@ -73,7 +73,7 @@ public class Java2DEngine extends Engine {
     }
 
 
-    public void enableInput(InputType inputType) {
+    public boolean enableInput(InputType inputType) {
         switch (inputType) {
         case KEYBOARD:
             component.addKeyListener(new KeyListener() {
@@ -89,7 +89,7 @@ public class Java2DEngine extends Engine {
                     addKeyEvent(ru.spacearena.engine.input.KeyEvent.Action.UP, e);
                 }
             });
-            break;
+            return true;
 
         case MOUSE:
 
@@ -129,7 +129,8 @@ public class Java2DEngine extends Engine {
                     //onInput(mouseEvent.init(e, MouseEvent.Action.WHEEL));
                 }
             });
-            break;
+            return true;
         }
+        return false;
     }
 }

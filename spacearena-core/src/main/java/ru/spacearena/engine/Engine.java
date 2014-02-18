@@ -75,7 +75,7 @@ public abstract class Engine {
 
     public abstract Matrix createMatrix();
     public abstract Image loadImage(String resource);
-    public abstract void enableInput(InputType inputType);
+    public abstract boolean enableInput(InputType inputType);
 
 
 }

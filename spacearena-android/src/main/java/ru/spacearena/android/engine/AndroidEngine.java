@@ -61,7 +61,7 @@ public class AndroidEngine extends Engine {
         this.height = height;
     }
 
-    public void enableInput(InputType inputType) {
+    public boolean enableInput(InputType inputType) {
         if (inputType == InputType.TOUCH) {
             view.setOnTouchListener(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
@@ -69,7 +69,9 @@ public class AndroidEngine extends Engine {
                     //return onInput(touchEvent);
                 }
             });
+            return true;
         }
+        return false;
     }
 
 }

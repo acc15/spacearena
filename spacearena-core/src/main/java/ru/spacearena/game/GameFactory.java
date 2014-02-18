@@ -92,34 +92,6 @@ public class GameFactory implements EngineFactory {
         viewport.add(new Rectangle(-5, -5, 5, 5));
         viewport.add(ship);
 
-        /*
-        final int count = 9;
-        for (int i=0; i<count; i++) {
-            final Ship bird = new Ship();
-            final Transform tf = bird.getTransform();
-            final float initialAngle = i * 30f;
-            bird.add(new EngineObject() {
-
-                //float angleVelocity = 10f;
-                float angle = initialAngle;
-
-                @Override
-                public boolean onUpdate(float seconds) {
-
-                    final float rads = FloatMathUtils.toRadians(angle-90);
-                    final float x = FloatMathUtils.cos(rads) * 500f;
-                    final float y = FloatMathUtils.sin(rads) * 500f;
-                    tf.setPosition(x, y);
-                    tf.setRotation(angle+90);
-                    angle += (100f * seconds);
-                    return true;
-                }
-            });
-            viewport.add(bird);
-        }
-        */
-        viewport.setPosition(0f, 0f);
-
         root.add(new PositionHandler(ship, viewport));
         root.add(new BoundChecker(mapBounds, ship));
         root.add(new BoundChecker(mapBounds, viewport));
