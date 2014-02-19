@@ -2,6 +2,8 @@ package ru.spacearena.game;
 
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -15,7 +17,7 @@ public class Ship extends Transform implements BoundChecker.Bounded {
 
     public Ship() {
         final PhysicsHandler physics = new PhysicsHandler(this);
-        physics.setSpeed(1000f);
+        physics.setSpeed(5000f);
         physics.setAcceleration(1000f);
         physics.setAngularSpeed(720f);
         add(physics);
@@ -70,5 +72,12 @@ public class Ship extends Transform implements BoundChecker.Bounded {
         if (!FloatMathUtils.isZero(dy)) {
             getPhysics().setVelocityY(0);
         }
+    }
+
+    @Override
+    public void onDraw(DrawContext context) {
+        super.onDraw(context);
+        context.setColor(Color.GREEN);
+        context.drawRect(getMinX(), getMinY(), getMaxX(), getMaxY());
     }
 }

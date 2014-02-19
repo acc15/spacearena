@@ -44,6 +44,10 @@ public class Java2DDrawContext implements DrawContext {
         graphics2D.drawString(text, x, y + fontOffset);
     }
 
+    public void drawRect(float left, float top, float right, float bottom) {
+        graphics2D.drawRect((int)left, (int)top, (int)(right-left), (int)(bottom-top));
+    }
+
     public void drawImage(Image image, float x, float y) {
         graphics2D.drawImage(((Java2DImage)image).image, (int)x, (int)y, null);
     }

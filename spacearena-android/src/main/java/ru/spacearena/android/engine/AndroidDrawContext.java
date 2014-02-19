@@ -21,6 +21,10 @@ public class AndroidDrawContext implements DrawContext {
         paint.setStyle(Paint.Style.FILL);
     }
 
+    private void enableStroke() {
+        paint.setStyle(Paint.Style.STROKE);
+    }
+
     public AndroidDrawContext() {
         paint.setTextSize(DEFAULT_TEXT_SIZE);
         final Paint.FontMetrics fm = paint.getFontMetrics();
@@ -53,6 +57,11 @@ public class AndroidDrawContext implements DrawContext {
 
     public void drawText(String text, float x, float y) {
         canvas.drawText(text, x, y + fontAscent, paint);
+    }
+
+    public void drawRect(float left, float top, float right, float bottom) {
+        enableStroke();
+        canvas.drawRect(left, top, right, bottom, paint);
     }
 
     public void drawImage(Image image, float x, float y) {

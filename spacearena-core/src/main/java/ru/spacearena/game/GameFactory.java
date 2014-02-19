@@ -26,7 +26,7 @@ public class GameFactory implements EngineFactory {
 
         final GenericContainer root = new GenericContainer();
 
-        final AABB mapBounds = new AABB(-10000f, -10000f, 10000f, 10000f);
+        final AABB mapBounds = new AABB(-20000f, -20000f, 20000f, 20000f);
 
         final Ship ship = new Ship();
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));

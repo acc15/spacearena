@@ -12,9 +12,10 @@ public interface DrawContext {
 
     void drawImage(Image image, float x, float y);
     void drawText(String text, float x, float y);
+    void drawRect(float left, float top, float right, float bottom);
+
     float getTextHeight();
-
     void setMatrix(Matrix matrix);
-    Matrix getMatrixCopy();
 
+    Matrix getMatrixCopy();
 }
