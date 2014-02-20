@@ -5,7 +5,6 @@ import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 
 /**
  * @author Vyacheslav Mayorov

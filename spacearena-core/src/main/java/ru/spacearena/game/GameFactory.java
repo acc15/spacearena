@@ -1,6 +1,7 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineEntity;
+import ru.spacearena.engine.collisions.CollisionContainer;
 import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
@@ -32,6 +33,9 @@ public class GameFactory implements EngineFactory {
         final Ship ship = new Ship();
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
 
+        final CollisionContainer collisionContainer = new CollisionContainer();
+        collisionContainer.add(ship);
+
         root.add(new InputTracker() {
 
             boolean canShot = true;
@@ -57,7 +61,7 @@ public class GameFactory implements EngineFactory {
                 if (canShot) {
                     final float[] gunPositions = ship.getGunPositions();
                     for (int i=0; i<gunPositions.length; i+=2) {
-                        viewport.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getAngle()));
+                        collisionContainer.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getAngle()));
                     }
                     canShot = false;
                 }
@@ -92,7 +96,8 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(new Sky(viewport, new Random()));
         viewport.add(new Rectangle(-5, -5, 5, 5));
-        viewport.add(ship);
+
+        viewport.add(collisionContainer);
 
         root.add(new PositionHandler(ship, viewport));
         root.add(new BoundChecker(mapBounds, ship));
