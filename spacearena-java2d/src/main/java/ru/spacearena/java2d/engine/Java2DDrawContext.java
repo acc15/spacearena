@@ -5,6 +5,7 @@ import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 
 /**
  * @author Vyacheslav Mayorov
@@ -37,7 +38,7 @@ public class Java2DDrawContext implements DrawContext {
     }
 
     public void fillCircle(float x, float y, float radius) {
-        graphics2D.fillOval((int)(x - radius), (int)(y - radius), (int)(radius*2), (int)(radius*2));
+        graphics2D.fillOval((int) (x - radius), (int) (y - radius), (int) (radius * 2), (int) (radius * 2));
     }
 
     public void drawText(String text, float x, float y) {

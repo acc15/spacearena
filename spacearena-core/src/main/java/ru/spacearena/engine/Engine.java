@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class Engine {
 
     protected final EngineFactory factory;
-    protected EngineObject root;
+    protected EngineEntity root;
     protected float width, height;
 
     long lastTime = -1;

@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public class Sky extends EngineObject {
 
-    private static final int PIXELS_PER_STAR = 300;
+    private static final int PIXELS_PER_STAR = 400;
 
     private static final float MAX_SIZE = 6f;
     private static final float MIN_SIZE = 2f;
@@ -61,7 +61,7 @@ public class Sky extends EngineObject {
                 final float translateX = (randX - bounds.getCenterX()) / scale + bounds.getCenterX();
                 final float translateY = (randY - bounds.getCenterY()) / scale + bounds.getCenterY();
 
-                context.fillCircle(translateX, translateY, halfSize);
+                context.fillRect(translateX-halfSize, translateY-halfSize, translateX+halfSize, translateY+halfSize);
             }
         }
     }

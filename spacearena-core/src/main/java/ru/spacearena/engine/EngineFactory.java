@@ -6,6 +6,6 @@ package ru.spacearena.engine;
  */
 public interface EngineFactory {
 
-    EngineObject createRoot(Engine engine);
+    EngineEntity createRoot(Engine engine);
 
 }

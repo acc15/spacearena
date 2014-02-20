@@ -1,5 +1,6 @@
 package ru.spacearena.game;
 
+import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
@@ -18,7 +19,7 @@ import java.util.Random;
  */
 public class GameFactory implements EngineFactory {
 
-    public EngineObject createRoot(final Engine engine) {
+    public EngineEntity createRoot(final Engine engine) {
 
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
