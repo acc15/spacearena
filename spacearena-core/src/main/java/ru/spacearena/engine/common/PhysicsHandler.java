@@ -1,6 +1,7 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
@@ -142,6 +143,10 @@ public class PhysicsHandler extends EngineObject {
         this.acceleration = acceleration;
     }
 
+    @Override
+    public void onDraw(DrawContext context) {
+    }
+
     public boolean onUpdate(float seconds) {
 
         // calculate current velocity;
@@ -155,12 +160,12 @@ public class PhysicsHandler extends EngineObject {
             final float appliedVelocityX = velDiffX * length;
             final float appliedVelocityY = velDiffY * length;
             if (FloatMathUtils.abs(appliedVelocityX) > FloatMathUtils.abs(velDiffX)) {
-                currentVelocityX = targetVelocityX;
+                currentVelocityX += velDiffX;
             } else {
                 currentVelocityX += appliedVelocityX;
             }
             if (FloatMathUtils.abs(appliedVelocityY) > FloatMathUtils.abs(velDiffY)) {
-                currentVelocityY = targetVelocityY;
+                currentVelocityY += velDiffY;
             } else {
                 currentVelocityY += appliedVelocityY;
             }
@@ -178,7 +183,7 @@ public class PhysicsHandler extends EngineObject {
         if (!FloatMathUtils.isZero(angleDiff)) {
             final float frameAngularSpeed = angularSpeed * seconds;
             transform.setAngle(frameAngularSpeed > FloatMathUtils.abs(angleDiff)
-                    ? targetAngle
+                    ? transform.angle + angleDiff
                     : transform.angle + FloatMathUtils.copySign(frameAngularSpeed, angleDiff));
         }
         return true;

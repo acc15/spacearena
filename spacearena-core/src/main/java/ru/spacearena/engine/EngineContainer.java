@@ -9,7 +9,7 @@ import java.util.*;
  * @author Vyacheslav Mayorov
  * @since 2014-13-02
  */
-public class EngineContainer<T extends EngineObject> extends EngineObject {
+public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
     protected final List<T> children = new ArrayList<T>();
     protected Engine engine = null;
@@ -30,7 +30,6 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
         return (X)children.get(index);
     }
 
-    @Override
     public void onInit(Engine engine) {
         if (this.engine != null) {
             throw new IllegalStateException("Already initialized");
@@ -66,7 +65,6 @@ public class EngineContainer<T extends EngineObject> extends EngineObject {
         }
         return true;
     }
-
 
     public void onDraw(DrawContext context) {
         for (T child : children) {

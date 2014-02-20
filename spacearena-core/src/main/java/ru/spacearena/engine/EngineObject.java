@@ -7,7 +7,7 @@ import ru.spacearena.engine.input.InputEvent;
  * @author Vyacheslav Mayorov
  * @since 2014-11-02
  */
-public class EngineObject {
+public class EngineObject implements EngineEntity {
 
     public void onInit(Engine engine) {
     }
