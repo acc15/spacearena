@@ -10,6 +10,8 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class PhysicsHandler extends EngineObject {
 
+    float frameVelocityX = 0f, frameVelocityY = 0f;
+
     // current move vector
     float currentVelocityX = 0f, currentVelocityY = 0f;
 
@@ -147,10 +149,28 @@ public class PhysicsHandler extends EngineObject {
     public void onDraw(DrawContext context) {
     }
 
+    public float getFrameVelocityX() {
+        return frameVelocityX;
+    }
+
+    public float getFrameVelocityY() {
+        return frameVelocityY;
+    }
+
     public boolean onUpdate(float seconds) {
 
-        // calculate current velocity;
+        updateVelocities(seconds);
 
+        // apply velocity
+        if (!FloatMathUtils.isZero(frameVelocityX, frameVelocityY)) {
+            transform.x += frameVelocityX;
+            transform.y += frameVelocityY;
+            transform.markDirty();
+        }
+        return true;
+    }
+
+    public void updateVelocities(float seconds) {
         final float velDiffX = targetVelocityX - currentVelocityX;
         final float velDiffY = targetVelocityY - currentVelocityY;
         if (!FloatMathUtils.isZero(velDiffX, velDiffY)) {
@@ -160,22 +180,15 @@ public class PhysicsHandler extends EngineObject {
             final float appliedVelocityX = velDiffX * length;
             final float appliedVelocityY = velDiffY * length;
             if (FloatMathUtils.abs(appliedVelocityX) > FloatMathUtils.abs(velDiffX)) {
-                currentVelocityX += velDiffX;
+                currentVelocityX = targetVelocityX;
             } else {
                 currentVelocityX += appliedVelocityX;
             }
             if (FloatMathUtils.abs(appliedVelocityY) > FloatMathUtils.abs(velDiffY)) {
-                currentVelocityY += velDiffY;
+                currentVelocityY = targetVelocityY;
             } else {
                 currentVelocityY += appliedVelocityY;
             }
-        }
-
-        // apply velocity
-        if (!FloatMathUtils.isZero(currentVelocityX, currentVelocityY)) {
-            transform.x += currentVelocityX * seconds;
-            transform.y += currentVelocityY * seconds;
-            transform.markDirty();
         }
 
         // apply rotation
@@ -183,9 +196,11 @@ public class PhysicsHandler extends EngineObject {
         if (!FloatMathUtils.isZero(angleDiff)) {
             final float frameAngularSpeed = angularSpeed * seconds;
             transform.setAngle(frameAngularSpeed > FloatMathUtils.abs(angleDiff)
-                    ? transform.angle + angleDiff
+                    ? targetAngle
                     : transform.angle + FloatMathUtils.copySign(frameAngularSpeed, angleDiff));
         }
-        return true;
+
+        frameVelocityX = currentVelocityX * seconds;
+        frameVelocityY = currentVelocityY * seconds;
     }
 }

@@ -25,6 +25,10 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return children.size();
     }
 
+    public List<T> getChildren() {
+        return children;
+    }
+
     @SuppressWarnings("unchecked")
     public <X extends EngineObject> X get(int index) {
         return (X)children.get(index);

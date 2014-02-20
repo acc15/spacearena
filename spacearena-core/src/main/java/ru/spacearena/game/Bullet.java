@@ -1,7 +1,6 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.common.PhysicsHandler;
-import ru.spacearena.engine.common.Transform;
+import ru.spacearena.engine.collisions.AbstractCollisionObject;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -10,7 +9,7 @@ import ru.spacearena.engine.util.FloatMathUtils;
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Bullet extends Transform {
+public class Bullet extends AbstractCollisionObject {
 
     private Bounds bounds;
 
@@ -18,12 +17,14 @@ public class Bullet extends Transform {
         this.bounds = bounds;
         setPosition(x, y);
         setAngle(angle);
-
-        final PhysicsHandler physicsHandler = new PhysicsHandler(this);
-        physicsHandler.setSpeed(1500f);
-        physicsHandler.setVelocityByAngle(angle);
-        add(physicsHandler);
+        getPhysics().setSpeed(1500f);
+        getPhysics().setVelocityByAngle(angle);
         add(new Rectangle(Color.RED, -5, -20, 5, 20));
+    }
+
+    @Override
+    public Bounds getOriginalBounds() {
+        return this.<Rectangle>get(1).getAABB();
     }
 
     @Override
@@ -32,9 +33,4 @@ public class Bullet extends Transform {
                FloatMathUtils.inRange(getX(), bounds.getMinX(), bounds.getMaxX()) &&
                FloatMathUtils.inRange(getY(), bounds.getMinY(), bounds.getMaxY());
     }
-
-    public PhysicsHandler getPhysics() {
-        return get(0);
-    }
-
 }

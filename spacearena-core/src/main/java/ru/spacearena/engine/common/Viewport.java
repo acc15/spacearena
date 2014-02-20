@@ -1,16 +1,35 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Matrix;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Viewport extends AbstractBoundedTransform {
+public class Viewport extends AbstractBoundedTransform implements BoundChecker.Bounded {
 
     ViewportAdjustStrategy adjustStrategy;
     Matrix inverseMatrix;
+
+    final Bounds originalBounds = new Bounds() {
+        public float getMinX() {
+            return 0;
+        }
+
+        public float getMaxX() {
+            return engine.getWidth();
+        }
+
+        public float getMinY() {
+            return 0;
+        }
+
+        public float getMaxY() {
+            return engine.getHeight();
+        }
+    };
 
     public Viewport() {
         this(new DefaultAdjustStrategy());
@@ -18,6 +37,14 @@ public class Viewport extends AbstractBoundedTransform {
 
     public Viewport(ViewportAdjustStrategy adjustStrategy) {
         this.adjustStrategy = adjustStrategy;
+    }
+
+    public Bounds getBounds() {
+        return getTransformedBounds();
+    }
+
+    public void onOutOfBounds(float dx, float dy) {
+        translate(dx, dy);
     }
 
     public static interface ViewportAdjustStrategy {
@@ -72,12 +99,8 @@ public class Viewport extends AbstractBoundedTransform {
         return inverseMatrix;
     }
 
-    public float getWidth() {
-        return engine.getWidth();
+    @Override
+    public Bounds getOriginalBounds() {
+        return originalBounds;
     }
-
-    public float getHeight() {
-        return engine.getHeight();
-    }
-
 }

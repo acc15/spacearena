@@ -35,6 +35,10 @@ public class AABB implements Bounds {
         this.maxY = maxY;
     }
 
+    public void set(Bounds bounds) {
+        set(bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
+    }
+
     public float getCenterX() {
         return minX + getWidth()/2;
     }

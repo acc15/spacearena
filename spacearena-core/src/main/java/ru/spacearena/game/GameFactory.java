@@ -1,12 +1,12 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.EngineEntity;
-import ru.spacearena.engine.collisions.CollisionContainer;
-import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.geom.AABB;
+import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
 import ru.spacearena.engine.input.trackers.InputTracker;
@@ -32,9 +32,21 @@ public class GameFactory implements EngineFactory {
 
         final Ship ship = new Ship();
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
+/*
+        final CollisionContainer collisionContainer = new CollisionContainer(new CollisionContainer.CollisionListener() {
+            public void onCollision(CollisionContainer.CollisionEntity e1, CollisionContainer.CollisionEntity e2, float timeOfImpact) {
+                // TODO implement..
 
-        final CollisionContainer collisionContainer = new CollisionContainer();
+            }
+
+            public boolean canCollide(CollisionContainer.CollisionEntity e1, CollisionContainer.CollisionEntity e2) {
+                // TODO implement..
+                return true;
+            }
+        });
         collisionContainer.add(ship);
+*/
+        viewport.add(ship);
 
         root.add(new InputTracker() {
 
@@ -61,7 +73,7 @@ public class GameFactory implements EngineFactory {
                 if (canShot) {
                     final float[] gunPositions = ship.getGunPositions();
                     for (int i=0; i<gunPositions.length; i+=2) {
-                        collisionContainer.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getAngle()));
+                        viewport.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getAngle()));
                     }
                     canShot = false;
                 }
@@ -97,7 +109,6 @@ public class GameFactory implements EngineFactory {
         viewport.add(new Sky(viewport, new Random()));
         viewport.add(new Rectangle(-5, -5, 5, 5));
 
-        viewport.add(collisionContainer);
 
         root.add(new PositionHandler(ship, viewport));
         root.add(new BoundChecker(mapBounds, ship));
@@ -106,8 +117,9 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public boolean onUpdate(float seconds) {
+                final Bounds bounds = viewport.getTransformedBounds();
                 viewportText.setText(String.format("Viewport: (%.2f,%.2f)(%.2f,%.2f)",
-                        viewport.getMinX(), viewport.getMinY(), viewport.getMaxX(), viewport.getMaxY()));
+                        bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()));
                 positionText.setText(String.format("Position: %.2f, %.2f",
                         ship.getX(), ship.getY()));
                 return true;

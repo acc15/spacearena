@@ -2,6 +2,7 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geom.Bounds;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -9,8 +10,9 @@ import ru.spacearena.engine.geom.Bounds;
  */
 public class BoundChecker extends EngineObject {
 
-    public static interface Bounded extends Bounds {
-        void offset(float dx, float dy);
+    public static interface Bounded {
+        Bounds getBounds();
+        void onOutOfBounds(float dx, float dy);
     }
 
     private Bounds bounds;
@@ -33,9 +35,13 @@ public class BoundChecker extends EngineObject {
 
     @Override
     public boolean onUpdate(float seconds) {
-        final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(), object.getMinX(), object.getMaxX());
-        final float dy = computeAxisOffset(bounds.getMinY(), bounds.getMaxY(), object.getMinY(), object.getMaxY());
-        object.offset(dx, dy);
+        final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(),
+                object.getBounds().getMinX(), object.getBounds().getMaxX());
+        final float dy = computeAxisOffset(bounds.getMinY(), bounds.getMaxY(),
+                object.getBounds().getMinY(), object.getBounds().getMaxY());
+        if (!FloatMathUtils.isZero(dx, dy)) {
+            object.onOutOfBounds(dx, dy);
+        }
         return true;
     }
 }

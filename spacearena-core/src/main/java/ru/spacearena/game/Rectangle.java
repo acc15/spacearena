@@ -1,6 +1,7 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 
@@ -11,83 +12,27 @@ import ru.spacearena.engine.graphics.DrawContext;
 public class Rectangle extends EngineObject {
 
     private int color = Color.WHITE;
-    private float left, top, right, bottom;
+    private AABB bounds = new AABB();
 
     public Rectangle() {
     }
 
     public Rectangle(float left, float top, float right, float bottom) {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
+        this.bounds.set(left, top, right, bottom);
     }
 
     public Rectangle(int color, float left, float top, float right, float bottom) {
-        this.color = color;
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-    }
-
-    public int getColor() {
-        return color;
-    }
-
-    public void setColor(int color) {
+        this(left, top, right, bottom);
         this.color = color;
     }
 
-    public float getLeft() {
-        return left;
-    }
-
-    public void setLeft(float left) {
-        this.left = left;
-    }
-
-    public float getTop() {
-        return top;
-    }
-
-    public void setTop(float top) {
-        this.top = top;
-    }
-
-    public float getRight() {
-        return right;
-    }
-
-    public void setRight(float right) {
-        this.right = right;
-    }
-
-    public float getBottom() {
-        return bottom;
-    }
-
-    public void setBottom(float bottom) {
-        this.bottom = bottom;
-    }
-
-    public void set(float left, float top, float right, float bottom) {
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
-    }
-
-    public void offset(float dx, float dy) {
-        this.left += dx;
-        this.right += dx;
-        this.top += dy;
-        this.bottom += dy;
+    public AABB getAABB() {
+        return bounds;
     }
 
     @Override
     public void onDraw(DrawContext context) {
         context.setColor(color);
-        context.fillRect(left, top, right, bottom);
+        context.fillRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
     }
 }

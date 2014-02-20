@@ -1,7 +1,11 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.collisions.AbstractCollisionObject;
+import ru.spacearena.engine.common.BoundChecker;
+import ru.spacearena.engine.common.PhysicsHandler;
+import ru.spacearena.engine.common.Sprite;
+import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
@@ -11,17 +15,20 @@ import ru.spacearena.engine.util.FloatMathUtils;
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Ship extends Transform implements BoundChecker.Bounded {
+public class Ship extends AbstractCollisionObject implements BoundChecker.Bounded, Bounds {
 
     private float boundDistance = 120f;
 
     public Ship() {
-        final PhysicsHandler physics = new PhysicsHandler(this);
-        physics.setSpeed(5000f);
-        physics.setAcceleration(1000f);
-        physics.setAngularSpeed(720f);
-        add(physics);
+        getPhysics().setSpeed(5000f);
+        getPhysics().setAcceleration(1000f);
+        getPhysics().setAngularSpeed(720f);
         add(new Sprite());
+    }
+
+    @Override
+    public Bounds getOriginalBounds() {
+        return getSprite();
     }
 
     public float[] getGunPositions() {
@@ -48,6 +55,10 @@ public class Ship extends Transform implements BoundChecker.Bounded {
         return get(1);
     }
 
+    public Bounds getBounds() {
+        return this;
+    }
+
     public float getMinX() {
         return getX() - boundDistance;
     }
@@ -64,8 +75,8 @@ public class Ship extends Transform implements BoundChecker.Bounded {
         return getY() + boundDistance;
     }
 
-    public void offset(float dx, float dy) {
-        setPosition(getX() + dx, getY() + dy);
+    public void onOutOfBounds(float dx, float dy) {
+        translate(dx, dy);
         if (!FloatMathUtils.isZero(dx)) {
             getPhysics().setVelocityX(0);
         }

@@ -125,6 +125,12 @@ public class Transform extends GenericContainer {
         markDirty();
     }
 
+    public void translate(float dx, float dy) {
+        this.x += dx;
+        this.y += dy;
+        isDirty = true;
+    }
+
     private void calculateMatrix() {
         matrix.identity();
         matrix.translate(x, y);
