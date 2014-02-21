@@ -86,10 +86,17 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         }
     }
 
-    public boolean onCollision(CollisionContainer.CollisionEntity entity, float timeOfImpact, float penetrationX, float penetrationY) {
+    public boolean onCollision(CollisionContainer.CollisionEntity entity, float penetrationX, float penetrationY) {
 
-        //translate(getFrameVelocityX() * timeOfImpact, getFrameVelocityY() * timeOfImpact);
-        //translate(penetrationX, penetrationY);
+        if (!FloatMathUtils.isZero(penetrationX)) {
+            getPhysics().setVelocityX(0f);
+        }
+        if (!FloatMathUtils.isZero(penetrationY)) {
+            getPhysics().setVelocityY(0f);
+        }
+
+        translate(getFrameVelocityX() - penetrationX/2, getFrameVelocityY() - penetrationY/2);
+
         return true;
     }
 

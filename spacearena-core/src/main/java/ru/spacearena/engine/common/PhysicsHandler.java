@@ -41,7 +41,7 @@ public class PhysicsHandler extends EngineObject {
     }
 
     public void setCurrentVelocityX(float currentVelocityX) {
-        this.currentVelocityX = currentVelocityX * speed;
+        this.currentVelocityX = currentVelocityX;
     }
 
     public float getCurrentVelocityY() {
@@ -49,42 +49,63 @@ public class PhysicsHandler extends EngineObject {
     }
 
     public void setCurrentVelocityY(float currentVelocityY) {
-        this.currentVelocityY = currentVelocityY * speed;
+        this.currentVelocityY = currentVelocityY;
     }
 
     public void setCurrentVelocity(float velocityX, float velocityY) {
-        this.currentVelocityX = velocityX * speed;
-        this.currentVelocityY = velocityY * speed;
+        this.currentVelocityX = velocityX;
+        this.currentVelocityY = velocityY;
     }
 
     public void setVelocityX(float velocityX) {
-        this.currentVelocityX = velocityX * speed;
-        this.targetVelocityX = velocityX * speed;
+        this.currentVelocityX = velocityX;
+        this.targetVelocityX = velocityX;
     }
 
     public void setVelocityY(float velocityY) {
-        this.currentVelocityY = velocityY * speed;
-        this.targetVelocityY = velocityY * speed;
+        this.currentVelocityY = velocityY;
+        this.targetVelocityY = velocityY;
     }
 
     public void setVelocity(float velocityX, float velocityY) {
-        this.currentVelocityX = this.targetVelocityX = velocityX * speed;
-        this.currentVelocityY = this.targetVelocityY = velocityY * speed;
+        this.currentVelocityX = this.targetVelocityX = velocityX;
+        this.currentVelocityY = this.targetVelocityY = velocityY;
+    }
+
+    public void setTargetVelocityX(float targetVelocityX) {
+        this.targetVelocityX = targetVelocityX;
+    }
+
+    public void setTargetVelocityY(float targetVelocityY) {
+        this.targetVelocityY = targetVelocityY;
+    }
+
+    public void setTargetVelocity(float velocityX, float velocityY) {
+        this.targetVelocityX = velocityX;
+        this.targetVelocityY = velocityY;
+    }
+
+    public float getTargetVelocityX() {
+        return targetVelocityX;
+    }
+
+    public float getTargetVelocityY() {
+        return targetVelocityY;
     }
 
     public void setCurrentVelocityByAngle(float degrees) {
         final float radians = FloatMathUtils.toRadians(degrees-90);
-        setCurrentVelocity(FloatMathUtils.cos(radians), FloatMathUtils.sin(radians));
+        setCurrentVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
     }
 
     public void setTargetVelocityByAngle(float degrees) {
         final float radians = FloatMathUtils.toRadians(degrees-90);
-        setTargetVelocity(FloatMathUtils.cos(radians), FloatMathUtils.sin(radians));
+        setTargetVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
     }
 
     public void setVelocityByAngle(float degrees) {
         final float radians = FloatMathUtils.toRadians(degrees-90);
-        setVelocity(FloatMathUtils.cos(radians), FloatMathUtils.sin(radians));
+        setVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
     }
 
     public float getAngularSpeed() {
@@ -98,27 +119,6 @@ public class PhysicsHandler extends EngineObject {
     public void setAngle(float angle) {
         transform.setAngle(angle);
         targetAngle = angle;
-    }
-
-    public void setTargetVelocityX(float targetVelocityX) {
-        this.targetVelocityX = targetVelocityX * speed;
-    }
-
-    public void setTargetVelocityY(float targetVelocityY) {
-        this.targetVelocityY = targetVelocityY * speed;
-    }
-
-    public void setTargetVelocity(float velocityX, float velocityY) {
-        this.targetVelocityX = velocityX * speed;
-        this.targetVelocityY = velocityY * speed;
-    }
-
-    public float getTargetVelocityX() {
-        return targetVelocityX;
-    }
-
-    public float getTargetVelocityY() {
-        return targetVelocityY;
     }
 
     public float getTargetAngle() {

@@ -28,7 +28,7 @@ public class Bullet extends AbstractCollisionObject {
         return this.<Rectangle>get(1).getAABB();
     }
 
-    public boolean onCollision(CollisionContainer.CollisionEntity entity, float timeOfImpact, float penetrationX, float penetrationY) {
+    public boolean onCollision(CollisionContainer.CollisionEntity entity, float penetrationX, float penetrationY) {
         return false;
     }
 

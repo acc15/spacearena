@@ -3,17 +3,13 @@ package ru.spacearena.engine.collisions;
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geom.Bounds;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-20-02
  */
 public class CollisionContainer extends EngineContainer<CollisionContainer.CollisionEntity> {
-
-    private static class AxisCollision {
-        float timeOfImpact;
-        float penetration;
-    }
 
     public static interface CollisionEntity extends EngineEntity {
 
@@ -25,26 +21,22 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
         float getFrameVelocityX();
         float getFrameVelocityY();
 
-        boolean onCollision(CollisionEntity entity, float timeOfImpact, float penetrationX, float penetrationY);
+        boolean onCollision(CollisionEntity entity, float penetrationX, float penetrationY);
         boolean canCollide(CollisionEntity entity);
 
     }
-
-    private AxisCollision xCollision = new AxisCollision();
-    private AxisCollision yCollision = new AxisCollision();
 
     @Override
     public boolean onUpdate(float seconds) {
         // naive implementation
         int size = children.size();
-        int i = 0;
-        while (i < size) {
+        for (int i=0; i<size; i++) {
             final CollisionEntity e1 = children.get(i);
             if (i==0) {
                 e1.computeVelocities(seconds);
             }
 
-            float timeOfImpact = -1f, penetrationX = 0f, penetrationY = 0f;
+            float distanceX = 0f, distanceY = 0f;
             int entityIndex = -1;
             for (int j=i+1; j<size; j++) {
                 final CollisionEntity e2 = children.get(j);
@@ -55,54 +47,48 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
                     continue;
                 }
 
-                if (!computeCollision(
-                        e1.getAABB().getMinX(),
-                        e1.getAABB().getMaxX(),
-                        e2.getAABB().getMinX(),
-                        e2.getAABB().getMaxX(),
-                        e1.getFrameVelocityX(),
-                        e2.getFrameVelocityX(),
-                        xCollision)) {
-                    continue;
-                }
-                if (!computeCollision(
-                        e1.getAABB().getMinY(),
-                        e1.getAABB().getMaxY(),
-                        e2.getAABB().getMinY(),
-                        e2.getAABB().getMaxY(),
-                        e1.getFrameVelocityY(),
-                        e2.getFrameVelocityY(),
-                        yCollision)) {
+                final Bounds a = e1.getAABB();
+                final Bounds b = e2.getAABB();
+
+                final float vx = e1.getFrameVelocityX() - e2.getFrameVelocityX();
+                float xOffset = computeCollision(a.getMinX(), a.getMaxX(), b.getMinX(), b.getMaxX(), vx);
+                if (FloatMathUtils.isZero(xOffset)) {
                     continue;
                 }
 
-                final float xyTime = Math.max(xCollision.timeOfImpact, yCollision.timeOfImpact);
-                if (xCollision.timeOfImpact > yCollision.timeOfImpact && xCollision.timeOfImpact < timeOfImpact) {
-                    timeOfImpact = xCollision.timeOfImpact;
-                    penetrationX = xCollision.penetration;
-                    penetrationY = 0;
-                    entityIndex = j;
-                } else if (yCollision.timeOfImpact > xCollision.timeOfImpact && yCollision.timeOfImpact < timeOfImpact) {
-                    timeOfImpact = yCollision.timeOfImpact;
-                    penetrationX = 0f;
-                    penetrationY = yCollision.penetration;
+                final float vy = e1.getFrameVelocityY() - e2.getFrameVelocityY();
+                float yOffset = computeCollision(a.getMinY(), a.getMaxY(), b.getMinY(), b.getMaxY(), vy);
+                if (FloatMathUtils.isZero(yOffset)) {
+                    continue;
+                }
+
+                if (FloatMathUtils.abs(xOffset) < FloatMathUtils.abs(yOffset)) {
+                    yOffset = 0f;//FloatMathUtils.isZero(vx) ? 0 : (vy * xOffset) / vx;
+                } else {
+                    xOffset = 0f;//FloatMathUtils.isZero(vy) ? 0 : (vx * yOffset) / vy;
+                }
+
+                if (entityIndex < 0 ||
+                        FloatMathUtils.abs(xOffset) > FloatMathUtils.abs(distanceX) ||
+                        FloatMathUtils.abs(yOffset) > FloatMathUtils.abs(distanceY)) {
+                    distanceX = xOffset;
+                    distanceY = yOffset;
                     entityIndex = j;
                 }
+
             }
             if (entityIndex < 0) {
                 e1.applyVelocities(seconds);
-                ++i;
                 continue;
             }
 
             final CollisionEntity firstContactEntity = get(entityIndex);
-            if (!e1.onCollision(firstContactEntity, timeOfImpact, penetrationX, penetrationY)) {
+            if (!e1.onCollision(firstContactEntity, distanceX, distanceY)) {
                 children.remove(i);
                 --size;
-            } else {
-                ++i;
+                --i;
             }
-            if (!firstContactEntity.onCollision(e1, timeOfImpact, penetrationX, penetrationY)) {
+            if (!firstContactEntity.onCollision(e1, distanceX, distanceY)) {
                 children.remove(entityIndex);
                 --size;
             }
@@ -110,25 +96,16 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
         return true;
     }
 
-    public boolean computeCollision(float min1, float max1, float min2, float max2, float v1, float v2, AxisCollision axisCollision) {
-        final float v = v1 - v2;
-        if (min1 <= max2 && v >= 0) {
-            return computePenetration(min2 - max1, v, axisCollision);
+    public float computeCollision(float a0, float a1, float b0, float b1, float v) {
+        final float ac = (a1+a0)/2, bc = (b1+b0)/2;
+        if (ac <= bc) {
+            final float dist = b0-a1;
+            return v > dist ? v-dist : 0f;
+        } else {
+            final float dist = b1-a0;
+            return v < dist ? v-dist : 0f;
         }
-        if (min2 <= max1 && v <= 0 && computePenetration(min1 - max2, -v, axisCollision)) {
-            axisCollision.penetration = -axisCollision.penetration;
-            return true;
-        }
-        return false;
     }
 
-    public boolean computePenetration(float distance, float velocity, AxisCollision a) {
-        if (distance > velocity) {
-            return false;
-        }
-        a.timeOfImpact = velocity > 0 ? distance/velocity : 0;
-        a.penetration = distance;
-        return true;
-    }
 
 }
