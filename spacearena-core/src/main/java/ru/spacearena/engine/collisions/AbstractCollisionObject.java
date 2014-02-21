@@ -3,7 +3,6 @@ package ru.spacearena.engine.collisions;
 import ru.spacearena.engine.common.AbstractBoundedTransform;
 import ru.spacearena.engine.common.PhysicsHandler;
 import ru.spacearena.engine.geom.Bounds;
-import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 
 /**
@@ -24,9 +23,9 @@ public abstract class AbstractCollisionObject extends AbstractBoundedTransform i
     public void onDraw(DrawContext context) {
         super.onDraw(context);
 
-        final Bounds b = getAABB();
-        context.setColor(Color.RED);
-        context.drawRect(b.getMinX(), b.getMinY(), b.getMaxX(), b.getMaxY());
+        //final Bounds b = getAABB();
+        //context.setColor(Color.RED);
+        //context.drawRect(b.getMinX(), b.getMinY(), b.getMaxX(), b.getMaxY());
     }
 
     public Bounds getAABB() {

@@ -13,8 +13,6 @@ import ru.spacearena.engine.input.KeyCode;
 import ru.spacearena.engine.input.trackers.InputTracker;
 import ru.spacearena.engine.util.FloatMathUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -45,17 +43,11 @@ public class GameFactory implements EngineFactory {
         final AABB mapBounds = new AABB(-20000f, -20000f, 20000f, 20000f);
 
         final Ship ship = new Ship() {
+
             @Override
-            public boolean onCollision(CollisionContainer.CollisionEntity entity, float penetrationX, float penetrationY) {
-                /*collisionText.setText(String.format("Collision vector: %.2f, %.2f", penetrationX, penetrationY));
-                if (!FloatMathUtils.isZero(penetrationX)) {
-                    getPhysics().setVelocityX(0f);
-                }
-                if (!FloatMathUtils.isZero(penetrationY)) {
-                    getPhysics().setVelocityY(0f);
-                }
-                translate(getFrameVelocityX() - penetrationX, getFrameVelocityY() - penetrationY);*/
-                return true;
+            public boolean onCollision(CollisionContainer.CollisionEntity entity, boolean first, float penetrationX, float penetrationY) {
+                collisionText.setText("Collision: " + first + " " + penetrationX + " " + penetrationY);
+                return super.onCollision(entity, first, penetrationX, penetrationY);
             }
 
             @Override
@@ -70,11 +62,15 @@ public class GameFactory implements EngineFactory {
         final CollisionContainer collisionContainer = new CollisionContainer();
         collisionContainer.add(ship);
 
-        //final Ship s2 = new Ship();
-        //s2.setPosition(500, 500);
-        //collisionContainer.add(s2);
+        for (int i=0; i<5; i++) {
 
+            final Ship s2 = new Ship();
+            s2.setPosition(200 * i, 500);
+            collisionContainer.add(s2);
 
+        }
+
+/*
         final List<Ship> ships = new ArrayList<Ship>();
         for (int i=0; i<10; i++) {
             final Ship s = new Ship();
@@ -102,7 +98,7 @@ public class GameFactory implements EngineFactory {
                 return true;
             }
         });
-
+*/
         root.add(new InputTracker() {
 
             boolean canShot = true;
@@ -113,11 +109,13 @@ public class GameFactory implements EngineFactory {
                 final float yVelocity = getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN, 1f);
                 if (!FloatMathUtils.isZero(xVelocity, yVelocity)) {
                     final float length = ship.getPhysics().getSpeed() / FloatMathUtils.length(xVelocity, yVelocity);
+                    ship.getPhysics().setAcceleration(2000f);
                     ship.getPhysics().setTargetVelocity(xVelocity*length, yVelocity*length);
 
                     final float angle = FloatMathUtils.angle(xVelocity, yVelocity);
                     ship.getPhysics().setTargetAngle(angle);
                 } else {
+                    ship.getPhysics().setAcceleration(500f);
                     ship.getPhysics().setTargetVelocity(0, 0);
                 }
 

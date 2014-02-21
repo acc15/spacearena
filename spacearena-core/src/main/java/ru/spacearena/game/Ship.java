@@ -7,8 +7,6 @@ import ru.spacearena.engine.common.BoundChecker;
 import ru.spacearena.engine.common.PhysicsHandler;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geom.Bounds;
-import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -22,7 +20,7 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
 
     public Ship() {
         getPhysics().setSpeed(5000f);
-        getPhysics().setAcceleration(1000f);
+        getPhysics().setAcceleration(500f);
         getPhysics().setAngularSpeed(720f);
         add(new Sprite());
     }
@@ -33,7 +31,7 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
     }
 
     public float[] getGunPositions() {
-        final float[] positions = new float[] {35, 100, 110, 100};
+        final float[] positions = new float[] {10,70,85,70};
         mapPoints(positions);
         return positions;
     }
@@ -86,16 +84,27 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         }
     }
 
-    public boolean onCollision(CollisionContainer.CollisionEntity entity, float penetrationX, float penetrationY) {
+    public boolean onCollision(CollisionContainer.CollisionEntity entity, boolean first, float penetrationX, float penetrationY) {
 
-        if (!FloatMathUtils.isZero(penetrationX)) {
-            getPhysics().setVelocityX(0f);
-        }
-        if (!FloatMathUtils.isZero(penetrationY)) {
-            getPhysics().setVelocityY(0f);
+        if (!first) {
+            return true;
         }
 
-        translate(getFrameVelocityX() - penetrationX/2, getFrameVelocityY() - penetrationY/2);
+        final Ship ship1 = this;
+        final Ship ship2 = (Ship)entity;
+
+        ship1.translate(ship1.getFrameVelocityX()-penetrationX, ship1.getFrameVelocityY()-penetrationY);
+        //ship2.translate(ship2.getFrameVelocityX()+penetrationX, ship2.getFrameVelocityY()+penetrationY);
+
+        final float vx1 = ship1.getPhysics().getCurrentVelocityX();
+        final float vx2 = ship2.getPhysics().getCurrentVelocityX();
+        ship1.getPhysics().setCurrentVelocityX(-vx1 * 0.2f + vx2 * 0.8f);
+        ship2.getPhysics().setCurrentVelocityX(-vx2 * 0.2f + vx1 * 0.8f);
+
+        final float vy1 = ship1.getPhysics().getCurrentVelocityY();
+        final float vy2 = ship2.getPhysics().getCurrentVelocityY();
+        ship1.getPhysics().setCurrentVelocityY(-vy1 * 0.2f + vy2 * 0.8f);
+        ship2.getPhysics().setCurrentVelocityY(-vy2 * 0.2f + vy1 * 0.8f);
 
         return true;
     }
@@ -103,11 +112,11 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
     public boolean canCollide(CollisionContainer.CollisionEntity entity) {
         return true;
     }
-
+/*
     @Override
     public void onDraw(DrawContext context) {
         super.onDraw(context);
         context.setColor(Color.GREEN);
         context.drawRect(getMinX(), getMinY(), getMaxX(), getMaxY());
-    }
+    }*/
 }

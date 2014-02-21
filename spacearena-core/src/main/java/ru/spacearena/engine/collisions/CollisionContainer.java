@@ -21,7 +21,7 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
         float getFrameVelocityX();
         float getFrameVelocityY();
 
-        boolean onCollision(CollisionEntity entity, float penetrationX, float penetrationY);
+        boolean onCollision(CollisionEntity entity, boolean b, float penetrationX, float penetrationY);
         boolean canCollide(CollisionEntity entity);
 
     }
@@ -63,9 +63,9 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
                 }
 
                 if (FloatMathUtils.abs(xOffset) < FloatMathUtils.abs(yOffset)) {
-                    yOffset = 0f;//FloatMathUtils.isZero(vx) ? 0 : (vy * xOffset) / vx;
+                    yOffset = FloatMathUtils.isZero(vx) ? 0 : vy*xOffset/vx;
                 } else {
-                    xOffset = 0f;//FloatMathUtils.isZero(vy) ? 0 : (vx * yOffset) / vy;
+                    xOffset = FloatMathUtils.isZero(vy) ? 0 : vx*yOffset/vy;
                 }
 
                 if (entityIndex < 0 ||
@@ -83,12 +83,12 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
             }
 
             final CollisionEntity firstContactEntity = get(entityIndex);
-            if (!e1.onCollision(firstContactEntity, distanceX, distanceY)) {
+            if (!e1.onCollision(firstContactEntity, true, distanceX, distanceY)) {
                 children.remove(i);
                 --size;
                 --i;
             }
-            if (!firstContactEntity.onCollision(e1, distanceX, distanceY)) {
+            if (!firstContactEntity.onCollision(e1, false, distanceX, distanceY)) {
                 children.remove(entityIndex);
                 --size;
             }
