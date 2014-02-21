@@ -6,7 +6,6 @@ import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.ShapeUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -14,8 +13,7 @@ import ru.spacearena.engine.util.ShapeUtils;
  */
 public abstract class AbstractCollisionObject extends PhysicalObject implements CollisionContainer.CollisionEntity {
 
-    private final AABB transformedBounds = new AABB();
-    private final float[] aabbPoints = new float[8];
+    private final AABB boundingBox = new AABB();
     private final float[][] shapePoints = new float[getConvexShapeCount()][];
 
     @Override
@@ -45,15 +43,16 @@ public abstract class AbstractCollisionObject extends PhysicalObject implements 
     @Override
     protected void calculateViewMatrix(Matrix matrix) {
         super.calculateViewMatrix(matrix);
-        final Bounds b = getOriginalBounds();
-        ShapeUtils.fillRect(aabbPoints, b.getMinX(), b.getMinY(), b.getMaxX(), b.getMaxY());
-        matrix.mapPoints(aabbPoints);
-        transformedBounds.calculate(aabbPoints);
         for (int i=0; i<getConvexShapeCount(); i++) {
             final float[] points = getConvexShape(i);
             final float[] txPoints = new float[points.length];
             System.arraycopy(points, 0, txPoints, 0, points.length);
             matrix.mapPoints(txPoints);
+            if (i == 0) {
+                boundingBox.calculate(txPoints);
+            } else {
+                boundingBox.update(txPoints, 0);
+            }
             shapePoints[i] = txPoints;
         }
     }
@@ -71,9 +70,7 @@ public abstract class AbstractCollisionObject extends PhysicalObject implements 
         return 0;
     }
 
-    public abstract Bounds getOriginalBounds();
-
     public Bounds getAABB() {
-        return transformedBounds;
+        return boundingBox;
     }
 }

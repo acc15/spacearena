@@ -76,7 +76,11 @@ public class AABB implements Bounds {
         maxX = points[0];
         minY = points[1];
         maxY = points[1];
-        for (int i=2;i<points.length;i+=2) {
+        update(points, 2);
+    }
+
+    public void update(float[] points, int index) {
+        for (int i=index;i<points.length;i+=2) {
             final float x = points[i], y = points[i+1];
             if (x < minX) {
                 minX = x;

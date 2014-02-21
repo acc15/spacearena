@@ -20,12 +20,7 @@ public class Bullet extends AbstractCollisionObject {
         setAngle(angle);
         setSpeed(1500f);
         setVelocityByAngle(angle);
-        add(new Rectangle(Color.RED, -5, -20, 5, 20));
-    }
-
-    @Override
-    public Bounds getOriginalBounds() {
-        return this.<Rectangle>get(0).getAABB();
+        add(new Rectangle(Color.RED, SHAPE[0], SHAPE[1], SHAPE[4], SHAPE[5]));
     }
 
     public boolean onCollision(CollisionContainer.CollisionEntity entity, boolean b, float penetrationX, float penetrationY) {
@@ -34,6 +29,18 @@ public class Bullet extends AbstractCollisionObject {
 
     public boolean canCollide(CollisionContainer.CollisionEntity entity) {
         return entity instanceof Ship;
+    }
+
+    private static final float[] SHAPE = new float[] {-5,-20, -5,20, 5,20, 5,-20};
+
+    @Override
+    public float[] getConvexShape(int n) {
+        return SHAPE;
+    }
+
+    @Override
+    public int getConvexShapeCount() {
+        return 1;
     }
 
     @Override

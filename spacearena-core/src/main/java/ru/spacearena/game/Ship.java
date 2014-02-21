@@ -44,11 +44,6 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         return get(0);
     }
 
-    @Override
-    public Bounds getOriginalBounds() {
-        return getSprite();
-    }
-
     public Bounds getBounds() {
         return this;
     }
