@@ -158,19 +158,16 @@ public class PhysicsHandler extends EngineObject {
     }
 
     public boolean onUpdate(float seconds) {
-
-        updateVelocities(seconds);
-
-        // apply velocity
-        if (!FloatMathUtils.isZero(frameVelocityX, frameVelocityY)) {
-            transform.x += frameVelocityX;
-            transform.y += frameVelocityY;
-            transform.markDirty();
-        }
+        updateVelocity(seconds);
+        applyVelocity(seconds);
         return true;
     }
 
-    public void updateVelocities(float seconds) {
+    public void applyVelocity(float seconds) {
+        transform.translate(frameVelocityX, frameVelocityY);
+    }
+
+    public void updateVelocity(float seconds) {
         final float velDiffX = targetVelocityX - currentVelocityX;
         final float velDiffY = targetVelocityY - currentVelocityY;
         if (!FloatMathUtils.isZero(velDiffX, velDiffY)) {

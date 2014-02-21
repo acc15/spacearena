@@ -2,6 +2,7 @@ package ru.spacearena.game;
 
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.collisions.AbstractCollisionObject;
+import ru.spacearena.engine.collisions.CollisionContainer;
 import ru.spacearena.engine.common.BoundChecker;
 import ru.spacearena.engine.common.PhysicsHandler;
 import ru.spacearena.engine.common.Sprite;
@@ -83,6 +84,17 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         if (!FloatMathUtils.isZero(dy)) {
             getPhysics().setVelocityY(0);
         }
+    }
+
+    public boolean onCollision(CollisionContainer.CollisionEntity entity, float timeOfImpact, float penetrationX, float penetrationY) {
+
+        //translate(getFrameVelocityX() * timeOfImpact, getFrameVelocityY() * timeOfImpact);
+        //translate(penetrationX, penetrationY);
+        return true;
+    }
+
+    public boolean canCollide(CollisionContainer.CollisionEntity entity) {
+        return true;
     }
 
     @Override

@@ -33,8 +33,12 @@ public abstract class AbstractCollisionObject extends AbstractBoundedTransform i
         return getTransformedBounds();
     }
 
-    public void updateVelocities(float seconds) {
-        getPhysics().updateVelocities(seconds);
+    public void computeVelocities(float seconds) {
+        getPhysics().updateVelocity(seconds);
+    }
+
+    public void applyVelocities(float seconds) {
+        getPhysics().applyVelocity(seconds);
     }
 
     public float getFrameVelocityX() {

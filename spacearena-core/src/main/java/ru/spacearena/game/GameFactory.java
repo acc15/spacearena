@@ -4,6 +4,7 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.collisions.CollisionContainer;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.geom.Bounds;
@@ -28,25 +29,41 @@ public class GameFactory implements EngineFactory {
 
         final GenericContainer root = new GenericContainer();
 
+        final MultilineText.Line fpsText = new MultilineText.Line();
+        final MultilineText.Line positionText = new MultilineText.Line();
+        final MultilineText.Line viewportText = new MultilineText.Line();
+        final MultilineText.Line collisionText = new MultilineText.Line();
+
+        final MultilineText multilineText = new MultilineText();
+        multilineText.add(fpsText);
+        multilineText.add(positionText);
+        multilineText.add(viewportText);
+        multilineText.add(collisionText);
+
         final AABB mapBounds = new AABB(-20000f, -20000f, 20000f, 20000f);
 
-        final Ship ship = new Ship();
-        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
-/*
-        final CollisionContainer collisionContainer = new CollisionContainer(new CollisionContainer.CollisionListener() {
-            public void onCollision(CollisionContainer.CollisionEntity e1, CollisionContainer.CollisionEntity e2, float timeOfImpact) {
-                // TODO implement..
-
-            }
-
-            public boolean canCollide(CollisionContainer.CollisionEntity e1, CollisionContainer.CollisionEntity e2) {
-                // TODO implement..
+        final Ship ship = new Ship() {
+            @Override
+            public boolean onCollision(CollisionContainer.CollisionEntity entity, float timeOfImpact, float penetrationX, float penetrationY) {
+                collisionText.setText("Collision at " + timeOfImpact);
+                translate(penetrationX, penetrationY);
                 return true;
             }
-        });
+
+            @Override
+            public void applyVelocities(float seconds) {
+                collisionText.setText("No collision");
+                super.applyVelocities(seconds);
+            }
+        };
+        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
+
+        final CollisionContainer collisionContainer = new CollisionContainer();
         collisionContainer.add(ship);
-*/
-        viewport.add(ship);
+
+        final Ship secondShip = new Ship();
+        secondShip.setPosition(500, 500);
+        collisionContainer.add(secondShip);
 
         root.add(new InputTracker() {
 
@@ -84,7 +101,6 @@ public class GameFactory implements EngineFactory {
         root.add(new Background());
 
         final FPSCounter fpsCounter = new FPSCounter();
-        final MultilineText.Line fpsText = new MultilineText.Line();
         root.add(fpsCounter);
 
         final Timer timer = new Timer(0.5f, true);
@@ -97,18 +113,11 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final MultilineText.Line positionText = new MultilineText.Line();
-        final MultilineText.Line viewportText = new MultilineText.Line();
-        final MultilineText multilineText = new MultilineText();
-        multilineText.add(fpsText);
-        multilineText.add(positionText);
-        multilineText.add(viewportText);
-
         root.add(viewport);
 
         viewport.add(new Sky(viewport, new Random()));
         viewport.add(new Rectangle(-5, -5, 5, 5));
-
+        viewport.add(collisionContainer);
 
         root.add(new PositionHandler(ship, viewport));
         root.add(new BoundChecker(mapBounds, ship));

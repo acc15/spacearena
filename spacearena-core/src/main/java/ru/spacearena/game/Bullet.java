@@ -1,6 +1,7 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.collisions.AbstractCollisionObject;
+import ru.spacearena.engine.collisions.CollisionContainer;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -25,6 +26,14 @@ public class Bullet extends AbstractCollisionObject {
     @Override
     public Bounds getOriginalBounds() {
         return this.<Rectangle>get(1).getAABB();
+    }
+
+    public boolean onCollision(CollisionContainer.CollisionEntity entity, float timeOfImpact, float penetrationX, float penetrationY) {
+        return false;
+    }
+
+    public boolean canCollide(CollisionContainer.CollisionEntity entity) {
+        return entity instanceof Ship;
     }
 
     @Override
