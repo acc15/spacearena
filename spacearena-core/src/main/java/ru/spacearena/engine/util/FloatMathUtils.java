@@ -151,4 +151,13 @@ public class FloatMathUtils {
     public static float max(float a, float b) {
         return Math.max(a, b);
     }
+
+    public static boolean absGt(float a, float b) {
+        return abs(a) > abs(b);
+    }
+
+    public static int absCmp(float a, float b) {
+        return Float.compare(abs(a), abs(b));
+    }
+
 }

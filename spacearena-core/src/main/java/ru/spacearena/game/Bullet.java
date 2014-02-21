@@ -18,14 +18,14 @@ public class Bullet extends AbstractCollisionObject {
         this.bounds = bounds;
         setPosition(x, y);
         setAngle(angle);
-        getPhysics().setSpeed(1500f);
-        getPhysics().setVelocityByAngle(angle);
+        setSpeed(1500f);
+        setVelocityByAngle(angle);
         add(new Rectangle(Color.RED, -5, -20, 5, 20));
     }
 
     @Override
     public Bounds getOriginalBounds() {
-        return this.<Rectangle>get(1).getAABB();
+        return this.<Rectangle>get(0).getAABB();
     }
 
     public boolean onCollision(CollisionContainer.CollisionEntity entity, boolean b, float penetrationX, float penetrationY) {

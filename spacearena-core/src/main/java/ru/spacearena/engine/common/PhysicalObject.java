@@ -1,14 +1,13 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
- * @since 2014-12-02
+ * @since 2014-21-02
  */
-public class PhysicsHandler extends EngineObject {
+public class PhysicalObject extends Transform {
+
 
     float frameVelocityX = 0f, frameVelocityY = 0f;
 
@@ -29,12 +28,6 @@ public class PhysicsHandler extends EngineObject {
 
     // how quickly speed can change
     float acceleration;
-
-    private Transform transform;
-
-    public PhysicsHandler(Transform transform) {
-        this.transform = transform;
-    }
 
     public float getCurrentVelocityX() {
         return currentVelocityX;
@@ -117,8 +110,8 @@ public class PhysicsHandler extends EngineObject {
     }
 
     public void setAngle(float angle) {
-        transform.setAngle(angle);
         targetAngle = angle;
+        super.setAngle(angle);
     }
 
     public float getTargetAngle() {
@@ -145,10 +138,6 @@ public class PhysicsHandler extends EngineObject {
         this.acceleration = acceleration;
     }
 
-    @Override
-    public void onDraw(DrawContext context) {
-    }
-
     public float getFrameVelocityX() {
         return frameVelocityX;
     }
@@ -158,46 +147,43 @@ public class PhysicsHandler extends EngineObject {
     }
 
     public boolean onUpdate(float seconds) {
-        updateVelocity(seconds);
-        applyVelocity(seconds);
+        if (!super.onUpdate(seconds)) {
+            return false;
+        }
+        computeVelocities(seconds);
+        applyVelocities(seconds);
         return true;
     }
 
-    public void applyVelocity(float seconds) {
-        transform.translate(frameVelocityX, frameVelocityY);
+    public void applyVelocities(float seconds) {
+        translate(frameVelocityX, frameVelocityY);
     }
 
-    public void updateVelocity(float seconds) {
+    public void computeVelocities(float seconds) {
         final float velDiffX = targetVelocityX - currentVelocityX;
         final float velDiffY = targetVelocityY - currentVelocityY;
         if (!FloatMathUtils.isZero(velDiffX, velDiffY)) {
-
             final float frameAcceleration = acceleration * seconds;
             final float length = frameAcceleration/FloatMathUtils.length(velDiffX, velDiffY);
             final float appliedVelocityX = velDiffX * length;
             final float appliedVelocityY = velDiffY * length;
-            if (FloatMathUtils.abs(appliedVelocityX) > FloatMathUtils.abs(velDiffX)) {
-                currentVelocityX = targetVelocityX;
-            } else {
-                currentVelocityX += appliedVelocityX;
-            }
-            if (FloatMathUtils.abs(appliedVelocityY) > FloatMathUtils.abs(velDiffY)) {
-                currentVelocityY = targetVelocityY;
-            } else {
-                currentVelocityY += appliedVelocityY;
-            }
+            currentVelocityX = FloatMathUtils.absGt(appliedVelocityX, velDiffX)
+                    ? targetVelocityX : currentVelocityX + appliedVelocityX;
+            currentVelocityY = FloatMathUtils.absGt(appliedVelocityY, velDiffY)
+                    ? targetVelocityY : currentVelocityY + appliedVelocityY;
         }
 
         // apply rotation
-        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, transform.angle);
+        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, angle);
         if (!FloatMathUtils.isZero(angleDiff)) {
             final float frameAngularSpeed = angularSpeed * seconds;
-            transform.setAngle(frameAngularSpeed > FloatMathUtils.abs(angleDiff)
-                    ? targetAngle
-                    : transform.angle + FloatMathUtils.copySign(frameAngularSpeed, angleDiff));
+            super.setAngle(frameAngularSpeed > FloatMathUtils.abs(angleDiff)
+                    ? targetAngle : angle + FloatMathUtils.copySign(frameAngularSpeed, angleDiff));
         }
 
         frameVelocityX = currentVelocityX * seconds;
         frameVelocityY = currentVelocityY * seconds;
     }
+
+
 }

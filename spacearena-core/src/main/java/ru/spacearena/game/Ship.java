@@ -4,7 +4,6 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.collisions.AbstractCollisionObject;
 import ru.spacearena.engine.collisions.CollisionContainer;
 import ru.spacearena.engine.common.BoundChecker;
-import ru.spacearena.engine.common.PhysicsHandler;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Image;
@@ -19,15 +18,10 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
     private float boundDistance = 120f;
 
     public Ship() {
-        getPhysics().setSpeed(5000f);
-        getPhysics().setAcceleration(500f);
-        getPhysics().setAngularSpeed(720f);
+        setSpeed(5000f);
+        setAcceleration(500f);
+        setAngularSpeed(720f);
         add(new Sprite());
-    }
-
-    @Override
-    public Bounds getOriginalBounds() {
-        return getSprite();
     }
 
     public float[] getGunPositions() {
@@ -46,12 +40,13 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         super.onInit(engine);
     }
 
-    public PhysicsHandler getPhysics() {
+    private Sprite getSprite() {
         return get(0);
     }
 
-    private Sprite getSprite() {
-        return get(1);
+    @Override
+    public Bounds getOriginalBounds() {
+        return getSprite();
     }
 
     public Bounds getBounds() {
@@ -77,10 +72,10 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
     public void onOutOfBounds(float dx, float dy) {
         translate(dx, dy);
         if (!FloatMathUtils.isZero(dx)) {
-            getPhysics().setVelocityX(0);
+            setVelocityX(0);
         }
         if (!FloatMathUtils.isZero(dy)) {
-            getPhysics().setVelocityY(0);
+            setVelocityY(0);
         }
     }
 
@@ -96,15 +91,15 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         ship1.translate(ship1.getFrameVelocityX()-penetrationX, ship1.getFrameVelocityY()-penetrationY);
         //ship2.translate(ship2.getFrameVelocityX()+penetrationX, ship2.getFrameVelocityY()+penetrationY);
 
-        final float vx1 = ship1.getPhysics().getCurrentVelocityX();
-        final float vx2 = ship2.getPhysics().getCurrentVelocityX();
-        ship1.getPhysics().setCurrentVelocityX(-vx1 * 0.2f + vx2 * 0.8f);
-        ship2.getPhysics().setCurrentVelocityX(-vx2 * 0.2f + vx1 * 0.8f);
+        final float vx1 = ship1.getCurrentVelocityX();
+        final float vx2 = ship2.getCurrentVelocityX();
+        ship1.setCurrentVelocityX(-vx1 * 0.2f + vx2 * 0.8f);
+        ship2.setCurrentVelocityX(-vx2 * 0.2f + vx1 * 0.8f);
 
-        final float vy1 = ship1.getPhysics().getCurrentVelocityY();
-        final float vy2 = ship2.getPhysics().getCurrentVelocityY();
-        ship1.getPhysics().setCurrentVelocityY(-vy1 * 0.2f + vy2 * 0.8f);
-        ship2.getPhysics().setCurrentVelocityY(-vy2 * 0.2f + vy1 * 0.8f);
+        final float vy1 = ship1.getCurrentVelocityY();
+        final float vy2 = ship2.getCurrentVelocityY();
+        ship1.setCurrentVelocityY(-vy1 * 0.2f + vy2 * 0.8f);
+        ship2.setCurrentVelocityY(-vy2 * 0.2f + vy1 * 0.8f);
 
         return true;
     }
