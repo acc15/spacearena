@@ -1,5 +1,7 @@
 package ru.spacearena.engine.common;
 
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
@@ -87,17 +89,17 @@ public class PhysicalObject extends Transform {
     }
 
     public void setCurrentVelocityByAngle(float degrees) {
-        final float radians = FloatMathUtils.toRadians(degrees-90);
+        final float radians = FloatMathUtils.toRadiansTop(degrees);
         setCurrentVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
     }
 
     public void setTargetVelocityByAngle(float degrees) {
-        final float radians = FloatMathUtils.toRadians(degrees-90);
+        final float radians = FloatMathUtils.toRadiansTop(degrees);
         setTargetVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
     }
 
     public void setVelocityByAngle(float degrees) {
-        final float radians = FloatMathUtils.toRadians(degrees-90);
+        final float radians = FloatMathUtils.toRadiansTop(degrees);
         setVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
     }
 
@@ -153,6 +155,36 @@ public class PhysicalObject extends Transform {
         computeVelocities(seconds);
         applyVelocities(seconds);
         return true;
+    }
+
+    @Override
+    public void onDraw(DrawContext context) {
+        super.onDraw(context);
+        if (engine.getDebug().isDrawVelocities() && !FloatMathUtils.isZero(currentVelocityX, currentVelocityY)) {
+
+            final float textSize = context.getTextSize();
+            final float lineWidth = context.getLineWidth();
+            try {
+                context.setLineWidth(2f);
+                context.setTextSize(40f);
+
+                final float tx = x + currentVelocityX, ty = y + currentVelocityY;
+                context.setColor(Color.WHITE);
+                context.drawLine(x, y, tx, ty);
+
+                final float angle = FloatMathUtils.angle(-currentVelocityX, -currentVelocityY);
+                final float r1 = FloatMathUtils.toRadiansTop(angle + 30);
+                final float arrow = 20f;
+                context.drawLine(tx, ty, tx + FloatMathUtils.cos(r1) * arrow, ty + FloatMathUtils.sin(r1) * arrow);
+                final float r2 = FloatMathUtils.toRadiansTop(angle - 30);
+                context.drawLine(tx, ty, tx + FloatMathUtils.cos(r2) * arrow, ty + FloatMathUtils.sin(r2) * arrow);
+                context.drawText(String.format("%.2f;%.2f", currentVelocityX, currentVelocityY), tx, ty+20);
+
+            } finally {
+                context.setTextSize(textSize);
+                context.setLineWidth(lineWidth);
+            }
+        }
     }
 
     public void applyVelocities(float seconds) {

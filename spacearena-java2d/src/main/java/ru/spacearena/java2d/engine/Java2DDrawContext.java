@@ -59,4 +59,42 @@ public class Java2DDrawContext implements DrawContext {
     public Matrix getMatrixCopy() {
         return new Java2DMatrix(graphics2D.getTransform());
     }
+
+    public void drawLine(float x1, float y1, float x2, float y2) {
+        graphics2D.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+    }
+
+    public void setTextSize(float size) {
+        final Font newFont = graphics2D.getFont().deriveFont(size);
+        graphics2D.setFont(newFont);
+    }
+
+    public float getTextSize() {
+        return graphics2D.getFont().getSize2D();
+    }
+
+    public static final int MAX_POLY_POINTS = 100;
+    private static final int[] xPointBuf = new int[MAX_POLY_POINTS];
+    private static final int[] yPointBuf = new int[MAX_POLY_POINTS];
+
+    public void drawPoly(float[] points) {
+        final int pc = points.length/2;
+        for (int i=0;i<pc;i++) {
+            xPointBuf[i] = (int)points[i*2];
+            yPointBuf[i] = (int)points[i*2+1];
+        }
+        graphics2D.drawPolygon(xPointBuf, yPointBuf, pc);
+    }
+
+    public float getLineWidth() {
+        final Stroke s = graphics2D.getStroke();
+        if (s instanceof BasicStroke) {
+            return ((BasicStroke)s).getLineWidth();
+        }
+        return 1f;
+    }
+
+    public void setLineWidth(float width) {
+        graphics2D.setStroke(new BasicStroke(width));
+    }
 }

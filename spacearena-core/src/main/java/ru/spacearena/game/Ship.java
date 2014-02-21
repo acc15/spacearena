@@ -107,7 +107,24 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
     public boolean canCollide(CollisionContainer.CollisionEntity entity) {
         return true;
     }
-/*
+
+    private static final float[][] SHIP_SHAPES = new float[][] {
+        {40,0, 25,90, 70,90, 53,0},
+        {47,70, 0, 110, 0, 164, 47, 135},
+        {47,70, 47, 135, 94, 164, 94, 110}
+    };
+
+    @Override
+    public float[] getConvexShape(int n) {
+        return SHIP_SHAPES[n];
+    }
+
+    @Override
+    public int getConvexShapeCount() {
+        return SHIP_SHAPES.length;
+    }
+
+    /*
     @Override
     public void onDraw(DrawContext context) {
         super.onDraw(context);

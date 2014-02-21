@@ -23,6 +23,8 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
+        engine.getDebug().setDrawAll(true);
+
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
@@ -88,7 +90,7 @@ public class GameFactory implements EngineFactory {
                 for (int i=0; i<ships.size(); i++) {
                     final Ship s = ships.get(i);
                     final float d = angle + (i*30);
-                    final float r = FloatMathUtils.toRadians(d-90);
+                    final float r = FloatMathUtils.toRadiansTop(d-90);
                     final float x = FloatMathUtils.cos(r) * 500;
                     final float y = FloatMathUtils.sin(r) * 500;
                     s.setAngle(d+90);

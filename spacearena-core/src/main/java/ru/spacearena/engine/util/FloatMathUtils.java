@@ -35,6 +35,10 @@ public class FloatMathUtils {
         return degrees * DEG_TO_RAD;
     }
 
+    public static float toRadiansTop(float degrees) {
+        return toRadians(degrees-90);
+    }
+
     public static boolean isZero(float x, float y) {
         return isEqual(x, y, 0f, 0f);
     }

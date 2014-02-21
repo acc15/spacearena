@@ -46,7 +46,7 @@ public class Point2F {
     }
 
     public Point2F polar(float angle, float distance) {
-        final float rads = FloatMathUtils.toRadians(angle - 90);
+        final float rads = FloatMathUtils.toRadiansTop(angle);
         return set(FloatMathUtils.cos(rads) * distance, FloatMathUtils.sin(rads) * distance);
     }
 

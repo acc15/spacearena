@@ -18,4 +18,14 @@ public interface DrawContext {
     void setMatrix(Matrix matrix);
 
     Matrix getMatrixCopy();
+
+    void drawLine(float x1, float y1, float x2, float y2);
+
+    void setTextSize(float size);
+    float getTextSize();
+
+    void drawPoly(float[] points);
+
+    float getLineWidth();
+    void setLineWidth(float width);
 }

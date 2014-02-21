@@ -14,6 +14,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public abstract class Engine {
 
+    private final Debug debug = new Debug();
+
     protected final EngineFactory factory;
     protected EngineEntity root;
     protected float width, height;
@@ -77,5 +79,44 @@ public abstract class Engine {
     public abstract Image loadImage(String resource);
     public abstract boolean enableInput(InputType inputType);
 
+    public static final class Debug {
 
+        boolean drawVelocities = false;
+        boolean drawBounds = false;
+        boolean drawConvexShapes = false;
+
+        public boolean isDrawVelocities() {
+            return drawVelocities;
+        }
+
+        public void setDrawVelocities(boolean drawVelocities) {
+            this.drawVelocities = drawVelocities;
+        }
+
+        public boolean isDrawBounds() {
+            return drawBounds;
+        }
+
+        public void setDrawBounds(boolean drawBounds) {
+            this.drawBounds = drawBounds;
+        }
+
+        public boolean isDrawConvexShapes() {
+            return drawConvexShapes;
+        }
+
+        public void setDrawConvexShapes(boolean drawConvexShapes) {
+            this.drawConvexShapes = drawConvexShapes;
+        }
+
+        public void setDrawAll(boolean value) {
+            this.drawBounds = value;
+            this.drawConvexShapes = value;
+            this.drawVelocities = value;
+        }
+    }
+
+    public Debug getDebug() {
+        return debug;
+    }
 }
