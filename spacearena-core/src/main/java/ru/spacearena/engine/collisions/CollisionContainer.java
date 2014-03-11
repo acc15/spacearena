@@ -1,30 +1,29 @@
 package ru.spacearena.engine.collisions;
 
 import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geom.Bounds;
-import ru.spacearena.engine.util.FloatMathUtils;
+import ru.vmsoftware.math.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-20-02
  */
-public class CollisionContainer extends EngineContainer<CollisionContainer.CollisionEntity> {
+public class CollisionContainer extends EngineContainer<CollisionEntity> {
 
-    public static interface CollisionEntity extends EngineEntity {
+    public static class AxisContact {
+        // time when shapes start overlap [0..1) 1 = shapes won't overlap (in current frame) by given velocity
+        float startTime;
 
-        Bounds getAABB();
+        // time when shapes end overlap [0..1) 1 = shapes won't end overlap (in current frame) if startTime < 1
+        float endTime;
 
-        void computeVelocities(float seconds);
-        void applyVelocities(float seconds);
-
-        float getFrameVelocityX();
-        float getFrameVelocityY();
-
-        boolean onCollision(CollisionEntity entity, boolean b, float penetrationX, float penetrationY);
-        boolean canCollide(CollisionEntity entity);
-
+        // amount of overlap
+        float overlap;
     }
+
+    private final AxisContact xContact = new AxisContact();
+    private final AxisContact yContact = new AxisContact();
+    private final Contact contact = new Contact();
 
     @Override
     public boolean onUpdate(float seconds) {
@@ -36,8 +35,9 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
                 e1.computeVelocities(seconds);
             }
 
-            float distanceX = 0f, distanceY = 0f;
-            int entityIndex = -1;
+            contact.setContact(1f, 0f, 0f);
+
+            int firstContactIndex = -1;
             for (int j=i+1; j<size; j++) {
                 final CollisionEntity e2 = children.get(j);
                 if (i==0) {
@@ -51,61 +51,79 @@ public class CollisionContainer extends EngineContainer<CollisionContainer.Colli
                 final Bounds b = e2.getAABB();
 
                 final float vx = e1.getFrameVelocityX() - e2.getFrameVelocityX();
-                float xOffset = computeCollision(a.getMinX(), a.getMaxX(), b.getMinX(), b.getMaxX(), vx);
-                if (FloatMathUtils.isZero(xOffset)) {
+                computeContact(a.getMinX(), a.getMaxX(), b.getMinX(), b.getMaxX(), vx, xContact);
+                if (xContact.startTime >= 1f) {
                     continue;
                 }
 
                 final float vy = e1.getFrameVelocityY() - e2.getFrameVelocityY();
-                float yOffset = computeCollision(a.getMinY(), a.getMaxY(), b.getMinY(), b.getMaxY(), vy);
-                if (FloatMathUtils.isZero(yOffset)) {
+                computeContact(a.getMinY(), a.getMaxY(), b.getMinY(), b.getMaxY(), vy, yContact);
+                if (yContact.startTime >= 1f) {
                     continue;
                 }
 
-                if (FloatMathUtils.abs(xOffset) < FloatMathUtils.abs(yOffset)) {
-                    yOffset = FloatMathUtils.isZero(vx) ? 0 : vy*xOffset/vx;
+                if (xContact.startTime > yContact.startTime) {
+                    if (!FloatMathUtils.inRange(xContact.startTime, yContact.startTime, yContact.endTime)) {
+                        continue;
+                    }
+                    if (xContact.startTime >= contact.time) {
+                        continue;
+                    }
+                    firstContactIndex = j;
+                    contact.time = xContact.startTime;
                 } else {
-                    xOffset = FloatMathUtils.isZero(vy) ? 0 : vx*yOffset/vy;
+                    if (!FloatMathUtils.inRange(yContact.startTime, xContact.startTime, xContact.endTime)) {
+                        continue;
+                    }
+                    if (yContact.startTime >= contact.time) {
+                        continue;
+                    }
+                    firstContactIndex = j;
+                    contact.time = yContact.startTime;
                 }
 
-                if (entityIndex < 0 ||
-                        FloatMathUtils.abs(xOffset) > FloatMathUtils.abs(distanceX) ||
-                        FloatMathUtils.abs(yOffset) > FloatMathUtils.abs(distanceY)) {
-                    distanceX = xOffset;
-                    distanceY = yOffset;
-                    entityIndex = j;
+                if (FloatMathUtils.absGt(xContact.overlap, yContact.overlap)) {
+                    contact.overlapX = 0f;
+                    contact.overlapY = yContact.overlap;
+                } else {
+                    contact.overlapX = xContact.overlap;
+                    contact.overlapY = 0f;
                 }
-
             }
-            if (entityIndex < 0) {
+            if (firstContactIndex < 0) {
                 e1.applyVelocities(seconds);
                 continue;
             }
 
-            final CollisionEntity firstContactEntity = get(entityIndex);
-            if (!e1.onCollision(firstContactEntity, true, distanceX, distanceY)) {
+            final CollisionEntity firstContactEntity = get(firstContactIndex);
+            if (!e1.onCollision(firstContactEntity, true, contact)) {
                 children.remove(i);
                 --size;
                 --i;
             }
-            if (!firstContactEntity.onCollision(e1, false, distanceX, distanceY)) {
-                children.remove(entityIndex);
+            if (!firstContactEntity.onCollision(e1, false, contact)) {
+                children.remove(firstContactIndex);
                 --size;
             }
         }
         return true;
     }
 
-    public float computeCollision(float a0, float a1, float b0, float b1, float v) {
+    public void computeContact(float a0, float a1, float b0, float b1, float v, AxisContact contact) {
         final float ac = (a1+a0)/2, bc = (b1+b0)/2;
-        if (ac <= bc) {
-            final float dist = b0-a1;
-            return v > dist ? v-dist : 0f;
+        if (ac < bc) {
+            // shape A is at left / top of B
+            final float mind = b0 - a1, maxd = b1 - a0;
+            contact.startTime = mind < 0 ? 0 : v > mind ? mind / v : 1;
+            contact.endTime = v > maxd ? maxd / v : 1;
+            contact.overlap = FloatMathUtils.min(mind, 0);
         } else {
-            final float dist = b1-a0;
-            return v < dist ? v-dist : 0f;
+            // shape A is at right / bottom of B
+            final float mind = b1 - a0, maxd = b0 - a1;
+            contact.startTime = mind > 0 ? 0 : v < mind ? mind / v : 1;
+            contact.endTime = v < maxd ? maxd / v : 1;
+            contact.overlap = FloatMathUtils.max(mind, 0);
         }
     }
-
 
 }

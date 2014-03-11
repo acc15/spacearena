@@ -3,7 +3,7 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.FloatMathUtils;
+import ru.vmsoftware.math.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -11,7 +11,8 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class Transform extends GenericContainer {
 
-    Matrix matrix;
+    Matrix localSpace;
+    Matrix worldSpace;
     boolean isDirty = false;
 
     float x = 0f, y = 0f;
@@ -131,18 +132,6 @@ public class Transform extends GenericContainer {
         isDirty = true;
     }
 
-    private void calculateMatrix() {
-        matrix.identity();
-        matrix.translate(x, y);
-        matrix.rotate(angle);
-        matrix.skew(skewX, skewY);
-        matrix.scale(scaleX, scaleY);
-        matrix.translate(-pivotX, -pivotY);
-    }
-
-    protected void calculateViewMatrix(Matrix matrix) {
-    }
-
     public void markDirty() {
         this.isDirty = true;
     }
@@ -150,40 +139,54 @@ public class Transform extends GenericContainer {
     protected void updateMatrices() {
         if (isDirty) {
             isDirty = false;
-            calculateMatrix();
-            calculateViewMatrix(matrix);
+            worldSpace.identity();
+            worldSpace.translate(x, y);
+            worldSpace.rotate(angle);
+            worldSpace.skew(skewX, skewY);
+            worldSpace.scale(scaleX, scaleY);
+            worldSpace.translate(-pivotX, -pivotY);
+            localSpace.inverse(worldSpace);
+            onMatrixUpdate();
         }
     }
 
-    public Matrix getViewMatrix() {
-        updateMatrices();
-        return matrix;
+    protected void onMatrixUpdate() {
     }
 
-    public Matrix getMatrix() {
+    public Matrix getViewMatrix() {
+        return getWorldSpace();
+    }
+
+    public Matrix getLocalSpace() {
         updateMatrices();
-        return matrix;
+        return localSpace;
+    }
+
+    public Matrix getWorldSpace() {
+        updateMatrices();
+        return worldSpace;
     }
 
     public void mapPoints(float[] pts) {
-        getMatrix().mapPoints(pts);
+        getWorldSpace().mapPoints(pts);
     }
 
     public void onInit(Engine engine) {
-        this.matrix = engine.createMatrix();
+        this.worldSpace = engine.createMatrix();
+        this.localSpace = engine.createMatrix();
         super.onInit(engine);
     }
 
     @Override
     public void onDraw(DrawContext context) {
-        final Matrix thisMatrix = getViewMatrix();
-        if (thisMatrix.isIdentity()) {
+        final Matrix viewMatrix = getViewMatrix();
+        if (viewMatrix.isIdentity()) {
             super.onDraw(context);
             return;
         }
         final Matrix oldMatrix = context.getMatrixCopy();
         final Matrix concatMatrix = context.getMatrixCopy();
-        concatMatrix.multiply(thisMatrix);
+        concatMatrix.multiply(viewMatrix);
         try {
             context.setMatrix(concatMatrix);
             super.onDraw(context);

@@ -2,12 +2,13 @@ package ru.spacearena.game;
 
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.collisions.AbstractCollisionObject;
-import ru.spacearena.engine.collisions.CollisionContainer;
+import ru.spacearena.engine.collisions.CollisionEntity;
+import ru.spacearena.engine.collisions.Contact;
 import ru.spacearena.engine.common.BoundChecker;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Image;
-import ru.spacearena.engine.util.FloatMathUtils;
+import ru.vmsoftware.math.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -18,7 +19,7 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
     private float boundDistance = 120f;
 
     public Ship() {
-        setSpeed(5000f);
+        setSpeed(1000f);
         setAcceleration(500f);
         setAngularSpeed(720f);
         add(new Sprite());
@@ -74,32 +75,32 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         }
     }
 
-    public boolean onCollision(CollisionContainer.CollisionEntity entity, boolean first, float penetrationX, float penetrationY) {
+    public boolean onCollision(CollisionEntity entity, boolean reference, Contact contact) {
 
-        if (!first) {
+        if (!reference) {
             return true;
         }
 
         final Ship ship1 = this;
         final Ship ship2 = (Ship)entity;
 
-        ship1.translate(ship1.getFrameVelocityX()-penetrationX, ship1.getFrameVelocityY()-penetrationY);
+        ship1.translate(ship1.getFrameVelocityX() * contact.getTime() + contact.getOverlapX(),
+                        ship1.getFrameVelocityY() * contact.getTime() + contact.getOverlapY());
         //ship2.translate(ship2.getFrameVelocityX()+penetrationX, ship2.getFrameVelocityY()+penetrationY);
 
         final float vx1 = ship1.getCurrentVelocityX();
         final float vx2 = ship2.getCurrentVelocityX();
-        ship1.setCurrentVelocityX(-vx1 * 0.2f + vx2 * 0.8f);
-        ship2.setCurrentVelocityX(-vx2 * 0.2f + vx1 * 0.8f);
+        ship1.setCurrentVelocityX(-vx1 * 0.4f + vx2 * 0.8f);
+        ship2.setCurrentVelocityX(-vx2 * 0.4f + vx1 * 0.8f);
 
         final float vy1 = ship1.getCurrentVelocityY();
         final float vy2 = ship2.getCurrentVelocityY();
-        ship1.setCurrentVelocityY(-vy1 * 0.2f + vy2 * 0.8f);
-        ship2.setCurrentVelocityY(-vy2 * 0.2f + vy1 * 0.8f);
-
+        ship1.setCurrentVelocityY(-vy1 * 0.4f + vy2 * 0.8f);
+        ship2.setCurrentVelocityY(-vy2 * 0.4f + vy1 * 0.8f);
         return true;
     }
 
-    public boolean canCollide(CollisionContainer.CollisionEntity entity) {
+    public boolean canCollide(CollisionEntity entity) {
         return true;
     }
 

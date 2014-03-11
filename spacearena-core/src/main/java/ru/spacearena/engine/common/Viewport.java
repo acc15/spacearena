@@ -11,7 +11,6 @@ import ru.spacearena.engine.graphics.Matrix;
 public class Viewport extends AbstractBoundedTransform implements BoundChecker.Bounded {
 
     ViewportAdjustStrategy adjustStrategy;
-    Matrix inverseMatrix;
 
     final Bounds originalBounds = new Bounds() {
         public float getMinX() {
@@ -73,7 +72,6 @@ public class Viewport extends AbstractBoundedTransform implements BoundChecker.B
     @Override
     public void onInit(Engine engine) {
         super.onInit(engine);
-        inverseMatrix = engine.createMatrix();
         adjustViewport(engine.getWidth(), engine.getHeight());
     }
 
@@ -88,15 +86,9 @@ public class Viewport extends AbstractBoundedTransform implements BoundChecker.B
         this.adjustStrategy.adjustViewport(width, height, this);
     }
 
-    protected void calculateViewMatrix(Matrix matrix) {
-        super.calculateViewMatrix(matrix);
-        inverseMatrix.inverse(matrix);
-    }
-
     @Override
     public Matrix getViewMatrix() {
-        updateMatrices();
-        return inverseMatrix;
+        return getLocalSpace();
     }
 
     @Override

@@ -5,13 +5,12 @@ import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.Matrix;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-20-02
  */
-public abstract class AbstractCollisionObject extends PhysicalObject implements CollisionContainer.CollisionEntity {
+public abstract class AbstractCollisionObject extends PhysicalObject implements CollisionEntity {
 
     private final AABB boundingBox = new AABB();
     private final float[][] shapePoints = new float[getConvexShapeCount()][];
@@ -41,13 +40,12 @@ public abstract class AbstractCollisionObject extends PhysicalObject implements 
     }
 
     @Override
-    protected void calculateViewMatrix(Matrix matrix) {
-        super.calculateViewMatrix(matrix);
+    protected void onMatrixUpdate() {
         for (int i=0; i<getConvexShapeCount(); i++) {
             final float[] points = getConvexShape(i);
             final float[] txPoints = new float[points.length];
             System.arraycopy(points, 0, txPoints, 0, points.length);
-            matrix.mapPoints(txPoints);
+            getWorldSpace().mapPoints(txPoints);
             if (i == 0) {
                 boundingBox.calculate(txPoints);
             } else {

@@ -5,13 +5,15 @@ import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.collisions.CollisionContainer;
+import ru.spacearena.engine.collisions.CollisionEntity;
+import ru.spacearena.engine.collisions.Contact;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
 import ru.spacearena.engine.input.trackers.InputTracker;
-import ru.spacearena.engine.util.FloatMathUtils;
+import ru.vmsoftware.math.FloatMathUtils;
 
 import java.util.Random;
 
@@ -42,14 +44,14 @@ public class GameFactory implements EngineFactory {
         multilineText.add(viewportText);
         multilineText.add(collisionText);
 
-        final AABB mapBounds = new AABB(-20000f, -20000f, 20000f, 20000f);
+        final AABB mapBounds = new AABB(-2000f, -2000f, 2000f, 2000f);
 
         final Ship ship = new Ship() {
 
             @Override
-            public boolean onCollision(CollisionContainer.CollisionEntity entity, boolean first, float penetrationX, float penetrationY) {
-                collisionText.setText("Collision: " + first + " " + penetrationX + " " + penetrationY);
-                return super.onCollision(entity, first, penetrationX, penetrationY);
+            public boolean onCollision(CollisionEntity entity, boolean reference, Contact contact) {
+                collisionText.setText("Collision: " + reference + " " + contact.getOverlapX() + " " + contact.getOverlapY());
+                return super.onCollision(entity, reference, contact);
             }
 
             @Override
@@ -60,17 +62,12 @@ public class GameFactory implements EngineFactory {
         };
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
 
-
         final CollisionContainer collisionContainer = new CollisionContainer();
         collisionContainer.add(ship);
 
-        for (int i=0; i<5; i++) {
-
-            final Ship s2 = new Ship();
-            s2.setPosition(200 * i, 500);
-            collisionContainer.add(s2);
-
-        }
+        final Ship s2 = new Ship();
+        s2.setPosition(50, 50);
+        collisionContainer.add(s2);
 
 /*
         final List<Ship> ships = new ArrayList<Ship>();

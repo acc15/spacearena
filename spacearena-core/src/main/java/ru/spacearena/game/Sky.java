@@ -5,7 +5,7 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.util.FloatMathUtils;
+import ru.vmsoftware.math.FloatMathUtils;
 import ru.spacearena.engine.util.RandomUtils;
 
 import java.util.Random;

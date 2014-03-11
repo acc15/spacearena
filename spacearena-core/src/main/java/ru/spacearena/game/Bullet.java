@@ -1,10 +1,11 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.collisions.AbstractCollisionObject;
-import ru.spacearena.engine.collisions.CollisionContainer;
+import ru.spacearena.engine.collisions.CollisionEntity;
+import ru.spacearena.engine.collisions.Contact;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.util.FloatMathUtils;
+import ru.vmsoftware.math.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -23,11 +24,11 @@ public class Bullet extends AbstractCollisionObject {
         add(new Rectangle(Color.RED, SHAPE[0], SHAPE[1], SHAPE[4], SHAPE[5]));
     }
 
-    public boolean onCollision(CollisionContainer.CollisionEntity entity, boolean b, float penetrationX, float penetrationY) {
+    public boolean onCollision(CollisionEntity entity, boolean reference, Contact contact) {
         return false;
     }
 
-    public boolean canCollide(CollisionContainer.CollisionEntity entity) {
+    public boolean canCollide(CollisionEntity entity) {
         return entity instanceof Ship;
     }
 
