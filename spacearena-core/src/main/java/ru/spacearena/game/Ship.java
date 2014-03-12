@@ -84,10 +84,6 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
         final Ship ship1 = this;
         final Ship ship2 = (Ship)entity;
 
-        ship1.translate(ship1.getFrameVelocityX() * contact.getTime() + contact.getOverlapX(),
-                        ship1.getFrameVelocityY() * contact.getTime() + contact.getOverlapY());
-        //ship2.translate(ship2.getFrameVelocityX()+penetrationX, ship2.getFrameVelocityY()+penetrationY);
-
         final float vx1 = ship1.getCurrentVelocityX();
         final float vx2 = ship2.getCurrentVelocityX();
         ship1.setCurrentVelocityX(-vx1 * 0.4f + vx2 * 0.8f);
