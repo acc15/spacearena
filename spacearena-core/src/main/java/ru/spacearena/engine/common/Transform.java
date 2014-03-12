@@ -13,11 +13,8 @@ import ru.vmsoftware.math.FloatMathUtils;
 public class Transform extends GenericContainer {
 
     private static final int MATRIX_DIRTY_MASK = 0x01;
-    private static final int ROTATE_DIRTY_MASK = 0x06;
 
     private static final int MATRIX_DIRTY_VALUE = 1;
-    private static final int ANGLE_DIRTY_VALUE = 1 << 1;
-    private static final int SINCOS_DIRTY_VALUE = 2 << 1;
 
     Matrix localSpace;
     Matrix worldSpace;
@@ -26,8 +23,7 @@ public class Transform extends GenericContainer {
     float scaleX = 1f, scaleY = 1f;
     float skewX = 0f, skewY = 0f;
     float pivotX = 0f, pivotY = 0f;
-    float rotate = 0f;
-    float rotateX = 0f, rotateY = 0f;
+    float rotation = 0f;
 
     int dirty = 0;
 
@@ -39,25 +35,8 @@ public class Transform extends GenericContainer {
         this.dirty = BitUtils.reset(dirty, MATRIX_DIRTY_MASK);
     }
 
-    private void resetRotateDirty() {
-        this.dirty = BitUtils.reset(dirty, ROTATE_DIRTY_MASK);
-    }
-
-    private void markRotateDirty(boolean angle) {
-        this.dirty = BitUtils.set(dirty, MATRIX_DIRTY_MASK | ROTATE_DIRTY_MASK,
-                MATRIX_DIRTY_VALUE | (angle ? ANGLE_DIRTY_VALUE : SINCOS_DIRTY_VALUE));
-    }
-
     private boolean isMatrixDirty() {
         return BitUtils.get(dirty, MATRIX_DIRTY_MASK) == MATRIX_DIRTY_VALUE;
-    }
-
-    private boolean isAngleDirty() {
-        return BitUtils.get(dirty, ROTATE_DIRTY_MASK) == ANGLE_DIRTY_VALUE;
-    }
-
-    private boolean isSinCosDirty() {
-        return BitUtils.get(dirty, ROTATE_DIRTY_MASK) == SINCOS_DIRTY_VALUE;
     }
 
     public float getX() {
@@ -156,48 +135,13 @@ public class Transform extends GenericContainer {
         markMatrixDirty();
     }
 
-    private void updateAngleIfNeeded() {
-        if (!isAngleDirty()) {
-            return;
-        }
-        this.rotate = FloatMathUtils.toDegrees(FloatMathUtils.atan2(this.rotateY, this.rotateX));
-        resetRotateDirty();
+    public float getRotation() {
+        return rotation;
     }
 
-    private void updateSinCosIfNeeded() {
-        if (!isSinCosDirty()) {
-            return;
-        }
-        final float rads = FloatMathUtils.toRadians(rotate);
-        this.rotateX = FloatMathUtils.cos(rads);
-        this.rotateY = FloatMathUtils.sin(rads);
-        resetRotateDirty();
-    }
-
-    public float getRotate() {
-        updateAngleIfNeeded();
-        return rotate;
-    }
-
-    public void setRotate(float rotate) {
-        this.rotate = FloatMathUtils.normalizeDegrees(rotate);
-        markRotateDirty(false);
-    }
-
-    public void setRotate(float cos, float sin) {
-        this.rotateX = cos;
-        this.rotateY = sin;
-        markRotateDirty(true);
-    }
-
-    public float getRotateX() {
-        updateSinCosIfNeeded();
-        return rotateX;
-    }
-
-    public float getRotateY() {
-        updateSinCosIfNeeded();
-        return rotateY;
+    public void setRotation(float rotation) {
+        this.rotation = FloatMathUtils.normalizeDegrees(rotation);
+        markMatrixDirty();
     }
 
     public void translate(float dx, float dy) {
@@ -211,8 +155,7 @@ public class Transform extends GenericContainer {
             return;
         }
         resetMatrixDirty();
-        updateSinCosIfNeeded();
-        worldSpace.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, rotateX, rotateY, x, y);
+        worldSpace.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, rotation, x, y);
         localSpace.inverse(worldSpace);
         onMatrixUpdate();
     }

@@ -1,6 +1,7 @@
 package ru.spacearena.java2d.engine;
 
 import ru.spacearena.engine.graphics.Matrix;
+import ru.vmsoftware.math.FloatMathUtils;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -50,11 +51,11 @@ public class Java2DMatrix implements Matrix {
             float pivotX, float pivotY,
             float scaleX, float scaleY,
             float skewX, float skewY,
-            float rotateX, float rotateY,
+            float rotation,
             float x, float y) {
         affineTransform.setToIdentity();
         affineTransform.translate(x, y);
-        affineTransform.rotate(rotateX, rotateY);
+        affineTransform.rotate(FloatMathUtils.toRadians(rotation));
         affineTransform.shear(skewX, skewY);
         affineTransform.scale(scaleX, scaleY);
         affineTransform.translate(-pivotX, -pivotY);

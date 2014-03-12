@@ -19,10 +19,10 @@ public class PhysicalObject extends Transform {
     // target move vector
     float targetVelocityX = 0f, targetVelocityY = 0f;
 
-    // an rotate to which object should rotate with {@link angularSpeed} speed
+    // an rotation to which object should rotation with {@link angularSpeed} speed
     float targetAngle;
 
-    // how quickly an object can rotate
+    // how quickly an object can rotation
     float angularSpeed = 0f;
 
     // how quickly an object can move
@@ -111,9 +111,9 @@ public class PhysicalObject extends Transform {
         this.angularSpeed = angularSpeed;
     }
 
-    public void setRotate(float angle) {
+    public void setRotation(float angle) {
         targetAngle = angle;
-        super.setRotate(angle);
+        super.setRotation(angle);
     }
 
     public float getTargetAngle() {
@@ -206,11 +206,11 @@ public class PhysicalObject extends Transform {
         }
 
         // apply rotation
-        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, rotate);
+        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, rotation);
         if (!FloatMathUtils.isZero(angleDiff)) {
             final float frameAngularSpeed = angularSpeed * seconds;
-            super.setRotate(frameAngularSpeed > FloatMathUtils.abs(angleDiff)
-                    ? targetAngle : rotate + FloatMathUtils.copySign(frameAngularSpeed, angleDiff));
+            super.setRotation(frameAngularSpeed > FloatMathUtils.abs(angleDiff)
+                    ? targetAngle : rotation + FloatMathUtils.copySign(frameAngularSpeed, angleDiff));
         }
 
         frameVelocityX = currentVelocityX * seconds;

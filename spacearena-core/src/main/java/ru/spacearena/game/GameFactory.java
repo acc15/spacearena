@@ -90,7 +90,7 @@ public class GameFactory implements EngineFactory {
                     final float r = FloatMathUtils.toRadiansTop(d-90);
                     final float x = FloatMathUtils.cos(r) * 500;
                     final float y = FloatMathUtils.sin(r) * 500;
-                    s.setRotate(d+90);
+                    s.setRotation(d+90);
                     s.setPosition(x,y);
                 }
                 angle += 100 * seconds;
@@ -125,7 +125,7 @@ public class GameFactory implements EngineFactory {
                 if (canShot) {
                     final float[] gunPositions = ship.getGunPositions();
                     for (int i=0; i<gunPositions.length; i+=2) {
-                        viewport.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getRotate()));
+                        viewport.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getRotation()));
                     }
                     canShot = false;
                 }
