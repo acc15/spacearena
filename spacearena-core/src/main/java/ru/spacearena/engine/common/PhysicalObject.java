@@ -2,6 +2,7 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawUtils;
 import ru.vmsoftware.math.FloatMathUtils;
 
 /**
@@ -10,99 +11,36 @@ import ru.vmsoftware.math.FloatMathUtils;
  */
 public class PhysicalObject extends Transform {
 
-
     float frameVelocityX = 0f, frameVelocityY = 0f;
 
     float frameAngularVelocity = 0f;
 
-    // current move vector
-    float currentVelocityX = 0f, currentVelocityY = 0f;
+    float velocityX = 0f, velocityY = 0f;
 
-    // target move vector
-    float targetVelocityX = 0f, targetVelocityY = 0f;
+    float angularVelocity = 0f;
 
-    // an rotation to which object should rotate with {@link angularVelocity} speed
-    float targetRotation = 0f;
-
-    // how quickly an object can rotate
-    float angularVelocity = 1f;
-
-    // how quickly an object can move
-    float maxSpeed = 1f;
-
-    // how quickly speed can change
-    float acceleration;
-
-    public float getCurrentVelocityX() {
-        return currentVelocityX;
+    public float getFrameVelocityX() {
+        return frameVelocityX;
     }
 
-    public void setCurrentVelocityX(float currentVelocityX) {
-        this.currentVelocityX = currentVelocityX;
+    public float getFrameVelocityY() {
+        return frameVelocityY;
     }
 
-    public float getCurrentVelocityY() {
-        return currentVelocityY;
-    }
-
-    public void setCurrentVelocityY(float currentVelocityY) {
-        this.currentVelocityY = currentVelocityY;
-    }
-
-    public void setCurrentVelocity(float velocityX, float velocityY) {
-        this.currentVelocityX = velocityX;
-        this.currentVelocityY = velocityY;
+    public float getVelocityX() {
+        return velocityX;
     }
 
     public void setVelocityX(float velocityX) {
-        this.currentVelocityX = velocityX;
-        this.targetVelocityX = velocityX;
+        this.velocityX = velocityX;
+    }
+
+    public float getVelocityY() {
+        return velocityY;
     }
 
     public void setVelocityY(float velocityY) {
-        this.currentVelocityY = velocityY;
-        this.targetVelocityY = velocityY;
-    }
-
-    public void setVelocity(float velocityX, float velocityY) {
-        this.currentVelocityX = this.targetVelocityX = velocityX;
-        this.currentVelocityY = this.targetVelocityY = velocityY;
-    }
-
-    public void setTargetVelocityX(float targetVelocityX) {
-        this.targetVelocityX = targetVelocityX;
-    }
-
-    public void setTargetVelocityY(float targetVelocityY) {
-        this.targetVelocityY = targetVelocityY;
-    }
-
-    public void setTargetVelocity(float velocityX, float velocityY) {
-        this.targetVelocityX = velocityX;
-        this.targetVelocityY = velocityY;
-    }
-
-    public float getTargetVelocityX() {
-        return targetVelocityX;
-    }
-
-    public float getTargetVelocityY() {
-        return targetVelocityY;
-    }
-
-    public void setCurrentVelocityByAngle(float degrees) {
-        final float radians = FloatMathUtils.toRadiansTop(degrees);
-        setCurrentVelocity(FloatMathUtils.cos(radians) * maxSpeed, FloatMathUtils.sin(radians) * maxSpeed);
-    }
-
-    public void setTargetVelocityByAngle(float degrees) {
-        final float radians = FloatMathUtils.toRadiansTop(degrees);
-        setTargetVelocity(FloatMathUtils.cos(radians) * maxSpeed, FloatMathUtils.sin(radians) * maxSpeed);
-    }
-
-    public void setVelocityByAngle(float degrees) {
-        final float radians = FloatMathUtils.toRadiansTop(degrees);
-        setVelocity(FloatMathUtils.cos(radians) * maxSpeed, FloatMathUtils.sin(radians) * maxSpeed);
+        this.velocityY = velocityY;
     }
 
     public float getAngularVelocity() {
@@ -113,48 +51,12 @@ public class PhysicalObject extends Transform {
         this.angularVelocity = angularVelocity;
     }
 
-    public void setRotation(float angle) {
-        targetRotation = angle;
-        super.setRotation(angle);
-    }
-
-    public float getTargetRotation() {
-        return targetRotation;
-    }
-
-    public void setTargetRotation(float targetRotation) {
-        this.targetRotation = targetRotation;
-    }
-
-    public float getMaxSpeed() {
-        return maxSpeed;
-    }
-
-    public void setMaxSpeed(float maxSpeed) {
-        this.maxSpeed = maxSpeed;
-    }
-
-    public float getAcceleration() {
-        return acceleration;
-    }
-
-    public void setAcceleration(float acceleration) {
-        this.acceleration = acceleration;
-    }
-
-    public float getFrameVelocityX() {
-        return frameVelocityX;
-    }
-
-    public float getFrameVelocityY() {
-        return frameVelocityY;
-    }
-
     public boolean onUpdate(float seconds) {
         if (!super.onUpdate(seconds)) {
             return false;
         }
         computeVelocities(seconds);
+        applyRotation(seconds);
         applyVelocities(seconds);
         return true;
     }
@@ -162,40 +64,64 @@ public class PhysicalObject extends Transform {
     @Override
     public void onDraw(DrawContext context) {
         super.onDraw(context);
-        if (engine.getDebug().isDrawVelocities() && !FloatMathUtils.isZero(currentVelocityX, currentVelocityY)) {
-
-            final float textSize = context.getTextSize();
-            final float lineWidth = context.getLineWidth();
-            try {
-                context.setLineWidth(2f);
-                context.setTextSize(40f);
-
-                final float tx = x + currentVelocityX, ty = y + currentVelocityY;
-                context.setColor(Color.WHITE);
-                context.drawLine(x, y, tx, ty);
-
-                final float angle = FloatMathUtils.angle(-currentVelocityX, -currentVelocityY);
-                final float r1 = FloatMathUtils.toRadiansTop(angle + 30);
-                final float arrow = 20f;
-                context.drawLine(tx, ty, tx + FloatMathUtils.cos(r1) * arrow, ty + FloatMathUtils.sin(r1) * arrow);
-                final float r2 = FloatMathUtils.toRadiansTop(angle - 30);
-                context.drawLine(tx, ty, tx + FloatMathUtils.cos(r2) * arrow, ty + FloatMathUtils.sin(r2) * arrow);
-                context.drawText(String.format("%.2f;%.2f", currentVelocityX, currentVelocityY), tx, ty+20);
-
-            } finally {
-                context.setTextSize(textSize);
-                context.setLineWidth(lineWidth);
-            }
+        if (!engine.getDebug().isDrawVelocities() || FloatMathUtils.isZero(velocityX, velocityY)) {
+            return;
         }
+
+        final float textSize = context.getTextSize();
+        final float lineWidth = context.getLineWidth();
+        try {
+            context.setLineWidth(2f);
+            context.setTextSize(40f);
+
+            final float tx = x + velocityX, ty = y + velocityY;
+            context.setColor(Color.WHITE);
+
+            DrawUtils.drawArrow(context, x, y, tx, ty, DrawUtils.HeadType.ARROW, 50f, DrawUtils.HeadType.ARROW, 50f);
+            context.drawText(String.format("%.2f;%.2f", velocityX, velocityY), tx, ty+20);
+
+        } finally {
+            context.setTextSize(textSize);
+            context.setLineWidth(lineWidth);
+        }
+    }
+
+    public void applyRotation(float seconds) {
+        setRotation(rotation + frameAngularVelocity);
     }
 
     public void applyVelocities(float seconds) {
         translate(frameVelocityX, frameVelocityY);
-        super.setRotation(rotation + frameAngularVelocity);
     }
 
+    public void accelerateTo(float targetVelocityX, float targetVelocityY, float acceleration) {
+        final float velDiffX = targetVelocityX - velocityX;
+        final float velDiffY = targetVelocityY - velocityY;
+        if (!FloatMathUtils.isZero(velDiffX, velDiffY)) {
+            final float length = acceleration/FloatMathUtils.length(velDiffX, velDiffY);
+            final float appliedVelocityX = velDiffX * length;
+            final float appliedVelocityY = velDiffY * length;
+            velocityX = FloatMathUtils.absGt(appliedVelocityX, velDiffX)
+                    ? targetVelocityX : velocityX + appliedVelocityX;
+            velocityY = FloatMathUtils.absGt(appliedVelocityY, velDiffY)
+                    ? targetVelocityY : velocityY + appliedVelocityY;
+        }
+    }
+
+    public void rotateTo(float targetAngle, float velocity) {
+        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, rotation);
+        if (!FloatMathUtils.isZero(angleDiff)) {
+            setRotation(velocity > FloatMathUtils.abs(angleDiff)
+                    ? targetAngle
+                    : FloatMathUtils.copySign(velocity, angleDiff));
+        }
+    }
+
+
     public void computeVelocities(float seconds) {
-        final float velDiffX = targetVelocityX - currentVelocityX;
+
+
+        /*final float velDiffX = targetVelocityX - currentVelocityX;
         final float velDiffY = targetVelocityY - currentVelocityY;
         if (!FloatMathUtils.isZero(velDiffX, velDiffY)) {
             final float frameAcceleration = acceleration * seconds;
@@ -219,6 +145,11 @@ public class PhysicalObject extends Transform {
 
         frameVelocityX = currentVelocityX * seconds;
         frameVelocityY = currentVelocityY * seconds;
+        */
+
+        this.frameVelocityX = velocityX * seconds;
+        this.frameVelocityY = velocityY * seconds;
+        this.frameAngularVelocity = angularVelocity * seconds;
     }
 
 

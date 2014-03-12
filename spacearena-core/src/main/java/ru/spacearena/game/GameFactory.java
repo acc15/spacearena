@@ -66,7 +66,7 @@ public class GameFactory implements EngineFactory {
         collisionContainer.add(ship);
 
         final Ship s2 = new Ship();
-        s2.setPosition(50, 50);
+        s2.setPosition(150, 150);
         collisionContainer.add(s2);
 
 /*
@@ -104,8 +104,19 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public boolean onUpdate(float seconds) {
-                final float xVelocity = getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT, 1f);
-                final float yVelocity = getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN, 1f);
+                final float xVelocity = getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT);
+                final float yVelocity = getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN);
+
+                if (FloatMathUtils.isZero(xVelocity, yVelocity)) {
+                    ship.accelerateTo(0, 0, Ship.ACCELERATION/10f * seconds);
+                } else {
+                    final float l = Ship.MAX_SPEED / FloatMathUtils.length(xVelocity, yVelocity);
+                    final float angle = FloatMathUtils.angle(xVelocity, yVelocity);
+                    ship.accelerateTo(xVelocity * l, yVelocity * l, Ship.ACCELERATION * seconds);
+                    ship.rotateTo(angle, Ship.ANGULAR_VELOCITY);
+                }
+
+                /*
                 if (!FloatMathUtils.isZero(xVelocity, yVelocity)) {
                     final float angle = FloatMathUtils.angle(xVelocity, yVelocity);
                     ship.setAcceleration(2000f);
@@ -114,7 +125,7 @@ public class GameFactory implements EngineFactory {
                 } else {
                     ship.setAcceleration(500f);
                     ship.setTargetVelocity(0, 0);
-                }
+                }*/
 
                 if (!isKeyboardKeyPressed(KeyCode.VK_SPACE)) {
                     canShot = true;

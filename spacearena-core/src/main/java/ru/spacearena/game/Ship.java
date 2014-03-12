@@ -8,7 +8,6 @@ import ru.spacearena.engine.common.BoundChecker;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Image;
-import ru.vmsoftware.math.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -18,10 +17,12 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
 
     private float boundDistance = 120f;
 
+    public static final float MAX_SPEED = 500f;
+    public static final float ACCELERATION = 2000f;
+    public static final float ANGULAR_VELOCITY = 720f;
+
+
     public Ship() {
-        setMaxSpeed(1000f);
-        setAcceleration(500f);
-        setAngularVelocity(720f);
         add(new Sprite());
     }
 
@@ -67,32 +68,17 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
 
     public void onOutOfBounds(float dx, float dy) {
         translate(dx, dy);
+        /*
         if (!FloatMathUtils.isZero(dx)) {
             setVelocityX(0);
         }
         if (!FloatMathUtils.isZero(dy)) {
             setVelocityY(0);
-        }
+        }*/
     }
 
     public boolean onCollision(CollisionEntity entity, boolean reference, Contact contact) {
 
-        if (!reference) {
-            return true;
-        }
-
-        final Ship ship1 = this;
-        final Ship ship2 = (Ship)entity;
-
-        final float vx1 = ship1.getCurrentVelocityX();
-        final float vx2 = ship2.getCurrentVelocityX();
-        ship1.setCurrentVelocityX(-vx1 * 0.4f + vx2 * 0.8f);
-        ship2.setCurrentVelocityX(-vx2 * 0.4f + vx1 * 0.8f);
-
-        final float vy1 = ship1.getCurrentVelocityY();
-        final float vy2 = ship2.getCurrentVelocityY();
-        ship1.setCurrentVelocityY(-vy1 * 0.4f + vy2 * 0.8f);
-        ship2.setCurrentVelocityY(-vy2 * 0.4f + vy1 * 0.8f);
         return true;
     }
 

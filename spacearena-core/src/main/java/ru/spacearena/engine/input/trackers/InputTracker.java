@@ -20,13 +20,13 @@ public class InputTracker extends EngineObject {
     private float mouseX, mouseY;
     private boolean consumeEvent = false;
 
-    public float getKeyboardDirection(int negativeKeyCode, int positiveKeyCode, float amount) {
-        float value = 0f;
+    public int getKeyboardDirection(int negativeKeyCode, int positiveKeyCode) {
+        int value = 0;
         if (isKeyboardKeyPressed(negativeKeyCode)) {
-            value -= amount;
+            value -= 1;
         }
         if (isKeyboardKeyPressed(positiveKeyCode)) {
-            value += amount;
+            value += 1;
         }
         return value;
     }
