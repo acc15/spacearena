@@ -25,7 +25,7 @@ public abstract class AbstractBoundedTransform extends Transform {
         final Bounds originalBounds = getOriginalBounds();
         ShapeUtils.fillRect(boundPoints,
                 originalBounds.getMinX(), originalBounds.getMinY(), originalBounds.getMaxX(), originalBounds.getMaxY());
-        mapPoints(boundPoints);
+        getWorldSpace().mapPoints(boundPoints);
         bounds.calculate(boundPoints);
     }
 

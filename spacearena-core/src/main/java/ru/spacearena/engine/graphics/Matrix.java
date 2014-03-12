@@ -5,14 +5,14 @@ package ru.spacearena.engine.graphics;
  * @since 2014-12-02
  */
 public interface Matrix {
-    void identity();
     void multiply(Matrix transform);
-    void translate(float x, float y);
-    void rotate(float degrees);
-    void scale(float x, float y);
-    void skew(float x, float y);
     void mapPoints(float[] pts);
     boolean inverse(Matrix matrix);
-
     boolean isIdentity();
+
+    void set(float pivotX, float pivotY,
+             float scaleX, float scaleY,
+             float skewX, float skewY,
+             float rotateX, float rotateY,
+             float x, float y);
 }

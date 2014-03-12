@@ -27,7 +27,7 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
 
     public float[] getGunPositions() {
         final float[] positions = new float[] {10,70,85,70};
-        mapPoints(positions);
+        getWorldSpace().mapPoints(positions);
         return positions;
     }
 

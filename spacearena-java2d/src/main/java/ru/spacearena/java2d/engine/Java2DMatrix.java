@@ -1,7 +1,6 @@
 package ru.spacearena.java2d.engine;
 
 import ru.spacearena.engine.graphics.Matrix;
-import ru.vmsoftware.math.FloatMathUtils;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -22,28 +21,8 @@ public class Java2DMatrix implements Matrix {
         this.affineTransform = affineTransform;
     }
 
-    public void identity() {
-        affineTransform.setToIdentity();
-    }
-
     public void multiply(Matrix transform) {
         affineTransform.concatenate(((Java2DMatrix)transform).affineTransform);
-    }
-
-    public void translate(float x, float y) {
-        affineTransform.translate(x, y);
-    }
-
-    public void rotate(float degrees) {
-        affineTransform.rotate(FloatMathUtils.toRadians(degrees));
-    }
-
-    public void scale(float x, float y) {
-        affineTransform.scale(x, y);
-    }
-
-    public void skew(float x, float y) {
-        affineTransform.shear(x, y);
     }
 
     public void mapPoints(float[] pts) {
@@ -65,5 +44,19 @@ public class Java2DMatrix implements Matrix {
 
     public boolean isIdentity() {
         return affineTransform.isIdentity();
+    }
+
+    public void set(
+            float pivotX, float pivotY,
+            float scaleX, float scaleY,
+            float skewX, float skewY,
+            float rotateX, float rotateY,
+            float x, float y) {
+        affineTransform.setToIdentity();
+        affineTransform.translate(x, y);
+        affineTransform.rotate(rotateX, rotateY);
+        affineTransform.shear(skewX, skewY);
+        affineTransform.scale(scaleX, scaleY);
+        affineTransform.translate(-pivotX, -pivotY);
     }
 }

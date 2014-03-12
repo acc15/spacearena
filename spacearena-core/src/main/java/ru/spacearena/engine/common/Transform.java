@@ -3,6 +3,7 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.BitUtils;
 import ru.vmsoftware.math.FloatMathUtils;
 
 /**
@@ -11,15 +12,53 @@ import ru.vmsoftware.math.FloatMathUtils;
  */
 public class Transform extends GenericContainer {
 
+    private static final int MATRIX_DIRTY_MASK = 0x01;
+    private static final int ROTATE_DIRTY_MASK = 0x06;
+
+    private static final int MATRIX_DIRTY_VALUE = 1;
+    private static final int ANGLE_DIRTY_VALUE = 1 << 1;
+    private static final int SINCOS_DIRTY_VALUE = 2 << 1;
+
     Matrix localSpace;
     Matrix worldSpace;
-    boolean isDirty = false;
 
     float x = 0f, y = 0f;
     float scaleX = 1f, scaleY = 1f;
     float skewX = 0f, skewY = 0f;
     float pivotX = 0f, pivotY = 0f;
-    float angle = 0f;
+    float rotate = 0f;
+    float rotateX = 0f, rotateY = 0f;
+
+    int dirty = 0;
+
+    private void markMatrixDirty() {
+        this.dirty = BitUtils.set(dirty, MATRIX_DIRTY_MASK, MATRIX_DIRTY_VALUE);
+    }
+
+    private void resetMatrixDirty() {
+        this.dirty = BitUtils.reset(dirty, MATRIX_DIRTY_MASK);
+    }
+
+    private void resetRotateDirty() {
+        this.dirty = BitUtils.reset(dirty, ROTATE_DIRTY_MASK);
+    }
+
+    private void markRotateDirty(boolean angle) {
+        this.dirty = BitUtils.set(dirty, MATRIX_DIRTY_MASK | ROTATE_DIRTY_MASK,
+                MATRIX_DIRTY_VALUE | (angle ? ANGLE_DIRTY_VALUE : SINCOS_DIRTY_VALUE));
+    }
+
+    private boolean isMatrixDirty() {
+        return BitUtils.get(dirty, MATRIX_DIRTY_MASK) == MATRIX_DIRTY_VALUE;
+    }
+
+    private boolean isAngleDirty() {
+        return BitUtils.get(dirty, ROTATE_DIRTY_MASK) == ANGLE_DIRTY_VALUE;
+    }
+
+    private boolean isSinCosDirty() {
+        return BitUtils.get(dirty, ROTATE_DIRTY_MASK) == SINCOS_DIRTY_VALUE;
+    }
 
     public float getX() {
         return x;
@@ -27,7 +66,7 @@ public class Transform extends GenericContainer {
 
     public void setX(float x) {
         this.x = x;
-        markDirty();
+        markMatrixDirty();
     }
 
     public float getY() {
@@ -36,13 +75,13 @@ public class Transform extends GenericContainer {
 
     public void setY(float y) {
         this.y = y;
-        markDirty();
+        markMatrixDirty();
     }
 
     public void setPosition(float x, float y) {
         this.x = x;
         this.y = y;
-        markDirty();
+        markMatrixDirty();
     }
 
     public float getScaleX() {
@@ -51,7 +90,7 @@ public class Transform extends GenericContainer {
 
     public void setScaleX(float scaleX) {
         this.scaleX = scaleX;
-        markDirty();
+        markMatrixDirty();
     }
 
     public float getScaleY() {
@@ -60,13 +99,13 @@ public class Transform extends GenericContainer {
 
     public void setScaleY(float scaleY) {
         this.scaleY = scaleY;
-        markDirty();
+        markMatrixDirty();
     }
 
     public void setScale(float scaleX, float scaleY) {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
-        markDirty();
+        markMatrixDirty();
     }
 
     public float getSkewX() {
@@ -75,7 +114,7 @@ public class Transform extends GenericContainer {
 
     public void setSkewX(float skewX) {
         this.skewX = skewX;
-        markDirty();
+        markMatrixDirty();
     }
 
     public float getSkewY() {
@@ -84,13 +123,13 @@ public class Transform extends GenericContainer {
 
     public void setSkewY(float skewY) {
         this.skewY = skewY;
-        markDirty();
+        markMatrixDirty();
     }
 
     public void setSkew(float skewX, float skewY) {
         this.skewX = skewX;
         this.skewY = skewY;
-        markDirty();
+        markMatrixDirty();
     }
 
     public float getPivotX() {
@@ -99,7 +138,7 @@ public class Transform extends GenericContainer {
 
     public void setPivotX(float pivotX) {
         this.pivotX = pivotX;
-        markDirty();
+        markMatrixDirty();
     }
 
     public float getPivotY() {
@@ -108,46 +147,74 @@ public class Transform extends GenericContainer {
 
     public void setPivotY(float pivotY) {
         this.pivotY = pivotY;
-        markDirty();
+        markMatrixDirty();
     }
 
     public void setPivot(float pivotX, float pivotY) {
         this.pivotX = pivotX;
         this.pivotY = pivotY;
-        markDirty();
+        markMatrixDirty();
     }
 
-    public float getAngle() {
-        return angle;
+    private void updateAngleIfNeeded() {
+        if (!isAngleDirty()) {
+            return;
+        }
+        this.rotate = FloatMathUtils.toDegrees(FloatMathUtils.atan2(this.rotateY, this.rotateX));
+        resetRotateDirty();
     }
 
-    public void setAngle(float angle) {
-        this.angle = FloatMathUtils.normalizeDegrees(angle);
-        markDirty();
+    private void updateSinCosIfNeeded() {
+        if (!isSinCosDirty()) {
+            return;
+        }
+        final float rads = FloatMathUtils.toRadians(rotate);
+        this.rotateX = FloatMathUtils.cos(rads);
+        this.rotateY = FloatMathUtils.sin(rads);
+        resetRotateDirty();
+    }
+
+    public float getRotate() {
+        updateAngleIfNeeded();
+        return rotate;
+    }
+
+    public void setRotate(float rotate) {
+        this.rotate = FloatMathUtils.normalizeDegrees(rotate);
+        markRotateDirty(false);
+    }
+
+    public void setRotate(float cos, float sin) {
+        this.rotateX = cos;
+        this.rotateY = sin;
+        markRotateDirty(true);
+    }
+
+    public float getRotateX() {
+        updateSinCosIfNeeded();
+        return rotateX;
+    }
+
+    public float getRotateY() {
+        updateSinCosIfNeeded();
+        return rotateY;
     }
 
     public void translate(float dx, float dy) {
         this.x += dx;
         this.y += dy;
-        isDirty = true;
-    }
-
-    public void markDirty() {
-        this.isDirty = true;
+        markMatrixDirty();
     }
 
     protected void updateMatrices() {
-        if (isDirty) {
-            isDirty = false;
-            worldSpace.identity();
-            worldSpace.translate(x, y);
-            worldSpace.rotate(angle);
-            worldSpace.skew(skewX, skewY);
-            worldSpace.scale(scaleX, scaleY);
-            worldSpace.translate(-pivotX, -pivotY);
-            localSpace.inverse(worldSpace);
-            onMatrixUpdate();
+        if (!isMatrixDirty()) {
+            return;
         }
+        resetMatrixDirty();
+        updateSinCosIfNeeded();
+        worldSpace.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, rotateX, rotateY, x, y);
+        localSpace.inverse(worldSpace);
+        onMatrixUpdate();
     }
 
     protected void onMatrixUpdate() {
@@ -165,10 +232,6 @@ public class Transform extends GenericContainer {
     public Matrix getWorldSpace() {
         updateMatrices();
         return worldSpace;
-    }
-
-    public void mapPoints(float[] pts) {
-        getWorldSpace().mapPoints(pts);
     }
 
     public void onInit(Engine engine) {

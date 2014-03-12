@@ -17,28 +17,8 @@ public class AndroidMatrix implements Matrix {
         this.androidMatrix = androidMatrix;
     }
 
-    public void identity() {
-        androidMatrix.reset();
-    }
-
     public void multiply(Matrix transform) {
         androidMatrix.preConcat(((AndroidMatrix) transform).androidMatrix);
-    }
-
-    public void translate(float x, float y) {
-        androidMatrix.preTranslate(x, y);
-    }
-
-    public void rotate(float degrees) {
-        androidMatrix.preRotate(degrees);
-    }
-
-    public void scale(float x, float y) {
-        androidMatrix.preScale(x, y);
-    }
-
-    public void skew(float x, float y) {
-        androidMatrix.preSkew(x, y);
     }
 
     public void mapPoints(float[] pts) {
@@ -51,5 +31,13 @@ public class AndroidMatrix implements Matrix {
 
     public boolean isIdentity() {
         return androidMatrix.isIdentity();
+    }
+
+    public void set(float pivotX, float pivotY, float scaleX, float scaleY, float skewX, float skewY, float rotateX, float rotateY, float x, float y) {
+        androidMatrix.setSinCos(rotateX, rotateY);
+        androidMatrix.preSkew(skewX, skewY);
+        androidMatrix.preScale(scaleX, scaleY);
+        androidMatrix.preTranslate(-pivotX, -pivotY);
+        androidMatrix.postTranslate(x, y);
     }
 }
