@@ -19,9 +19,9 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
     private float boundDistance = 120f;
 
     public Ship() {
-        setSpeed(1000f);
+        setMaxSpeed(1000f);
         setAcceleration(500f);
-        setAngularSpeed(720f);
+        setAngularVelocity(720f);
         add(new Sprite());
     }
 

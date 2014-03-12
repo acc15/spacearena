@@ -19,7 +19,7 @@ public class Bullet extends AbstractCollisionObject {
         this.bounds = bounds;
         setPosition(x, y);
         setRotation(angle);
-        setSpeed(1500f);
+        setMaxSpeed(1500f);
         setVelocityByAngle(angle);
         add(new Rectangle(Color.RED, SHAPE[0], SHAPE[1], SHAPE[4], SHAPE[5]));
     }

@@ -107,12 +107,10 @@ public class GameFactory implements EngineFactory {
                 final float xVelocity = getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT, 1f);
                 final float yVelocity = getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN, 1f);
                 if (!FloatMathUtils.isZero(xVelocity, yVelocity)) {
-                    final float length = ship.getSpeed() / FloatMathUtils.length(xVelocity, yVelocity);
-                    ship.setAcceleration(2000f);
-                    ship.setTargetVelocity(xVelocity*length, yVelocity*length);
-
                     final float angle = FloatMathUtils.angle(xVelocity, yVelocity);
-                    ship.setTargetAngle(angle);
+                    ship.setAcceleration(2000f);
+                    ship.setTargetVelocityByAngle(angle);
+                    ship.setTargetRotation(angle);
                 } else {
                     ship.setAcceleration(500f);
                     ship.setTargetVelocity(0, 0);

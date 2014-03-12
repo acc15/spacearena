@@ -13,20 +13,22 @@ public class PhysicalObject extends Transform {
 
     float frameVelocityX = 0f, frameVelocityY = 0f;
 
+    float frameAngularVelocity = 0f;
+
     // current move vector
     float currentVelocityX = 0f, currentVelocityY = 0f;
 
     // target move vector
     float targetVelocityX = 0f, targetVelocityY = 0f;
 
-    // an rotation to which object should rotation with {@link angularSpeed} speed
-    float targetAngle;
+    // an rotation to which object should rotate with {@link angularVelocity} speed
+    float targetRotation = 0f;
 
-    // how quickly an object can rotation
-    float angularSpeed = 0f;
+    // how quickly an object can rotate
+    float angularVelocity = 1f;
 
     // how quickly an object can move
-    float speed = 1f;
+    float maxSpeed = 1f;
 
     // how quickly speed can change
     float acceleration;
@@ -90,46 +92,46 @@ public class PhysicalObject extends Transform {
 
     public void setCurrentVelocityByAngle(float degrees) {
         final float radians = FloatMathUtils.toRadiansTop(degrees);
-        setCurrentVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
+        setCurrentVelocity(FloatMathUtils.cos(radians) * maxSpeed, FloatMathUtils.sin(radians) * maxSpeed);
     }
 
     public void setTargetVelocityByAngle(float degrees) {
         final float radians = FloatMathUtils.toRadiansTop(degrees);
-        setTargetVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
+        setTargetVelocity(FloatMathUtils.cos(radians) * maxSpeed, FloatMathUtils.sin(radians) * maxSpeed);
     }
 
     public void setVelocityByAngle(float degrees) {
         final float radians = FloatMathUtils.toRadiansTop(degrees);
-        setVelocity(FloatMathUtils.cos(radians) * speed, FloatMathUtils.sin(radians) * speed);
+        setVelocity(FloatMathUtils.cos(radians) * maxSpeed, FloatMathUtils.sin(radians) * maxSpeed);
     }
 
-    public float getAngularSpeed() {
-        return angularSpeed;
+    public float getAngularVelocity() {
+        return angularVelocity;
     }
 
-    public void setAngularSpeed(float angularSpeed) {
-        this.angularSpeed = angularSpeed;
+    public void setAngularVelocity(float angularVelocity) {
+        this.angularVelocity = angularVelocity;
     }
 
     public void setRotation(float angle) {
-        targetAngle = angle;
+        targetRotation = angle;
         super.setRotation(angle);
     }
 
-    public float getTargetAngle() {
-        return targetAngle;
+    public float getTargetRotation() {
+        return targetRotation;
     }
 
-    public void setTargetAngle(float targetAngle) {
-        this.targetAngle = targetAngle;
+    public void setTargetRotation(float targetRotation) {
+        this.targetRotation = targetRotation;
     }
 
-    public float getSpeed() {
-        return speed;
+    public float getMaxSpeed() {
+        return maxSpeed;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
+    public void setMaxSpeed(float maxSpeed) {
+        this.maxSpeed = maxSpeed;
     }
 
     public float getAcceleration() {
@@ -189,6 +191,7 @@ public class PhysicalObject extends Transform {
 
     public void applyVelocities(float seconds) {
         translate(frameVelocityX, frameVelocityY);
+        super.setRotation(rotation + frameAngularVelocity);
     }
 
     public void computeVelocities(float seconds) {
@@ -206,11 +209,12 @@ public class PhysicalObject extends Transform {
         }
 
         // apply rotation
-        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, rotation);
+        final float angleDiff = FloatMathUtils.angleDiff(targetRotation, rotation);
         if (!FloatMathUtils.isZero(angleDiff)) {
-            final float frameAngularSpeed = angularSpeed * seconds;
-            super.setRotation(frameAngularSpeed > FloatMathUtils.abs(angleDiff)
-                    ? targetAngle : rotation + FloatMathUtils.copySign(frameAngularSpeed, angleDiff));
+            final float frameAngularSpeed = angularVelocity * seconds;
+            frameAngularVelocity = frameAngularSpeed > FloatMathUtils.abs(angleDiff)
+                    ? targetRotation - rotation
+                    : FloatMathUtils.copySign(frameAngularSpeed, angleDiff);
         }
 
         frameVelocityX = currentVelocityX * seconds;
