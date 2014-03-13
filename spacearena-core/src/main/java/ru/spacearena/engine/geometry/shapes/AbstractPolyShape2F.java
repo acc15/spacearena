@@ -2,7 +2,6 @@ package ru.spacearena.engine.geometry.shapes;
 
 import ru.spacearena.engine.geometry.primitives.Line2F;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.ShapeUtils;
 

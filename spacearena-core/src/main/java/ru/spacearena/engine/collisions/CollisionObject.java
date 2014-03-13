@@ -3,7 +3,6 @@ package ru.spacearena.engine.collisions;
 import ru.spacearena.engine.common.PhysicalObject;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.util.ShapeUtils;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.*;
