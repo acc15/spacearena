@@ -16,6 +16,10 @@ public class Polygon2FP extends AbstractPolyShape2F {
         this.count = count;
     }
 
+    public ShapeType getType() {
+        return ShapeType.POLYGON;
+    }
+
     @Override
     public void getPoints(float[] points, int start, int pointCount) {
         System.arraycopy(this.points, this.start, points, start, pointCount*2);

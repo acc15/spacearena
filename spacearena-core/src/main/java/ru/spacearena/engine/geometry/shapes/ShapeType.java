@@ -7,6 +7,7 @@ package ru.spacearena.engine.geometry.shapes;
 public enum ShapeType {
 
     CIRCLE,
+    ELLIPSE,
     RECTANGLE,
     POLYGON
 

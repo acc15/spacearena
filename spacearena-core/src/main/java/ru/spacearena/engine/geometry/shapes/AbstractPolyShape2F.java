@@ -2,6 +2,7 @@ package ru.spacearena.engine.geometry.shapes;
 
 import ru.spacearena.engine.geometry.primitives.Line2F;
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.ShapeUtils;
 
@@ -57,10 +58,6 @@ public abstract class AbstractPolyShape2F implements PolyShape2F, Shape2F {
             final float x = getPointX(i), y = getPointY(i);
             projection.accumulate(axis.dot(x,y));
         }
-    }
-
-    public ShapeType getType() {
-        return ShapeType.POLYGON;
     }
 
     public boolean obtainAxis(int n, boolean references, Shape2F shape, Point2F axis) {
