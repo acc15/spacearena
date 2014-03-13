@@ -31,32 +31,33 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
         int size = children.size();
         for (int i=0; i<size; i++) {
             final CollisionEntity e1 = children.get(i);
-            if (i==0) {
-                e1.computeVelocities(seconds);
-            }
+            e1.applyRotation(seconds);
 
+            final float e1vx = e1.getVelocityX() * seconds, e1vy = e1.getVelocityY() * seconds;
             contact.setContact(1f, 0f, 0f);
 
             int firstContactIndex = -1;
             for (int j=i+1; j<size; j++) {
                 final CollisionEntity e2 = children.get(j);
-                if (i==0) {
-                    e2.computeVelocities(seconds);
+                if (i == 0) {
+                    e2.applyRotation(seconds);
                 }
                 if (!e1.canCollide(e2)) {
                     continue;
                 }
 
+                final float e2vx = e2.getVelocityX() * seconds, e2vy = e2.getVelocityY() * seconds;
+
                 final Bounds a = e1.getAABB();
                 final Bounds b = e2.getAABB();
 
-                final float vx = e1.getFrameVelocityX() - e2.getFrameVelocityX();
+                final float vx = e1vx - e2vx;
                 computeContact(a.getMinX(), a.getMaxX(), b.getMinX(), b.getMaxX(), vx, xContact);
                 if (xContact.startTime >= 1f) {
                     continue;
                 }
 
-                final float vy = e1.getFrameVelocityY() - e2.getFrameVelocityY();
+                final float vy = e1vy - e2vy;
                 computeContact(a.getMinY(), a.getMaxY(), b.getMinY(), b.getMaxY(), vy, yContact);
                 if (yContact.startTime >= 1f) {
                     continue;
@@ -91,7 +92,7 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
                 }
             }
             if (firstContactIndex < 0) {
-                e1.applyVelocities(seconds);
+                e1.applyVelocity(seconds);
                 continue;
             }
 

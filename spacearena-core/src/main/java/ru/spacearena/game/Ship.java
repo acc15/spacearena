@@ -8,6 +8,7 @@ import ru.spacearena.engine.common.BoundChecker;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Image;
+import ru.vmsoftware.math.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -68,13 +69,15 @@ public class Ship extends AbstractCollisionObject implements BoundChecker.Bounde
 
     public void onOutOfBounds(float dx, float dy) {
         translate(dx, dy);
-        /*
+
         if (!FloatMathUtils.isZero(dx)) {
+            setAccelerationX(0f);
             setVelocityX(0);
         }
         if (!FloatMathUtils.isZero(dy)) {
             setVelocityY(0);
-        }*/
+            setAccelerationY(0f);
+        }
     }
 
     public boolean onCollision(CollisionEntity entity, boolean reference, Contact contact) {

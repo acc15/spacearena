@@ -4,6 +4,7 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.BitUtils;
+import ru.vmsoftware.math.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -139,14 +140,16 @@ public class Transform extends GenericContainer {
     }
 
     public void setRotation(float rotation) {
-        this.rotation = rotation;
+        this.rotation = FloatMathUtils.normalizeDegrees(rotation);
         markMatrixDirty();
     }
 
+    public void rotate(float d) {
+        setRotation(rotation + d);
+    }
+
     public void translate(float dx, float dy) {
-        this.x += dx;
-        this.y += dy;
-        markMatrixDirty();
+        setPosition(x + dx, y + dy);
     }
 
     protected void updateMatrices() {

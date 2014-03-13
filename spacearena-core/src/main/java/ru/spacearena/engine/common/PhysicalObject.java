@@ -11,21 +11,9 @@ import ru.vmsoftware.math.FloatMathUtils;
  */
 public class PhysicalObject extends Transform {
 
-    float frameVelocityX = 0f, frameVelocityY = 0f;
-
-    float frameAngularVelocity = 0f;
-
     float velocityX = 0f, velocityY = 0f;
-
+    float accelerationX = 0f, accelerationY = 0f;
     float angularVelocity = 0f;
-
-    public float getFrameVelocityX() {
-        return frameVelocityX;
-    }
-
-    public float getFrameVelocityY() {
-        return frameVelocityY;
-    }
 
     public float getVelocityX() {
         return velocityX;
@@ -43,6 +31,11 @@ public class PhysicalObject extends Transform {
         this.velocityY = velocityY;
     }
 
+    public void setVelocity(float velocityX, float velocityY) {
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+    }
+
     public float getAngularVelocity() {
         return angularVelocity;
     }
@@ -51,13 +44,38 @@ public class PhysicalObject extends Transform {
         this.angularVelocity = angularVelocity;
     }
 
+    public float getAccelerationX() {
+        return accelerationX;
+    }
+
+    public void setAccelerationX(float accelerationX) {
+        this.accelerationX = accelerationX;
+    }
+
+    public float getAccelerationY() {
+        return accelerationY;
+    }
+
+    public void setAccelerationY(float accelerationY) {
+        this.accelerationY = accelerationY;
+    }
+
+    public void applyRotation(float seconds) {
+        rotate(angularVelocity * seconds);
+    }
+
+    public void applyVelocity(float seconds) {
+        velocityX += accelerationX * seconds;
+        velocityY += accelerationY * seconds;
+        translate(velocityX * seconds, velocityY * seconds);
+    }
+
     public boolean onUpdate(float seconds) {
         if (!super.onUpdate(seconds)) {
             return false;
         }
-        computeVelocities(seconds);
         applyRotation(seconds);
-        applyVelocities(seconds);
+        applyVelocity(seconds);
         return true;
     }
 
@@ -77,7 +95,7 @@ public class PhysicalObject extends Transform {
             final float tx = x + velocityX, ty = y + velocityY;
             context.setColor(Color.WHITE);
 
-            DrawUtils.drawArrow(context, x, y, tx, ty, DrawUtils.HeadType.ARROW, 50f, DrawUtils.HeadType.ARROW, 50f);
+            DrawUtils.drawArrow(context, x, y, tx, ty, DrawUtils.HeadType.NONE, 0f, DrawUtils.HeadType.ARROW, 50f);
             context.drawText(String.format("%.2f;%.2f", velocityX, velocityY), tx, ty+20);
 
         } finally {
@@ -86,71 +104,43 @@ public class PhysicalObject extends Transform {
         }
     }
 
-    public void applyRotation(float seconds) {
-        setRotation(rotation + frameAngularVelocity);
-    }
-
-    public void applyVelocities(float seconds) {
-        translate(frameVelocityX, frameVelocityY);
-    }
-
-    public void accelerateTo(float targetVelocityX, float targetVelocityY, float acceleration) {
+    public void accelerateTo(float targetVelocityX, float targetVelocityY, float acceleration, float time) {
         final float velDiffX = targetVelocityX - velocityX;
         final float velDiffY = targetVelocityY - velocityY;
-        if (!FloatMathUtils.isZero(velDiffX, velDiffY)) {
-            final float length = acceleration/FloatMathUtils.length(velDiffX, velDiffY);
-            final float appliedVelocityX = velDiffX * length;
-            final float appliedVelocityY = velDiffY * length;
-            velocityX = FloatMathUtils.absGt(appliedVelocityX, velDiffX)
-                    ? targetVelocityX : velocityX + appliedVelocityX;
-            velocityY = FloatMathUtils.absGt(appliedVelocityY, velDiffY)
-                    ? targetVelocityY : velocityY + appliedVelocityY;
+        if (FloatMathUtils.isZero(velDiffX, velDiffY)) {
+            accelerationX = 0f;
+            accelerationY = 0f;
+            return;
         }
+
+        final float l2 = FloatMathUtils.lengthSquare(velDiffX, velDiffY);
+
+        final float at = acceleration * time;
+        if (at*at >= l2) {
+            accelerationX = velDiffX / time;
+            accelerationY = velDiffY / time;
+            return;
+        }
+
+        final float l = FloatMathUtils.sqrt(l2);
+        accelerationX = velDiffX * acceleration / l;
+        accelerationY = velDiffY * acceleration / l;
     }
 
-    public void rotateTo(float targetAngle, float velocity) {
+    public void rotateTo(float targetAngle, float velocity, float time) {
         final float angleDiff = FloatMathUtils.angleDiff(targetAngle, rotation);
-        if (!FloatMathUtils.isZero(angleDiff)) {
-            setRotation(velocity > FloatMathUtils.abs(angleDiff)
-                    ? targetAngle
-                    : FloatMathUtils.copySign(velocity, angleDiff));
+        if (FloatMathUtils.isZero(angleDiff)) {
+            angularVelocity = 0f;
+            return;
         }
+
+        final float vt = velocity * time;
+        if (FloatMathUtils.abs(vt) >= FloatMathUtils.abs(angleDiff)) {
+            angularVelocity = angleDiff / time;
+            return;
+        }
+
+        angularVelocity = FloatMathUtils.copySign(velocity, angleDiff);
     }
-
-
-    public void computeVelocities(float seconds) {
-
-
-        /*final float velDiffX = targetVelocityX - currentVelocityX;
-        final float velDiffY = targetVelocityY - currentVelocityY;
-        if (!FloatMathUtils.isZero(velDiffX, velDiffY)) {
-            final float frameAcceleration = acceleration * seconds;
-            final float length = frameAcceleration/FloatMathUtils.length(velDiffX, velDiffY);
-            final float appliedVelocityX = velDiffX * length;
-            final float appliedVelocityY = velDiffY * length;
-            currentVelocityX = FloatMathUtils.absGt(appliedVelocityX, velDiffX)
-                    ? targetVelocityX : currentVelocityX + appliedVelocityX;
-            currentVelocityY = FloatMathUtils.absGt(appliedVelocityY, velDiffY)
-                    ? targetVelocityY : currentVelocityY + appliedVelocityY;
-        }
-
-        // apply rotation
-        final float angleDiff = FloatMathUtils.angleDiff(targetRotation, rotation);
-        if (!FloatMathUtils.isZero(angleDiff)) {
-            final float frameAngularSpeed = angularVelocity * seconds;
-            frameAngularVelocity = frameAngularSpeed > FloatMathUtils.abs(angleDiff)
-                    ? targetRotation - rotation
-                    : FloatMathUtils.copySign(frameAngularSpeed, angleDiff);
-        }
-
-        frameVelocityX = currentVelocityX * seconds;
-        frameVelocityY = currentVelocityY * seconds;
-        */
-
-        this.frameVelocityX = velocityX * seconds;
-        this.frameVelocityY = velocityY * seconds;
-        this.frameAngularVelocity = angularVelocity * seconds;
-    }
-
 
 }

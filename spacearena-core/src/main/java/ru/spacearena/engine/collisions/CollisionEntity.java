@@ -11,13 +11,13 @@ public interface CollisionEntity extends EngineEntity {
 
     Bounds getAABB();
 
-    void computeVelocities(float seconds);
-    void applyVelocities(float seconds);
-
-    float getFrameVelocityX();
-    float getFrameVelocityY();
+    float getVelocityX();
+    float getVelocityY();
 
     boolean onCollision(CollisionEntity entity, boolean reference, Contact contact);
     boolean canCollide(CollisionEntity entity);
+
+    void applyRotation(float seconds);
+    void applyVelocity(float seconds);
 
 }

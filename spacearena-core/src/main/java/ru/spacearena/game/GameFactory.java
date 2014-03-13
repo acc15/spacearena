@@ -54,11 +54,6 @@ public class GameFactory implements EngineFactory {
                 return super.onCollision(entity, reference, contact);
             }
 
-            @Override
-            public void applyVelocities(float seconds) {
-                collisionText.setText("No collision");
-                super.applyVelocities(seconds);
-            }
         };
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
 
@@ -98,6 +93,8 @@ public class GameFactory implements EngineFactory {
             }
         });
 */
+        //ship.setAngularVelocity(360);
+
         root.add(new InputTracker() {
 
             boolean canShot = true;
@@ -108,12 +105,13 @@ public class GameFactory implements EngineFactory {
                 final float yVelocity = getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN);
 
                 if (FloatMathUtils.isZero(xVelocity, yVelocity)) {
-                    ship.accelerateTo(0, 0, Ship.ACCELERATION/10f * seconds);
+                    ship.accelerateTo(0, 0, Ship.ACCELERATION/10f, seconds);
+                    ship.setAngularVelocity(0f);
                 } else {
                     final float l = Ship.MAX_SPEED / FloatMathUtils.length(xVelocity, yVelocity);
                     final float angle = FloatMathUtils.angle(xVelocity, yVelocity);
-                    ship.accelerateTo(xVelocity * l, yVelocity * l, Ship.ACCELERATION * seconds);
-                    ship.rotateTo(angle, Ship.ANGULAR_VELOCITY);
+                    ship.accelerateTo(xVelocity * l, yVelocity * l, Ship.ACCELERATION, seconds);
+                    ship.rotateTo(angle, Ship.ANGULAR_VELOCITY, seconds);
                 }
 
                 /*

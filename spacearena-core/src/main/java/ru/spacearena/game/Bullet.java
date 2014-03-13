@@ -15,11 +15,13 @@ public class Bullet extends AbstractCollisionObject {
 
     private Bounds bounds;
 
+    public static final float SPEED = 1500f;
+
     public Bullet(Bounds bounds, float x, float y, float angle) {
         this.bounds = bounds;
         setPosition(x, y);
         setRotation(angle);
-        //setMaxSpeed(1500f);
+        setVelocity(FloatMathUtils.cos(angle) * angle, FloatMathUtils.sin(angle) * angle);
         //setVelocityByAngle(angle);
         add(new Rectangle(Color.RED, SHAPE[0], SHAPE[1], SHAPE[4], SHAPE[5]));
     }
