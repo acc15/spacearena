@@ -30,6 +30,10 @@ public class Java2DMatrix implements Matrix {
         affineTransform.transform(pts, 0, pts, 0, pts.length/2);
     }
 
+    public void mapPoints(float[] dst, int dstOffset, float[] src, int srcOffset, int pointCount) {
+        affineTransform.transform(src, srcOffset, dst, dstOffset, pointCount);
+    }
+
     public boolean inverse(Matrix matrix) {
         final AffineTransform anotherTransform = ((Java2DMatrix)matrix).affineTransform;
         if (anotherTransform != affineTransform) {

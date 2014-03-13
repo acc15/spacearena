@@ -31,6 +31,11 @@ public class PhysicalObject extends Transform {
         this.velocityY = velocityY;
     }
 
+    public void setVelocityByAngle(float angle, float speed) {
+        final float rads = FloatMathUtils.toRadians(angle);
+        setVelocity(FloatMathUtils.cos(rads) * speed, FloatMathUtils.sin(rads) * speed);
+    }
+
     public void setVelocity(float velocityX, float velocityY) {
         this.velocityX = velocityX;
         this.velocityY = velocityY;

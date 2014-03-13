@@ -1,7 +1,6 @@
 package ru.spacearena.engine.collisions;
 
 import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.geom.Bounds;
 import ru.vmsoftware.math.FloatMathUtils;
 
 /**
@@ -32,7 +31,8 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
         for (int i=0; i<size; i++) {
             final CollisionEntity e1 = children.get(i);
             e1.applyRotation(seconds);
-
+            e1.applyVelocity(seconds);
+/*
             final float e1vx = e1.getVelocityX() * seconds, e1vy = e1.getVelocityY() * seconds;
             contact.setContact(1f, 0f, 0f);
 
@@ -48,8 +48,8 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
 
                 final float e2vx = e2.getVelocityX() * seconds, e2vy = e2.getVelocityY() * seconds;
 
-                final Bounds a = e1.getAABB();
-                final Bounds b = e2.getAABB();
+                final AABB2F a = e1.getAABB();
+                final AABB2F b = e2.getAABB();
 
                 final float vx = e1vx - e2vx;
                 computeContact(a.getMinX(), a.getMaxX(), b.getMinX(), b.getMaxX(), vx, xContact);
@@ -96,7 +96,7 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
                 continue;
             }
 
-            final CollisionEntity firstContactEntity = get(firstContactIndex);
+            final CollisionEntity firstContactEntity = getChild(firstContactIndex);
             if (!e1.onCollision(firstContactEntity, true, contact)) {
                 children.remove(i);
                 --size;
@@ -105,7 +105,7 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
             if (!firstContactEntity.onCollision(e1, false, contact)) {
                 children.remove(firstContactIndex);
                 --size;
-            }
+            }*/
         }
         return true;
     }

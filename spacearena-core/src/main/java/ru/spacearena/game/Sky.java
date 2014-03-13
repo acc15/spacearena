@@ -1,12 +1,12 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.vmsoftware.math.FloatMathUtils;
 import ru.spacearena.engine.util.RandomUtils;
+import ru.vmsoftware.math.FloatMathUtils;
+import ru.vmsoftware.math.geometry.shapes.Rect2FPR;
 
 import java.util.Random;
 
@@ -24,7 +24,7 @@ public class Sky extends EngineObject {
     private final Random random;
     private final long seed;
     private final Viewport viewport;
-    private final AABB bounds = new AABB();
+    private final Rect2FPR bounds = new Rect2FPR();
 
     public Sky(Viewport viewport, Random random) {
         this.viewport = viewport;
@@ -42,16 +42,16 @@ public class Sky extends EngineObject {
         bounds.scale(scale, scale);
         bounds.inflate(twoStarDistance, twoStarDistance);
 
-        final float startX = FloatMathUtils.firstVisiblePosition(bounds.minX, pixelsPerStar);
-        final float startY = FloatMathUtils.firstVisiblePosition(bounds.minY, pixelsPerStar);
+        final float startX = FloatMathUtils.firstVisiblePosition(bounds.getMinX(), pixelsPerStar);
+        final float startY = FloatMathUtils.firstVisiblePosition(bounds.getMinY(), pixelsPerStar);
 
-        for (float y=startY; y<=bounds.maxY; y += pixelsPerStar) {
-            for (float x=startX; x<=bounds.maxX; x += pixelsPerStar) {
+        for (float y=startY; y<=bounds.getMaxY(); y += pixelsPerStar) {
+            for (float x=startX; x<=bounds.getMaxX(); x += pixelsPerStar) {
                 random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x<<24) ^ ((long)y));
 
                 final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
-                final float halfSize = (MIN_SIZE + random.nextFloat() * (MAX_SIZE-MIN_SIZE))/2;
+                final float halfSize = RandomUtils.randomBetween(random, MIN_SIZE, MAX_SIZE)/2;
 
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);

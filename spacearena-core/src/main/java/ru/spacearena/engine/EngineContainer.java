@@ -30,7 +30,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
     }
 
     @SuppressWarnings("unchecked")
-    public <X extends EngineEntity> X get(int index) {
+    public <X extends EngineEntity> X getChild(int index) {
         return (X)children.get(index);
     }
 

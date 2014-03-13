@@ -1,15 +1,13 @@
 package ru.spacearena.engine.collisions;
 
 import ru.spacearena.engine.EngineEntity;
-import ru.spacearena.engine.geom.Bounds;
+import ru.vmsoftware.math.geometry.shapes.AABB2F;
 
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-03-03
 */
 public interface CollisionEntity extends EngineEntity {
-
-    Bounds getAABB();
 
     float getVelocityX();
     float getVelocityY();
@@ -20,4 +18,5 @@ public interface CollisionEntity extends EngineEntity {
     void applyRotation(float seconds);
     void applyVelocity(float seconds);
 
+    AABB2F getAABB();
 }

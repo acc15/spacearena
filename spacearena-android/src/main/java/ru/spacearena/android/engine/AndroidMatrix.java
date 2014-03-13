@@ -25,6 +25,10 @@ public class AndroidMatrix implements Matrix {
         androidMatrix.mapPoints(pts);
     }
 
+    public void mapPoints(float[] dst, int dstOffset, float[] src, int srcOffset, int pointCount) {
+        androidMatrix.mapPoints(dst, dstOffset, src, srcOffset, pointCount);
+    }
+
     public boolean inverse(Matrix matrix) {
         return ((AndroidMatrix) matrix).androidMatrix.invert(androidMatrix);
     }

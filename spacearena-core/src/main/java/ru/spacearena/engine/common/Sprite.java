@@ -1,15 +1,15 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
+import ru.vmsoftware.math.geometry.shapes.AABB2F;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-14-02
  */
-public class Sprite extends EngineObject implements Bounds {
+public class Sprite extends EngineObject implements AABB2F {
 
     Image image;
     float x, y;
@@ -60,6 +60,22 @@ public class Sprite extends EngineObject implements Bounds {
 
     public float getMaxY() {
         return y + image.getHeight();
+    }
+
+    public float getCenterX() {
+        return x + getHalfWidth();
+    }
+
+    public float getCenterY() {
+        return y + getHalfHeight();
+    }
+
+    public float getHalfWidth() {
+        return getWidth()/2;
+    }
+
+    public float getHalfHeight() {
+        return getHeight()/2;
     }
 
     @Override

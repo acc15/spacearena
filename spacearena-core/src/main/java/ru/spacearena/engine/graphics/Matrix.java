@@ -7,6 +7,8 @@ package ru.spacearena.engine.graphics;
 public interface Matrix {
     void multiply(Matrix transform);
     void mapPoints(float[] pts);
+    void mapPoints(float[] dst, int dstOffset, float[] src, int srcOffset, int pointCount);
+
     boolean inverse(Matrix matrix);
     boolean isIdentity();
 

@@ -1,8 +1,8 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.geom.Bounds;
 import ru.vmsoftware.math.FloatMathUtils;
+import ru.vmsoftware.math.geometry.shapes.AABB2F;
 
 /**
  * @author Vyacheslav Mayorov
@@ -11,14 +11,14 @@ import ru.vmsoftware.math.FloatMathUtils;
 public class BoundChecker extends EngineObject {
 
     public static interface Bounded {
-        Bounds getBounds();
+        AABB2F getBounds();
         void onOutOfBounds(float dx, float dy);
     }
 
-    private Bounds bounds;
+    private AABB2F bounds;
     private Bounded object;
 
-    public BoundChecker(Bounds bounds, Bounded object) {
+    public BoundChecker(AABB2F bounds, Bounded object) {
         this.bounds = bounds;
         this.object = object;
     }
@@ -35,10 +35,9 @@ public class BoundChecker extends EngineObject {
 
     @Override
     public boolean onUpdate(float seconds) {
-        final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(),
-                object.getBounds().getMinX(), object.getBounds().getMaxX());
-        final float dy = computeAxisOffset(bounds.getMinY(), bounds.getMaxY(),
-                object.getBounds().getMinY(), object.getBounds().getMaxY());
+        final AABB2F oBounds = object.getBounds();
+        final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(), oBounds.getMinX(), oBounds.getMinX());
+        final float dy = computeAxisOffset(bounds.getMinY(), bounds.getMaxY(), oBounds.getMinY(), oBounds.getMaxY());
         if (!FloatMathUtils.isZero(dx, dy)) {
             object.onOutOfBounds(dx, dy);
         }

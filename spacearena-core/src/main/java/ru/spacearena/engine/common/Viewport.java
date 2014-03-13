@@ -1,34 +1,20 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.ShapeUtils;
+import ru.vmsoftware.math.geometry.shapes.AABB2F;
+import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Viewport extends AbstractBoundedTransform implements BoundChecker.Bounded {
+public class Viewport extends Transform implements BoundChecker.Bounded {
 
     ViewportAdjustStrategy adjustStrategy;
 
-    final Bounds originalBounds = new Bounds() {
-        public float getMinX() {
-            return 0;
-        }
-
-        public float getMaxX() {
-            return engine.getWidth();
-        }
-
-        public float getMinY() {
-            return 0;
-        }
-
-        public float getMaxY() {
-            return engine.getHeight();
-        }
-    };
+    private final Rect2FPP bounds = new Rect2FPP();
 
     public Viewport() {
         this(new DefaultAdjustStrategy());
@@ -36,10 +22,6 @@ public class Viewport extends AbstractBoundedTransform implements BoundChecker.B
 
     public Viewport(ViewportAdjustStrategy adjustStrategy) {
         this.adjustStrategy = adjustStrategy;
-    }
-
-    public Bounds getBounds() {
-        return getTransformedBounds();
     }
 
     public void onOutOfBounds(float dx, float dy) {
@@ -86,13 +68,20 @@ public class Viewport extends AbstractBoundedTransform implements BoundChecker.B
         this.adjustStrategy.adjustViewport(width, height, this);
     }
 
+    public AABB2F getBounds() {
+        updateMatricesIfNeeded();
+        return bounds;
+    }
+
+    @Override
+    protected void onMatrixUpdate() {
+        bounds.set(0, 0, engine.getWidth(), engine.getHeight());
+        ShapeUtils.computeBoundingBox(bounds, bounds, getWorldSpace());
+    }
+
     @Override
     public Matrix getViewMatrix() {
         return getLocalSpace();
     }
 
-    @Override
-    public Bounds getOriginalBounds() {
-        return originalBounds;
-    }
 }

@@ -1,9 +1,9 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.geom.AABB;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
 
 /**
  * @author Vyacheslav Mayorov
@@ -11,28 +11,25 @@ import ru.spacearena.engine.graphics.DrawContext;
  */
 public class Rectangle extends EngineObject {
 
-    private int color = Color.WHITE;
-    private AABB bounds = new AABB();
+    private final int color;
+    private final Rect2FPP bounds = new Rect2FPP();
 
     public Rectangle() {
+        this.color = Color.WHITE;
     }
 
     public Rectangle(float left, float top, float right, float bottom) {
-        this.bounds.set(left, top, right, bottom);
+        this(Color.WHITE, left, top, right, bottom);
     }
 
     public Rectangle(int color, float left, float top, float right, float bottom) {
-        this(left, top, right, bottom);
         this.color = color;
-    }
-
-    public AABB getAABB() {
-        return bounds;
+        this.bounds.set(left, top, right, bottom);
     }
 
     @Override
     public void onDraw(DrawContext context) {
         context.setColor(color);
-        context.fillRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+        context.fillRect(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
     }
 }

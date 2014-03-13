@@ -8,12 +8,12 @@ import ru.spacearena.engine.collisions.CollisionContainer;
 import ru.spacearena.engine.collisions.CollisionEntity;
 import ru.spacearena.engine.collisions.Contact;
 import ru.spacearena.engine.common.*;
-import ru.spacearena.engine.geom.AABB;
-import ru.spacearena.engine.geom.Bounds;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
 import ru.spacearena.engine.input.trackers.InputTracker;
 import ru.vmsoftware.math.FloatMathUtils;
+import ru.vmsoftware.math.geometry.shapes.AABB2F;
+import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
 
 import java.util.Random;
 
@@ -44,7 +44,7 @@ public class GameFactory implements EngineFactory {
         multilineText.add(viewportText);
         multilineText.add(collisionText);
 
-        final AABB mapBounds = new AABB(-2000f, -2000f, 2000f, 2000f);
+        final AABB2F mapBounds = new Rect2FPP(-2000f, -2000f, 2000f, 2000f);
 
         final Ship ship = new Ship() {
 
@@ -80,7 +80,7 @@ public class GameFactory implements EngineFactory {
             @Override
             public boolean onUpdate(float seconds) {
                 for (int i=0; i<ships.size(); i++) {
-                    final Ship s = ships.get(i);
+                    final Ship s = ships.getChild(i);
                     final float d = angle + (i*30);
                     final float r = FloatMathUtils.toRadiansTop(d-90);
                     final float x = FloatMathUtils.cos(r) * 500;
@@ -132,7 +132,7 @@ public class GameFactory implements EngineFactory {
                 if (canShot) {
                     final float[] gunPositions = ship.getGunPositions();
                     for (int i=0; i<gunPositions.length; i+=2) {
-                        viewport.add(new Bullet(mapBounds, gunPositions[i], gunPositions[i+1], ship.getRotation()));
+                        viewport.add(new Bullet(gunPositions[i], gunPositions[i+1], ship.getRotation()));
                     }
                     canShot = false;
                 }
@@ -162,13 +162,12 @@ public class GameFactory implements EngineFactory {
         viewport.add(collisionContainer);
 
         root.add(new PositionHandler(ship, viewport));
-        root.add(new BoundChecker(mapBounds, ship));
         root.add(new BoundChecker(mapBounds, viewport));
         root.add(new EngineObject() {
 
             @Override
             public boolean onUpdate(float seconds) {
-                final Bounds bounds = viewport.getTransformedBounds();
+                final AABB2F bounds = viewport.getBounds();
                 viewportText.setText(String.format("Viewport: (%.2f,%.2f)(%.2f,%.2f)",
                         bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()));
                 positionText.setText(String.format("Position: %.2f, %.2f",

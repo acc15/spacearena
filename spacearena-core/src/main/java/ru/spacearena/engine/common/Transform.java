@@ -152,7 +152,7 @@ public class Transform extends GenericContainer {
         setPosition(x + dx, y + dy);
     }
 
-    protected void updateMatrices() {
+    protected void updateMatricesIfNeeded() {
         if (!isMatrixDirty()) {
             return;
         }
@@ -170,12 +170,12 @@ public class Transform extends GenericContainer {
     }
 
     public Matrix getLocalSpace() {
-        updateMatrices();
+        updateMatricesIfNeeded();
         return localSpace;
     }
 
     public Matrix getWorldSpace() {
-        updateMatrices();
+        updateMatricesIfNeeded();
         return worldSpace;
     }
 
