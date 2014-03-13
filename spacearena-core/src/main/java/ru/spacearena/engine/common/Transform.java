@@ -4,7 +4,8 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.BitUtils;
-import ru.vmsoftware.math.FloatMathUtils;
+import ru.spacearena.engine.util.FloatMathUtils
+;
 
 /**
  * @author Vyacheslav Mayorov
@@ -13,7 +14,6 @@ import ru.vmsoftware.math.FloatMathUtils;
 public class Transform extends GenericContainer {
 
     private static final int MATRIX_DIRTY_MASK = 0x01;
-
     private static final int MATRIX_DIRTY_VALUE = 1;
 
     Matrix localSpace;

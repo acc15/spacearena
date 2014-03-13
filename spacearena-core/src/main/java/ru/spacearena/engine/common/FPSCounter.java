@@ -1,7 +1,8 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
-import ru.vmsoftware.math.FloatMathUtils;
+import ru.spacearena.engine.util.FloatMathUtils
+;
 
 /**
  * @author Vyacheslav Mayorov

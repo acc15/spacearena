@@ -1,52 +1,34 @@
 package ru.spacearena.game;
 
-import ru.spacearena.engine.collisions.AbstractCollisionObject;
-import ru.spacearena.engine.collisions.CollisionEntity;
+import ru.spacearena.engine.collisions.CollisionObject;
 import ru.spacearena.engine.collisions.Contact;
 import ru.spacearena.engine.graphics.Color;
-import ru.vmsoftware.math.geometry.shapes.AABB2F;
-import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Bullet extends AbstractCollisionObject {
+public class Bullet extends CollisionObject {
 
     public static final float SPEED = 1500f;
 
-    private final Rect2FPP boundingBox = new Rect2FPP();
-
     public Bullet(float x, float y, float angle) {
+        //super(new Rect2FPP(-20, -5, 20, 5));
+
         setPosition(x, y);
         setRotation(angle);
         setVelocityByAngle(angle, SPEED);
-        add(new Rectangle(Color.RED, SHAPE[0], SHAPE[1], SHAPE[4], SHAPE[5]));
+        add(new Rectangle(-20, -5, 20, 5, Color.RED));
     }
 
-    public boolean onCollision(CollisionEntity entity, boolean reference, Contact contact) {
+    public boolean onCollision(CollisionObject object, float time, boolean reference, Contact contact) {
         return false;
     }
 
-    public boolean canCollide(CollisionEntity entity) {
-        return entity instanceof Ship;
+    public boolean canCollide(CollisionObject object) {
+        return true;
     }
 
-    private static final float[] SHAPE = new float[] {-20,-5, -20,5, 20,5, 20,-5};
-
-    public AABB2F getAABB() {
-        return boundingBox;
-    }
-
-    @Override
-    public float[] getConvexShape(int n) {
-        return SHAPE;
-    }
-
-    @Override
-    public int getConvexShapeCount() {
-        return 1;
-    }
 /*
     @Override
     public boolean onUpdate(float seconds) {

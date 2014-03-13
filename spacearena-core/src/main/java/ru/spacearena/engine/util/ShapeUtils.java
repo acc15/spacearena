@@ -1,8 +1,8 @@
 package ru.spacearena.engine.util;
 
 import ru.spacearena.engine.graphics.Matrix;
-import ru.vmsoftware.math.geometry.shapes.PolyShape2F;
-import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.geometry.shapes.PolyShape2F;
+import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 
 /**
  * @author Vyacheslav Mayorov
@@ -13,7 +13,7 @@ public class ShapeUtils {
     public static final float[] POINT_BUF = new float[200];
 
     public static float[] transformShape(PolyShape2F shape, Matrix matrix) {
-        final int pointCount = shape.getVertexCount();
+        final int pointCount = shape.getPointCount();
         if (pointCount > POINT_BUF.length/2) {
             throw new RuntimeException("POINT_BUF overflow");
         }
@@ -23,8 +23,12 @@ public class ShapeUtils {
     }
 
     public static void computeBoundingBox(PolyShape2F shape, Rect2FPP rect, Matrix matrix) {
-        final int pointCount = shape.getVertexCount();
-        rect.computeBoundingBox(transformShape(shape, matrix), 0, pointCount);
+        final int pointCount = shape.getPointCount();
+        if (pointCount > 0) {
+            final float[] pts = transformShape(shape, matrix);
+            rect.set(pts[0], pts[1], pts[0], pts[1]);
+            rect.computeBoundingBox(pts, 2, pointCount-1);
+        }
     }
 
     public static void fillPoint(float[] vertex, int offset, float x, float y) {

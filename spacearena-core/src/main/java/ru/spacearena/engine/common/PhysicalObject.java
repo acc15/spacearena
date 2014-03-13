@@ -3,7 +3,8 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.DrawUtils;
-import ru.vmsoftware.math.FloatMathUtils;
+import ru.spacearena.engine.util.FloatMathUtils
+;
 
 /**
  * @author Vyacheslav Mayorov
@@ -11,9 +12,9 @@ import ru.vmsoftware.math.FloatMathUtils;
  */
 public class PhysicalObject extends Transform {
 
-    float velocityX = 0f, velocityY = 0f;
-    float accelerationX = 0f, accelerationY = 0f;
-    float angularVelocity = 0f;
+    private float velocityX = 0f, velocityY = 0f;
+    private float accelerationX = 0f, accelerationY = 0f;
+    private float angularVelocity = 0f;
 
     public float getVelocityX() {
         return velocityX;
@@ -87,6 +88,10 @@ public class PhysicalObject extends Transform {
     @Override
     public void onDraw(DrawContext context) {
         super.onDraw(context);
+        drawVelocities(context);
+    }
+
+    private void drawVelocities(DrawContext context) {
         if (!engine.getDebug().isDrawVelocities() || FloatMathUtils.isZero(velocityX, velocityY)) {
             return;
         }

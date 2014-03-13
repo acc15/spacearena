@@ -24,8 +24,10 @@ public interface DrawContext {
     void setTextSize(float size);
     float getTextSize();
 
-    void drawPoly(float[] points);
+    void drawPoly(float[] points, int start, int pointCount);
 
     float getLineWidth();
     void setLineWidth(float width);
+
+    void fillPoly(float[] pointBuf, int start, int pointCount);
 }

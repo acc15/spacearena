@@ -2,7 +2,8 @@ package ru.spacearena.game;
 
 import org.fest.assertions.Delta;
 import org.junit.Test;
-import ru.vmsoftware.math.FloatMathUtils;
+import ru.spacearena.engine.util.FloatMathUtils
+;
 
 import java.util.Random;
 

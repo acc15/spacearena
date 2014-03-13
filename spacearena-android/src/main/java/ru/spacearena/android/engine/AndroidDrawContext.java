@@ -88,8 +88,9 @@ public class AndroidDrawContext implements DrawContext {
         return paint.getTextSize();
     }
 
-    public void drawPoly(float[] points) {
-        canvas.drawPoints(points, paint);
+    public void drawPoly(float[] points, int start, int pointCount) {
+        enableStroke();
+        canvas.drawPoints(points, start, pointCount << 1, paint);
     }
 
     public float getLineWidth() {
@@ -98,5 +99,10 @@ public class AndroidDrawContext implements DrawContext {
 
     public void setLineWidth(float width) {
         paint.setStrokeWidth(width);
+    }
+
+    public void fillPoly(float[] pointBuf, int start, int pointCount) {
+        enableFill();
+        canvas.drawPoints(pointBuf, start, pointCount << 1, paint);
     }
 }

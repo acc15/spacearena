@@ -1,10 +1,10 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.ShapeUtils;
-import ru.vmsoftware.math.geometry.shapes.AABB2F;
-import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 
 /**
  * @author Vyacheslav Mayorov
@@ -68,7 +68,7 @@ public class Viewport extends Transform implements BoundChecker.Bounded {
         this.adjustStrategy.adjustViewport(width, height, this);
     }
 
-    public AABB2F getBounds() {
+    public BoundingBox2F getBounds() {
         updateMatricesIfNeeded();
         return bounds;
     }

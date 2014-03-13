@@ -5,8 +5,9 @@ import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.RandomUtils;
-import ru.vmsoftware.math.FloatMathUtils;
-import ru.vmsoftware.math.geometry.shapes.Rect2FPR;
+import ru.spacearena.engine.util.FloatMathUtils
+;
+import ru.spacearena.engine.geometry.shapes.Rect2FPR;
 
 import java.util.Random;
 

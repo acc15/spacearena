@@ -5,15 +5,16 @@ import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.collisions.CollisionContainer;
-import ru.spacearena.engine.collisions.CollisionEntity;
+import ru.spacearena.engine.collisions.CollisionObject;
 import ru.spacearena.engine.collisions.Contact;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.input.InputType;
 import ru.spacearena.engine.input.KeyCode;
 import ru.spacearena.engine.input.trackers.InputTracker;
-import ru.vmsoftware.math.FloatMathUtils;
-import ru.vmsoftware.math.geometry.shapes.AABB2F;
-import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.util.FloatMathUtils
+;
+import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
+import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 
 import java.util.Random;
 
@@ -44,14 +45,14 @@ public class GameFactory implements EngineFactory {
         multilineText.add(viewportText);
         multilineText.add(collisionText);
 
-        final AABB2F mapBounds = new Rect2FPP(-2000f, -2000f, 2000f, 2000f);
+        final BoundingBox2F mapBounds = new Rect2FPP(-2000f, -2000f, 2000f, 2000f);
 
         final Ship ship = new Ship() {
 
             @Override
-            public boolean onCollision(CollisionEntity entity, boolean reference, Contact contact) {
+            public boolean onCollision(CollisionObject entity, float seconds, boolean reference, Contact contact) {
                 collisionText.setText("Collision: " + reference + " " + contact.getOverlapX() + " " + contact.getOverlapY());
-                return super.onCollision(entity, reference, contact);
+                return super.onCollision(entity, seconds, reference, contact);
             }
 
         };
@@ -167,7 +168,7 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public boolean onUpdate(float seconds) {
-                final AABB2F bounds = viewport.getBounds();
+                final BoundingBox2F bounds = viewport.getBounds();
                 viewportText.setText(String.format("Viewport: (%.2f,%.2f)(%.2f,%.2f)",
                         bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY()));
                 positionText.setText(String.format("Position: %.2f, %.2f",

@@ -1,9 +1,10 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.vmsoftware.math.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 
 /**
  * @author Vyacheslav Mayorov
@@ -18,13 +19,18 @@ public class Rectangle extends EngineObject {
         this.color = Color.WHITE;
     }
 
-    public Rectangle(float left, float top, float right, float bottom) {
-        this(Color.WHITE, left, top, right, bottom);
+    public Rectangle(BoundingBox2F aabb, int color) {
+        this.bounds.set(aabb);
+        this.color = color;
     }
 
-    public Rectangle(int color, float left, float top, float right, float bottom) {
-        this.color = color;
+    public Rectangle(float left, float top, float right, float bottom) {
+        this(left, top, right, bottom, Color.WHITE);
+    }
+
+    public Rectangle(float left, float top, float right, float bottom, int color) {
         this.bounds.set(left, top, right, bottom);
+        this.color = color;
     }
 
     @Override

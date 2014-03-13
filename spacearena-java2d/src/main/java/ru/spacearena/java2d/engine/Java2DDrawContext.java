@@ -77,13 +77,16 @@ public class Java2DDrawContext implements DrawContext {
     private static final int[] xPointBuf = new int[MAX_POLY_POINTS];
     private static final int[] yPointBuf = new int[MAX_POLY_POINTS];
 
-    public void drawPoly(float[] points) {
-        final int pc = points.length/2;
-        for (int i=0;i<pc;i++) {
-            xPointBuf[i] = (int)points[i*2];
-            yPointBuf[i] = (int)points[i*2+1];
+    private void convertPolyPoint(float[] points, int start, int pointCount) {
+        for (int i=0;i<pointCount;i++) {
+            xPointBuf[i] = (int)points[i*2+start];
+            yPointBuf[i] = (int)points[i*2+start+1];
         }
-        graphics2D.drawPolygon(xPointBuf, yPointBuf, pc);
+    }
+
+    public void drawPoly(float[] points, int start, int pointCount) {
+        convertPolyPoint(points, start, pointCount);
+        graphics2D.drawPolygon(xPointBuf, yPointBuf, pointCount);
     }
 
     public float getLineWidth() {
@@ -96,5 +99,10 @@ public class Java2DDrawContext implements DrawContext {
 
     public void setLineWidth(float width) {
         graphics2D.setStroke(new BasicStroke(width));
+    }
+
+    public void fillPoly(float[] pointBuf, int start, int pointCount) {
+        convertPolyPoint(pointBuf, start, pointCount);
+        graphics2D.fillPolygon(xPointBuf, yPointBuf, pointCount);
     }
 }

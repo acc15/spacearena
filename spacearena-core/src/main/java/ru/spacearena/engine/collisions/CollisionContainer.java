@@ -1,13 +1,14 @@
 package ru.spacearena.engine.collisions;
 
 import ru.spacearena.engine.EngineContainer;
-import ru.vmsoftware.math.FloatMathUtils;
+import ru.spacearena.engine.util.FloatMathUtils
+;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-20-02
  */
-public class CollisionContainer extends EngineContainer<CollisionEntity> {
+public class CollisionContainer extends EngineContainer<CollisionObject> {
 
     public static class AxisContact {
         // time when shapes start overlap [0..1) 1 = shapes won't overlap (in current frame) by given velocity
@@ -29,27 +30,31 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
         // naive implementation
         int size = children.size();
         for (int i=0; i<size; i++) {
-            final CollisionEntity e1 = children.get(i);
-            e1.applyRotation(seconds);
-            e1.applyVelocity(seconds);
-/*
+            final CollisionObject e1 = children.get(i);
+            if (i == 0) {
+                e1.computeBoundingBox(seconds);
+                e1.applyRotation(seconds);
+            }
+
             final float e1vx = e1.getVelocityX() * seconds, e1vy = e1.getVelocityY() * seconds;
             contact.setContact(1f, 0f, 0f);
 
             int firstContactIndex = -1;
             for (int j=i+1; j<size; j++) {
-                final CollisionEntity e2 = children.get(j);
+                final CollisionObject e2 = children.get(j);
                 if (i == 0) {
+                    e2.computeBoundingBox(seconds);
                     e2.applyRotation(seconds);
                 }
                 if (!e1.canCollide(e2)) {
                     continue;
                 }
 
+                /*
                 final float e2vx = e2.getVelocityX() * seconds, e2vy = e2.getVelocityY() * seconds;
 
-                final AABB2F a = e1.getAABB();
-                final AABB2F b = e2.getAABB();
+                final BoundingBox2F a = e1.getAABB();
+                final BoundingBox2F b = e2.getAABB();
 
                 final float vx = e1vx - e2vx;
                 computeContact(a.getMinX(), a.getMaxX(), b.getMinX(), b.getMaxX(), vx, xContact);
@@ -90,22 +95,23 @@ public class CollisionContainer extends EngineContainer<CollisionEntity> {
                     contact.overlapX = xContact.overlap;
                     contact.overlapY = 0f;
                 }
+                */
             }
             if (firstContactIndex < 0) {
                 e1.applyVelocity(seconds);
                 continue;
             }
 
-            final CollisionEntity firstContactEntity = getChild(firstContactIndex);
-            if (!e1.onCollision(firstContactEntity, true, contact)) {
+            final CollisionObject e2 = getChild(firstContactIndex);
+            if (!e1.onCollision(e2, seconds, true, contact)) {
                 children.remove(i);
                 --size;
                 --i;
             }
-            if (!firstContactEntity.onCollision(e1, false, contact)) {
+            if (!e2.onCollision(e1, seconds, false, contact)) {
                 children.remove(firstContactIndex);
                 --size;
-            }*/
+            }
         }
         return true;
     }
