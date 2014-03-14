@@ -4,8 +4,7 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.BitUtils;
-import ru.spacearena.engine.util.FloatMathUtils
-;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -197,6 +196,7 @@ public class Transform extends GenericContainer {
         concatMatrix.multiply(viewMatrix);
         try {
             context.setMatrix(concatMatrix);
+            //context.setLineWidth(context.getLineWidth() * viewMatrix.);
             super.onDraw(context);
         } finally {
             context.setMatrix(oldMatrix);

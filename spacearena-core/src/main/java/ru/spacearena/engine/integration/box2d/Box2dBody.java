@@ -5,6 +5,7 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.Fixture;
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.ShapeUtils;
 
@@ -40,30 +41,35 @@ public class Box2dBody extends EngineObject {
         return body.getAngle();
     }
 
+    private void drawEdge(DrawContext context, EdgeShape edgeShape) {
+        final Vec2 from = body.getWorldPoint(edgeShape.m_vertex1);
+        final Vec2 to = body.getWorldPoint(edgeShape.m_vertex2);
+        context.drawLine(from.x, from.y, to.x, to.y);
+    }
+
     @Override
     public void onDraw(DrawContext context) {
-        final Fixture f = body.getFixtureList();
-        while (f != null) {
-
+        for (Fixture f = body.getFixtureList(); f != null; f = f.getNext()) {
             final Shape shape = f.getShape();
+
+            context.setColor(Color.GREEN);
             switch (shape.getType()) {
             case EDGE:
-                final EdgeShape edge = (EdgeShape) shape;
-                context.drawLine(edge.m_vertex1.x, edge.m_vertex1.y, edge.m_vertex2.x, edge.m_vertex2.y);
+                drawEdge(context, (EdgeShape)shape);
                 break;
 
             case CIRCLE:
                 final CircleShape circle = (CircleShape) shape;
-                context.drawCircle(circle.m_p.x, circle.m_p.y, circle.m_radius);
+                final Vec2 center = body.getWorldPoint(circle.getVertex(0));
+                context.drawCircle(center.x, center.y, circle.getRadius());
                 break;
 
             case POLYGON:
                 final PolygonShape polygon = (PolygonShape) shape;
-
                 final float[] buf = ShapeUtils.POINT_BUF;
                 final int pointCount = polygon.getVertexCount();
                 for (int i=0; i < pointCount; i++) {
-                    final Vec2 vertex = polygon.getVertex(i);
+                    final Vec2 vertex = body.getWorldPoint(polygon.getVertex(i));
                     buf[i*2] = vertex.x;
                     buf[i*2+1] = vertex.y;
                 }
@@ -75,11 +81,9 @@ public class Box2dBody extends EngineObject {
                 final EdgeShape edgeShape = new EdgeShape();
                 for (int i=0; i<chain.getChildCount(); i++) {
                     chain.getChildEdge(edgeShape, i);
-                    context.drawLine(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y,
-                            edgeShape.m_vertex2.x, edgeShape.m_vertex2.y);
+                    drawEdge(context, edgeShape);
                 }
             }
-
         }
     }
 }

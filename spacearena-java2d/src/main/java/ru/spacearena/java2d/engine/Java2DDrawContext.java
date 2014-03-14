@@ -129,17 +129,18 @@ public class Java2DDrawContext implements DrawContext {
     }
 
     private void setEllipse(float x, float y, float rx, float ry) {
-        floatEllipse.setFrame(x-rx, y-ry, x+rx, y+ry);
+        floatEllipse.setFrame(x-rx, y-ry, rx*2, ry*2);
     }
 
     private void setPath(float[] points, int start, int pointCount) {
         floatPath.reset();
-        for (int i=0; i<pointCount; i++) {
-            final float x = points[start+i*2];
-            final float y = points[start+i*2+1];
+        for (int i=0; i<=pointCount; i++) {
+            final int imod = i%pointCount;
+            final float x = points[start+imod*2];
+            final float y = points[start+imod*2+1];
             if (i == 0) {
                 floatPath.moveTo(x, y);
-            } else {
+            } else{
                 floatPath.lineTo(x, y);
             }
         }
