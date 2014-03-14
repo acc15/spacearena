@@ -5,6 +5,7 @@ import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 
 import java.awt.*;
+import java.awt.geom.*;
 
 /**
  * @author Vyacheslav Mayorov
@@ -15,6 +16,17 @@ public class Java2DDrawContext implements DrawContext {
     private Graphics2D graphics2D;
     private int fontOffset;
     private int fontHeight;
+
+    private final Line2D.Float floatLine = new Line2D.Float();
+    private final Ellipse2D.Float floatEllipse = new Ellipse2D.Float();
+    private final Rectangle2D.Float floatRect = new Rectangle2D.Float();
+    private final Path2D.Float floatPath = new Path2D.Float();
+
+    private final AffineTransform imageTransform = new AffineTransform();
+
+    //public static final int MAX_POLY_POINTS = 100;
+    //private static final int[] xPointBuf = new int[MAX_POLY_POINTS];
+    //private static final int[] yPointBuf = new int[MAX_POLY_POINTS];
 
     public DrawContext wrap(Graphics2D graphics2D) {
         this.graphics2D = graphics2D;
@@ -32,24 +44,8 @@ public class Java2DDrawContext implements DrawContext {
         graphics2D.setColor(new Color(color, true));
     }
 
-    public void fillRect(float left, float top, float right, float bottom) {
-        graphics2D.fillRect((int)left, (int)top, (int)(right-left), (int)(bottom-top));
-    }
-
-    public void fillCircle(float x, float y, float radius) {
-        graphics2D.fillOval((int) (x - radius), (int) (y - radius), (int) (radius * 2), (int) (radius * 2));
-    }
-
-    public void drawText(String text, float x, float y) {
-        graphics2D.drawString(text, x, y + fontOffset);
-    }
-
-    public void drawRect(float left, float top, float right, float bottom) {
-        graphics2D.drawRect((int)left, (int)top, (int)(right-left), (int)(bottom-top));
-    }
-
-    public void drawImage(Image image, float x, float y) {
-        graphics2D.drawImage(((Java2DImage)image).image, (int)x, (int)y, null);
+    public int getColor() {
+        return graphics2D.getColor().getRGB();
     }
 
     public void setMatrix(Matrix matrix) {
@@ -60,33 +56,56 @@ public class Java2DDrawContext implements DrawContext {
         return new Java2DMatrix(graphics2D.getTransform());
     }
 
-    public void drawLine(float x1, float y1, float x2, float y2) {
-        graphics2D.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
-    }
-
-    public void setTextSize(float size) {
-        final Font newFont = graphics2D.getFont().deriveFont(size);
-        graphics2D.setFont(newFont);
-    }
-
     public float getTextSize() {
         return graphics2D.getFont().getSize2D();
     }
 
-    public static final int MAX_POLY_POINTS = 100;
-    private static final int[] xPointBuf = new int[MAX_POLY_POINTS];
-    private static final int[] yPointBuf = new int[MAX_POLY_POINTS];
+    public void setTextSize(float size) {
+        graphics2D.setFont(graphics2D.getFont().deriveFont(size));
+    }
 
-    private void convertPolyPoint(float[] points, int start, int pointCount) {
-        for (int i=0;i<pointCount;i++) {
-            xPointBuf[i] = (int)points[i*2+start];
-            yPointBuf[i] = (int)points[i*2+start+1];
-        }
+    public void drawText(String text, float x, float y) {
+        graphics2D.drawString(text, x, y + fontOffset);
+    }
+
+    public void drawLine(float x1, float y1, float x2, float y2) {
+        setLine(x1, y1, x2, y2);
+        graphics2D.draw(floatLine);
+    }
+
+    public void drawImage(Image image, float x, float y) {
+        imageTransform.setToTranslation(x, y);
+        graphics2D.drawImage(((Java2DImage)image).image, imageTransform, null);
+    }
+
+    public void drawRect(float l, float t, float r, float b) {
+        setRect(l, t, r, b);
+        graphics2D.draw(floatRect);
+    }
+
+    public void fillRect(float l, float t, float r, float b) {
+        setRect(l, t, r, b);
+        graphics2D.fill(floatRect);
+    }
+
+    public void drawCircle(float x, float y, float radius) {
+        setEllipse(x, y, radius, radius);
+        graphics2D.draw(floatEllipse);
+    }
+
+    public void fillCircle(float x, float y, float radius) {
+        setEllipse(x, y, radius, radius);
+        graphics2D.fill(floatEllipse);
     }
 
     public void drawPoly(float[] points, int start, int pointCount) {
-        convertPolyPoint(points, start, pointCount);
-        graphics2D.drawPolygon(xPointBuf, yPointBuf, pointCount);
+        setPath(points, start, pointCount);
+        graphics2D.draw(floatPath);
+    }
+
+    public void fillPoly(float[] pointBuf, int start, int pointCount) {
+        setPath(pointBuf, start, pointCount);
+        graphics2D.fill(floatPath);
     }
 
     public float getLineWidth() {
@@ -101,8 +120,37 @@ public class Java2DDrawContext implements DrawContext {
         graphics2D.setStroke(new BasicStroke(width));
     }
 
-    public void fillPoly(float[] pointBuf, int start, int pointCount) {
-        convertPolyPoint(pointBuf, start, pointCount);
-        graphics2D.fillPolygon(xPointBuf, yPointBuf, pointCount);
+    private void setRect(float l, float t, float r, float b) {
+        floatRect.setFrameFromDiagonal(l, t, r, b);
     }
+
+    private void setLine(float x1, float y1, float x2, float y2) {
+        floatLine.setLine(x1, y1, x2, y2);
+    }
+
+    private void setEllipse(float x, float y, float rx, float ry) {
+        floatEllipse.setFrame(x-rx, y-ry, x+rx, y+ry);
+    }
+
+    private void setPath(float[] points, int start, int pointCount) {
+        floatPath.reset();
+        for (int i=0; i<pointCount; i++) {
+            final float x = points[start+i*2];
+            final float y = points[start+i*2+1];
+            if (i == 0) {
+                floatPath.moveTo(x, y);
+            } else {
+                floatPath.lineTo(x, y);
+            }
+        }
+        /*
+
+        for (int i=0;i<pointCount;i++) {
+            xPointBuf[i] = (int)points[i*2+start];
+            yPointBuf[i] = (int)points[i*2+start+1];
+        }*/
+    }
+
+
+
 }

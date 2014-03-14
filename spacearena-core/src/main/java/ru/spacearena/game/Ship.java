@@ -51,12 +51,12 @@ public class Ship extends CollisionObject {
     };
 
     @Override
-    public Shape2F getConvexShape(int n) {
+    public Shape2F getWorldShape(int n) {
         return SHIP_SHAPES[n];
     }
 
     @Override
-    public int getConvexShapeCount() {
+    public int getShapeCount() {
         return SHIP_SHAPES.length;
     }
 

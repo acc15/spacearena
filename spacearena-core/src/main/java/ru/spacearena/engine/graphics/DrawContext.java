@@ -7,27 +7,31 @@ package ru.spacearena.engine.graphics;
 public interface DrawContext {
 
     void setColor(int color);
-    void fillRect(float left, float top, float right, float bottom);
-    void fillCircle(float x, float y, float radius);
-
-    void drawImage(Image image, float x, float y);
-    void drawText(String text, float x, float y);
-    void drawRect(float left, float top, float right, float bottom);
-
-    float getTextHeight();
-    void setMatrix(Matrix matrix);
-
-    Matrix getMatrixCopy();
+    int getColor();
 
     void drawLine(float x1, float y1, float x2, float y2);
+    void drawImage(Image image, float x, float y);
+    void drawText(String text, float x, float y);
+
+    void drawRect(float left, float top, float right, float bottom);
+    void fillRect(float left, float top, float right, float bottom);
+
+    void drawCircle(float x, float y, float radius);
+    void fillCircle(float x, float y, float radius);
+
+    void drawPoly(float[] points, int start, int pointCount);
+    void fillPoly(float[] pointBuf, int start, int pointCount);
+
+    float getTextHeight();
+
+    void setMatrix(Matrix matrix);
+    Matrix getMatrixCopy();
 
     void setTextSize(float size);
     float getTextSize();
 
-    void drawPoly(float[] points, int start, int pointCount);
-
     float getLineWidth();
     void setLineWidth(float width);
 
-    void fillPoly(float[] pointBuf, int start, int pointCount);
+
 }

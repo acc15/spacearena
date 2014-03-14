@@ -66,6 +66,7 @@ public class Viewport extends Transform implements BoundChecker.Bounded {
     void adjustViewport(float width, float height) {
         setPivot(width / 2, height / 2);
         this.adjustStrategy.adjustViewport(width, height, this);
+
     }
 
     public BoundingBox2F getBounds() {

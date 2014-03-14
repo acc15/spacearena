@@ -10,10 +10,23 @@ public class Polygon2FP extends AbstractPolyShape2F {
     private int start;
     private int count;
 
+    private int computeOffset(int i) {
+        return start + i * 2;
+    }
+
     public Polygon2FP(float[] points, int start, int count) {
         this.points = points;
         this.start = start;
         this.count = count;
+    }
+
+    public void setPoint(int i, float x, float y) {
+        if (i >= count) {
+            throw new IndexOutOfBoundsException();
+        }
+        final int off = computeOffset(i);
+        this.points[off] = x;
+        this.points[off+1] = y;
     }
 
     public ShapeType getType() {
@@ -26,11 +39,11 @@ public class Polygon2FP extends AbstractPolyShape2F {
     }
 
     public float getPointX(int i) {
-        return points[i*2];
+        return points[i*2+start];
     }
 
     public float getPointY(int i) {
-        return points[i*2+1];
+        return points[i*2+start+1];
     }
 
     public int getPointCount() {

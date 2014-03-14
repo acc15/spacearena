@@ -1,5 +1,6 @@
 package ru.spacearena.engine.geometry.shapes;
 
+import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils
 ;
 
