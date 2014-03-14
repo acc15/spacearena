@@ -1,10 +1,10 @@
-package ru.spacearena.engine.input;
+package ru.spacearena.engine.events;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-14-02
  */
-public class KeyEvent implements InputEvent {
+public class KeyEvent extends InputEvent {
 
     public static enum Action {
         UP,
@@ -17,6 +17,7 @@ public class KeyEvent implements InputEvent {
     private Action action;
 
     public KeyEvent(Action action, int keyCode, char keyChar) {
+        super(InputType.KEYBOARD);
         this.action = action;
         this.keyCode = keyCode;
         this.keyChar = keyChar;

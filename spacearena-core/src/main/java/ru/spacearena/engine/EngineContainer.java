@@ -1,7 +1,7 @@
 package ru.spacearena.engine;
 
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.input.InputEvent;
+import ru.spacearena.engine.events.InputEvent;
 
 import java.util.*;
 

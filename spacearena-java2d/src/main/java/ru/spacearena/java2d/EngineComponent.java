@@ -1,13 +1,15 @@
 package ru.spacearena.java2d;
 
 import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.events.SizeEvent;
 import ru.spacearena.game.GameFactory;
 import ru.spacearena.java2d.engine.Java2DEngine;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * @author Vyacheslav Mayorov
@@ -16,11 +18,17 @@ import java.awt.event.ComponentEvent;
 public class EngineComponent extends Canvas {
 
     public static void start(EngineFactory factory, String title) {
-        final JFrame frame = new JFrame(title);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        final Frame frame = new Frame(title);
         frame.setMinimumSize(new Dimension(640, 480));
         frame.setLocationRelativeTo(null);
         frame.setBackground(null);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
 
         // TODO add ability to switch between windowed and full-screen
         /*GraphicsDevice d = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -31,14 +39,13 @@ public class EngineComponent extends Canvas {
         }*/
 
         final EngineComponent component = new EngineComponent();
-        frame.getContentPane().add(component);
+        frame.add(component);
         frame.setVisible(true);
-
 
         final Java2DEngine engine = new Java2DEngine(factory, component);
         component.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
-                engine.onSize(component.getWidth(), component.getHeight());
+                engine.scheduleEvent(new SizeEvent(e.getComponent().getWidth(), e.getComponent().getHeight()));
             }
         });
         component.setBackground(null);

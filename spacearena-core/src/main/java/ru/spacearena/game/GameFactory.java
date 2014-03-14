@@ -7,7 +7,7 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
-import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.events.InputType;
 
 import java.util.Random;
 
@@ -61,6 +61,17 @@ public class GameFactory implements EngineFactory {
         viewport.add(new Rectangle(-5, -5, 5, 5));
 
         root.add(viewport);
+        root.add(new EngineObject() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                final BoundingBox2F box = viewport.getBounds();
+                viewportText.setText(String.format("L: %.2f; T: %.2f; R: %.2f; B: %.2f; X: %.2f; Y: %.2f; SX: %.2f; SY: %.2f",
+                        box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY(),
+                        viewport.getX(), viewport.getY(),
+                        viewport.getScaleX(), viewport.getScaleY()));
+                return true;
+            }
+        });
 
         /*
         final Box2dWorld box2dWorld = new Box2dWorld();

@@ -8,7 +8,7 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.util.IOUtils;
 
 import java.io.InputStream;

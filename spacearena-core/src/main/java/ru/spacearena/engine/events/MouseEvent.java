@@ -1,10 +1,10 @@
-package ru.spacearena.engine.input;
+package ru.spacearena.engine.events;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class MouseEvent implements InputEvent {
+public class MouseEvent extends InputEvent {
 
     public static enum Action {
         CLICK,
@@ -27,6 +27,7 @@ public class MouseEvent implements InputEvent {
     private float x, y;
 
     public MouseEvent(Action action, int button, float x, float y) {
+        super(InputType.MOUSE);
         this.action = action;
         this.button = button;
         this.x = x;

@@ -1,10 +1,11 @@
 package ru.spacearena.engine;
 
+import ru.spacearena.engine.events.EngineEvent;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.input.InputEvent;
-import ru.spacearena.engine.input.InputType;
+import ru.spacearena.engine.events.InputEvent;
+import ru.spacearena.engine.events.InputType;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,28 +16,33 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class Engine {
 
     private final Debug debug = new Debug();
+    private final EngineFactory factory;
 
-    protected final EngineFactory factory;
-    protected EngineEntity root;
-    protected float width, height;
+    private EngineEntity root;
+    private float width, height;
+    private long lastTime = -1;
 
-    long lastTime = -1;
-
-    final ConcurrentLinkedQueue<InputEvent> pendingEvents = new ConcurrentLinkedQueue<InputEvent>();
+    private final ConcurrentLinkedQueue<EngineEvent> pendingEvents = new ConcurrentLinkedQueue<EngineEvent>();
 
     protected Engine(EngineFactory factory) {
         this.factory = factory;
     }
 
-    protected void init() {
+    protected void init(float width, float height) {
+        this.width = width;
+        this.height = height;
         this.root = factory.createRoot(this);
         this.root.onInit(this);
     }
 
+    public EngineFactory getFactory() {
+        return factory;
+    }
+
     public boolean onUpdate() {
-        InputEvent inputEvent;
+        EngineEvent inputEvent;
         while ((inputEvent = pendingEvents.poll()) != null) {
-            root.onInput(inputEvent);
+            inputEvent.run(this);
         }
 
         final long currentTime = currentTime();
@@ -59,7 +65,7 @@ public abstract class Engine {
     }
 
     public boolean onInput(InputEvent event) {
-        pendingEvents.add(event);
+        root.onInput(event);
         return true;
     }
 
@@ -73,6 +79,10 @@ public abstract class Engine {
 
     public float getHeight() {
         return height;
+    }
+
+    public void scheduleEvent(EngineEvent event) {
+        pendingEvents.add(event);
     }
 
     public abstract Matrix createMatrix();

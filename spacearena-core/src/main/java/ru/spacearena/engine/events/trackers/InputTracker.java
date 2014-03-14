@@ -1,9 +1,9 @@
-package ru.spacearena.engine.input.trackers;
+package ru.spacearena.engine.events.trackers;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.input.InputEvent;
-import ru.spacearena.engine.input.KeyEvent;
-import ru.spacearena.engine.input.MouseEvent;
+import ru.spacearena.engine.events.InputEvent;
+import ru.spacearena.engine.events.KeyEvent;
+import ru.spacearena.engine.events.MouseEvent;
 
 import java.util.HashSet;
 
