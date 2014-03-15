@@ -6,14 +6,19 @@ import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 
+import java.util.Stack;
+
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-12-02
  */
 public class AndroidDrawContext implements DrawContext {
     public static final int DEFAULT_TEXT_SIZE = 30;
-    private Canvas canvas;
     private final Paint paint = new Paint();
+    private final Stack<android.graphics.Matrix> matrixStack = new Stack<android.graphics.Matrix>();
+    private final android.graphics.Matrix concat = new android.graphics.Matrix();
+
+    private Canvas canvas;
     private float fontAscent;
     private float fontHeight;
 
@@ -68,12 +73,25 @@ public class AndroidDrawContext implements DrawContext {
         canvas.drawBitmap(((AndroidImage)image).bitmap, x, y, paint);
     }
 
-    public void setMatrix(Matrix matrix) {
-        canvas.setMatrix(((AndroidMatrix)matrix).androidMatrix);
+    public int getColor() {
+        return paint.getColor();
     }
 
-    public Matrix getMatrixCopy() {
-        return new AndroidMatrix(canvas.getMatrix());
+    public void drawCircle(float x, float y, float radius) {
+        enableStroke();
+        canvas.drawCircle(x, y, radius, paint);
+    }
+
+    public void pushMatrix(Matrix matrix) {
+        final android.graphics.Matrix stackCopy = canvas.getMatrix();
+        matrixStack.push(stackCopy);
+        canvas.getMatrix(concat);
+        concat.preConcat(((AndroidMatrix)matrix).androidMatrix);
+        canvas.setMatrix(concat);
+    }
+
+    public void popMatrix() {
+        canvas.setMatrix(matrixStack.pop());
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {

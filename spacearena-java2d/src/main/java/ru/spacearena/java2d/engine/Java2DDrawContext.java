@@ -6,6 +6,7 @@ import ru.spacearena.engine.graphics.Matrix;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.Stack;
 
 /**
  * @author Vyacheslav Mayorov
@@ -22,6 +23,7 @@ public class Java2DDrawContext implements DrawContext {
     private final Rectangle2D.Float floatRect = new Rectangle2D.Float();
     private final Path2D.Float floatPath = new Path2D.Float();
 
+    private final Stack<AffineTransform> matrixStack = new Stack<AffineTransform>();
     private final AffineTransform imageTransform = new AffineTransform();
 
     //public static final int MAX_POLY_POINTS = 100;
@@ -48,12 +50,16 @@ public class Java2DDrawContext implements DrawContext {
         return graphics2D.getColor().getRGB();
     }
 
-    public void setMatrix(Matrix matrix) {
-        graphics2D.setTransform(((Java2DMatrix)matrix).affineTransform);
+    public void pushMatrix(Matrix matrix) {
+        final AffineTransform stackCopy = graphics2D.getTransform();
+        matrixStack.push(stackCopy);
+        final AffineTransform concatCopy = graphics2D.getTransform();
+        concatCopy.concatenate(((Java2DMatrix) matrix).affineTransform);
+        graphics2D.setTransform(concatCopy);
     }
 
-    public Matrix getMatrixCopy() {
-        return new Java2DMatrix(graphics2D.getTransform());
+    public void popMatrix() {
+        graphics2D.setTransform(matrixStack.pop());
     }
 
     public float getTextSize() {

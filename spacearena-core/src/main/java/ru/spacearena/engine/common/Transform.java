@@ -191,15 +191,11 @@ public class Transform extends GenericContainer {
             super.onDraw(context);
             return;
         }
-        final Matrix oldMatrix = context.getMatrixCopy();
-        final Matrix concatMatrix = context.getMatrixCopy();
-        concatMatrix.multiply(viewMatrix);
+        context.pushMatrix(viewMatrix);
         try {
-            context.setMatrix(concatMatrix);
-            //context.setLineWidth(context.getLineWidth() * viewMatrix.);
             super.onDraw(context);
         } finally {
-            context.setMatrix(oldMatrix);
+            context.popMatrix();
         }
     }
 

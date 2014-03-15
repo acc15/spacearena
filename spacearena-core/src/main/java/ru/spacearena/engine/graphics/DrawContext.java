@@ -24,8 +24,8 @@ public interface DrawContext {
 
     float getTextHeight();
 
-    void setMatrix(Matrix matrix);
-    Matrix getMatrixCopy();
+    void pushMatrix(Matrix matrix);
+    void popMatrix();
 
     void setTextSize(float size);
     float getTextSize();
