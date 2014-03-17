@@ -13,9 +13,9 @@ import ru.spacearena.engine.geometry.shapes.Rect2FPP;
  */
 public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bounded {
 
-    ViewportAdjustStrategy adjustStrategy;
-
+    private final ViewportAdjustStrategy adjustStrategy;
     private final Rect2FPP bounds = new Rect2FPP();
+    private Matrix localSpace;
 
     public Viewport() {
         this(new DefaultAdjustStrategy());
@@ -55,6 +55,7 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
     @Override
     public void onAttach(Engine engine) {
         super.onAttach(engine);
+        localSpace = engine.createMatrix();
         adjustViewport(engine.getWidth(), engine.getHeight());
     }
 
@@ -70,14 +71,20 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
     }
 
     public BoundingBox2F getBounds() {
-        updateMatricesIfNeeded();
+        updateMatrixIfNeeded();
         return bounds;
     }
 
     @Override
     protected void onMatrixUpdate() {
+        localSpace.inverse(getWorldSpace());
         bounds.set(0, 0, getEngine().getWidth(), getEngine().getHeight());
         ShapeUtils.computeBoundingBox(bounds, bounds, getWorldSpace());
+    }
+
+    public Matrix getLocalSpace() {
+        updateMatrixIfNeeded();
+        return localSpace;
     }
 
     @Override

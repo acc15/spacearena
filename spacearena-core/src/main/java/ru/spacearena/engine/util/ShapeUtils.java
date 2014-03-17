@@ -1,8 +1,10 @@
 package ru.spacearena.engine.util;
 
-import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.geometry.shapes.PolyShape2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.graphics.Matrix;
 
 /**
  * @author Vyacheslav Mayorov
@@ -11,6 +13,9 @@ import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 public class ShapeUtils {
 
     public static final float[] POINT_BUF = new float[200];
+    public static final Point2F POINT_1 = new Point2F();
+    public static final ProjectionF PROJECTION_1 = new ProjectionF();
+    public static final ProjectionF PROJECTION_2 = new ProjectionF();
 
     public static float[] transformShape(PolyShape2F shape, Matrix matrix) {
         final int pointCount = shape.getPointCount();

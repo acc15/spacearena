@@ -16,7 +16,7 @@ public class Bullet extends CollisionObject {
         //super(new Rect2FPP(-20, -5, 20, 5));
 
         setPosition(x, y);
-        setRotation(angle);
+        setAngle(angle);
         setVelocityByAngle(angle, SPEED);
         add(new Rectangle(-20, -5, 20, 5, Color.RED));
     }

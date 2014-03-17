@@ -17,10 +17,9 @@ import java.util.Random;
  */
 public class Sky extends EngineObject {
 
-    private static final int PIXELS_PER_STAR = 400;
-
-    private static final float MAX_SIZE = 6f;
-    private static final float MIN_SIZE = 2f;
+    private float starDistance = 15f;
+    private float minStarSize = 0.1f;
+    private float maxStarSize = 0.2f;
 
     private final Random random;
     private final long seed;
@@ -33,26 +32,50 @@ public class Sky extends EngineObject {
         this.seed = random.nextLong();
     }
 
+    public float getStarDistance() {
+        return starDistance;
+    }
+
+    public void setStarDistance(float starDistance) {
+        this.starDistance = starDistance;
+    }
+
+    public float getMinStarSize() {
+        return minStarSize;
+    }
+
+    public void setMinStarSize(float minStarSize) {
+        this.minStarSize = minStarSize;
+    }
+
+    public float getMaxStarSize() {
+        return maxStarSize;
+    }
+
+    public void setMaxStarSize(float maxStarSize) {
+        this.maxStarSize = maxStarSize;
+    }
+
     private void drawStarLayer(DrawContext context, float scale) {
 
         bounds.set(viewport.getBounds());
 
-        final float pixelsPerStar = PIXELS_PER_STAR * scale;
-        final float twoStarDistance = pixelsPerStar * 2;
+        final float starDistanceScale = starDistance * scale;
+        final float twoStarDistance = starDistanceScale * 2;
 
         bounds.scale(scale, scale);
         bounds.inflate(twoStarDistance, twoStarDistance);
 
-        final float startX = FloatMathUtils.firstVisiblePosition(bounds.getMinX(), pixelsPerStar);
-        final float startY = FloatMathUtils.firstVisiblePosition(bounds.getMinY(), pixelsPerStar);
+        final float startX = FloatMathUtils.firstVisiblePosition(bounds.getMinX(), starDistanceScale);
+        final float startY = FloatMathUtils.firstVisiblePosition(bounds.getMinY(), starDistanceScale);
 
-        for (float y=startY; y<=bounds.getMaxY(); y += pixelsPerStar) {
-            for (float x=startX; x<=bounds.getMaxX(); x += pixelsPerStar) {
+        for (float y=startY; y<=bounds.getMaxY(); y += starDistanceScale) {
+            for (float x=startX; x<=bounds.getMaxX(); x += starDistanceScale) {
                 random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x<<24) ^ ((long)y));
 
                 final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
-                final float halfSize = RandomUtils.randomBetween(random, MIN_SIZE, MAX_SIZE)/2;
+                final float halfSize = RandomUtils.randomBetween(random, minStarSize, maxStarSize)/2;
 
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);

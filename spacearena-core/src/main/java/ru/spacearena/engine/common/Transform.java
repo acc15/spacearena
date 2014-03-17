@@ -5,7 +5,6 @@ import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.BitUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
@@ -14,54 +13,55 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
-    private static final int MATRIX_DIRTY_MASK = 0x01;
-    private static final int MATRIX_DIRTY_VALUE = 1;
+    private static final int MATRIX_DIRTY = 1;
 
-    Matrix localSpace;
-    Matrix worldSpace;
+    private Matrix worldSpace;
 
-    float x = 0f, y = 0f;
-    float scaleX = 1f, scaleY = 1f;
-    float skewX = 0f, skewY = 0f;
-    float pivotX = 0f, pivotY = 0f;
-    float rotation = 0f;
+    private float positionX = 0f, positionY = 0f;
+    private float scaleX = 1f, scaleY = 1f;
+    private float skewX = 0f, skewY = 0f;
+    private float pivotX = 0f, pivotY = 0f;
+    private float angle = 0f;
 
-    int dirty = 0;
+    private int dirty = 0;
 
-    private void markMatrixDirty() {
-        this.dirty = BitUtils.set(dirty, MATRIX_DIRTY_MASK, MATRIX_DIRTY_VALUE);
+    public boolean isDirty(int field) {
+        return (dirty & field) != 0;
     }
 
-    private void resetMatrixDirty() {
-        this.dirty = BitUtils.reset(dirty, MATRIX_DIRTY_MASK);
+    public boolean isDirty() {
+        return dirty != 0;
     }
 
-    private boolean isMatrixDirty() {
-        return BitUtils.get(dirty, MATRIX_DIRTY_MASK) == MATRIX_DIRTY_VALUE;
+    private void markDirty(int field) {
+        this.dirty |= field;
     }
 
-    public float getX() {
-        return x;
+    private void resetDirty() {
+        this.dirty = 0;
     }
 
-    public void setX(float x) {
-        this.x = x;
-        markMatrixDirty();
+    public float getPositionX() {
+        return positionX;
     }
 
-    public float getY() {
-        return y;
+    public void setPositionX(float positionX) {
+        this.positionX = positionX;
+        markDirty(MATRIX_DIRTY);
     }
 
-    public void setY(float y) {
-        this.y = y;
-        markMatrixDirty();
+    public float getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(float positionY) {
+        this.positionY = positionY;
+        markDirty(MATRIX_DIRTY);
     }
 
     public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
-        markMatrixDirty();
+        setPositionX(x);
+        setPositionY(y);
     }
 
     public float getScaleX() {
@@ -70,7 +70,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     public void setScaleX(float scaleX) {
         this.scaleX = scaleX;
-        markMatrixDirty();
+        markDirty(MATRIX_DIRTY);
     }
 
     public float getScaleY() {
@@ -79,13 +79,12 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     public void setScaleY(float scaleY) {
         this.scaleY = scaleY;
-        markMatrixDirty();
+        markDirty(MATRIX_DIRTY);
     }
 
     public void setScale(float scaleX, float scaleY) {
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-        markMatrixDirty();
+        setScaleX(scaleX);
+        setScaleY(scaleY);
     }
 
     public void setScale(float scale) {
@@ -98,7 +97,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     public void setSkewX(float skewX) {
         this.skewX = skewX;
-        markMatrixDirty();
+        markDirty(MATRIX_DIRTY);
     }
 
     public float getSkewY() {
@@ -107,13 +106,12 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     public void setSkewY(float skewY) {
         this.skewY = skewY;
-        markMatrixDirty();
+        markDirty(MATRIX_DIRTY);
     }
 
     public void setSkew(float skewX, float skewY) {
-        this.skewX = skewX;
-        this.skewY = skewY;
-        markMatrixDirty();
+        setSkewX(skewX);
+        setSkewY(skewY);
     }
 
     public float getPivotX() {
@@ -122,7 +120,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     public void setPivotX(float pivotX) {
         this.pivotX = pivotX;
-        markMatrixDirty();
+        markDirty(MATRIX_DIRTY);
     }
 
     public float getPivotY() {
@@ -131,62 +129,49 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     public void setPivotY(float pivotY) {
         this.pivotY = pivotY;
-        markMatrixDirty();
+        markDirty(MATRIX_DIRTY);
     }
 
     public void setPivot(float pivotX, float pivotY) {
-        this.pivotX = pivotX;
-        this.pivotY = pivotY;
-        markMatrixDirty();
+        setPivotX(pivotX);
+        setPivotY(pivotY);
     }
 
-    public float getRotation() {
-        return rotation;
+    public float getAngle() {
+        return angle;
     }
 
-    public void setRotation(float rotation) {
-        this.rotation = FloatMathUtils.normalizeDegrees(rotation);
-        markMatrixDirty();
+    public void setAngle(float angle) {
+        this.angle = FloatMathUtils.normalizeDegrees(angle);
+        markDirty(MATRIX_DIRTY);
     }
 
     public void rotate(float d) {
-        setRotation(rotation + d);
+        setAngle(angle + d);
     }
 
     public void translate(float dx, float dy) {
-        setPosition(x + dx, y + dy);
-    }
-
-    protected void updateMatricesIfNeeded() {
-        if (!isMatrixDirty()) {
-            return;
-        }
-        resetMatrixDirty();
-        worldSpace.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, rotation, x, y);
-        localSpace.inverse(worldSpace);
-        onMatrixUpdate();
+        setPosition(positionX + dx, positionY + dy);
     }
 
     protected void onMatrixUpdate() {
     }
 
     public Matrix getViewMatrix() {
-        return getWorldSpace();
-    }
-
-    public Matrix getLocalSpace() {
-        updateMatricesIfNeeded();
-        return localSpace;
-    }
-
-    public Matrix getWorldSpace() {
-        updateMatricesIfNeeded();
         return worldSpace;
+    }
+
+    @Override
+    public boolean onUpdate(float seconds) {
+        if (!super.onUpdate(seconds)) {
+            return false;
+        }
+        updateMatrixIfNeeded();
+        return true;
     }
 
     public void onAttach(Engine engine) {
         this.worldSpace = engine.createMatrix();
-        this.localSpace = engine.createMatrix();
         super.onAttach(engine);
     }
 
@@ -194,15 +179,32 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     public void onDraw(DrawContext context) {
         final Matrix viewMatrix = getViewMatrix();
         if (viewMatrix.isIdentity()) {
-            super.onDraw(context);
+            onDrawTransformed(context);
             return;
         }
         context.pushMatrix(viewMatrix);
         try {
-            super.onDraw(context);
+            onDrawTransformed(context);
         } finally {
             context.popMatrix();
         }
+    }
+
+    public Matrix getWorldSpace() {
+        return worldSpace;
+    }
+
+    protected void onDrawTransformed(DrawContext context) {
+        super.onDraw(context);
+    }
+
+    protected void updateMatrixIfNeeded() {
+        if (!isDirty()) {
+            return;
+        }
+        resetDirty();
+        worldSpace.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, angle, positionX, positionY);
+        onMatrixUpdate();
     }
 
 }

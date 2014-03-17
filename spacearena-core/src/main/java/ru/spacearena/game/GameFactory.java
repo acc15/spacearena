@@ -31,7 +31,7 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
 
-        final GenericContainer root = new GenericContainer();
+        final GenericContainer root = new GenericContainer(engine);
 
         final MultilineText.Line fpsText = new MultilineText.Line();
         final MultilineText.Line positionText = new MultilineText.Line();
@@ -43,8 +43,6 @@ public class GameFactory implements EngineFactory {
         multilineText.add(positionText);
         multilineText.add(viewportText);
         multilineText.add(collisionText);
-
-        final BoundingBox2F mapBounds = new Rect2FPP(-2000f, -2000f, 2000f, 2000f);
 
         root.add(new Background());
 
@@ -61,38 +59,35 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-
-        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(2000f));
+        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
         viewport.add(new Sky(viewport, new Random()));
-        viewport.add(new Rectangle(-5, -5, 5, 5));
+        viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f));
 
         root.add(viewport);
+
         root.add(new EngineObject() {
             @Override
             public boolean onUpdate(float seconds) {
                 final BoundingBox2F box = viewport.getBounds();
                 viewportText.setText(String.format("L: %.2f; T: %.2f; R: %.2f; B: %.2f; X: %.2f; Y: %.2f; SX: %.2f; SY: %.2f",
                         box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY(),
-                        viewport.getX(), viewport.getY(),
+                        viewport.getPositionX(), viewport.getPositionY(),
                         viewport.getScaleX(), viewport.getScaleY()));
                 return true;
             }
         });
 
-        final Box2dWorld box2dWorld = new Box2dWorld(0, 0);
-        box2dWorld.setScale(1/40f);
+        final Box2dWorld box2dWorld = new Box2dWorld();
         box2dWorld.setTimeScale(2f);
 
         final Ship ship1 = new Ship();
-        box2dWorld.add(ship1);
-
-        ship1.setPosition(3, 0);
+        ship1.setInitialPosition(0, -5);
 
         final Ship ship2 = new Ship();
+        ship2.setInitialPosition(0, 5);
+
+        box2dWorld.add(ship1);
         box2dWorld.add(ship2);
-
-        ship2.setPosition(-3, 0);
-
 
         viewport.add(box2dWorld);
         root.add(new InputTracker() {
@@ -112,12 +107,20 @@ public class GameFactory implements EngineFactory {
                 force.normalize();
                 force.mulLocal(10000f);
                 ship1.getBody().applyForceToCenter(force);
-                ship1.setRotation(radians);
+                ship1.getBody().setTransform(ship1.getBody().getPosition(), radians);
 
                 return true;
             }
         });
-        root.add(new BoundChecker(mapBounds, viewport));
+        root.add(new EngineObject() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                viewport.setPosition(ship1.getPositionX(), ship1.getPositionY());
+                return true;
+            }
+        });
+        root.add(new BoundChecker(new Rect2FPP(-100f, -100f, 100f, 100f), viewport));
+
         root.add(multilineText);
         return root;
     }

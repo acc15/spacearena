@@ -14,6 +14,13 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
     private final List<T> children = new ArrayList<T>();
     private Engine engine = null;
 
+    public EngineContainer() {
+    }
+
+    public EngineContainer(Engine engine) {
+        this.engine = engine;
+    }
+
     public Engine getEngine() {
         if (engine == null) {
             throw new NullPointerException("Attempt to get engine before object initialization");
@@ -70,7 +77,9 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
     }
 
     public void onAttach(Engine engine) {
-        if (this.engine != null) {
+        if (this.engine == engine) {
+            return;
+        } else if (this.engine != null) {
             throw new IllegalStateException("Already initialized");
         }
         this.engine = engine;

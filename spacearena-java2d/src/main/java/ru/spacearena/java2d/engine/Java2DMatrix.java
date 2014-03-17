@@ -53,8 +53,7 @@ public class Java2DMatrix implements Matrix {
     }
 
     public void set(float pivotX, float pivotY, float scaleX, float scaleY, float skewX, float skewY, float rotateX, float rotateY, float x, float y) {
-        affineTransform.setToIdentity();
-        affineTransform.translate(x, y);
+        affineTransform.setToTranslation(x, y);
         affineTransform.rotate(rotateX, rotateY);
         affineTransform.shear(skewX, skewY);
         affineTransform.scale(scaleX, scaleY);
@@ -67,11 +66,15 @@ public class Java2DMatrix implements Matrix {
             float skewX, float skewY,
             float rotation,
             float x, float y) {
-        affineTransform.setToIdentity();
-        affineTransform.translate(x, y);
+        affineTransform.setToTranslation(x,y);
         affineTransform.rotate(FloatMathUtils.toRadians(rotation));
         affineTransform.shear(skewX, skewY);
         affineTransform.scale(scaleX, scaleY);
         affineTransform.translate(-pivotX, -pivotY);
+    }
+
+    public void set(float rotateX, float rotateY, float x, float y) {
+        affineTransform.setToTranslation(x, y);
+        affineTransform.rotate(rotateX, rotateY);
     }
 }

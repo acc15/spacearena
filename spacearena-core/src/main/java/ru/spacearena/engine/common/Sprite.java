@@ -1,74 +1,55 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.EngineEntity;
+import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
-import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-14-02
  */
-public class Sprite extends EngineObject implements BoundingBox2F {
+public class Sprite extends Transform<EngineEntity> implements BoundingBox2F {
 
-    Image image;
-    float x, y;
+    private final Image image;
 
-    public float getX() {
-        return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
+    public Sprite(Image image) {
+        this.image = image;
     }
 
     public Image getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
     public float getWidth() {
-        return image.getWidth();
+        return image.getWidth() * getScaleX();
     }
 
     public float getHeight() {
-        return image.getHeight();
+        return image.getHeight() * getScaleY();
     }
 
     public float getMinX() {
-        return x;
+        return getPositionX() - getPivotX() * getScaleX();
     }
 
     public float getMaxX() {
-        return x + image.getWidth();
+        return getMinX() + getWidth();
     }
 
     public float getMinY() {
-        return y;
+        return getPositionY() - getPivotY() * getScaleY();
     }
 
     public float getMaxY() {
-        return y + image.getHeight();
+        return getMinY() + getHeight();
     }
 
     public float getCenterX() {
-        return x + getHalfWidth();
+        return getPositionX();
     }
 
-    public float getCenterY() {
-        return y + getHalfHeight();
-    }
+    public float getCenterY() { return getPositionY(); }
 
     public float getHalfWidth() {
         return getWidth()/2;
@@ -79,7 +60,9 @@ public class Sprite extends EngineObject implements BoundingBox2F {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
-        context.drawImage(image, x, y);
+    protected void onDrawTransformed(DrawContext context) {
+        super.onDrawTransformed(context);
+        context.drawImage(image, 0, 0);
     }
+
 }

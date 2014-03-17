@@ -120,7 +120,6 @@ public class CollisionObject extends PhysicalObject {
     }
 
     public BoundingBox2F getAABB() {
-        updateMatricesIfNeeded();
         return worldSpaceRect;
     }
 

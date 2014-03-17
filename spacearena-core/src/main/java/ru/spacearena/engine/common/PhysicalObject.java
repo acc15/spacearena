@@ -103,10 +103,10 @@ public class PhysicalObject extends Transform<EngineEntity> {
             context.setLineWidth(2f);
             context.setTextSize(40f);
 
-            final float tx = x + velocityX, ty = y + velocityY;
+            final float tx = getPositionX() + velocityX, ty = getPositionY() + velocityY;
             context.setColor(Color.WHITE);
 
-            DrawUtils.drawArrow(context, x, y, tx, ty, DrawUtils.HeadType.NONE, 0f, DrawUtils.HeadType.ARROW, 50f);
+            DrawUtils.drawArrow(context, getPositionX(), getPositionY(), tx, ty, DrawUtils.HeadType.NONE, 0f, DrawUtils.HeadType.ARROW, 50f);
             context.drawText(String.format("%.2f;%.2f", velocityX, velocityY), tx, ty+20);
 
         } finally {
@@ -139,7 +139,7 @@ public class PhysicalObject extends Transform<EngineEntity> {
     }
 
     public void rotateTo(float targetAngle, float velocity, float time) {
-        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, rotation);
+        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, getAngle());
         if (FloatMathUtils.isZero(angleDiff)) {
             angularVelocity = 0f;
             return;

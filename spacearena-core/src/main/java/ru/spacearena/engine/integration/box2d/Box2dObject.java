@@ -1,16 +1,15 @@
 package ru.spacearena.engine.integration.box2d;
 
 import org.jbox2d.collision.shapes.*;
-import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.common.GenericContainer;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.ShapeUtils;
 
 /**
@@ -19,122 +18,41 @@ import ru.spacearena.engine.util.ShapeUtils;
  */
 public class Box2dObject extends GenericContainer {
 
-    private Body body;
     private Matrix matrix;
+    private Body body;
 
-    private float pivotX = 0f, pivotY = 0f;
-    private float scaleX = 1f, scaleY = 1f;
-    private float skewX = 0f, skewY = 0f;
+    private final BodyDef bodyDef = new BodyDef();
 
-    public float getPivotX() {
-        return pivotX;
-    }
-
-    public void setPivotX(float pivotX) {
-        this.pivotX = pivotX;
-    }
-
-    public float getPivotY() {
-        return pivotY;
-    }
-
-    public void setPivotY(float pivotY) {
-        this.pivotY = pivotY;
-    }
-
-    public void setPivot(float pivotX, float pivotY) {
-        this.pivotX = pivotX;
-        this.pivotY = pivotY;
-    }
-
-    public float getScaleX() {
-        return scaleX;
-    }
-
-    public void setScaleX(float scaleX) {
-        this.scaleX = scaleX;
-    }
-
-    public float getScaleY() {
-        return scaleY;
-    }
-
-    public void setScaleY(float scaleY) {
-        this.scaleY = scaleY;
-    }
-
-    public void setScale(float scale) {
-        setScale(scale, scale);
-    }
-
-    public void setScale(float scaleX, float scaleY) {
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
-    }
-
-    public float getSkewX() {
-        return skewX;
-    }
-
-    public void setSkewX(float skewX) {
-        this.skewX = skewX;
-    }
-
-    public float getSkewY() {
-        return skewY;
-    }
-
-    public void setSkewY(float skewY) {
-        this.skewY = skewY;
-    }
-
-    public void setSkew(float skewX, float skewY) {
-        this.skewX = skewX;
-        this.skewY = skewY;
-    }
-
-    public float getRotation() {
-        return FloatMathUtils.toDegrees(this.body.getAngle());
-    }
-
-    private Transform getTransform() {
-        return this.body.getTransform();
-    }
-
-    public void setRotation(float radians) {
-        body.setTransform(body.getPosition(), radians);
-    }
-
-    public void setPositionX(float x) {
-        getTransform().p.x = x;
-    }
-
-    public void setPositionY(float y) {
-        getTransform().p.y = y;
-    }
-
-    public void setPosition(float x, float y) {
-        getTransform().p.set(x, y);
-    }
-
-    public float getPositionX() {
-        return this.body.getPosition().x;
-    }
-
-    public float getPositionY() {
-        return this.body.getPosition().y;
-    }
-
-    public void setBody(Body body) {
-        this.body = body;
+    public BodyDef getBodyDef() {
+        return bodyDef;
     }
 
     public Body getBody() {
         return body;
     }
 
+    public float getAngle() {
+        return body.getAngle();
+    }
+
+    public float getPositionX() {
+        return body.getPosition().x;
+    }
+
+    public float getPositionY() {
+        return body.getPosition().y;
+    }
+
     public void onCreate(Box2dWorld world) {
-        setScale(world.getScaleX(), world.getScaleY());
+        onPreCreate(bodyDef);
+        this.body = world.getWorld().createBody(bodyDef);
+        onPostCreate(this.body);
+    }
+
+    protected void onPreCreate(BodyDef bodyDef) {
+    }
+
+    protected void onPostCreate(Body body) {
     }
 
     @Override
@@ -145,35 +63,22 @@ public class Box2dObject extends GenericContainer {
 
     @Override
     public void onDraw(DrawContext context) {
-        drawBody(context);
-    }
-
-    protected void drawBody(DrawContext context) {
-        final org.jbox2d.common.Transform xf = body.getTransform();
-        matrix.set(0, 0, 1, 1, 0, 0, xf.q.c, xf.q.s, xf.p.x, xf.p.y);
-        context.pushMatrix(matrix);
+        org.jbox2d.common.Transform tx = body.getTransform();
+        matrix.set(tx.q.c, tx.q.s, tx.p.x, tx.p.y);
         try {
-            if (getEngine().getDebug().isDrawConvexShapes()) {
-                context.setColor(Color.GREEN);
-                drawBodyShapes(context, body);
-            }
-            onDrawBody(context);
-            matrix.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, 0, 0, 0, 0);
             context.pushMatrix(matrix);
-            try {
-                onDrawGraphic(context);
-            } finally {
-                context.popMatrix();
-            }
+            onDrawTransformed(context);
         } finally {
             context.popMatrix();
         }
     }
 
-    protected void onDrawGraphic(DrawContext context) {
-    }
-
-    protected void onDrawBody(DrawContext context) {
+    protected void onDrawTransformed(DrawContext context) {
+        super.onDraw(context);
+        if (getEngine().getDebug().isDrawConvexShapes()) {
+            context.setColor(Color.GREEN);
+            drawBodyShapes(context, body);
+        }
     }
 
     protected final void drawBodyShapes(DrawContext context, Body body) {
@@ -221,5 +126,9 @@ public class Box2dObject extends GenericContainer {
 
     private void drawEdge(DrawContext context, EdgeShape edgeShape) {
         context.drawLine(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y, edgeShape.m_vertex2.x, edgeShape.m_vertex2.y);
+    }
+
+    public void setInitialPosition(float x, float y) {
+        bodyDef.position.set(x, y);
     }
 }
