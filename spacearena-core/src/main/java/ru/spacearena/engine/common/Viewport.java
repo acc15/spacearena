@@ -53,8 +53,8 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
     }
 
     @Override
-    public void onInit(Engine engine) {
-        super.onInit(engine);
+    public void onAttach(Engine engine) {
+        super.onAttach(engine);
         adjustViewport(engine.getWidth(), engine.getHeight());
     }
 
@@ -76,7 +76,7 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
 
     @Override
     protected void onMatrixUpdate() {
-        bounds.set(0, 0, engine.getWidth(), engine.getHeight());
+        bounds.set(0, 0, getEngine().getWidth(), getEngine().getHeight());
         ShapeUtils.computeBoundingBox(bounds, bounds, getWorldSpace());
     }
 

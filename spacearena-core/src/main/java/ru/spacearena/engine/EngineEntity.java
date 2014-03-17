@@ -8,7 +8,9 @@ import ru.spacearena.engine.events.InputEvent;
  * @since 2014-20-02
  */
 public interface EngineEntity {
-    void onInit(Engine engine);
+    void onAttach(Engine engine);
+
+    void onDetach(Engine engine);
 
     void onSize(float width, float height);
 

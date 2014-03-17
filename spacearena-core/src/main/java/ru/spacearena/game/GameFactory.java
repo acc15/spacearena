@@ -80,14 +80,21 @@ public class GameFactory implements EngineFactory {
         });
 
         final Box2dWorld box2dWorld = new Box2dWorld(0, 0);
-        box2dWorld.setScale(1/40f, 1/40f);
+        box2dWorld.setScale(1/40f);
         box2dWorld.setTimeScale(2f);
 
-        box2dWorld.add(new Ship());
+        final Ship ship1 = new Ship();
+        box2dWorld.add(ship1);
+
+        ship1.setPosition(3, 0);
+
+        final Ship ship2 = new Ship();
+        box2dWorld.add(ship2);
+
+        ship2.setPosition(-3, 0);
+
 
         viewport.add(box2dWorld);
-
-
         root.add(new InputTracker() {
 
             private Vec2 force = new Vec2();
@@ -100,8 +107,12 @@ public class GameFactory implements EngineFactory {
                     return true;
                 }
 
+                final float radians = FloatMathUtils.radians(force.x, force.y);
+
                 force.normalize();
                 force.mulLocal(10000f);
+                ship1.getBody().applyForceToCenter(force);
+                ship1.setRotation(radians);
 
                 return true;
             }

@@ -11,29 +11,57 @@ import java.util.*;
  */
 public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
-    protected final List<T> children = new ArrayList<T>();
-    protected Engine engine = null;
+    private final List<T> children = new ArrayList<T>();
+    private Engine engine = null;
+
+    public Engine getEngine() {
+        if (engine == null) {
+            throw new NullPointerException("Attempt to get engine before object initialization");
+        }
+        return engine;
+    }
 
     public void add(T entity) {
         if (engine != null) {
-            entity.onInit(engine);
+            attach(entity);
         }
-        onAttach(entity);
+        onAddChild(entity);
         children.add(entity);
     }
 
-    protected void onAttach(T entity) {
+    public void remove(int index) {
+        final T e = children.get(index);
+        if (engine != null) {
+            detach(e);
+        }
+        onRemoveChild(e);
+        children.remove(index);
     }
 
-    protected void onDetach(T entity) {
+    private void detach(T entity) {
+        onDetachChild(entity);
+        entity.onDetach(engine);
     }
 
-    public int getChildrenCount() {
+    private void attach(T entity) {
+        entity.onAttach(engine);
+        onAttachChild(entity);
+    }
+
+    protected void onAddChild(T entity) {
+    }
+
+    protected void onRemoveChild(T entity) {
+    }
+
+    protected void onAttachChild(T entity) {
+    }
+
+    protected void onDetachChild(T entity) {
+    }
+
+    public int getChildCount() {
         return children.size();
-    }
-
-    public List<T> getChildren() {
-        return children;
     }
 
     @SuppressWarnings("unchecked")
@@ -41,14 +69,24 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return (X)children.get(index);
     }
 
-    public void onInit(Engine engine) {
+    public void onAttach(Engine engine) {
         if (this.engine != null) {
             throw new IllegalStateException("Already initialized");
         }
         this.engine = engine;
         for (T child : children) {
-            child.onInit(engine);
+            attach(child);
         }
+    }
+
+    public void onDetach(Engine engine) {
+        if (this.engine != engine) {
+            throw new IllegalStateException("Not initialized");
+        }
+        for (T child: children) {
+            detach(child);
+        }
+        this.engine = null;
     }
 
     public void onSize(float width, float height) {
@@ -71,7 +109,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         while (iterator.hasNext()) {
             final T child = iterator.next();
             if (!child.onUpdate(seconds)) {
-                onDetach(child);
+                onDetachChild(child);
                 iterator.remove();
             }
         }

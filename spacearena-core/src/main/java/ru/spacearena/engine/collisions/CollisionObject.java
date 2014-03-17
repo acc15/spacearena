@@ -150,7 +150,7 @@ public class CollisionObject extends PhysicalObject {
     }
 
     private void drawAABB(DrawContext context) {
-        if (!engine.getDebug().isDrawBounds()) {
+        if (!getEngine().getDebug().isDrawBounds()) {
             return;
         }
         final BoundingBox2F b = getAABB();
@@ -159,7 +159,7 @@ public class CollisionObject extends PhysicalObject {
     }
 
     private void drawShapes(DrawContext context) {
-        if (!engine.getDebug().isDrawConvexShapes()) {
+        if (!getEngine().getDebug().isDrawConvexShapes()) {
             return;
         }
         final float lw = context.getLineWidth();

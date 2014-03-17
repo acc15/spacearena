@@ -1,18 +1,17 @@
 package ru.spacearena.engine.integration.box2d;
 
 import org.jbox2d.collision.shapes.*;
+import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.Fixture;
-import org.jbox2d.dynamics.World;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.common.GenericContainer;
+import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.ShapeUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Vyacheslav Mayorov
@@ -20,17 +19,12 @@ import java.util.List;
  */
 public class Box2dObject extends GenericContainer {
 
-    private final List<Body> bodies = new ArrayList<Body>();
-
+    private Body body;
     private Matrix matrix;
 
     private float pivotX = 0f, pivotY = 0f;
     private float scaleX = 1f, scaleY = 1f;
     private float skewX = 0f, skewY = 0f;
-
-    public void addBody(Body body) {
-        this.bodies.add(body);
-    }
 
     public float getPivotX() {
         return pivotX;
@@ -69,6 +63,10 @@ public class Box2dObject extends GenericContainer {
         this.scaleY = scaleY;
     }
 
+    public void setScale(float scale) {
+        setScale(scale, scale);
+    }
+
     public void setScale(float scaleX, float scaleY) {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
@@ -95,38 +93,87 @@ public class Box2dObject extends GenericContainer {
         this.skewY = skewY;
     }
 
-    public void onCreate(World world) {
+    public float getRotation() {
+        return FloatMathUtils.toDegrees(this.body.getAngle());
+    }
+
+    private Transform getTransform() {
+        return this.body.getTransform();
+    }
+
+    public void setRotation(float radians) {
+        body.setTransform(body.getPosition(), radians);
+    }
+
+    public void setPositionX(float x) {
+        getTransform().p.x = x;
+    }
+
+    public void setPositionY(float y) {
+        getTransform().p.y = y;
+    }
+
+    public void setPosition(float x, float y) {
+        getTransform().p.set(x, y);
+    }
+
+    public float getPositionX() {
+        return this.body.getPosition().x;
+    }
+
+    public float getPositionY() {
+        return this.body.getPosition().y;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public void onCreate(Box2dWorld world) {
+        setScale(world.getScaleX(), world.getScaleY());
     }
 
     @Override
-    public void onInit(Engine engine) {
+    public void onAttach(Engine engine) {
+        super.onAttach(engine);
         matrix = engine.createMatrix();
     }
 
     @Override
     public void onDraw(DrawContext context) {
-        drawBodies(context, bodies);
+        drawBody(context);
     }
 
-    protected void drawBodies(DrawContext context, List<Body> bodies) {
-        for (final Body body: bodies) {
-            drawBody(context, body);
-        }
-    }
-
-    protected void drawBody(DrawContext context, Body body) {
+    protected void drawBody(DrawContext context) {
         final org.jbox2d.common.Transform xf = body.getTransform();
-        matrix.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, xf.q.c, xf.q.s, xf.p.x, xf.p.y);
+        matrix.set(0, 0, 1, 1, 0, 0, xf.q.c, xf.q.s, xf.p.x, xf.p.y);
         context.pushMatrix(matrix);
         try {
-            onDrawBody(context, body);
+            if (getEngine().getDebug().isDrawConvexShapes()) {
+                context.setColor(Color.GREEN);
+                drawBodyShapes(context, body);
+            }
+            onDrawBody(context);
+            matrix.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, 0, 0, 0, 0);
+            context.pushMatrix(matrix);
+            try {
+                onDrawGraphic(context);
+            } finally {
+                context.popMatrix();
+            }
         } finally {
             context.popMatrix();
         }
     }
 
-    protected void onDrawBody(DrawContext context, Body body) {
-        drawBodyShapes(context, body);
+    protected void onDrawGraphic(DrawContext context) {
+    }
+
+    protected void onDrawBody(DrawContext context) {
     }
 
     protected final void drawBodyShapes(DrawContext context, Body body) {

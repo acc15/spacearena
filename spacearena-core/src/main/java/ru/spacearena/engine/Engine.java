@@ -32,7 +32,7 @@ public abstract class Engine {
         this.width = width;
         this.height = height;
         this.root = factory.createRoot(this);
-        this.root.onInit(this);
+        this.root.onAttach(this);
     }
 
     public EngineFactory getFactory() {

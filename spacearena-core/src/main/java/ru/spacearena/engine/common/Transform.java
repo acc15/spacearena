@@ -184,10 +184,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
         return worldSpace;
     }
 
-    public void onInit(Engine engine) {
+    public void onAttach(Engine engine) {
         this.worldSpace = engine.createMatrix();
         this.localSpace = engine.createMatrix();
-        super.onInit(engine);
+        super.onAttach(engine);
     }
 
     @Override

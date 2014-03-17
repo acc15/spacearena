@@ -7,6 +7,7 @@ package ru.spacearena.engine.util;
 public class FloatMathUtils {
 
     public static final float PI = 3.1415927f;
+    public static final float HALF_PI = PI / 2;
     public static final float TWO_PI = PI * 2;
     public static final float EPSILON = 1e-5f;
     public static final float HALF_CIRCLE_ANGLE = 180;
@@ -104,8 +105,10 @@ public class FloatMathUtils {
         return v < 0 ? -v : v;
     }
 
+    public static float radians(float x, float y) { return atan2(y, x); }
+
     public static float angle(float x, float y) {
-        return toDegrees(atan2(-y, -x))+HALF_CIRCLE_ANGLE;
+        return toDegrees(radians(x,y));
     }
 
     public static float angle(float x1, float y1, float x2, float y2) {

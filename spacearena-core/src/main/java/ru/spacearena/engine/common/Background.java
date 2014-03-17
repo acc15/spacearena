@@ -23,7 +23,7 @@ public class Background extends EngineObject {
     }
 
     @Override
-    public void onInit(Engine engine) {
+    public void onAttach(Engine engine) {
         this.engine = engine;
     }
 

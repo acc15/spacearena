@@ -93,7 +93,7 @@ public class PhysicalObject extends Transform<EngineEntity> {
     }
 
     private void drawVelocities(DrawContext context) {
-        if (!engine.getDebug().isDrawVelocities() || FloatMathUtils.isZero(velocityX, velocityY)) {
+        if (!getEngine().getDebug().isDrawVelocities() || FloatMathUtils.isZero(velocityX, velocityY)) {
             return;
         }
 

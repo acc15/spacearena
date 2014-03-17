@@ -9,7 +9,10 @@ import ru.spacearena.engine.events.InputEvent;
  */
 public class EngineObject implements EngineEntity {
 
-    public void onInit(Engine engine) {
+    public void onAttach(Engine engine) {
+    }
+
+    public void onDetach(Engine engine) {
     }
 
     public void onSize(float width, float height) {

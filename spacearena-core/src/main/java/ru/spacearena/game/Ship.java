@@ -4,8 +4,10 @@ import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.common.Sprite;
+import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.integration.box2d.Box2dObject;
+import ru.spacearena.engine.integration.box2d.Box2dWorld;
 
 /**
  * @author Vyacheslav Mayorov
@@ -17,9 +19,7 @@ public class Ship extends Box2dObject {
     public static final float ACCELERATION = 2000f;
     public static final float ANGULAR_VELOCITY = 720f;
 
-    public Ship() {
-        add(new Sprite());
-    }
+    private Image image;
 
     private static final PolygonShape FIXTURE_SHAPE = new PolygonShape();
     static {
@@ -29,6 +29,8 @@ public class Ship extends Box2dObject {
     private static final BodyDef BODY_DEF = new BodyDef();
     static {
         BODY_DEF.type = BodyType.DYNAMIC;
+        BODY_DEF.linearDamping = 0.1f;
+        BODY_DEF.angularDamping = 0.1f;
     }
 
     private static final FixtureDef FIXTURE_DEF = new FixtureDef();
@@ -39,21 +41,23 @@ public class Ship extends Box2dObject {
     }
 
     @Override
-    public void onCreate(World world) {
-        final Body body = world.createBody(BODY_DEF);
+    public void onCreate(Box2dWorld world) {
+        super.onCreate(world);
+        final Body body = world.getWorld().createBody(BODY_DEF);
         body.createFixture(FIXTURE_DEF);
-        addBody(body);
+        setBody(body);
     }
 
     @Override
-    public void onInit(Engine engine) {
-        getSprite().setImage(engine.loadImage("ship.png"));
-        //setPivot(getSprite().getWidth()/3, getSprite().getHeight()/2);
-        super.onInit(engine);
+    public void onAttach(Engine engine) {
+        super.onAttach(engine);
+        image = getEngine().loadImage("ship.png");
+        setPivot(image.getWidth() / 3, image.getHeight() / 2);
     }
 
-    private Sprite getSprite() {
-        return getChild(0);
+    @Override
+    protected void onDrawGraphic(DrawContext context) {
+        context.drawImage(image, 0, 0);
     }
 
     /*

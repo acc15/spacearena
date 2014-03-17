@@ -28,9 +28,9 @@ public class CollisionContainer extends EngineContainer<CollisionObject> {
     @Override
     public boolean onUpdate(float seconds) {
         // naive implementation
-        int size = children.size();
+        int size = getChildCount();
         for (int i=0; i<size; i++) {
-            final CollisionObject e1 = children.get(i);
+            final CollisionObject e1 = getChild(i);
             if (i == 0) {
                 e1.computeBoundingBox(seconds);
                 e1.applyRotation(seconds);
@@ -41,7 +41,7 @@ public class CollisionContainer extends EngineContainer<CollisionObject> {
 
             int firstContactIndex = -1;
             for (int j=i+1; j<size; j++) {
-                final CollisionObject e2 = children.get(j);
+                final CollisionObject e2 = getChild(j);
                 if (i == 0) {
                     e2.computeBoundingBox(seconds);
                     e2.applyRotation(seconds);
@@ -104,12 +104,12 @@ public class CollisionContainer extends EngineContainer<CollisionObject> {
 
             final CollisionObject e2 = getChild(firstContactIndex);
             if (!e1.onCollision(e2, seconds, true, contact)) {
-                children.remove(i);
+                remove(i);
                 --size;
                 --i;
             }
             if (!e2.onCollision(e1, seconds, false, contact)) {
-                children.remove(firstContactIndex);
+                remove(firstContactIndex);
                 --size;
             }
         }

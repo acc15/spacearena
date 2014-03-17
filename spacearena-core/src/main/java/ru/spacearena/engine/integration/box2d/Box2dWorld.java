@@ -38,8 +38,8 @@ public class Box2dWorld extends Transform<Box2dObject> {
     }
 
     @Override
-    protected void onAttach(Box2dObject entity) {
-        entity.onCreate(world);
+    protected void onAddChild(Box2dObject entity) {
+        entity.onCreate(this);
     }
 
     @Override
