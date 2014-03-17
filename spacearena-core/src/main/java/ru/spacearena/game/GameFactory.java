@@ -1,21 +1,19 @@
 package ru.spacearena.game;
 
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.EdgeShape;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.*;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.events.KeyCode;
+import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
-import ru.spacearena.engine.integration.box2d.Box2dObject;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.Random;
 
@@ -81,21 +79,33 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final Box2dWorld box2dWorld = new Box2dWorld(0, 9.81f);
-        box2dWorld.setScale(0.05f, 0.05f);
+        final Box2dWorld box2dWorld = new Box2dWorld(0, 0);
+        box2dWorld.setScale(1/40f, 1/40f);
         box2dWorld.setTimeScale(2f);
+
+        box2dWorld.add(new Ship());
 
         viewport.add(box2dWorld);
 
-        createWall(box2dWorld, -40, 20, 40, 20);
-        createWall(box2dWorld, -40, -30, -40, 20);
-        createWall(box2dWorld, 40, -30, 40, 20);
 
-        for (int i=0; i<10; i++) {
-            final Shape s = i % 2 == 0 ? createCircle(1f) : createBox(5f, 0.5f);
-            createBody(box2dWorld, BodyType.DYNAMIC, s, (i-5)*4f, -i * 5f);
-        }
+        root.add(new InputTracker() {
 
+            private Vec2 force = new Vec2();
+
+            @Override
+            public boolean onUpdate(float seconds) {
+                force.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
+                        getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
+                if (FloatMathUtils.isZero(force.x, force.y)) {
+                    return true;
+                }
+
+                force.normalize();
+                force.mulLocal(10000f);
+
+                return true;
+            }
+        });
         root.add(new BoundChecker(mapBounds, viewport));
         root.add(multilineText);
         return root;
@@ -106,56 +116,6 @@ public class GameFactory implements EngineFactory {
         edgeShape.m_vertex1.set(x1, y1);
         edgeShape.m_vertex2.set(x2, y2);
         return edgeShape;
-    }
-
-    private static Vec2 vec1 = new Vec2();
-
-    private static PolygonShape createBox(float hx, float hy) {
-        final PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(hx, hy);
-        return polygonShape;
-    }
-
-    private static PolygonShape createBox(float x, float y, float hx, float hy, float angle) {
-        final PolygonShape polygonShape = new PolygonShape();
-        vec1.set(x, y);
-        polygonShape.setAsBox(hx, hy, vec1, angle);
-        return polygonShape;
-    }
-
-    private static CircleShape createCircle(float r) {
-        return createCircle(0f, 0f, r);
-    }
-
-    private static CircleShape createCircle(float x, float y, float r) {
-        final CircleShape c = new CircleShape();
-        c.m_p.set(x, y);
-        c.m_radius = r;
-        return c;
-    }
-
-    private Box2dObject createWall(Box2dWorld world, float x1, float y1, float x2, float y2) {
-        return createBody(world, BodyType.STATIC, createEdge(x1, y1, x2, y2), 0, 0);
-    }
-
-    private Box2dObject createBody(Box2dWorld world, BodyType type, Shape shape, float x, float y) {
-        final BodyDef bd = new BodyDef();
-        bd.type = type;
-        bd.position.set(x, y);
-
-        final FixtureDef bf = new FixtureDef();
-        bf.shape = shape;
-        bf.density = 10f;
-        bf.restitution = 0.7f;
-        bf.friction = 0.05f;//0.01f;
-
-        final Body bb = world.getWorld().createBody(bd);
-        bb.createFixture(bf);
-
-        final Box2dObject o = new Box2dObject();
-        o.addBody(bb);
-        world.add(o);
-        return o;
     }
 
 }

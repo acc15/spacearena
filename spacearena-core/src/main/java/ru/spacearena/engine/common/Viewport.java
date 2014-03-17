@@ -1,6 +1,7 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.ShapeUtils;
@@ -10,7 +11,7 @@ import ru.spacearena.engine.geometry.shapes.Rect2FPP;
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Viewport extends Transform implements BoundChecker.Bounded {
+public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bounded {
 
     ViewportAdjustStrategy adjustStrategy;
 

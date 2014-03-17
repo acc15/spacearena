@@ -1,16 +1,17 @@
 package ru.spacearena.game;
 
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.*;
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.collisions.CollisionObject;
-import ru.spacearena.engine.collisions.Contact;
 import ru.spacearena.engine.common.Sprite;
-import ru.spacearena.engine.geometry.shapes.Shape2F;
+import ru.spacearena.engine.integration.box2d.Box2dObject;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Ship extends CollisionObject {
+public class Ship extends Box2dObject {
 
     public static final float MAX_SPEED = 500f;
     public static final float ACCELERATION = 2000f;
@@ -20,44 +21,39 @@ public class Ship extends CollisionObject {
         add(new Sprite());
     }
 
-    public float[] getGunPositions() {
-        final float[] positions = new float[] {90,10,90,85};
-        getWorldSpace().mapPoints(positions);
-        return positions;
+    private static final PolygonShape FIXTURE_SHAPE = new PolygonShape();
+    static {
+        FIXTURE_SHAPE.setAsBox(3, 2, new Vec2(1, 0), 0);
+    }
+
+    private static final BodyDef BODY_DEF = new BodyDef();
+    static {
+        BODY_DEF.type = BodyType.DYNAMIC;
+    }
+
+    private static final FixtureDef FIXTURE_DEF = new FixtureDef();
+    static {
+        FIXTURE_DEF.restitution = 0.1f;
+        FIXTURE_DEF.density = 87;
+        FIXTURE_DEF.shape = FIXTURE_SHAPE;
+    }
+
+    @Override
+    public void onCreate(World world) {
+        final Body body = world.createBody(BODY_DEF);
+        body.createFixture(FIXTURE_DEF);
+        addBody(body);
     }
 
     @Override
     public void onInit(Engine engine) {
         getSprite().setImage(engine.loadImage("ship.png"));
-        setPivot(getSprite().getWidth()/3, getSprite().getHeight()/2);
+        //setPivot(getSprite().getWidth()/3, getSprite().getHeight()/2);
         super.onInit(engine);
     }
 
     private Sprite getSprite() {
         return getChild(0);
-    }
-
-    public boolean onCollision(CollisionObject entity, float seconds, boolean reference, Contact contact) {
-
-        return true;
-    }
-
-    public boolean canCollide(CollisionObject entity) {
-        return true;
-    }
-
-    private static final Shape2F[] SHIP_SHAPES = new Shape2F[] {/*
-        new Rect2FPP(0,0,164,94)*/
-    };
-
-    @Override
-    public Shape2F getWorldShape(int n) {
-        return SHIP_SHAPES[n];
-    }
-
-    @Override
-    public int getShapeCount() {
-        return SHIP_SHAPES.length;
     }
 
     /*

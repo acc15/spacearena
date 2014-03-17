@@ -11,8 +11,8 @@ public interface PolyShape2F {
 
     void getPoints(float[] points, int start, int pointCount);
 
-    Line2F getEdge(int i, Line2F edge);
     Line2F getEdge(int i);
+    Line2F getEdge(int i, Line2F edge);
     Point2F getPoint(int i);
     Point2F getPoint(int i, Point2F pt);
 

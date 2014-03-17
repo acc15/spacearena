@@ -1,6 +1,8 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.Engine;
+import ru.spacearena.engine.EngineContainer;
+import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.BitUtils;
@@ -10,7 +12,7 @@ import ru.spacearena.engine.util.FloatMathUtils;
  * @author Vyacheslav Mayorov
  * @since 2014-15-02
  */
-public class Transform extends GenericContainer {
+public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     private static final int MATRIX_DIRTY_MASK = 0x01;
     private static final int MATRIX_DIRTY_VALUE = 1;
@@ -84,6 +86,10 @@ public class Transform extends GenericContainer {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
         markMatrixDirty();
+    }
+
+    public void setScale(float scale) {
+        setScale(scale, scale);
     }
 
     public float getSkewX() {

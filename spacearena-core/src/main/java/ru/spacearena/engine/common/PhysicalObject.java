@@ -1,5 +1,6 @@
 package ru.spacearena.engine.common;
 
+import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.DrawUtils;
@@ -10,7 +11,7 @@ import ru.spacearena.engine.util.FloatMathUtils
  * @author Vyacheslav Mayorov
  * @since 2014-21-02
  */
-public class PhysicalObject extends Transform {
+public class PhysicalObject extends Transform<EngineEntity> {
 
     private float velocityX = 0f, velocityY = 0f;
     private float accelerationX = 0f, accelerationY = 0f;

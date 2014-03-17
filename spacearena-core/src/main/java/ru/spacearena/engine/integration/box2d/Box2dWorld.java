@@ -1,7 +1,7 @@
 package ru.spacearena.engine.integration.box2d;
 
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.World;
 import ru.spacearena.engine.common.Transform;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
@@ -10,7 +10,7 @@ import ru.spacearena.engine.graphics.Matrix;
  * @author Vyacheslav Mayorov
  * @since 2014-14-03
  */
-public class Box2dWorld extends Transform {
+public class Box2dWorld extends Transform<Box2dObject> {
 
     private final World world;
     private int velocityIters = 7;
@@ -38,6 +38,11 @@ public class Box2dWorld extends Transform {
     }
 
     @Override
+    protected void onAttach(Box2dObject entity) {
+        entity.onCreate(world);
+    }
+
+    @Override
     public boolean onUpdate(float seconds) {
         world.step(seconds * timeScale, velocityIters, positionIters);
         return true;
@@ -46,14 +51,6 @@ public class Box2dWorld extends Transform {
     @Override
     public Matrix getViewMatrix() {
         return getLocalSpace();
-    }
-
-    public Box2dObject createBody(BodyDef bodyDef) {
-        final Body body = world.createBody(bodyDef);
-        final Box2dObject object = new Box2dObject();
-        object.addBody(body);
-        add(object);
-        return object;
     }
 
     @Override

@@ -24,9 +24,7 @@ public class AndroidEngine extends Engine {
     public AndroidEngine(EngineFactory factory, View view, float initialWidth, float initialHeight) {
         super(factory);
         this.view = view;
-        this.width = initialWidth;
-        this.height = initialHeight;
-        init();
+        init(initialWidth, initialHeight);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class AndroidEngine extends Engine {
     }
 
     public Image loadImage(String resource) {
-        final InputStream inputStream = factory.getClass().getResourceAsStream(resource);
+        final InputStream inputStream = getFactory().getClass().getResourceAsStream(resource);
         try {
             final Bitmap bm = BitmapFactory.decodeStream(inputStream);
             return new AndroidImage(bm);
@@ -44,27 +42,11 @@ public class AndroidEngine extends Engine {
         }
     }
 
-    @Override
-    public float getWidth() {
-        return width;
-    }
-
-    @Override
-    public float getHeight() {
-        return height;
-    }
-
-    @Override
-    public void onSize(float width, float height) {
-        super.onSize(width, height);
-        this.width = width;
-        this.height = height;
-    }
-
     public boolean enableInput(InputType inputType) {
         if (inputType == InputType.TOUCH) {
             view.setOnTouchListener(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
+                    // TODO implement
                     return false;
                     //return onInput(touchEvent);
                 }

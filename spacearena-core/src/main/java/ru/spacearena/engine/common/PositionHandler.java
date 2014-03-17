@@ -8,10 +8,10 @@ import ru.spacearena.engine.EngineObject;
  */
 public class PositionHandler extends EngineObject {
 
-    private Transform source;
-    private Transform target;
+    private Transform<?> source;
+    private Transform<?> target;
 
-    public PositionHandler(Transform source, Transform target) {
+    public PositionHandler(Transform<?> source, Transform<?> target) {
         this.source = source;
         this.target = target;
     }

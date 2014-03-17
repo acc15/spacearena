@@ -18,7 +18,14 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         if (engine != null) {
             entity.onInit(engine);
         }
+        onAttach(entity);
         children.add(entity);
+    }
+
+    protected void onAttach(T entity) {
+    }
+
+    protected void onDetach(T entity) {
     }
 
     public int getChildrenCount() {
@@ -64,6 +71,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         while (iterator.hasNext()) {
             final T child = iterator.next();
             if (!child.onUpdate(seconds)) {
+                onDetach(child);
                 iterator.remove();
             }
         }
