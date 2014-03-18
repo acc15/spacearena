@@ -1,8 +1,5 @@
 package ru.spacearena.engine.util;
 
-import ru.spacearena.engine.geometry.primitives.Line2F;
-import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.geometry.shapes.PolyShape2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 import ru.spacearena.engine.graphics.Matrix;
@@ -13,20 +10,14 @@ import ru.spacearena.engine.graphics.Matrix;
  */
 public class ShapeUtils {
 
-    public static final float[] POINT_BUF = new float[200];
-    public static final Line2F EDGE_1 = new Line2F();
-    public static final Point2F POINT_1 = new Point2F();
-    public static final ProjectionF PROJECTION_1 = new ProjectionF();
-    public static final ProjectionF PROJECTION_2 = new ProjectionF();
-
     public static float[] transformShape(PolyShape2F shape, Matrix matrix) {
         final int pointCount = shape.getPointCount();
-        if (pointCount > POINT_BUF.length/2) {
+        if (pointCount > BufUtils.POINT_BUF.length/2) {
             throw new RuntimeException("POINT_BUF overflow");
         }
-        shape.getPoints(POINT_BUF, 0, pointCount);
-        matrix.mapPoints(POINT_BUF, 0, POINT_BUF, 0, pointCount);
-        return POINT_BUF;
+        shape.getPoints(BufUtils.POINT_BUF, 0, pointCount);
+        matrix.mapPoints(BufUtils.POINT_BUF, 0, BufUtils.POINT_BUF, 0, pointCount);
+        return BufUtils.POINT_BUF;
     }
 
     public static void computeBoundingBox(PolyShape2F shape, Rect2FPP rect, Matrix matrix) {

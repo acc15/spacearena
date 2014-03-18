@@ -18,6 +18,10 @@ public class InputEvent implements EngineEvent {
         return inputType;
     }
 
+    public MouseEvent asMouseEvent() { return (MouseEvent)this; }
+    public KeyEvent asKeyEvent() { return (KeyEvent)this; }
+    public TouchEvent asTouchEvent() { return (TouchEvent)this; }
+
     public void run(Engine engine) {
         engine.onInput(this);
     }

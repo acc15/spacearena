@@ -7,5 +7,6 @@ package ru.spacearena.engine.events;
 public enum InputType {
     KEYBOARD,
     MOUSE,
-    TOUCH
+    TOUCH,
+
 }

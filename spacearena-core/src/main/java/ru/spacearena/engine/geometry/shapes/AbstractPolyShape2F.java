@@ -4,7 +4,7 @@ import ru.spacearena.engine.geometry.primitives.Line2F;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.util.ShapeUtils;
+import ru.spacearena.engine.util.BufUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -43,14 +43,14 @@ public abstract class AbstractPolyShape2F implements PolyShape2F, Shape2F {
 
     public void stroke(DrawContext drawContext) {
         final int pointCount = getPointCount();
-        getPoints(ShapeUtils.POINT_BUF, 0, pointCount);
-        drawContext.drawPoly(ShapeUtils.POINT_BUF, 0, pointCount);
+        getPoints(BufUtils.POINT_BUF, 0, pointCount);
+        drawContext.drawPoly(BufUtils.POINT_BUF, 0, pointCount);
     }
 
     public void fill(DrawContext drawContext) {
         final int pointCount = getPointCount();
-        getPoints(ShapeUtils.POINT_BUF, 0, pointCount);
-        drawContext.fillPoly(ShapeUtils.POINT_BUF, 0, pointCount);
+        getPoints(BufUtils.POINT_BUF, 0, pointCount);
+        drawContext.fillPoly(BufUtils.POINT_BUF, 0, pointCount);
     }
 
     public void calculateProjection(Point2F axis, ProjectionF projection) {

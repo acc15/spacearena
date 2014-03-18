@@ -1,6 +1,8 @@
 package ru.spacearena.android.engine;
 
+import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.BufUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -27,6 +29,15 @@ public class AndroidMatrix implements Matrix {
 
     public void mapPoints(float[] dst, int dstOffset, float[] src, int srcOffset, int pointCount) {
         androidMatrix.mapPoints(dst, dstOffset, src, srcOffset, pointCount);
+    }
+
+    public void mapPoint(Point2F point) {
+        mapPoint(point, point);
+    }
+
+    public void mapPoint(Point2F point, Point2F out) {
+        androidMatrix.mapPoints(BufUtils.tempBuf(point.x, point.y));
+        out.set(BufUtils.POINT_BUF[0], BufUtils.POINT_BUF[1]);
     }
 
     public boolean inverse(Matrix matrix) {

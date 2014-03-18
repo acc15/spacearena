@@ -1,6 +1,5 @@
 package ru.spacearena.game;
 
-import org.jbox2d.common.Vec2;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
@@ -9,11 +8,14 @@ import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.events.KeyCode;
 import ru.spacearena.engine.events.trackers.InputTracker;
+import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
+import ru.spacearena.engine.util.BufUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
 
+import java.awt.event.MouseEvent;
 import java.util.Random;
 
 /**
@@ -97,22 +99,37 @@ public class GameFactory implements EngineFactory {
         viewport.add(box2dWorld);
         root.add(new InputTracker() {
 
-            private Vec2 moveTo = new Vec2();
             private boolean canShoot = true;
+
+            private Point2F getDirection(Point2F pt) {
+                pt.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
+                       getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
+                if (!pt.isZero()) {
+                    return pt;
+                }
+                if (isMouseKeyPressed(MouseEvent.BUTTON3)) {
+                    pt.set(getMouseX(), getMouseY());
+                } else if (isPointerActive(0)) {
+                    pt.set(getPointerX(0), getPointerY(0));
+                } else {
+                    return pt;
+                }
+                viewport.getWorldSpace().mapPoint(pt);
+                pt.sub(ship1.getPositionX(), ship1.getPositionY());
+                return pt;
+            }
 
             @Override
             public boolean onUpdate(float seconds) {
+                final Point2F dir = getDirection(BufUtils.POINT_1);
+                ship1.flyTo(dir.x, dir.y, seconds);
 
-                moveTo.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
-                           getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
-                ship1.flyTo(moveTo.x, moveTo.y, seconds);
-
-                if (isKeyboardKeyPressed(KeyCode.VK_SPACE)) {
+                if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1)) {
                     if (canShoot) {
                         final org.jbox2d.common.Transform tf = ship1.getTransform();
-                        for (Vec2 gun: ship1.getGuns()) {
-                            ship1.getBody().getWorldPointToOut(gun, moveTo);
-                            box2dWorld.add(new Bullet(ship1, moveTo.x, moveTo.y, tf.q.c, tf.q.s, ship1.getAngle()));
+                        for (Point2F gun: ship1.getGuns()) {
+                            final Point2F worldGun = ship1.mapPoint(BufUtils.tempPoint(gun));
+                            box2dWorld.add(new Bullet(ship1, worldGun.x, worldGun.y, tf.q.c, tf.q.s, ship1.getAngle()));
                         }
                         canShoot = false;
                     }

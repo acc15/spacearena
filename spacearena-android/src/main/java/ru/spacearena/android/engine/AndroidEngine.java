@@ -2,10 +2,12 @@ package ru.spacearena.android.engine;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.view.MotionEvent;
 import android.view.View;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.events.TouchEvent;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.IOUtils;
@@ -41,31 +43,44 @@ public class AndroidEngine extends Engine {
         }
     }
 
+    public static TouchEvent.Action mapAction(int motionAction) {
+        switch (motionAction) {
+        case MotionEvent.ACTION_DOWN:
+        case MotionEvent.ACTION_POINTER_DOWN:
+            return TouchEvent.Action.DOWN;
+
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_POINTER_UP:
+            return TouchEvent.Action.UP;
+
+        case MotionEvent.ACTION_MOVE:
+        case MotionEvent.ACTION_CANCEL:
+            return TouchEvent.Action.MOVE;
+        }
+        throw new IllegalArgumentException(String.format("Unknown action code: 0x%02x", motionAction));
+    }
+
     public boolean enableInput(InputType inputType) {
         if (inputType == InputType.TOUCH) {
-            /*
+
             view.setOnTouchListener(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
-                    pointers.clear();
-                    return engine.onInput(pointers.values());
-                }
-
-                final int action = event.getAction() & MotionEvent.ACTION_MASK;
-                final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK)
-                        >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-
-                for (int i=0; i<event.getPointerCount(); i++) {
-                    final int ptrId = event.getPointerId(i);
-                    if (action == MotionEvent.ACTION_POINTER_UP && pointerIndex == i) {
-                        pointers.remove(ptrId);
-                    } else {
-                        pointers.put(ptrId, Point2F.xy(event.getX(i), event.getY(i)));
+                    final TouchEvent.Action action = mapAction(event.getAction() & MotionEvent.ACTION_MASK);
+                    final int pointerId = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK)
+                            >> MotionEvent.ACTION_POINTER_ID_SHIFT;
+                    final int pointerIndex = event.findPointerIndex(pointerId);
+                    final int pointerCount = event.getPointerCount();
+                    final TouchEvent touchEvent = new TouchEvent(action, pointerCount, pointerIndex);
+                    for (int i=0; i<touchEvent.getPointerCount(); i++) {
+                        final float x = event.getX(i);
+                        final float y = event.getY(i);
+                        final int id = event.getPointerId(i);
+                        touchEvent.setPointer(i, id, x, y);
                     }
+                    AndroidEngine.this.scheduleEvent(touchEvent);
+                    return true;
                 }
-                return engine.onInput(pointers.values());
-                }
-            });*/
+            });
             return true;
         }
         return false;

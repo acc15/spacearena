@@ -4,6 +4,7 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.KeyEvent;
 import ru.spacearena.engine.events.MouseEvent;
+import ru.spacearena.engine.events.TouchEvent;
 
 import java.util.HashSet;
 
@@ -13,9 +14,13 @@ import java.util.HashSet;
  */
 public class InputTracker extends EngineObject {
 
+    private static final int MAX_POINTER_COUNT = 50;
+
     // TODO consider replacing this with more fast primitive collection (colt or trove)
-    private HashSet<Integer> keyboardKeys = new HashSet<Integer>();
-    private HashSet<Integer> mouseKeys = new HashSet<Integer>();
+    private final HashSet<Integer> keyboardKeys = new HashSet<Integer>();
+    private final HashSet<Integer> mouseKeys = new HashSet<Integer>();
+    private final float[] pointers = new float[MAX_POINTER_COUNT];
+    private int pointerCount = 0;
 
     private float mouseX, mouseY;
     private boolean consumeEvent = false;
@@ -55,11 +60,27 @@ public class InputTracker extends EngineObject {
         this.consumeEvent = consumeEvent;
     }
 
+    public int getPointerCount() {
+        return pointerCount;
+    }
+
+    public boolean isPointerActive(int i) {
+        return i < pointerCount;
+    }
+
+    public float getPointerX(int i) {
+        return pointers[i*2];
+    }
+
+    public float getPointerY(int i) {
+        return pointers[i*2+1];
+    }
+
     @Override
     public boolean onInput(InputEvent inputEvent) {
         switch (inputEvent.getInputType()) {
             case KEYBOARD:
-                final KeyEvent keyEvent = (KeyEvent)inputEvent;
+                final KeyEvent keyEvent = inputEvent.asKeyEvent();
                 final int keyCode = keyEvent.getKeyCode();
                 switch (keyEvent.getAction()) {
                 case UP: keyboardKeys.remove(keyCode); break;
@@ -68,7 +89,7 @@ public class InputTracker extends EngineObject {
                 break;
 
             case MOUSE:
-                final MouseEvent mouseEvent = (MouseEvent)inputEvent;
+                final MouseEvent mouseEvent = inputEvent.asMouseEvent();
                 switch (mouseEvent.getAction()) {
                 case UP: mouseKeys.remove(mouseEvent.getButton()); break;
                 case DOWN: mouseKeys.add(mouseEvent.getButton()); break;
@@ -77,6 +98,11 @@ public class InputTracker extends EngineObject {
                 mouseY = mouseEvent.getY();
                 break;
 
+            case TOUCH:
+                final TouchEvent touchEvent = inputEvent.asTouchEvent();
+                System.arraycopy(touchEvent.getRawPointers(), 0, pointers, 0, touchEvent.getPointerCount()*2);
+                pointerCount = touchEvent.getPointerCount();
+                break;
         }
         return consumeEvent;
     }

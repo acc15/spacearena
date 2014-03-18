@@ -8,11 +8,12 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.common.GenericContainer;
+import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.BufUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.ShapeUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -89,6 +90,16 @@ public class Box2dObject extends GenericContainer {
         matrix = engine.createMatrix();
     }
 
+    public Point2F mapPoint(Point2F pt, Point2F out) {
+        final Vec2 v = Box2dUtils.tempVec(pt.x, pt.y);
+        getBody().getWorldPointToOut(v, v);
+        return out.set(v.x, v.y);
+    }
+
+    public Point2F mapPoint(Point2F pt) {
+        return mapPoint(pt, pt);
+    }
+
     @Override
     public boolean onUpdate(float seconds) {
         if (!super.onUpdate(seconds)) {
@@ -128,7 +139,7 @@ public class Box2dObject extends GenericContainer {
         }
 
         final float l = FloatMathUtils.sqrt(l2);
-        body.setLinearVelocity(Box2dUtils.tempVec(velocityX + velDiffX * acceleration/l, velocityY + velDiffY * acceleration/l));
+        body.setLinearVelocity(Box2dUtils.tempVec(velocityX + velDiffX * acceleration / l, velocityY + velDiffY * acceleration / l));
     }
 
     public void rotateTo(float targetAngle, float velocity) {
@@ -182,7 +193,7 @@ public class Box2dObject extends GenericContainer {
 
         case POLYGON:
             final PolygonShape polygon = (PolygonShape) shape;
-            final float[] buf = ShapeUtils.POINT_BUF;
+            final float[] buf = BufUtils.POINT_BUF;
             final int pointCount = polygon.getVertexCount();
             for (int i=0; i < pointCount; i++) {
                 final Vec2 v = polygon.getVertex(i);

@@ -7,13 +7,17 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import ru.spacearena.engine.common.Sprite;
+import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dObject;
+import ru.spacearena.engine.util.BufUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import static ru.spacearena.engine.geometry.primitives.Point2F.p;
 
 /**
  * @author Vyacheslav Mayorov
@@ -21,18 +25,18 @@ import java.util.LinkedList;
  */
 public class Ship extends Box2dObject {
 
-    public static final float MAX_SPEED = 20f;
-    public static final float ACCELERATION = 30f;
-    public static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI;
+    private static final float MAX_SPEED = 30f;
+    private static final float ACCELERATION = 30f;
+    private static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI * 2;
 
-    private static final Vec2[] LOCAL_GUN_POS = new Vec2[]{new Vec2(1f, 1.5f), new Vec2(1f, -1.5f)};
+    private static final float STEAM_TIME = 0.5f;
+
+    private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
+    private static final Point2F LOCAL_ENGINE_POS = new Point2F(-1.7f, 0f);
+
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
-    private static final Vec2 LOCAL_ENGINE_POS = new Vec2(-1.7f, 0f);
-    public static final float STEAM_TIME = 0.5f;
 
-    //private final CyclicArray<Vec2> engineSteam = new CyclicArray<Vec2>(ENGINE_STEAM_LENGTH);
-
-    public Vec2[] getGuns() {
+    public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
     }
 
@@ -62,9 +66,8 @@ public class Ship extends Box2dObject {
 
         final boolean engineDisabled = FloatMathUtils.isZero(dx, dy);
 
-        final Vec2 enginePos = new Vec2();
-        getBody().getWorldPointToOut(LOCAL_ENGINE_POS, enginePos);
-        engineParticles.add(new SteamParticle(seconds, enginePos.x, enginePos.y, !engineDisabled));
+        final Point2F pt = mapPoint(BufUtils.tempPoint(LOCAL_ENGINE_POS));
+        engineParticles.add(new SteamParticle(seconds, pt.x, pt.y, !engineDisabled));
         timeSum += seconds;
 
         SteamParticle particle;

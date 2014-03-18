@@ -43,6 +43,13 @@ public class Point2F {
         return this;
     }
 
+    public Point2F set(Point2F pt) {
+        this.x = pt.x;
+        this.y = pt.y;
+        return this;
+    }
+
+
     public Point2F polar(float angle, float distance) {
         final float rads = FloatMathUtils.toRadians(angle);
         return set(FloatMathUtils.cos(rads) * distance, FloatMathUtils.sin(rads) * distance);
@@ -216,6 +223,10 @@ public class Point2F {
 
     public float max() {
         return Math.max(x,y);
+    }
+
+    public static Point2F p(float x, float y) {
+        return new Point2F(x, y);
     }
 
     public static float[] toFloatArray(Point2F... points) {
