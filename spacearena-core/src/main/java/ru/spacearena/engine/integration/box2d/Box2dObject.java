@@ -20,13 +20,6 @@ import ru.spacearena.engine.util.ShapeUtils;
  */
 public class Box2dObject extends GenericContainer {
 
-    public static final Vec2 VEC_BUF = new Vec2();
-
-    public static Vec2 tempVec(float x, float y) {
-        VEC_BUF.set(x, y);
-        return VEC_BUF;
-    }
-
     private boolean live = true;
     private Matrix matrix;
     private Body body;
@@ -74,7 +67,7 @@ public class Box2dObject extends GenericContainer {
     }
 
     public void setPosition(float x, float y) {
-        body.setTransform(tempVec(x, y), body.getAngle());
+        body.setTransform(Box2dUtils.tempVec(x, y), body.getAngle());
     }
 
     public void onCreate(Box2dWorld world) {
@@ -130,12 +123,12 @@ public class Box2dObject extends GenericContainer {
 
         final float l2 = FloatMathUtils.lengthSquare(velDiffX, velDiffY);
         if (acceleration * acceleration >= l2) {
-            body.setLinearVelocity(tempVec(targetVelocityX, targetVelocityY));
+            body.setLinearVelocity(Box2dUtils.tempVec(targetVelocityX, targetVelocityY));
             return;
         }
 
         final float l = FloatMathUtils.sqrt(l2);
-        body.setLinearVelocity(tempVec(velocityX + velDiffX * acceleration/l, velocityY + velDiffY * acceleration/l));
+        body.setLinearVelocity(Box2dUtils.tempVec(velocityX + velDiffX * acceleration/l, velocityY + velDiffY * acceleration/l));
     }
 
     public void rotateTo(float targetAngle, float velocity) {

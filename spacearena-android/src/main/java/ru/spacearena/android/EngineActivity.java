@@ -27,20 +27,16 @@ public class EngineActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (Build.VERSION.SDK_INT >= SDK_VERSION_HONEYCOMB) {
-            getWindow().setFlags(
-                    FLAG_HARDWARE_ACCELERATED,
-                    FLAG_HARDWARE_ACCELERATED);
+            getWindow().addFlags(FLAG_HARDWARE_ACCELERATED);
         }
 
         final SurfaceView surfaceView = new SurfaceView(this);
         setContentView(surfaceView);
 
         final SurfaceHolder surfaceHolder = surfaceView.getHolder();
-
         final EngineFactory factory = new GameFactory();
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
 
@@ -65,34 +61,6 @@ public class EngineActivity extends Activity {
                 surfaceDrawThread.stop();
             }
         });
-
-
     }
 
-
-        /*
-        final LinkedHashMap<Integer,Point2F> pointers = new LinkedHashMap<Integer, Point2F>();
-        surfaceView.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, final MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
-                    pointers.clear();
-                    return engine.onInput(pointers.values());
-                }
-
-                final int action = event.getAction() & MotionEvent.ACTION_MASK;
-                final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK)
-                        >> MotionEvent.ACTION_POINTER_ID_SHIFT;
-
-                for (int i=0; i<event.getPointerCount(); i++) {
-                    final int ptrId = event.getPointerId(i);
-                    if (action == MotionEvent.ACTION_POINTER_UP && pointerIndex == i) {
-                        pointers.remove(ptrId);
-                    } else {
-                        pointers.put(ptrId, Point2F.xy(event.getX(i), event.getY(i)));
-                    }
-                }
-                return engine.onInput(pointers.values());
-            }
-        });
-        */
 }

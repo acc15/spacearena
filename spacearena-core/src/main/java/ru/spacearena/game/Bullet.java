@@ -37,7 +37,7 @@ public class Bullet extends Box2dObject {
     protected void onPostCreate(Body body) {
         final PolygonShape shape = new PolygonShape();
         shape.setAsBox(2f, 0.1f);
-        body.createFixture(shape, 2000f);
+        body.createFixture(shape, 100f);
     }
 
     @Override

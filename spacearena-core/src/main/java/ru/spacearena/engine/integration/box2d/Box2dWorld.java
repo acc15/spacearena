@@ -42,10 +42,6 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         });
         world.setContactListener(new ContactListener() {
             public void beginContact(Contact contact) {
-                final Box2dObject o1 = (Box2dObject)contact.getFixtureA().getBody().getUserData();
-                final Box2dObject o2 = (Box2dObject)contact.getFixtureB().getBody().getUserData();
-                o1.onCollision(o2);
-                o2.onCollision(o1);
             }
 
             public void endContact(Contact contact) {
@@ -55,6 +51,10 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
             }
 
             public void postSolve(Contact contact, ContactImpulse impulse) {
+                final Box2dObject o1 = (Box2dObject)contact.getFixtureA().getBody().getUserData();
+                final Box2dObject o2 = (Box2dObject)contact.getFixtureB().getBody().getUserData();
+                o1.onCollision(o2);
+                o2.onCollision(o1);
             }
         });
     }

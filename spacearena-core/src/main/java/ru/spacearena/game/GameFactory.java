@@ -94,7 +94,6 @@ public class GameFactory implements EngineFactory {
             box2dWorld.add(ship2);
         }
 
-
         viewport.add(box2dWorld);
         root.add(new InputTracker() {
 
@@ -106,11 +105,7 @@ public class GameFactory implements EngineFactory {
 
                 moveTo.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
                            getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
-                if (!FloatMathUtils.isZero(moveTo.x, moveTo.y)) {
-                    moveTo.mulLocal(Ship.MAX_SPEED/moveTo.length());
-                    ship1.accelerateTo(moveTo.x, moveTo.y, Ship.ACCELERATION * seconds);
-                    ship1.rotateTo(FloatMathUtils.atan2(moveTo.y, moveTo.x), Ship.ANGULAR_VELOCITY * seconds);
-                }
+                ship1.flyTo(moveTo.x, moveTo.y, seconds);
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SPACE)) {
                     if (canShoot) {
