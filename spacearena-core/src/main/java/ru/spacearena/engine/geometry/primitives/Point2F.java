@@ -168,6 +168,9 @@ public class Point2F {
         return FloatMathUtils.angle(x, y);
     }
 
+    public float atan2() { return FloatMathUtils.atan2(y, x); }
+
+
     public float angle(float x, float y) {
         return FloatMathUtils.angle(this.x, this.y, x, y);
     }

@@ -88,13 +88,19 @@ public class FloatMathUtils {
         return sqrt(lengthSquare(x, y));
     }
 
+
+    public static float radDiff(float a, float b) {
+        final float d = a - b;
+        return d >= PI ? d - TWO_PI : d <= -PI ? TWO_PI + d : d;
+    }
+
     /**
      * Calculates shortest difference between two angles.
      * @param a first angle in degrees (0..360)
      * @param b second angle in degrees (0..360)
      * @return difference which {@code a - diff = b}
      */
-    public static float angleDiff(float a, float b) {
+    public static float degreeDiff(float a, float b) {
         final float d = a - b;
         return d >= HALF_CIRCLE_ANGLE ? d - CIRCLE_ANGLE :
                d <= -HALF_CIRCLE_ANGLE ? CIRCLE_ANGLE + d :

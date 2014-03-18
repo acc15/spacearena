@@ -8,6 +8,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.integration.box2d.Box2dObject;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -15,20 +16,12 @@ import ru.spacearena.engine.integration.box2d.Box2dObject;
  */
 public class Ship extends Box2dObject {
 
-    public static final float MAX_SPEED = 500f;
-    public static final float ACCELERATION = 2000f;
-    public static final float ANGULAR_VELOCITY = 720f;
+    public static final float MAX_SPEED = 20f;
+    public static final float ACCELERATION = 30f;
+    public static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI;
 
-    private static final PolygonShape FIXTURE_SHAPE = new PolygonShape();
-    static {
-        FIXTURE_SHAPE.set(new Vec2[] {new Vec2(-2,-2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)}, 4);
-    }
-
-    private static final FixtureDef FIXTURE_DEF = new FixtureDef();
-    static {
-        FIXTURE_DEF.restitution = 0.1f;
-        FIXTURE_DEF.density = 87;
-        FIXTURE_DEF.shape = FIXTURE_SHAPE;
+    public Vec2[] getGuns() {
+        return GUN_POS;
     }
 
     public void onPreCreate(BodyDef bodyDef) {
@@ -37,12 +30,23 @@ public class Ship extends Box2dObject {
         bodyDef.angularDamping = 0.1f;
     }
 
+    private static final Vec2[] GUN_POS = new Vec2[]{new Vec2(1f, 1.5f), new Vec2(1f, -1.5f)};
+    private static final Vec2[] SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
+
     public void onPostCreate(Body body) {
         final Sprite sprite = new Sprite(getEngine().loadImage("ship.png"));
         sprite.setPivot(sprite.getWidth() / 3, sprite.getHeight() / 2);
         sprite.setScale(6 / sprite.getWidth());
         add(sprite);
-        body.createFixture(FIXTURE_DEF);
+
+        final PolygonShape shape = new PolygonShape();
+        shape.set(SHAPE, SHAPE.length);
+
+        final FixtureDef fd = new FixtureDef();
+        fd.restitution = 0.1f;
+        fd.density = 87;
+        fd.shape = shape;
+        body.createFixture(fd);
     }
 
 }

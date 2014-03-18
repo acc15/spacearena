@@ -1,6 +1,5 @@
 package ru.spacearena.game;
 
-import org.jbox2d.collision.shapes.EdgeShape;
 import org.jbox2d.common.Vec2;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
@@ -25,7 +24,7 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
-        engine.getDebug().setDrawAll(true);
+        //engine.getDebug().setDrawAll(true);
 
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
@@ -59,6 +58,8 @@ public class GameFactory implements EngineFactory {
             }
         });
 
+        final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
+
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
         viewport.add(new Sky(viewport, new Random()));
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f));
@@ -79,35 +80,50 @@ public class GameFactory implements EngineFactory {
 
         final Box2dWorld box2dWorld = new Box2dWorld();
         box2dWorld.setTimeScale(2f);
+        box2dWorld.add(new LevelBounds(levelBounds));
 
         final Ship ship1 = new Ship();
         ship1.setInitialPosition(0, -5);
-
-        final Ship ship2 = new Ship();
-        ship2.setInitialPosition(0, 5);
-
+        ship1.setInitialAngle(FloatMathUtils.HALF_PI);
         box2dWorld.add(ship1);
-        box2dWorld.add(ship2);
+
+        for (int i=0; i<20; i++) {
+            final Ship ship2 = new Ship();
+            ship2.setInitialPosition((i-10)*5, 5);
+            ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
+            box2dWorld.add(ship2);
+        }
+
 
         viewport.add(box2dWorld);
         root.add(new InputTracker() {
 
-            private Vec2 force = new Vec2();
+            private Vec2 moveTo = new Vec2();
+            private boolean canShoot = true;
 
             @Override
             public boolean onUpdate(float seconds) {
-                force.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
-                        getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
-                if (FloatMathUtils.isZero(force.x, force.y)) {
-                    return true;
+
+                moveTo.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
+                           getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
+                if (!FloatMathUtils.isZero(moveTo.x, moveTo.y)) {
+                    moveTo.mulLocal(Ship.MAX_SPEED/moveTo.length());
+                    ship1.accelerateTo(moveTo.x, moveTo.y, Ship.ACCELERATION * seconds);
+                    ship1.rotateTo(FloatMathUtils.atan2(moveTo.y, moveTo.x), Ship.ANGULAR_VELOCITY * seconds);
                 }
 
-                final float radians = FloatMathUtils.radians(force.x, force.y);
-
-                force.normalize();
-                force.mulLocal(10000f);
-                ship1.getBody().applyForceToCenter(force);
-                ship1.getBody().setTransform(ship1.getBody().getPosition(), radians);
+                if (isKeyboardKeyPressed(KeyCode.VK_SPACE)) {
+                    if (canShoot) {
+                        final org.jbox2d.common.Transform tf = ship1.getTransform();
+                        for (Vec2 gun: ship1.getGuns()) {
+                            ship1.getBody().getWorldPointToOut(gun, moveTo);
+                            box2dWorld.add(new Bullet(ship1, moveTo.x, moveTo.y, tf.q.c, tf.q.s, ship1.getAngle()));
+                        }
+                        canShoot = false;
+                    }
+                } else {
+                    canShoot = true;
+                }
 
                 return true;
             }
@@ -119,17 +135,10 @@ public class GameFactory implements EngineFactory {
                 return true;
             }
         });
-        root.add(new BoundChecker(new Rect2FPP(-100f, -100f, 100f, 100f), viewport));
+        root.add(new BoundChecker(levelBounds, viewport));
 
         root.add(multilineText);
         return root;
-    }
-
-    private static EdgeShape createEdge(float x1, float y1, float x2, float y2) {
-        final EdgeShape edgeShape = new EdgeShape();
-        edgeShape.m_vertex1.set(x1, y1);
-        edgeShape.m_vertex2.set(x2, y2);
-        return edgeShape;
     }
 
 }

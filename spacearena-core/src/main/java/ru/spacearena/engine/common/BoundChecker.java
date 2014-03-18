@@ -1,9 +1,8 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.util.FloatMathUtils
-;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -37,7 +36,7 @@ public class BoundChecker extends EngineObject {
     @Override
     public boolean onUpdate(float seconds) {
         final BoundingBox2F oBounds = object.getBounds();
-        final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(), oBounds.getMinX(), oBounds.getMinX());
+        final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(), oBounds.getMinX(), oBounds.getMaxX());
         final float dy = computeAxisOffset(bounds.getMinY(), bounds.getMaxY(), oBounds.getMinY(), oBounds.getMaxY());
         if (!FloatMathUtils.isZero(dx, dy)) {
             object.onOutOfBounds(dx, dy);

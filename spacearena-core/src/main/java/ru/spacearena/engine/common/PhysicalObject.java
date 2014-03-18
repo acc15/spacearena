@@ -139,7 +139,7 @@ public class PhysicalObject extends Transform<EngineEntity> {
     }
 
     public void rotateTo(float targetAngle, float velocity, float time) {
-        final float angleDiff = FloatMathUtils.angleDiff(targetAngle, getAngle());
+        final float angleDiff = FloatMathUtils.degreeDiff(targetAngle, getAngle());
         if (FloatMathUtils.isZero(angleDiff)) {
             angularVelocity = 0f;
             return;
