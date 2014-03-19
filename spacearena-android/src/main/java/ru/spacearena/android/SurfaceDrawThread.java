@@ -1,6 +1,8 @@
 package ru.spacearena.android;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ public class SurfaceDrawThread implements Runnable {
 
     public void run() {
 
+        final PaintFlagsDrawFilter drawFilter = new PaintFlagsDrawFilter(Paint.ANTI_ALIAS_FLAG, 0);
         final AndroidDrawContext drawContext = new AndroidDrawContext();
         while (running) {
 
@@ -71,6 +74,7 @@ public class SurfaceDrawThread implements Runnable {
                 continue;
             }
             try {
+                canvas.setDrawFilter(drawFilter);
                 engine.onDraw(drawContext.wrap(canvas));
             } finally {
                 surfaceHolder.unlockCanvasAndPost(canvas);

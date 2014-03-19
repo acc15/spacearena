@@ -8,7 +8,7 @@ import ru.spacearena.engine.geometry.primitives.ProjectionF;
  * @author Vyacheslav Mayorov
  * @since 2014-18-03
  */
-public class BufUtils {
+public class TempUtils {
 
     public static final float[] POINT_BUF = new float[200];
     public static final Line2F EDGE_1 = new Line2F();

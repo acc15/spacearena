@@ -12,12 +12,12 @@ public class ShapeUtils {
 
     public static float[] transformShape(PolyShape2F shape, Matrix matrix) {
         final int pointCount = shape.getPointCount();
-        if (pointCount > BufUtils.POINT_BUF.length/2) {
+        if (pointCount > TempUtils.POINT_BUF.length/2) {
             throw new RuntimeException("POINT_BUF overflow");
         }
-        shape.getPoints(BufUtils.POINT_BUF, 0, pointCount);
-        matrix.mapPoints(BufUtils.POINT_BUF, 0, BufUtils.POINT_BUF, 0, pointCount);
-        return BufUtils.POINT_BUF;
+        shape.getPoints(TempUtils.POINT_BUF, 0, pointCount);
+        matrix.mapPoints(TempUtils.POINT_BUF, 0, TempUtils.POINT_BUF, 0, pointCount);
+        return TempUtils.POINT_BUF;
     }
 
     public static void computeBoundingBox(PolyShape2F shape, Rect2FPP rect, Matrix matrix) {

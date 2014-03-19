@@ -57,7 +57,6 @@ public class Java2DEngine extends Engine {
                 graphics2D.dispose();
             }
             strategy.show();
-            Thread.yield();
         }
     }
 

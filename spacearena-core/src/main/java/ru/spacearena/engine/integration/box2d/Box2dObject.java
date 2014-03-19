@@ -12,7 +12,7 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.BufUtils;
+import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
@@ -58,6 +58,10 @@ public class Box2dObject extends GenericContainer {
     public float getPositionY() {
         return body.getPosition().y;
     }
+
+    public float getVelocityX() { return body.getLinearVelocity().x; }
+
+    public float getVelocityY() { return body.getLinearVelocity().y; }
 
     public void setPositionX(float x) {
         setPosition(x, getPositionY());
@@ -162,11 +166,11 @@ public class Box2dObject extends GenericContainer {
         super.onDraw(context);
         if (getEngine().getDebug().isDrawConvexShapes()) {
             context.setColor(Color.GREEN);
-            drawBodyShapes(context, false, body);
+            drawBodyShapes(context, false);
         }
     }
 
-    protected final void drawBodyShapes(DrawContext context, boolean fill, Body body) {
+    protected final void drawBodyShapes(DrawContext context, boolean fill) {
         for (Fixture f = body.getFixtureList(); f != null; f = f.getNext()) {
             final Shape shape = f.getShape();
             drawShape(context, fill, shape);
@@ -193,7 +197,7 @@ public class Box2dObject extends GenericContainer {
 
         case POLYGON:
             final PolygonShape polygon = (PolygonShape) shape;
-            final float[] buf = BufUtils.POINT_BUF;
+            final float[] buf = TempUtils.POINT_BUF;
             final int pointCount = polygon.getVertexCount();
             for (int i=0; i < pointCount; i++) {
                 final Vec2 v = polygon.getVertex(i);

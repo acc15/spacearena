@@ -12,7 +12,7 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
-import ru.spacearena.engine.util.BufUtils;
+import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.awt.event.MouseEvent;
@@ -60,7 +60,7 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
+        final Rect2FPP levelBounds = new Rect2FPP(-1000f, -1000f, 1000f, 1000f);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
         viewport.add(new Sky(viewport, new Random()));
@@ -68,20 +68,8 @@ public class GameFactory implements EngineFactory {
 
         root.add(viewport);
 
-        root.add(new EngineObject() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                final BoundingBox2F box = viewport.getBounds();
-                viewportText.setText(String.format("L: %.2f; T: %.2f; R: %.2f; B: %.2f; X: %.2f; Y: %.2f; SX: %.2f; SY: %.2f",
-                        box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY(),
-                        viewport.getPositionX(), viewport.getPositionY(),
-                        viewport.getScaleX(), viewport.getScaleY()));
-                return true;
-            }
-        });
-
         final Box2dWorld box2dWorld = new Box2dWorld();
-        box2dWorld.setTimeScale(2f);
+        //box2dWorld.setTimeScale(2f);
         box2dWorld.add(new LevelBounds(levelBounds));
 
         final Ship ship1 = new Ship();
@@ -121,14 +109,14 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public boolean onUpdate(float seconds) {
-                final Point2F dir = getDirection(BufUtils.POINT_1);
+                final Point2F dir = getDirection(TempUtils.POINT_1);
                 ship1.flyTo(dir.x, dir.y, seconds);
 
-                if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1)) {
+                if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
                     if (canShoot) {
                         final org.jbox2d.common.Transform tf = ship1.getTransform();
                         for (Point2F gun: ship1.getGuns()) {
-                            final Point2F worldGun = ship1.mapPoint(BufUtils.tempPoint(gun));
+                            final Point2F worldGun = ship1.mapPoint(TempUtils.tempPoint(gun));
                             box2dWorld.add(new Bullet(ship1, worldGun.x, worldGun.y, tf.q.c, tf.q.s, ship1.getAngle()));
                         }
                         canShoot = false;
@@ -149,6 +137,19 @@ public class GameFactory implements EngineFactory {
         });
         root.add(new BoundChecker(levelBounds, viewport));
 
+        root.add(new EngineObject() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                final BoundingBox2F box = viewport.getBounds();
+                viewportText.setText(String.format("L: %.2f; T: %.2f; R: %.2f; B: %.2f; X: %.2f; Y: %.2f; SX: %.2f; SY: %.2f",
+                        box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY(),
+                        viewport.getPositionX(), viewport.getPositionY(),
+                        viewport.getScaleX(), viewport.getScaleY()));
+                positionText.setText(String.format("Speed: %.2f",
+                        FloatMathUtils.length(ship1.getVelocityX(), ship1.getVelocityY())));
+                return true;
+            }
+        });
         root.add(multilineText);
         return root;
     }

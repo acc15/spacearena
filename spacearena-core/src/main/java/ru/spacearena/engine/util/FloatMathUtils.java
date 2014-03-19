@@ -206,4 +206,8 @@ public class FloatMathUtils {
     public static float halfSize(float min, float max) {
         return size(min, max) / 2;
     }
+
+    public static long round(float v) {
+        return Math.round(v);
+    }
 }

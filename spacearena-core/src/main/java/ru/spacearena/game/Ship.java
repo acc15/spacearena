@@ -11,7 +11,7 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dObject;
-import ru.spacearena.engine.util.BufUtils;
+import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.Iterator;
@@ -56,8 +56,8 @@ public class Ship extends Box2dObject {
 
     public void onPreCreate(BodyDef bodyDef) {
         bodyDef.type = BodyType.DYNAMIC;
-        bodyDef.linearDamping = 0.1f;
-        bodyDef.angularDamping = 0.1f;
+        bodyDef.linearDamping = 0.2f;
+        bodyDef.angularDamping = 0.2f;
     }
 
     private final LinkedList<SteamParticle> engineParticles = new LinkedList<SteamParticle>();
@@ -66,7 +66,7 @@ public class Ship extends Box2dObject {
 
         final boolean engineDisabled = FloatMathUtils.isZero(dx, dy);
 
-        final Point2F pt = mapPoint(BufUtils.tempPoint(LOCAL_ENGINE_POS));
+        final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
         engineParticles.add(new SteamParticle(seconds, pt.x, pt.y, !engineDisabled));
         timeSum += seconds;
 

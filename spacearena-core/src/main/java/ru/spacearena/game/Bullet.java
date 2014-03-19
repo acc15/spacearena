@@ -36,12 +36,15 @@ public class Bullet extends Box2dObject {
     @Override
     protected void onPostCreate(Body body) {
         final PolygonShape shape = new PolygonShape();
-        shape.setAsBox(2f, 0.1f);
+        shape.setAsBox(2f, 0.2f);
         body.createFixture(shape, 100f);
     }
 
     @Override
     public boolean canCollide(Box2dObject object) {
+        if (object instanceof Bullet) {
+            return ((Bullet)object).owner != owner;
+        }
         return object != owner;
     }
 
@@ -53,7 +56,7 @@ public class Bullet extends Box2dObject {
     @Override
     protected void onDrawTransformed(DrawContext context) {
         context.setColor(Color.RED);
-        drawBodyShapes(context, true, getBody());
+        drawBodyShapes(context, true);
     }
 
     /*

@@ -19,7 +19,9 @@ public class InputTracker extends EngineObject {
     // TODO consider replacing this with more fast primitive collection (colt or trove)
     private final HashSet<Integer> keyboardKeys = new HashSet<Integer>();
     private final HashSet<Integer> mouseKeys = new HashSet<Integer>();
-    private final float[] pointers = new float[MAX_POINTER_COUNT];
+
+    private final float[] pointers = new float[MAX_POINTER_COUNT*2];
+    private final int[] pointerSequence = new int[MAX_POINTER_COUNT];
     private int pointerCount = 0;
 
     private float mouseX, mouseY;
@@ -101,7 +103,29 @@ public class InputTracker extends EngineObject {
             case TOUCH:
                 final TouchEvent touchEvent = inputEvent.asTouchEvent();
                 System.arraycopy(touchEvent.getRawPointers(), 0, pointers, 0, touchEvent.getPointerCount()*2);
-                pointerCount = touchEvent.getPointerCount();
+                if (touchEvent.getAction() == TouchEvent.Action.MOVE) {
+                    break;
+                }
+
+                final int pointerIndex = touchEvent.getPointerIndex();
+                switch (touchEvent.getAction()) {
+                case DOWN:
+                    //pointerSequence[pointerCount] = pointerIndex;
+                    ++pointerCount;
+                    break;
+
+                case UP:
+                    /*boolean found = false;
+                    for (int i=0; i<pointerCount; i++) {
+                        if (found) {
+                            pointerSequence[i] = pointerSequence[i + 1];
+                        } else {
+                            found = pointerSequence[i] == pointerIndex;
+                        }
+                    }*/
+                    --pointerCount;
+                    break;
+                }
                 break;
         }
         return consumeEvent;
