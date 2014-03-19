@@ -14,7 +14,7 @@ import ru.spacearena.engine.integration.box2d.Box2dObject;
  */
 public class Bullet extends Box2dObject {
 
-    public static final float SPEED = 500f;
+    public static final float SPEED = 70f;
 
     private Ship owner;
 
@@ -37,7 +37,7 @@ public class Bullet extends Box2dObject {
     protected void onPostCreate(Body body) {
         final PolygonShape shape = new PolygonShape();
         shape.setAsBox(2f, 0.2f);
-        body.createFixture(shape, 100f);
+        body.createFixture(shape, 0f);
     }
 
     @Override

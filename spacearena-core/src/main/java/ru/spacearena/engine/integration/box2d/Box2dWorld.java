@@ -17,10 +17,13 @@ import ru.spacearena.engine.graphics.DrawContext;
  */
 public class Box2dWorld extends EngineContainer<Box2dObject> {
 
+    // default update rate = 60Hz = 60FPS = 1/60seconds
+    public static final float DEFAULT_TIME_STEP = 1/60f;
+
     private final World world;
     private int velocityIters = 7;
     private int positionIters = 3;
-    private float timeScale = 1f;
+    private float timeStep = DEFAULT_TIME_STEP;
 
     public World getWorld() {
         return world;
@@ -59,14 +62,6 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         });
     }
 
-    public float getTimeScale() {
-        return timeScale;
-    }
-
-    public void setTimeScale(float timeScale) {
-        this.timeScale = timeScale;
-    }
-
     public int getVelocityIters() {
         return velocityIters;
     }
@@ -83,6 +78,22 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         this.positionIters = positionIters;
     }
 
+    public float getTimeStep() {
+        return timeStep;
+    }
+
+    public void setTimeStep(float timeStep) {
+        this.timeStep = timeStep;
+    }
+
+    public void setFPS(float fps) {
+        this.timeStep = 1/fps;
+    }
+
+    public float getFPS() {
+        return 1/timeStep;
+    }
+
     @Override
     protected void onAttachChild(Box2dObject entity) {
         entity.onCreate(this);
@@ -90,8 +101,12 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
 
     @Override
     public boolean onUpdate(float seconds) {
-        world.step(seconds * timeScale, velocityIters, positionIters);
+        onStep(seconds);
         return super.onUpdate(seconds);
+    }
+
+    public void onStep(float dt) {
+        world.step(dt, velocityIters, positionIters);
     }
 
     @Override

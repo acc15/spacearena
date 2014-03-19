@@ -71,9 +71,13 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return children.size();
     }
 
+    public Iterable<T> getChildren() {
+        return children;
+    }
+
     @SuppressWarnings("unchecked")
-    public <X extends EngineEntity> X getChild(int index) {
-        return (X)children.get(index);
+    public T getChild(int index) {
+        return children.get(index);
     }
 
     public void onAttach(Engine engine) {
