@@ -6,9 +6,8 @@ import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.timing.MilliTimer;
+import ru.spacearena.engine.timing.NanoTimer;
 import ru.spacearena.engine.timing.Timer;
-import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -25,10 +24,10 @@ public abstract class Engine {
 
     private EngineEntity root;
     private float width, height;
-    private float maxFPS = 100;
+    private float maxFPS = 0;
     private float compensationTime = 0f;
 
-    private final Timer timer = new MilliTimer();
+    private final Timer timer = new NanoTimer();
 
     private final ConcurrentLinkedQueue<EngineEvent> pendingEvents = new ConcurrentLinkedQueue<EngineEvent>();
 
@@ -47,37 +46,41 @@ public abstract class Engine {
         return factory;
     }
 
-    private float pauseBeforeNextFrame(float secondElapsed) {
+    private float pauseBeforeNextFrame() {
+        if (!timer.isStarted()) {
+            timer.start();
+            return 0;
+        }
+
+        final float secondsElapsed = timer.reset();
         if (maxFPS <= 0) {
-            return secondElapsed;
+            return secondsElapsed;
         }
 
         final float secondsPerFrame = 1/maxFPS;
-        compensationTime = FloatMathUtils.min(MAX_COMPENSATION_TIME, compensationTime + secondElapsed - secondsPerFrame);
-        if (compensationTime >= 0f) {
-            return secondElapsed;
+        compensationTime += secondsElapsed - secondsPerFrame;
+        if (compensationTime > MAX_COMPENSATION_TIME) {
+            compensationTime = MAX_COMPENSATION_TIME;
         }
 
-        final long timeToSleep = FloatMathUtils.round(-compensationTime * 1000);
+        if (compensationTime >= 0f) {
+            return secondsElapsed;
+        }
+
+        final long timeToSleep = (long)(-compensationTime * 1000);
         try {
             Thread.sleep(timeToSleep);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        secondElapsed -= compensationTime;
-        compensationTime = 0f;
-        return secondElapsed;
+
+        final float realSleepTime = timer.reset();
+        compensationTime += realSleepTime;
+        return secondsElapsed + realSleepTime;
     }
 
     public boolean onUpdate() {
-        final float secondsElapsed;
-        if (timer.isStarted()) {
-            secondsElapsed = pauseBeforeNextFrame(timer.reset());
-        } else {
-            timer.start();
-            secondsElapsed = 0f;
-        }
-
+        final float secondsElapsed = pauseBeforeNextFrame();
         EngineEvent inputEvent;
         while ((inputEvent = pendingEvents.poll()) != null) {
             inputEvent.run(this);
@@ -159,6 +162,10 @@ public abstract class Engine {
 
     public void setMaxFPS(float maxFPS) {
         this.maxFPS = maxFPS;
+    }
+
+    public Timer getTimer() {
+        return timer;
     }
 
     public Debug getDebug() {

@@ -68,7 +68,7 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
         float y = this.y;
         context.setColor(color);
         context.setTextSize(12f);
-        for (int i=0; i< getChildCount(); i++) {
+        for (int i=0; i < getChildCount(); i++) {
             final Line line = getChild(i);
             context.drawText(line.text, x, y);
             y += context.getTextHeight();

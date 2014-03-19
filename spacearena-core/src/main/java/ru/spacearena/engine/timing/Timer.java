@@ -9,4 +9,5 @@ public interface Timer {
     void start();
     void stop();
     float reset();
+    float getElapsedSeconds();
 }

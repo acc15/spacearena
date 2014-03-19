@@ -11,6 +11,7 @@ import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.integration.box2d.Box2dObject;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -117,7 +118,8 @@ public class GameFactory implements EngineFactory {
                         final org.jbox2d.common.Transform tf = ship1.getTransform();
                         for (Point2F gun: ship1.getGuns()) {
                             final Point2F worldGun = ship1.mapPoint(TempUtils.tempPoint(gun));
-                            box2dWorld.add(new Bullet(ship1, worldGun.x, worldGun.y, tf.q.c, tf.q.s, ship1.getAngle()));
+                            final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, tf.q.c, tf.q.s, ship1.getAngle());
+                            box2dWorld.add(bullet);
                         }
                         canShoot = false;
                     }
@@ -138,6 +140,10 @@ public class GameFactory implements EngineFactory {
         root.add(new BoundChecker(levelBounds, viewport));
 
         root.add(new EngineObject() {
+            private float time;
+
+            private long t0 = -1;
+
             @Override
             public boolean onUpdate(float seconds) {
                 final BoundingBox2F box = viewport.getBounds();
@@ -145,8 +151,27 @@ public class GameFactory implements EngineFactory {
                         box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY(),
                         viewport.getPositionX(), viewport.getPositionY(),
                         viewport.getScaleX(), viewport.getScaleY()));
-                positionText.setText(String.format("Speed: %.2f",
-                        FloatMathUtils.length(ship1.getVelocityX(), ship1.getVelocityY())));
+
+                float bulletSpeed = 0;
+                for (int i=0; i<box2dWorld.getChildCount(); i++) {
+                    final Box2dObject b2o = box2dWorld.getChild(i);
+                    if (b2o instanceof Bullet) {
+                        bulletSpeed = FloatMathUtils.length(b2o.getVelocityX(), b2o.getVelocityY());
+                        break;
+                    }
+                }
+
+                positionText.setText(String.format("Speed: %.2f; Bullet speed: %.2f",
+                        FloatMathUtils.length(ship1.getVelocityX(), ship1.getVelocityY()), bulletSpeed));
+                time += seconds;
+
+                final long ct = System.currentTimeMillis();
+                if (t0 < 0) {
+                    t0 = ct - (long)(engine.getTimer().getElapsedSeconds() * 1000f);
+                }
+
+                final float real = (float)(ct - t0)/1000;
+                collisionText.setText(String.format("Time: %.4f; Real: %.4f; Diff: %.4f", time, real, time - real));
                 return true;
             }
         });

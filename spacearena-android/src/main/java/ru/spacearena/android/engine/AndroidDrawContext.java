@@ -14,15 +14,12 @@ import java.util.Stack;
  * @since 2014-12-02
  */
 public class AndroidDrawContext implements DrawContext {
-    public static final int DEFAULT_TEXT_SIZE = 30;
+
     private final Paint paint = new Paint();
     private final Stack<android.graphics.Matrix> matrixStack = new Stack<android.graphics.Matrix>();
     private final android.graphics.Matrix concat = new android.graphics.Matrix();
 
     private Canvas canvas;
-    private float fontAscent;
-    private float fontHeight;
-
     private void enableFill() {
         paint.setStyle(Paint.Style.FILL);
     }
@@ -31,20 +28,18 @@ public class AndroidDrawContext implements DrawContext {
         paint.setStyle(Paint.Style.STROKE);
     }
 
-    public AndroidDrawContext() {
-        paint.setTextSize(DEFAULT_TEXT_SIZE);
-        final Paint.FontMetrics fm = paint.getFontMetrics();
-        fontAscent = -fm.top;
-        fontHeight = fm.bottom - fm.top;
-    }
-
     public DrawContext wrap(Canvas canvas) {
         this.canvas = canvas;
         return this;
     }
 
     public float getTextHeight() {
-        return fontHeight;
+        final Paint.FontMetrics fm = paint.getFontMetrics();
+        return fm.bottom - fm.top;
+    }
+
+    public float getTextAscent() {
+        return paint.getFontMetrics().top;
     }
 
     public void setColor(int color) {
@@ -62,7 +57,7 @@ public class AndroidDrawContext implements DrawContext {
     }
 
     public void drawText(String text, float x, float y) {
-        canvas.drawText(text, x, y + fontAscent, paint);
+        canvas.drawText(text, x, y - getTextAscent(), paint);
     }
 
     public void drawRect(float left, float top, float right, float bottom) {
