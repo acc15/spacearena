@@ -25,7 +25,7 @@ public abstract class Engine {
 
     private EngineEntity root;
     private float width, height;
-    private float maxFPS = 10;
+    private float maxFPS = 100;
     private float compensationTime = 0f;
 
     private final Timer timer = new MilliTimer();
@@ -70,17 +70,19 @@ public abstract class Engine {
     }
 
     public boolean onUpdate() {
-        if (!timer.isStarted()) {
+        final float secondsElapsed;
+        if (timer.isStarted()) {
+            secondsElapsed = pauseBeforeNextFrame(timer.reset());
+        } else {
             timer.start();
-            return true;
+            secondsElapsed = 0f;
         }
 
-        float secondElapsed = pauseBeforeNextFrame(timer.reset());
         EngineEvent inputEvent;
         while ((inputEvent = pendingEvents.poll()) != null) {
             inputEvent.run(this);
         }
-        return root.onUpdate(secondElapsed);
+        return root.onUpdate(secondsElapsed);
     }
 
     public void onSize(float width, float height) {

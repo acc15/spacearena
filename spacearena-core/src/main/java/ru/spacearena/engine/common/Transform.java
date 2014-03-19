@@ -158,7 +158,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public Matrix getViewMatrix() {
-        return worldSpace;
+        return getWorldSpace();
     }
 
     @Override
@@ -191,6 +191,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public Matrix getWorldSpace() {
+        updateMatrixIfNeeded();
         return worldSpace;
     }
 

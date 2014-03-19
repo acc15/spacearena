@@ -14,7 +14,7 @@ import ru.spacearena.engine.integration.box2d.Box2dObject;
  */
 public class Bullet extends Box2dObject {
 
-    public static final float SPEED = 50f;
+    public static final float SPEED = 100f;
 
     private Ship owner;
 
