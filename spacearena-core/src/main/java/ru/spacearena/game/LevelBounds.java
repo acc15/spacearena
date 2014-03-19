@@ -3,13 +3,13 @@ package ru.spacearena.game;
 import org.jbox2d.collision.shapes.EdgeShape;
 import org.jbox2d.dynamics.Body;
 import ru.spacearena.engine.geometry.shapes.PolyShape2F;
-import ru.spacearena.engine.integration.box2d.Box2dObject;
+import ru.spacearena.engine.integration.box2d.Box2dBody;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-18-03
  */
-public class LevelBounds extends Box2dObject {
+public class LevelBounds extends Box2dBody {
 
     private PolyShape2F bounds;
 

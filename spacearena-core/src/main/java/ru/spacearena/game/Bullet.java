@@ -6,13 +6,13 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.integration.box2d.Box2dObject;
+import ru.spacearena.engine.integration.box2d.Box2dBody;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Bullet extends Box2dObject {
+public class Bullet extends Box2dBody {
 
     public static final float SPEED = 70f;
 
@@ -37,11 +37,11 @@ public class Bullet extends Box2dObject {
     protected void onPostCreate(Body body) {
         final PolygonShape shape = new PolygonShape();
         shape.setAsBox(2f, 0.2f);
-        body.createFixture(shape, 0f);
+        body.createFixture(shape, 5f);
     }
 
     @Override
-    public boolean canCollide(Box2dObject object) {
+    public boolean canCollide(Box2dBody object) {
         if (object instanceof Bullet) {
             return ((Bullet)object).owner != owner;
         }
@@ -49,7 +49,7 @@ public class Bullet extends Box2dObject {
     }
 
     @Override
-    public void onCollision(Box2dObject object) {
+    public void onCollision(Box2dBody object) {
         markDead();
     }
 

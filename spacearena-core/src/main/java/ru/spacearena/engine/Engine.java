@@ -164,11 +164,11 @@ public abstract class Engine {
     }
 
     public float getMaxFPS() {
-        return 1/deltaTime;
+        return deltaTime > 0 ? 1/deltaTime : 0;
     }
 
     public void setMaxFPS(float maxFPS) {
-        this.deltaTime = 1/maxFPS;
+        this.deltaTime = maxFPS > 0 ? 1/maxFPS : 0;
     }
 
     public Timer getTimer() {

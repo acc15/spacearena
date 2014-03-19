@@ -15,15 +15,20 @@ import ru.spacearena.engine.graphics.DrawContext;
  * @author Vyacheslav Mayorov
  * @since 2014-14-03
  */
-public class Box2dWorld extends EngineContainer<Box2dObject> {
+public class Box2dWorld extends EngineContainer<Box2dBody> {
 
     // default update rate = 60Hz = 60FPS = 1/60seconds
     public static final float DEFAULT_TIME_STEP = 1/60f;
+
+    public static final int MAX_SUB_STEPS = 5;
 
     private final World world;
     private int velocityIters = 7;
     private int positionIters = 3;
     private float timeStep = DEFAULT_TIME_STEP;
+
+    private float accumulator = 0f;
+    private float accumulatorRatio;
 
     public World getWorld() {
         return world;
@@ -35,11 +40,12 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
 
     public Box2dWorld(float gravityX, float gravityY) {
         world = new World(new Vec2(gravityX, gravityY));
+        world.setAutoClearForces(false);
         world.setContactFilter(new ContactFilter() {
             @Override
             public boolean shouldCollide(Fixture fixtureA, Fixture fixtureB) {
-                final Box2dObject o1 = (Box2dObject)fixtureA.getBody().getUserData();
-                final Box2dObject o2 = (Box2dObject)fixtureB.getBody().getUserData();
+                final Box2dBody o1 = (Box2dBody)fixtureA.getBody().getUserData();
+                final Box2dBody o2 = (Box2dBody)fixtureB.getBody().getUserData();
                 return o1.canCollide(o2) && o2.canCollide(o1);
             }
         });
@@ -54,8 +60,8 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
             }
 
             public void postSolve(Contact contact, ContactImpulse impulse) {
-                final Box2dObject o1 = (Box2dObject)contact.getFixtureA().getBody().getUserData();
-                final Box2dObject o2 = (Box2dObject)contact.getFixtureB().getBody().getUserData();
+                final Box2dBody o1 = (Box2dBody)contact.getFixtureA().getBody().getUserData();
+                final Box2dBody o2 = (Box2dBody)contact.getFixtureB().getBody().getUserData();
                 o1.onCollision(o2);
                 o2.onCollision(o1);
             }
@@ -94,19 +100,60 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         return 1/timeStep;
     }
 
+    public float getTimeRemainder() {
+        return accumulator;
+    }
+
+    public float getTimeRatio() {
+        return accumulatorRatio;
+    }
+
     @Override
-    protected void onAttachChild(Box2dObject entity) {
+    protected void onAttachChild(Box2dBody entity) {
         entity.onCreate(this);
     }
 
     @Override
     public boolean onUpdate(float seconds) {
-        onStep(seconds);
+        if (timeStep <= 0) {
+            doSingleStep(seconds);
+        } else {
+            doSubSteps(seconds);
+        }
         return super.onUpdate(seconds);
+    }
+
+    private void doSingleStep(float dt) {
+        onStep(dt);
+        world.clearForces();
+        accumulator = 0f;
+        accumulatorRatio = 0f;
+    }
+
+    private void doSubSteps(float dt) {
+        accumulator += dt;
+        final float ratio = accumulator/timeStep;
+        int discreteSteps = (int)(ratio);
+        if (discreteSteps <= 0) {
+            accumulatorRatio = ratio;
+            return;
+        }
+        if (discreteSteps > MAX_SUB_STEPS) {
+            discreteSteps = MAX_SUB_STEPS;
+        }
+        for (int i = 0; i < discreteSteps; i++) {
+            onStep(timeStep);
+        }
+        world.clearForces();
+        accumulator -= (float) discreteSteps * timeStep;
+        accumulatorRatio = accumulator/timeStep;
     }
 
     public void onStep(float dt) {
         world.step(dt, velocityIters, positionIters);
+        for (Box2dBody b2o: getChildren()) {
+            b2o.onStep(dt);
+        }
     }
 
     @Override

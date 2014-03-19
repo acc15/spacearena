@@ -11,7 +11,7 @@ import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
-import ru.spacearena.engine.integration.box2d.Box2dObject;
+import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -62,7 +62,7 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final Rect2FPP levelBounds = new Rect2FPP(-1000f, -1000f, 1000f, 1000f);
+        final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
         viewport.add(new Sky(viewport, new Random()));
@@ -79,7 +79,7 @@ public class GameFactory implements EngineFactory {
         ship1.setInitialAngle(FloatMathUtils.HALF_PI);
         box2dWorld.add(ship1);
 
-        for (int i=0; i<20; i++) {
+        for (int i=0; i<1; i++) {
             final Ship ship2 = new Ship();
             ship2.setInitialPosition((i-10)*5, 5);
             ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
@@ -155,7 +155,7 @@ public class GameFactory implements EngineFactory {
 
                 float bulletSpeed = 0;
                 for (int i=0; i<box2dWorld.getChildCount(); i++) {
-                    final Box2dObject b2o = box2dWorld.getChild(i);
+                    final Box2dBody b2o = box2dWorld.getChild(i);
                     if (b2o instanceof Bullet) {
                         bulletSpeed = FloatMathUtils.length(b2o.getVelocityX(), b2o.getVelocityY());
                         break;
