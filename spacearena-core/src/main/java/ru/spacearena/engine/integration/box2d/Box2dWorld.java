@@ -15,7 +15,7 @@ import ru.spacearena.engine.graphics.DrawContext;
  * @author Vyacheslav Mayorov
  * @since 2014-14-03
  */
-public class Box2dWorld extends EngineContainer<Box2dBody> {
+public class Box2dWorld extends EngineContainer<Box2dObject> {
 
     // default update rate = 60Hz = 60FPS = 1/60seconds
     public static final float DEFAULT_TIME_STEP = 1/60f;
@@ -109,7 +109,7 @@ public class Box2dWorld extends EngineContainer<Box2dBody> {
     }
 
     @Override
-    protected void onAttachChild(Box2dBody entity) {
+    protected void onAttachChild(Box2dObject entity) {
         entity.onCreate(this);
     }
 
@@ -151,7 +151,7 @@ public class Box2dWorld extends EngineContainer<Box2dBody> {
 
     public void onStep(float dt) {
         world.step(dt, velocityIters, positionIters);
-        for (Box2dBody b2o: getChildren()) {
+        for (Box2dObject b2o: getChildren()) {
             b2o.onStep(dt);
         }
     }

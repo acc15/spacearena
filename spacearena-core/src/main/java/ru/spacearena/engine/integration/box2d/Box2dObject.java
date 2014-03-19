@@ -7,4 +7,11 @@ import ru.spacearena.engine.common.GenericContainer;
  * @since 2014-20-03
  */
 public class Box2dObject extends GenericContainer {
+
+    public void onCreate(Box2dWorld b2dWorld) {
+    }
+
+    public void onStep(float dt) {
+    }
+
 }

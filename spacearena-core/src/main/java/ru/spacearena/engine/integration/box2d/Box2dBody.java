@@ -7,19 +7,18 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
 import ru.spacearena.engine.Engine;
-import ru.spacearena.engine.common.GenericContainer;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.TempUtils;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-14-03
  */
-public class Box2dBody extends GenericContainer {
+public class Box2dBody extends Box2dObject {
 
     private boolean live = true;
     private Matrix matrix;
