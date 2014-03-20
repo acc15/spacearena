@@ -9,6 +9,7 @@ import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.timing.NanoTimer;
 import ru.spacearena.engine.timing.Timer;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -21,6 +22,8 @@ public abstract class Engine {
 
     private final Debug debug = new Debug();
     private final EngineFactory factory;
+
+    private final HashMap<String, Image> imageCache = new HashMap<String, Image>();
 
     private EngineEntity root;
     private float width, height;
@@ -114,8 +117,17 @@ public abstract class Engine {
         pendingEvents.add(event);
     }
 
+    public Image getImage(String resource) {
+        Image img = imageCache.get(resource);
+        if (img == null) {
+            img = loadImage(resource);
+            imageCache.put(resource, img);
+        }
+        return img;
+    }
+
     public abstract Matrix createMatrix();
-    public abstract Image loadImage(String resource);
+
     public abstract boolean enableInput(InputType inputType);
 
     public static final class Debug {
@@ -178,4 +190,7 @@ public abstract class Engine {
     public Debug getDebug() {
         return debug;
     }
+
+    protected abstract Image loadImage(String resource);
+
 }

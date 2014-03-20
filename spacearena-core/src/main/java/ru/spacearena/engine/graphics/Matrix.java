@@ -29,4 +29,6 @@ public interface Matrix {
              float x, float y);
 
     void set(float rotateX, float rotateY, float x, float y);
+
+    void set(float x, float y, float radians);
 }

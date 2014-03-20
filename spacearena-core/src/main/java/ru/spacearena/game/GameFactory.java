@@ -11,10 +11,10 @@ import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
-import ru.spacearena.engine.integration.box2d.Box2dBody;
+import ru.spacearena.engine.integration.box2d.Box2dObject;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
-import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.TempUtils;
 
 import java.awt.event.MouseEvent;
 import java.util.Random;
@@ -71,7 +71,7 @@ public class GameFactory implements EngineFactory {
         root.add(viewport);
 
         final Box2dWorld box2dWorld = new Box2dWorld();
-        //box2dWorld.setTimeScale(2f);
+        box2dWorld.setFPS(60f);
         box2dWorld.add(new LevelBounds(levelBounds));
 
         final Ship ship1 = new Ship();
@@ -79,11 +79,13 @@ public class GameFactory implements EngineFactory {
         ship1.setInitialAngle(FloatMathUtils.HALF_PI);
         box2dWorld.add(ship1);
 
-        for (int i=0; i<1; i++) {
-            final Ship ship2 = new Ship();
-            ship2.setInitialPosition((i-10)*5, 5);
-            ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
-            box2dWorld.add(ship2);
+        for (int i=0; i<10; i++) {
+            for (int j = 0; j < 10; j++) {
+                final Ship ship2 = new Ship();
+                ship2.setInitialPosition((i - 10) * 5, j * 7);
+                ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
+                box2dWorld.add(ship2);
+            }
         }
 
         viewport.add(box2dWorld);
@@ -154,10 +156,10 @@ public class GameFactory implements EngineFactory {
                         viewport.getScaleX(), viewport.getScaleY()));
 
                 float bulletSpeed = 0;
-                for (int i=0; i<box2dWorld.getChildCount(); i++) {
-                    final Box2dBody b2o = box2dWorld.getChild(i);
+                for (Box2dObject b2o: box2dWorld.getChildren()) {
                     if (b2o instanceof Bullet) {
-                        bulletSpeed = FloatMathUtils.length(b2o.getVelocityX(), b2o.getVelocityY());
+                        final Bullet bt = (Bullet) b2o;
+                        bulletSpeed = FloatMathUtils.length(bt.getVelocityX(), bt.getVelocityY());
                         break;
                     }
                 }
@@ -176,7 +178,9 @@ public class GameFactory implements EngineFactory {
                 return true;
             }
         });
+
         root.add(multilineText);
+
         return root;
     }
 

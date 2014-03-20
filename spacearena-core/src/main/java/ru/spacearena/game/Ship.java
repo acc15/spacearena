@@ -85,7 +85,7 @@ public class Ship extends Box2dBody {
     }
 
     public void onPostCreate(Body body) {
-        final Sprite sprite = new Sprite(getEngine().loadImage("ship.png"));
+        final Sprite sprite = new Sprite(getEngine().getImage("ship.png"));
         sprite.setPivot(sprite.getWidth() / 3, sprite.getHeight() / 2);
         sprite.setScale(6 / sprite.getWidth());
         add(sprite);

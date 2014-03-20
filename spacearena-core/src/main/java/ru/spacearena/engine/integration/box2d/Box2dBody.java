@@ -23,7 +23,10 @@ public class Box2dBody extends Box2dObject {
     private boolean live = true;
     private Matrix matrix;
     private Body body;
-    private Box2dWorld world;
+
+
+    private float smoothX, smoothY, smoothAngle;
+    private float prevX, prevY, prevAngle;
 
     private final BodyDef bodyDef = new BodyDef();
 
@@ -32,7 +35,7 @@ public class Box2dBody extends Box2dObject {
     }
 
     public float getAngle() {
-        return body.getAngle();
+        return smoothAngle;//body.getAngle();
     }
 
     public void markDead() {
@@ -44,11 +47,11 @@ public class Box2dBody extends Box2dObject {
     }
 
     public float getPositionX() {
-        return body.getPosition().x;
+        return smoothX;//body.getPosition().x;
     }
 
     public float getPositionY() {
-        return body.getPosition().y;
+        return smoothY;//body.getPosition().y;
     }
 
     public float getVelocityX() { return body.getLinearVelocity().x; }
@@ -67,16 +70,14 @@ public class Box2dBody extends Box2dObject {
         body.setTransform(Box2dUtils.tempVec(x, y), body.getAngle());
     }
 
-    public Box2dWorld getWorld() {
-        return world;
-    }
-
     public void onCreate(Box2dWorld world) {
-        this.world = world;
         onPreCreate(bodyDef);
         bodyDef.userData = this;
         this.body = world.getWorld().createBody(bodyDef);
         onPostCreate(this.body);
+        prevX = body.getPosition().x;
+        prevY = body.getPosition().y;
+        prevAngle = body.getAngle();
     }
 
     protected void onPreCreate(BodyDef bodyDef) {
@@ -92,9 +93,8 @@ public class Box2dBody extends Box2dObject {
     }
 
     public Point2F mapPoint(Point2F pt, Point2F out) {
-        final Vec2 v = Box2dUtils.tempVec(pt.x, pt.y);
-        body.getWorldPointToOut(v, v);
-        return out.set(v.x, v.y);
+        matrix.mapPoint(pt, out);
+        return out;
     }
 
     public Point2F mapPoint(Point2F pt) {
@@ -110,19 +110,27 @@ public class Box2dBody extends Box2dObject {
             body.getWorld().destroyBody(body);
             return false;
         }
-
-        //body.setTransform();
-
         return true;
     }
 
     public void onStep(float dt) {
+        prevX = body.getPosition().x;
+        prevY = body.getPosition().y;
+        prevAngle = body.getAngle();
+    }
+
+    @Override
+    public void onSmooth(float dt, float ratio, float prevRatio) {
+        smoothX = body.getPosition().x * ratio + prevX * prevRatio;
+        smoothY = body.getPosition().y * ratio + prevY * prevRatio;
+
+        final float diff = FloatMathUtils.radDiff(body.getAngle(), prevAngle);
+        smoothAngle = FloatMathUtils.normalizeRadians(prevAngle + diff * ratio);
+        matrix.set(smoothX, smoothY, smoothAngle);
     }
 
     @Override
     public void onDraw(DrawContext context) {
-        final Transform tx = body.getTransform();
-        matrix.set(tx.q.c, tx.q.s, tx.p.x, tx.p.y);
         try {
             context.pushMatrix(matrix);
             onDrawTransformed(context);

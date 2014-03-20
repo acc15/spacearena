@@ -91,4 +91,9 @@ public class Java2DMatrix implements Matrix {
         affineTransform.setToTranslation(x, y);
         affineTransform.rotate(rotateX, rotateY);
     }
+
+    public void set(float x, float y, float radians) {
+        affineTransform.setToTranslation(x, y);
+        affineTransform.rotate(radians);
+    }
 }

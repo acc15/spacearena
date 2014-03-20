@@ -20,7 +20,7 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
     // default update rate = 60Hz = 60FPS = 1/60seconds
     public static final float DEFAULT_TIME_STEP = 1/60f;
 
-    public static final int MAX_SUB_STEPS = 5;
+    public static final int MAX_SUB_STEPS = 10;
 
     private final World world;
     private int velocityIters = 7;
@@ -28,7 +28,6 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
     private float timeStep = DEFAULT_TIME_STEP;
 
     private float accumulator = 0f;
-    private float accumulatorRatio;
 
     public World getWorld() {
         return world;
@@ -100,14 +99,6 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         return 1/timeStep;
     }
 
-    public float getTimeRemainder() {
-        return accumulator;
-    }
-
-    public float getTimeRatio() {
-        return accumulatorRatio;
-    }
-
     @Override
     protected void onAttachChild(Box2dObject entity) {
         entity.onCreate(this);
@@ -127,7 +118,7 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         onStep(dt);
         world.clearForces();
         accumulator = 0f;
-        accumulatorRatio = 0f;
+        onSmooth(1f);
     }
 
     private void doSubSteps(float dt) {
@@ -135,7 +126,7 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         final float ratio = accumulator/timeStep;
         int discreteSteps = (int)(ratio);
         if (discreteSteps <= 0) {
-            accumulatorRatio = ratio;
+            onSmooth(ratio);
             return;
         }
         if (discreteSteps > MAX_SUB_STEPS) {
@@ -145,15 +136,24 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
             onStep(timeStep);
         }
         world.clearForces();
+
         accumulator -= (float) discreteSteps * timeStep;
-        accumulatorRatio = accumulator/timeStep;
+        onSmooth(accumulator/timeStep);
+    }
+
+    public void onSmooth(float ratio) {
+        final float prevRatio = 1f - ratio;
+        for (Box2dObject b2o: getChildren()) {
+            b2o.onSmooth(accumulator, ratio, prevRatio);
+        }
     }
 
     public void onStep(float dt) {
-        world.step(dt, velocityIters, positionIters);
         for (Box2dObject b2o: getChildren()) {
             b2o.onStep(dt);
         }
+        world.step(dt, velocityIters, positionIters);
+        super.onUpdate(dt);
     }
 
     @Override

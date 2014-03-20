@@ -50,7 +50,7 @@ public class SurfaceDrawThread implements Runnable {
         thread.start();
     }
 
-    public void run() {
+     public void run() {
 
         final PaintFlagsDrawFilter drawFilter = new PaintFlagsDrawFilter(Paint.ANTI_ALIAS_FLAG, 0);
         final AndroidDrawContext drawContext = new AndroidDrawContext();

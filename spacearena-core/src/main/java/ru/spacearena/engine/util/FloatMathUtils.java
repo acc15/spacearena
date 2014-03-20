@@ -141,12 +141,16 @@ public class FloatMathUtils {
         return isEqual(x1 * y2, x2 * y1);
     }
 
-    public static float normalizeDegrees(float degrees) {
-        float norm = degrees % CIRCLE_ANGLE;
-        if (norm < 0) {
-            return CIRCLE_ANGLE + norm;
-        }
-        return norm;
+    public static float pmod(float v, float m) {
+        return v < 0 ? m + v % m : v % m;
+    }
+
+    public static float normalizeDegrees(float d) {
+        return pmod(d, CIRCLE_ANGLE);
+    }
+
+    public static float normalizeRadians(float v) {
+        return pmod(v, TWO_PI);
     }
 
     public static float random() {
@@ -210,4 +214,5 @@ public class FloatMathUtils {
     public static long round(float v) {
         return Math.round(v);
     }
+
 }

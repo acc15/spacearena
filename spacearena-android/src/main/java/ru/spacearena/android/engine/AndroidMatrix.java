@@ -2,6 +2,7 @@ package ru.spacearena.android.engine;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 
 /**
@@ -67,6 +68,11 @@ public class AndroidMatrix implements Matrix {
 
     public void set(float rotateX, float rotateY, float x, float y) {
         androidMatrix.setSinCos(rotateY, rotateX);
+        androidMatrix.postTranslate(x, y);
+    }
+
+    public void set(float x, float y, float radians) {
+        androidMatrix.setRotate(FloatMathUtils.toDegrees(radians));
         androidMatrix.postTranslate(x, y);
     }
 }
