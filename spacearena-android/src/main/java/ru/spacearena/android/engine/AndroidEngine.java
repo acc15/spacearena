@@ -8,7 +8,6 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.events.TouchEvent;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.IOUtils;
@@ -43,14 +42,24 @@ public class AndroidEngine extends Engine {
             IOUtils.closeQuietly(inputStream);
         }
     }
+/*
+    @Override
+    public boolean onUpdate() {
+        try {
+            android.os.Debug.startMethodTracing("spacearena-update");
+            return super.onUpdate();
+        } finally {
+            android.os.Debug.stopMethodTracing();
+        }
+    }
 
     @Override
     public void onDraw(DrawContext context) {
-        //android.os.Debug.startMethodTracing("spacearena-draw");
+        android.os.Debug.startMethodTracing("spacearena-draw");
         super.onDraw(context);
-        //android.os.Debug.stopMethodTracing();
+        android.os.Debug.stopMethodTracing();
     }
-
+*/
     public static TouchEvent.Action mapAction(int motionAction) {
         switch (motionAction) {
         case MotionEvent.ACTION_DOWN:

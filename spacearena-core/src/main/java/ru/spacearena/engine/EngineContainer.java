@@ -118,12 +118,15 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
     }
 
     public boolean onUpdate(float seconds) {
-        final Iterator<T> iterator = children.iterator();
-        while (iterator.hasNext()) {
-            final T child = iterator.next();
-            if (!child.onUpdate(seconds)) {
-                onDetachChild(child);
-                iterator.remove();
+        int l = 0, r = children.size();
+        while (l < r) {
+            final T c = children.get(l);
+            if (!c.onUpdate(seconds)) {
+                onDetachChild(c);
+                children.remove(l);
+                --r;
+            } else {
+                ++l;
             }
         }
         return true;

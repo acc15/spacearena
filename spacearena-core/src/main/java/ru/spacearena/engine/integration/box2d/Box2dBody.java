@@ -114,17 +114,17 @@ public class Box2dBody extends Box2dObject {
     }
 
     public void onStep(float dt) {
-        prevX = body.getPosition().x;
-        prevY = body.getPosition().y;
-        prevAngle = body.getAngle();
+        prevX = body.m_xf.p.x;
+        prevY = body.m_xf.p.y;
+        prevAngle = body.m_sweep.a;
     }
 
     @Override
     public void onSmooth(float dt, float ratio, float prevRatio) {
-        smoothX = body.getPosition().x * ratio + prevX * prevRatio;
-        smoothY = body.getPosition().y * ratio + prevY * prevRatio;
+        smoothX = body.m_xf.p.x * ratio + prevX * prevRatio;
+        smoothY = body.m_xf.p.y * ratio + prevY * prevRatio;
 
-        final float diff = FloatMathUtils.radDiff(body.getAngle(), prevAngle);
+        final float diff = FloatMathUtils.radDiff(body.m_sweep.a, prevAngle);
         smoothAngle = FloatMathUtils.normalizeRadians(prevAngle + diff * ratio);
         matrix.set(smoothX, smoothY, smoothAngle);
     }

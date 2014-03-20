@@ -1,8 +1,7 @@
 package ru.spacearena.android;
 
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PaintFlagsDrawFilter;
+import android.os.Debug;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,7 @@ public class SurfaceDrawThread implements Runnable {
 
     final Engine engine;
     final SurfaceHolder surfaceHolder;
+    private final AndroidDrawContext drawContext = new AndroidDrawContext();
 
     private Thread thread = null;
     private volatile boolean running = false;
@@ -50,35 +50,40 @@ public class SurfaceDrawThread implements Runnable {
         thread.start();
     }
 
-     public void run() {
+    private boolean onFrame() {
+        if (!engine.onUpdate()) {
+            return false;
+        }
 
-        final PaintFlagsDrawFilter drawFilter = new PaintFlagsDrawFilter(Paint.ANTI_ALIAS_FLAG, 0);
-        final AndroidDrawContext drawContext = new AndroidDrawContext();
-        while (running) {
-
-            if (!engine.onUpdate()) {
-                break;
-            }
-
-            final Canvas canvas = surfaceHolder.lockCanvas();
-            if (canvas == null) {
-                logger.info("Canvas can't be locked. Waiting 100ms...");
-                if (!running) {
-                    break;
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    logger.error("Canvas wait interrupted");
-                }
-                continue;
+        final Canvas canvas = surfaceHolder.lockCanvas();
+        if (canvas == null) {
+            logger.info("Canvas can't be locked. Waiting 100ms...");
+            if (!running) {
+                return false;
             }
             try {
-                canvas.setDrawFilter(drawFilter);
-                engine.onDraw(drawContext.wrap(canvas));
-            } finally {
-                surfaceHolder.unlockCanvasAndPost(canvas);
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                logger.error("Canvas wait interrupted");
             }
+            return true;
+        }
+        try {
+            engine.onDraw(drawContext.wrap(canvas));
+        } finally {
+            surfaceHolder.unlockCanvasAndPost(canvas);
+        }
+        return true;
+    }
+
+    public void run() {
+        while (running) {
+            Debug.startMethodTracing("spacearena-dt");
+            if (!onFrame()) {
+                Debug.stopMethodTracing();
+                break;
+            }
+            Debug.stopMethodTracing();
         }
         logger.info("Drawing thread finished");
     }

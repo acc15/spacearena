@@ -161,15 +161,6 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
         return getWorldSpace();
     }
 
-    @Override
-    public boolean onUpdate(float seconds) {
-        if (!super.onUpdate(seconds)) {
-            return false;
-        }
-        updateMatrixIfNeeded();
-        return true;
-    }
-
     public void onAttach(Engine engine) {
         this.worldSpace = engine.createMatrix();
         super.onAttach(engine);
