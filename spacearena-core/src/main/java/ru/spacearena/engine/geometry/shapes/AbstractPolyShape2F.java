@@ -4,7 +4,7 @@ import ru.spacearena.engine.geometry.primitives.Line2F;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.util.TempUtils;
+import ru.spacearena.engine.graphics.Path;
 
 /**
  * @author Vyacheslav Mayorov
@@ -41,16 +41,28 @@ public abstract class AbstractPolyShape2F implements PolyShape2F, Shape2F {
         return pt;
     }
 
+    private void preparePath(DrawContext drawContext) {
+
+        final float x0 = getPointX(0), y0 = getPointY(0);
+
+        final Path p = drawContext.preparePath();
+        p.moveTo(x0, y0);
+
+        final int pc = getPointCount();
+        for (int i=1; i<pc; i++) {
+            p.lineTo(getPointX(i), getPointY(i));
+        }
+        p.lineTo(x0, y0);
+    }
+
     public void stroke(DrawContext drawContext) {
-        final int pointCount = getPointCount();
-        getPoints(TempUtils.POINT_BUF, 0, pointCount);
-        drawContext.drawPoly(TempUtils.POINT_BUF, 0, pointCount);
+        preparePath(drawContext);
+        drawContext.drawPath();
     }
 
     public void fill(DrawContext drawContext) {
-        final int pointCount = getPointCount();
-        getPoints(TempUtils.POINT_BUF, 0, pointCount);
-        drawContext.fillPoly(TempUtils.POINT_BUF, 0, pointCount);
+        preparePath(drawContext);
+        drawContext.fillPath();
     }
 
     public void calculateProjection(Point2F axis, ProjectionF projection) {

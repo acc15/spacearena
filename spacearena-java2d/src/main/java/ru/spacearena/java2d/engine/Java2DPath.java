@@ -20,10 +20,6 @@ public class Java2DPath implements Path {
         this.path = path;
     }
 
-    public void reset() {
-        path.reset();
-    }
-
     public void moveTo(float x, float y) {
         path.moveTo(x, y);
     }

@@ -15,47 +15,32 @@ import java.util.Stack;
 public class Java2DDrawContext implements DrawContext {
 
     private Graphics2D graphics2D;
-    private int fontOffset;
-    private int fontHeight;
 
     private final Line2D.Float floatLine = new Line2D.Float();
     private final Ellipse2D.Float floatEllipse = new Ellipse2D.Float();
     private final Rectangle2D.Float floatRect = new Rectangle2D.Float();
-    private final Path2D.Float floatPath = new Path2D.Float();
+    private final Java2DPath path = new Java2DPath();
 
     private final Stack<AffineTransform> matrixStack = new Stack<AffineTransform>();
     private final AffineTransform imageTransform = new AffineTransform();
 
-    //public static final int MAX_POLY_POINTS = 100;
-    //private static final int[] xPointBuf = new int[MAX_POLY_POINTS];
-    //private static final int[] yPointBuf = new int[MAX_POLY_POINTS];
-
     public DrawContext wrap(Graphics2D graphics2D) {
         this.graphics2D = graphics2D;
-        final FontMetrics fm = graphics2D.getFontMetrics();
-        this.fontOffset = fm.getAscent();
-        this.fontHeight = fm.getHeight();
         return this;
     }
 
     public float getTextHeight() {
-        return fontHeight;
+        return graphics2D.getFontMetrics().getHeight();
     }
 
     public void strokeColor(int color) {
         setColor(color);
     }
 
-    public void fillColor(int color) {
-        setColor(color);
-    }
+    public void fillColor(int color) { setColor(color); }
 
     private void setColor(int color) {
         graphics2D.setColor(new Color(color, ru.spacearena.engine.graphics.Color.hasAlpha(color)));
-    }
-
-    public int getColor() {
-        return graphics2D.getColor().getRGB();
     }
 
     public void pushMatrix(Matrix matrix) {
@@ -79,7 +64,7 @@ public class Java2DDrawContext implements DrawContext {
     }
 
     public void drawText(String text, float x, float y) {
-        graphics2D.drawString(text, x, y + fontOffset);
+        graphics2D.drawString(text, x, y + graphics2D.getFontMetrics().getAscent());
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {
@@ -112,22 +97,18 @@ public class Java2DDrawContext implements DrawContext {
         graphics2D.fill(floatEllipse);
     }
 
-    public void drawPoly(float[] points, int start, int pointCount) {
-        setPath(points, start, pointCount);
-        graphics2D.draw(floatPath);
+    public Path preparePath() {
+        return path;
     }
 
-    public void fillPoly(float[] pointBuf, int start, int pointCount) {
-        setPath(pointBuf, start, pointCount);
-        graphics2D.fill(floatPath);
+    public void drawPath() {
+        graphics2D.draw(path.path);
+        path.path.reset();
     }
 
-    public void drawPath(Path path) {
-        graphics2D.draw(((Java2DPath)path).path);
-    }
-
-    public void fillPath(Path path) {
-        graphics2D.fill(((Java2DPath) path).path);
+    public void fillPath() {
+        graphics2D.fill(path.path);
+        path.path.reset();
     }
 
     public float getLineWidth() {
@@ -153,21 +134,5 @@ public class Java2DDrawContext implements DrawContext {
     private void setEllipse(float x, float y, float rx, float ry) {
         floatEllipse.setFrame(x-rx, y-ry, rx*2, ry*2);
     }
-
-    private void setPath(float[] points, int start, int pointCount) {
-        floatPath.reset();
-        for (int i=0; i<=pointCount; i++) {
-            final int imod = i%pointCount;
-            final float x = points[start+imod*2];
-            final float y = points[start+imod*2+1];
-            if (i == 0) {
-                floatPath.moveTo(x, y);
-            } else{
-                floatPath.lineTo(x, y);
-            }
-        }
-    }
-
-
 
 }

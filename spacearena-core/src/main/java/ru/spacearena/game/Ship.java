@@ -33,8 +33,9 @@ public class Ship extends Box2dBody {
 
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
     private static final Point2F LOCAL_ENGINE_POS = new Point2F(-1.7f, 0f);
-
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
+
+    private final LinkedList<SteamParticle> engineParticles = new LinkedList<SteamParticle>();
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
@@ -60,13 +61,9 @@ public class Ship extends Box2dBody {
         bodyDef.angularDamping = 0.2f;
     }
 
-    private final LinkedList<SteamParticle> engineParticles = new LinkedList<SteamParticle>();
-
     public void flyTo(float dx, float dy, float seconds) {
 
         final boolean engineDisabled = FloatMathUtils.isZero(dx, dy);
-
-
         final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
         engineParticles.add(new SteamParticle(seconds, pt.x, pt.y, !engineDisabled));
         timeSum += seconds;

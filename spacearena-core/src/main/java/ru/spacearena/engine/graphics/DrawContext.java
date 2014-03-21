@@ -19,11 +19,9 @@ public interface DrawContext {
     void drawCircle(float x, float y, float radius);
     void fillCircle(float x, float y, float radius);
 
-    void drawPoly(float[] points, int start, int pointCount);
-    void fillPoly(float[] pointBuf, int start, int pointCount);
-
-    void drawPath(Path path);
-    void fillPath(Path path);
+    Path preparePath();
+    void drawPath();
+    void fillPath();
 
     float getTextHeight();
 

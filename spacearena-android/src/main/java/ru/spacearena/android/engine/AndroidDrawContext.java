@@ -13,10 +13,13 @@ import ru.spacearena.engine.graphics.Path;
  */
 public class AndroidDrawContext implements DrawContext {
 
+    public static final int MATRIX_STACK_DEPTH = 40;
     private final Paint strokePaint = new Paint();
     private final Paint fillPaint = new Paint();
 
-    private final android.graphics.Matrix[] matrixPool = new android.graphics.Matrix[40];
+    private final AndroidPath path = new AndroidPath();
+
+    private final android.graphics.Matrix[] matrixPool = new android.graphics.Matrix[MATRIX_STACK_DEPTH];
     private int matrixIndex = 0;
 
     private Canvas canvas;
@@ -39,10 +42,6 @@ public class AndroidDrawContext implements DrawContext {
         return fm.bottom - fm.top;
     }
 
-    public float getTextAscent() {
-        return strokePaint.getFontMetrics().top;
-    }
-
     public void strokeColor(int color) {
         strokePaint.setColor(color);
     }
@@ -60,7 +59,7 @@ public class AndroidDrawContext implements DrawContext {
     }
 
     public void drawText(String text, float x, float y) {
-        canvas.drawText(text, x, y - getTextAscent(), strokePaint);
+        canvas.drawText(text, x, y - strokePaint.getFontMetrics().top, strokePaint);
     }
 
     public void drawRect(float left, float top, float right, float bottom) {
@@ -68,7 +67,7 @@ public class AndroidDrawContext implements DrawContext {
     }
 
     public void drawImage(Image image, float x, float y) {
-        canvas.drawBitmap(((AndroidImage)image).bitmap, x, y, strokePaint);
+        canvas.drawBitmap(((AndroidImage) image).bitmap, x, y, strokePaint);
     }
 
     public void drawCircle(float x, float y, float radius) {
@@ -92,16 +91,26 @@ public class AndroidDrawContext implements DrawContext {
         canvas.drawLine(x1, y1, x2, y2, strokePaint);
     }
 
+    public Path preparePath() {
+        return path;
+    }
+
+    public void drawPath() {
+        canvas.drawPath(path.androidPath, strokePaint);
+        path.androidPath.reset();
+    }
+
+    public void fillPath() {
+        canvas.drawPath(path.androidPath, fillPaint);
+        path.androidPath.reset();
+    }
+
     public void setTextSize(float size) {
         strokePaint.setTextSize(size);
     }
 
     public float getTextSize() {
         return strokePaint.getTextSize();
-    }
-
-    public void drawPoly(float[] points, int start, int pointCount) {
-        canvas.drawPoints(points, start, pointCount << 1, strokePaint);
     }
 
     public float getLineWidth() {
@@ -112,26 +121,4 @@ public class AndroidDrawContext implements DrawContext {
         strokePaint.setStrokeWidth(width);
     }
 
-    private final android.graphics.Path path = new android.graphics.Path();
-
-    public void fillPoly(float[] pointBuf, int start, int pointCount) {
-        path.reset();
-        for (int i=0; i<pointCount; i++) {
-            final float x = pointBuf[start+i*2], y = pointBuf[start+i*2+1];
-            if (i == 0) {
-                path.moveTo(x, y);
-            } else {
-                path.lineTo(x, y);
-            }
-        }
-        canvas.drawPath(path, fillPaint);
-    }
-
-    public void drawPath(Path path) {
-        canvas.drawPath(((AndroidPath)path).androidPath, strokePaint);
-    }
-
-    public void fillPath(Path path) {
-        canvas.drawPath(((AndroidPath)path).androidPath, fillPaint);
-    }
 }

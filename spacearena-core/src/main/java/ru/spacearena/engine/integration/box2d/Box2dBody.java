@@ -8,12 +8,8 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.DrawUtils;
-import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.graphics.*;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.TempUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -219,17 +215,21 @@ public class Box2dBody extends Box2dObject {
 
         case POLYGON:
             final PolygonShape polygon = (PolygonShape) shape;
-            final float[] buf = TempUtils.POINT_BUF;
-            final int pointCount = polygon.getVertexCount();
-            for (int i=0; i < pointCount; i++) {
+            final int pc = polygon.getVertexCount();
+
+            final Vec2 v0 = polygon.getVertex(0);
+            final Path p = context.preparePath();
+            p.moveTo(v0.x, v0.y);
+            for (int i=1; i<pc; i++) {
                 final Vec2 v = polygon.getVertex(i);
-                buf[i*2] = v.x;
-                buf[i*2+1] = v.y;
+                p.lineTo(v.x, v.y);
             }
+            p.lineTo(v0.x, v0.y);
+
             if (fill) {
-                context.fillPoly(buf, 0, pointCount);
+                context.fillPath();
             } else {
-                context.drawPoly(buf, 0, pointCount);
+                context.drawPath();
             }
             break;
 
