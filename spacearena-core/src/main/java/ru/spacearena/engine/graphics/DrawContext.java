@@ -22,6 +22,9 @@ public interface DrawContext {
     void drawPoly(float[] points, int start, int pointCount);
     void fillPoly(float[] pointBuf, int start, int pointCount);
 
+    void drawPath(Path path);
+    void fillPath(Path path);
+
     float getTextHeight();
 
     void pushMatrix(Matrix matrix);
@@ -32,6 +35,5 @@ public interface DrawContext {
 
     float getLineWidth();
     void setLineWidth(float width);
-
 
 }

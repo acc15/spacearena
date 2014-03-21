@@ -3,6 +3,7 @@ package ru.spacearena.java2d.engine;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.graphics.Path;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -114,6 +115,14 @@ public class Java2DDrawContext implements DrawContext {
         graphics2D.fill(floatPath);
     }
 
+    public void drawPath(Path path) {
+        graphics2D.draw(((Java2DPath)path).path);
+    }
+
+    public void fillPath(Path path) {
+        graphics2D.fill(((Java2DPath)path).path);
+    }
+
     public float getLineWidth() {
         final Stroke s = graphics2D.getStroke();
         if (s instanceof BasicStroke) {
@@ -150,12 +159,6 @@ public class Java2DDrawContext implements DrawContext {
                 floatPath.lineTo(x, y);
             }
         }
-        /*
-
-        for (int i=0;i<pointCount;i++) {
-            xPointBuf[i] = (int)points[i*2+start];
-            yPointBuf[i] = (int)points[i*2+start+1];
-        }*/
     }
 
 

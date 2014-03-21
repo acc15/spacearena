@@ -2,10 +2,10 @@ package ru.spacearena.android.engine;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.graphics.Path;
 
 /**
  * @author Vyacheslav Mayorov
@@ -113,7 +113,7 @@ public class AndroidDrawContext implements DrawContext {
         strokePaint.setStrokeWidth(width);
     }
 
-    private final Path path = new Path();
+    private final android.graphics.Path path = new android.graphics.Path();
 
     public void fillPoly(float[] pointBuf, int start, int pointCount) {
         path.reset();
@@ -126,5 +126,13 @@ public class AndroidDrawContext implements DrawContext {
             }
         }
         canvas.drawPath(path, fillPaint);
+    }
+
+    public void drawPath(Path path) {
+        canvas.drawPath(((AndroidPath)path).androidPath, strokePaint);
+    }
+
+    public void fillPath(Path path) {
+        canvas.drawPath(((AndroidPath)path).androidPath, fillPaint);
     }
 }
