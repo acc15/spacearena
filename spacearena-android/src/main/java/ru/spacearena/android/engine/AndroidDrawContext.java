@@ -43,9 +43,12 @@ public class AndroidDrawContext implements DrawContext {
         return strokePaint.getFontMetrics().top;
     }
 
-    public void setColor(int color) {
-        fillPaint.setColor(color);
+    public void strokeColor(int color) {
         strokePaint.setColor(color);
+    }
+
+    public void fillColor(int color) {
+        fillPaint.setColor(color);
     }
 
     public void fillRect(float left, float top, float right, float bottom) {
@@ -66,10 +69,6 @@ public class AndroidDrawContext implements DrawContext {
 
     public void drawImage(Image image, float x, float y) {
         canvas.drawBitmap(((AndroidImage)image).bitmap, x, y, strokePaint);
-    }
-
-    public int getColor() {
-        return strokePaint.getColor();
     }
 
     public void drawCircle(float x, float y, float radius) {

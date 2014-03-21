@@ -55,7 +55,7 @@ public class Bullet extends Box2dBody {
 
     @Override
     protected void onDrawTransformed(DrawContext context) {
-        context.setColor(Color.RED);
+        context.fillColor(Color.RED);
         drawBodyShapes(context, true);
     }
 

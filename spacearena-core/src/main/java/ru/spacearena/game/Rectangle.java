@@ -35,7 +35,7 @@ public class Rectangle extends EngineObject {
 
     @Override
     public void onDraw(DrawContext context) {
-        context.setColor(color);
+        context.fillColor(color);
         context.fillRect(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
     }
 }

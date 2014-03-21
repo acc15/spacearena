@@ -104,7 +104,7 @@ public class PhysicalObject extends Transform<EngineEntity> {
             context.setTextSize(40f);
 
             final float tx = getPositionX() + velocityX, ty = getPositionY() + velocityY;
-            context.setColor(Color.WHITE);
+            context.strokeColor(Color.WHITE);
 
             DrawUtils.drawArrow(context, getPositionX(), getPositionY(), tx, ty, DrawUtils.HeadType.NONE, 0f, DrawUtils.HeadType.ARROW, 50f);
             context.drawText(String.format("%.2f;%.2f", velocityX, velocityY), tx, ty+20);

@@ -79,7 +79,7 @@ public class Sky extends EngineObject {
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);
 
-                context.setColor(color);
+                context.fillColor(color);
 
                 final float tx = (randX - bounds.x) / scale + bounds.x,
                             ty = (randY - bounds.y) / scale + bounds.y;

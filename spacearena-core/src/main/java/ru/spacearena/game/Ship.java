@@ -112,7 +112,7 @@ public class Ship extends Box2dBody {
             final SteamParticle p = iter.next();
             if (p.active) {
                 final float size = (float)(engineParticles.size()-i)/engineParticles.size();
-                context.setColor(Color.argb(1.f, size, size, 1f));
+                context.fillColor(Color.argb(1.f, size, size, 1f));
                 final float r = size * 0.3f;
                 context.fillCircle(p.x, p.y, r);
             }

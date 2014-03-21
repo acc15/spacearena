@@ -1,11 +1,10 @@
 package ru.spacearena.java2d.engine;
 
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.*;
 import ru.spacearena.engine.graphics.Image;
-import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.graphics.Path;
 
 import java.awt.*;
+import java.awt.Color;
 import java.awt.geom.*;
 import java.util.Stack;
 
@@ -43,8 +42,16 @@ public class Java2DDrawContext implements DrawContext {
         return fontHeight;
     }
 
-    public void setColor(int color) {
-        graphics2D.setColor(new Color(color, true));
+    public void strokeColor(int color) {
+        setColor(color);
+    }
+
+    public void fillColor(int color) {
+        setColor(color);
+    }
+
+    private void setColor(int color) {
+        graphics2D.setColor(new Color(color, ru.spacearena.engine.graphics.Color.hasAlpha(color)));
     }
 
     public int getColor() {
@@ -120,7 +127,7 @@ public class Java2DDrawContext implements DrawContext {
     }
 
     public void fillPath(Path path) {
-        graphics2D.fill(((Java2DPath)path).path);
+        graphics2D.fill(((Java2DPath) path).path);
     }
 
     public float getLineWidth() {
