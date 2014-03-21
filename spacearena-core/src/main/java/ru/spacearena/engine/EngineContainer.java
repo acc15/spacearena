@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
-    private final List<T> children = new ArrayList<T>();
+    protected final List<T> children = new ArrayList<T>();
     private Engine engine = null;
 
     public EngineContainer() {

@@ -11,11 +11,10 @@ import static ru.spacearena.engine.util.FloatMathUtils.*;
  */
 public class Matrix2F {
 
-    private float m00, m01, m02,
-                  m10, m11, m12;
+    public float m00 = 1f, m01 = 0f, m02 = 0f,
+                 m10 = 0f, m11 = 1f, m12 = 0f;
 
     public Matrix2F() {
-        identity();
     }
 
     public Matrix2F(Matrix2F m) {

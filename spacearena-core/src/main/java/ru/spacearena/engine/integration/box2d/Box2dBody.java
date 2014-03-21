@@ -75,9 +75,9 @@ public class Box2dBody extends Box2dObject {
         bodyDef.userData = this;
         this.body = world.getWorld().createBody(bodyDef);
         onPostCreate(this.body);
-        prevX = body.getPosition().x;
-        prevY = body.getPosition().y;
-        prevAngle = body.getAngle();
+        smoothX = prevX = body.getPosition().x;
+        smoothY = prevY = body.getPosition().y;
+        smoothAngle = prevAngle = body.getAngle();
     }
 
     protected void onPreCreate(BodyDef bodyDef) {

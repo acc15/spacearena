@@ -149,7 +149,7 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
     }
 
     public void onStep(float dt) {
-        for (Box2dObject b2o: getChildren()) {
+        for (final Box2dObject b2o: getChildren()) {
             b2o.onStep(dt);
         }
         world.step(dt, velocityIters, positionIters);

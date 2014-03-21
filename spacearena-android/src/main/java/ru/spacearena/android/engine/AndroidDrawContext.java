@@ -7,8 +7,6 @@ import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 import ru.spacearena.engine.graphics.Matrix;
 
-import java.util.Stack;
-
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-12-02
@@ -17,15 +15,18 @@ public class AndroidDrawContext implements DrawContext {
 
     private final Paint strokePaint = new Paint();
     private final Paint fillPaint = new Paint();
-    private final Stack<android.graphics.Matrix> matrixStack = new Stack<android.graphics.Matrix>();
 
-    private android.graphics.Matrix current = new android.graphics.Matrix();
+    private final android.graphics.Matrix[] matrixPool = new android.graphics.Matrix[40];
+    private int matrixIndex = 0;
 
     private Canvas canvas;
 
     public AndroidDrawContext() {
         strokePaint.setStyle(Paint.Style.STROKE);
         fillPaint.setStyle(Paint.Style.FILL);
+        for (int i=0; i<matrixPool.length; i++) {
+            matrixPool[i] = new android.graphics.Matrix();
+        }
     }
 
     public DrawContext wrap(Canvas canvas) {
@@ -76,16 +77,16 @@ public class AndroidDrawContext implements DrawContext {
     }
 
     public void pushMatrix(Matrix matrix) {
-        final android.graphics.Matrix mx = new android.graphics.Matrix(current);
-        mx.preConcat(((AndroidMatrix)matrix).androidMatrix);
-        matrixStack.push(current);
-        current = mx;
-        canvas.setMatrix(mx);
+        final android.graphics.Matrix c = matrixPool[matrixIndex];
+        ++matrixIndex;
+        final android.graphics.Matrix m = matrixPool[matrixIndex];
+        m.set(c);
+        m.preConcat(((AndroidMatrix)matrix).androidMatrix);
+        canvas.setMatrix(m);
     }
 
     public void popMatrix() {
-        current = matrixStack.pop();
-        canvas.setMatrix(current);
+        canvas.setMatrix(matrixPool[--matrixIndex]);
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {

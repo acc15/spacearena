@@ -8,10 +8,13 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.TempUtils;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import static ru.spacearena.engine.geometry.primitives.Point2F.p;
@@ -63,7 +66,7 @@ public class Ship extends Box2dBody {
 
         final boolean engineDisabled = FloatMathUtils.isZero(dx, dy);
 
-        /*
+
         final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
         engineParticles.add(new SteamParticle(seconds, pt.x, pt.y, !engineDisabled));
         timeSum += seconds;
@@ -71,12 +74,10 @@ public class Ship extends Box2dBody {
         SteamParticle particle;
         while (timeSum > STEAM_TIME && (particle = engineParticles.poll()) != null) {
             timeSum -= particle.time;
-        }*/
-
+        }
         if (engineDisabled) {
             return;
         }
-
 
         final float vl = Ship.MAX_SPEED/FloatMathUtils.length(dx, dy);
         final float vx = dx * vl, vy = dy * vl;
@@ -103,7 +104,7 @@ public class Ship extends Box2dBody {
     @Override
     public void onDraw(DrawContext context) {
         super.onDraw(context);
-        /*
+
         final Iterator<SteamParticle> iter = engineParticles.descendingIterator();
 
         int i = 0;
@@ -116,7 +117,7 @@ public class Ship extends Box2dBody {
                 context.fillCircle(p.x, p.y, r);
             }
             ++i;
-        }*/
+        }
     }
 
 

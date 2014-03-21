@@ -29,7 +29,7 @@ public class GameFactory implements EngineFactory {
 
         //engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(100f);
+        engine.setMaxFPS(200f);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
@@ -62,7 +62,7 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
+        final Rect2FPP levelBounds = new Rect2FPP(-1000f, -1000f, 1000f, 1000f);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
         viewport.add(new Sky(viewport, new Random()));
@@ -75,14 +75,14 @@ public class GameFactory implements EngineFactory {
         box2dWorld.add(new LevelBounds(levelBounds));
 
         final Ship ship1 = new Ship();
-        ship1.setInitialPosition(0, -5);
+        ship1.setInitialPosition(0, -10);
         ship1.setInitialAngle(FloatMathUtils.HALF_PI);
         box2dWorld.add(ship1);
 
-        for (int i=0; i<10; i++) {
-            for (int j = 0; j < 10; j++) {
+        for (int i=0; i<=10; i++) {
+            for (int j = 0; j < 2; j++) {
                 final Ship ship2 = new Ship();
-                ship2.setInitialPosition((i - 10) * 5, j * 7);
+                ship2.setInitialPosition((i - 5) * 5, j * 7);
                 ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
                 box2dWorld.add(ship2);
             }
@@ -115,6 +115,12 @@ public class GameFactory implements EngineFactory {
             public boolean onUpdate(float seconds) {
                 final Point2F dir = getDirection(TempUtils.POINT_1);
                 ship1.flyTo(dir.x, dir.y, seconds);
+
+                if (isKeyboardKeyPressed(KeyCode.VK_SUBTRACT)) {
+                    viewport.setScale(viewport.getScaleX() + 0.001f);
+                } else if (isKeyboardKeyPressed(KeyCode.VK_ADD)) {
+                    viewport.setScale(viewport.getScaleX() - 0.001f);
+                }
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
                     if (canShoot) {

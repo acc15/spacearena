@@ -72,7 +72,7 @@ public class Sky extends EngineObject {
         for (float y=startY; y<=bounds.getMaxY(); y += starDistanceScale) {
             for (float x=startX; x<=bounds.getMaxX(); x += starDistanceScale) {
                 random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x<<24) ^ ((long)y));
-
+                final float x1 = random.nextFloat();
                 final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float halfSize = RandomUtils.randomBetween(random, minStarSize, maxStarSize)/2;
@@ -82,17 +82,16 @@ public class Sky extends EngineObject {
 
                 context.setColor(color);
 
-                final float translateX = (randX - bounds.getCenterX()) / scale + bounds.getCenterX();
-                final float translateY = (randY - bounds.getCenterY()) / scale + bounds.getCenterY();
-
-                context.fillRect(translateX-halfSize, translateY-halfSize, translateX+halfSize, translateY+halfSize);
+                final float tx = (randX - bounds.x) / scale + bounds.x,
+                            ty = (randY - bounds.y) / scale + bounds.y;
+                context.fillRect(tx-halfSize, ty-halfSize, tx+halfSize, ty+halfSize);
             }
         }
     }
 
     @Override
     public void onDraw(DrawContext context) {
-        for (float scale=5; scale>=1; scale--) {
+        for (float scale=6; scale>1; scale--) {
             drawStarLayer(context, scale);
         }
     }
