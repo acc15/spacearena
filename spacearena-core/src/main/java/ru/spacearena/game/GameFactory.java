@@ -27,7 +27,7 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
-        engine.getDebug().setDrawAll(true);
+        //engine.getDebug().setDrawAll(true);
 
         engine.setMaxFPS(100f);
         engine.enableInput(InputType.KEYBOARD);
