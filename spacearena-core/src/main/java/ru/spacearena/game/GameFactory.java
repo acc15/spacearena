@@ -27,9 +27,9 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
-        //engine.getDebug().setDrawAll(true);
+        engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(200f);
+        engine.setMaxFPS(100f);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
@@ -62,7 +62,7 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final Rect2FPP levelBounds = new Rect2FPP(-1000f, -1000f, 1000f, 1000f);
+        final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
         viewport.add(new Sky(viewport, new Random()));

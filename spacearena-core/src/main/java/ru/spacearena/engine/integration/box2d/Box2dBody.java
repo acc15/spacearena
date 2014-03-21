@@ -10,6 +10,7 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawUtils;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
@@ -78,6 +79,7 @@ public class Box2dBody extends Box2dObject {
         smoothX = prevX = body.getPosition().x;
         smoothY = prevY = body.getPosition().y;
         smoothAngle = prevAngle = body.getAngle();
+        matrix.set(smoothX, smoothY, smoothAngle);
     }
 
     protected void onPreCreate(BodyDef bodyDef) {
@@ -136,6 +138,12 @@ public class Box2dBody extends Box2dObject {
             onDrawTransformed(context);
         } finally {
             context.popMatrix();
+        }
+        if (getEngine().getDebug().isDrawVelocities()) {
+            final float vx = body.getLinearVelocity().x, vy = body.getLinearVelocity().y;
+            context.setColor(Color.LIGHT_GRAY);
+            DrawUtils.drawArrow(context, smoothX, smoothY, smoothX + vx, smoothY + vy,
+                    DrawUtils.HeadType.NONE, 0, DrawUtils.HeadType.ARROW, 1f);
         }
     }
 
@@ -202,7 +210,6 @@ public class Box2dBody extends Box2dObject {
                 context.fillCircle(pos.x, pos.y, radius);
             } else {
                 context.drawCircle(pos.x, pos.y, radius);
-                context.drawLine(pos.x, pos.y, pos.x + radius, pos.y);
             }
             break;
 
