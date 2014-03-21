@@ -25,7 +25,15 @@ public class InputTracker extends EngineObject {
     private int pointerCount = 0;
 
     private float mouseX, mouseY;
-    private boolean consumeEvent = false;
+    private final boolean consumeEvent;
+
+    public InputTracker() {
+        this(false);
+    }
+
+    public InputTracker(boolean consumeEvent) {
+        this.consumeEvent = consumeEvent;
+    }
 
     public int getKeyboardDirection(int negativeKeyCode, int positiveKeyCode) {
         int value = 0;
@@ -56,10 +64,6 @@ public class InputTracker extends EngineObject {
 
     public boolean isConsumeEvent() {
         return consumeEvent;
-    }
-
-    public void setConsumeEvent(boolean consumeEvent) {
-        this.consumeEvent = consumeEvent;
     }
 
     public int getPointerCount() {
@@ -107,6 +111,7 @@ public class InputTracker extends EngineObject {
                     break;
                 }
 
+                // TODO fix pointer order
                 final int pointerIndex = touchEvent.getPointerIndex();
                 switch (touchEvent.getAction()) {
                 case DOWN:

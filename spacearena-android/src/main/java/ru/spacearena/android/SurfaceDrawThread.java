@@ -1,7 +1,6 @@
 package ru.spacearena.android;
 
 import android.graphics.Canvas;
-import android.os.Debug;
 import android.view.SurfaceHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,12 +77,12 @@ public class SurfaceDrawThread implements Runnable {
 
     public void run() {
         while (running) {
-            Debug.startMethodTracing("spacearena-dt");
+            //Debug.startMethodTracing("spacearena-dt");
             if (!onFrame()) {
-                Debug.stopMethodTracing();
+                //Debug.stopMethodTracing();
                 break;
             }
-            Debug.stopMethodTracing();
+            //Debug.stopMethodTracing();
         }
         logger.info("Drawing thread finished");
     }
