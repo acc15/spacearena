@@ -153,6 +153,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
         setPivotY(pivotY);
     }
 
+    public void setPivotToCenter(float dx, float dy) {
+        setPivot(dx/2, dy/2);
+    }
+
     public float getAngle() {
         return angle;
     }
