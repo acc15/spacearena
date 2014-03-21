@@ -76,6 +76,8 @@ public class SurfaceDrawThread implements Runnable {
     }
 
     public void run() {
+        // ensures that timer will start with new time
+        engine.getTimer().stop();
         while (running) {
             //Debug.startMethodTracing("spacearena-dt");
             if (!onFrame()) {
