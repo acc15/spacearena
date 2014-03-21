@@ -15,20 +15,12 @@ public interface Matrix {
 
     boolean inverse(Matrix matrix);
     boolean isIdentity();
-//
-//    void set(float pivotX, float pivotY,
-//             float scaleX, float scaleY,
-//             float skewX, float skewY,
-//             float rotateX, float rotateY,
-//             float x, float y);
 
     void set(float pivotX, float pivotY,
              float scaleX, float scaleY,
              float skewX, float skewY,
-             float rotation,
+             float radians,
              float x, float y);
-
-    void set(float rotateX, float rotateY, float x, float y);
 
     void set(float x, float y, float radians);
 }

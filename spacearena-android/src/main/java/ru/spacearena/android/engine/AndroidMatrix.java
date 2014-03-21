@@ -49,26 +49,13 @@ public class AndroidMatrix implements Matrix {
         return androidMatrix.isIdentity();
     }
 
-    public void set(float pivotX, float pivotY, float scaleX, float scaleY, float skewX, float skewY, float rotateX, float rotateY, float x, float y) {
-        androidMatrix.setSinCos(rotateY, rotateX);
-        androidMatrix.postTranslate(x, y);
-        androidMatrix.preSkew(skewX, skewY);
-        androidMatrix.preScale(scaleX, scaleY);
-        androidMatrix.preTranslate(-pivotX, -pivotY);
-    }
-
-    public void set(float pivotX, float pivotY, float scaleX, float scaleY, float skewX, float skewY, float rotation, float x, float y) {
+    public void set(float pivotX, float pivotY, float scaleX, float scaleY, float skewX, float skewY, float radians, float x, float y) {
         androidMatrix.reset();
         androidMatrix.preTranslate(x, y);
-        androidMatrix.preRotate(rotation);
+        androidMatrix.preRotate(FloatMathUtils.toDegrees(radians));
         androidMatrix.preSkew(skewX, skewY);
         androidMatrix.preScale(scaleX, scaleY);
         androidMatrix.preTranslate(-pivotX, -pivotY);
-    }
-
-    public void set(float rotateX, float rotateY, float x, float y) {
-        androidMatrix.setSinCos(rotateY, rotateX);
-        androidMatrix.postTranslate(x, y);
     }
 
     public void set(float x, float y, float radians) {

@@ -157,12 +157,16 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
         setPivot(dx/2, dy/2);
     }
 
+    /**
+     * Returns an angle in radians
+     * @return angle in radians
+     */
     public float getAngle() {
         return angle;
     }
 
-    public void setAngle(float angle) {
-        final float deg = FloatMathUtils.normalizeDegrees(angle);;
+    public void setAngle(float radians) {
+        final float deg = FloatMathUtils.normalizeRadians(radians);
         if (this.angle != deg) {
             this.angle = deg;
             markDirty(MATRIX_DIRTY);
