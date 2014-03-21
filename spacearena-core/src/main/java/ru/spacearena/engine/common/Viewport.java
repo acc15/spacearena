@@ -58,8 +58,8 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
         public void adjustViewport(float width, float height, Transform<?> tx) {
             tx.setPivot(width / 2, height / 2);
 
-            // s0 - initial scale
-            // s1 - new scale
+            // s0 - current scale
+            // s1 - new scale (need to compute)
             // d0 - old size (width or height)
             // d1 - new dimension (width or height)
             // r - largestRatio
