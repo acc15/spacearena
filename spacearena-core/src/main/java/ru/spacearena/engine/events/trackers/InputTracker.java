@@ -118,21 +118,22 @@ public class InputTracker extends EngineObject {
                     break;
                 }
 
-                final int pointerIndex = touchEvent.getPointerIndex();
                 switch (touchEvent.getAction()) {
                 case DOWN:
+                    final int downIndex = touchEvent.getPointerIndex();
                     System.arraycopy(rawPointers, 0, pointers, 0, bufSize);
                     for (int i=0; i<pointerCount; i++) {
-                        if (pointerSequence[i] >= pointerIndex) {
+                        if (pointerSequence[i] >= downIndex) {
                             ++pointerSequence[i];
                         }
                     }
-                    pointerSequence[pointerCount] = pointerIndex;
+                    pointerSequence[pointerCount] = downIndex;
                     ++pointerCount;
                     break;
 
                 case UP:
-                    final int pointerPosition = pointerIndex << 1;
+                    final int upIndex = touchEvent.getPointerIndex();
+                    final int pointerPosition = upIndex << 1;
                     System.arraycopy(rawPointers, 0, pointers, 0, pointerPosition);
                     System.arraycopy(rawPointers, pointerPosition+2, pointers, pointerPosition,
                             bufSize - pointerPosition - 2);
@@ -140,16 +141,20 @@ public class InputTracker extends EngineObject {
 
                     boolean found = false;
                     for (int i=0; i<pointerCount; i++) {
-                        if (pointerSequence[i] == pointerIndex) {
+                        if (pointerSequence[i] == upIndex) {
                             found = true;
                         }
                         if (found) {
                             pointerSequence[i] = pointerSequence[i+1];
                         }
-                        if (pointerSequence[i] > pointerIndex) {
+                        if (pointerSequence[i] > upIndex) {
                             --pointerSequence[i];
                         }
                     }
+                    break;
+
+                case MOVE:
+                    System.arraycopy(rawPointers, 0, pointers, 0, bufSize);
                     break;
 
                 case CANCEL:
