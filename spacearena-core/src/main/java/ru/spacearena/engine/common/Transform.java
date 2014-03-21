@@ -46,8 +46,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setPositionX(float positionX) {
-        this.positionX = positionX;
-        markDirty(MATRIX_DIRTY);
+        if (this.positionX != positionX) {
+            this.positionX = positionX;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public float getPositionY() {
@@ -55,8 +57,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setPositionY(float positionY) {
-        this.positionY = positionY;
-        markDirty(MATRIX_DIRTY);
+        if (this.positionY != positionY) {
+            this.positionY = positionY;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public void setPosition(float x, float y) {
@@ -69,8 +73,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setScaleX(float scaleX) {
-        this.scaleX = scaleX;
-        markDirty(MATRIX_DIRTY);
+        if (this.scaleX != scaleX) {
+            this.scaleX = scaleX;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public float getScaleY() {
@@ -78,8 +84,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setScaleY(float scaleY) {
-        this.scaleY = scaleY;
-        markDirty(MATRIX_DIRTY);
+        if (this.scaleY != scaleY) {
+            this.scaleY = scaleY;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public void setScale(float scaleX, float scaleY) {
@@ -96,8 +104,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setSkewX(float skewX) {
-        this.skewX = skewX;
-        markDirty(MATRIX_DIRTY);
+        if (this.skewX != skewX) {
+            this.skewX = skewX;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public float getSkewY() {
@@ -105,8 +115,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setSkewY(float skewY) {
-        this.skewY = skewY;
-        markDirty(MATRIX_DIRTY);
+        if (this.skewY != skewY) {
+            this.skewY = skewY;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public void setSkew(float skewX, float skewY) {
@@ -119,8 +131,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setPivotX(float pivotX) {
-        this.pivotX = pivotX;
-        markDirty(MATRIX_DIRTY);
+        if (this.pivotX != pivotX) {
+            this.pivotX = pivotX;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public float getPivotY() {
@@ -128,8 +142,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setPivotY(float pivotY) {
-        this.pivotY = pivotY;
-        markDirty(MATRIX_DIRTY);
+        if (this.pivotY != pivotY) {
+            this.pivotY = pivotY;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public void setPivot(float pivotX, float pivotY) {
@@ -142,8 +158,11 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void setAngle(float angle) {
-        this.angle = FloatMathUtils.normalizeDegrees(angle);
-        markDirty(MATRIX_DIRTY);
+        final float deg = FloatMathUtils.normalizeDegrees(angle);;
+        if (this.angle != deg) {
+            this.angle = deg;
+            markDirty(MATRIX_DIRTY);
+        }
     }
 
     public void rotate(float d) {

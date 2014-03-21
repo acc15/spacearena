@@ -123,12 +123,16 @@ public class Box2dBody extends Box2dObject {
 
     @Override
     public void onSmooth(float dt, float ratio, float prevRatio) {
-        smoothX = body.m_xf.p.x * ratio + prevX * prevRatio;
-        smoothY = body.m_xf.p.y * ratio + prevY * prevRatio;
-
-        final float diff = FloatMathUtils.radDiff(body.m_sweep.a, prevAngle);
-        smoothAngle = FloatMathUtils.normalizeRadians(prevAngle + diff * ratio);
-        matrix.set(smoothX, smoothY, smoothAngle);
+        final float newX = body.m_xf.p.x * ratio + prevX * prevRatio,
+                    newY = body.m_xf.p.y * ratio + prevY * prevRatio,
+                    newAngle = FloatMathUtils.normalizeRadians(prevAngle +
+                            FloatMathUtils.radDiff(body.m_sweep.a, prevAngle) * ratio);
+        if (newX != smoothX || newY != smoothY || newAngle != smoothAngle) {
+            smoothX = newX;
+            smoothY = newY;
+            smoothAngle = newAngle;
+            matrix.set(smoothX, smoothY, smoothAngle);
+        }
     }
 
     @Override

@@ -30,44 +30,81 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
     }
 
     public static interface ViewportAdjustStrategy {
-        void adjustViewport(float width, float height, Viewport viewport);
+        void initViewport(float width, float height, Transform<?> tx);
+        void adjustViewport(float width, float height, Transform<?> tx);
     }
 
     public static class DefaultAdjustStrategy implements ViewportAdjustStrategy {
-        public void adjustViewport(float width, float height, Viewport viewport) {
+        public void adjustViewport(float width, float height, Transform<?> tx) {
+        }
+
+        public void initViewport(float width, float height, Transform<?> tx) {
         }
     }
 
     public static class LargestSideAdjustStrategy implements ViewportAdjustStrategy {
 
-        private float largestDimension;
+        private float largestRatio;
 
-        public LargestSideAdjustStrategy(float largestDimension) {
-            this.largestDimension = largestDimension;
+        public LargestSideAdjustStrategy(float largestRatio) {
+            this.largestRatio = largestRatio;
         }
 
-        public void adjustViewport(float width, float height, Viewport viewport) {
-            final float scale = width > height ? largestDimension/width : largestDimension/height;
-            viewport.setScale(scale, scale);
+        public void initViewport(float width, float height, Transform<?> tx) {
+            tx.setPivot(width / 2, height / 2);
+            tx.setScale(largestRatio / (width > height ? width : height));
         }
+
+        public void adjustViewport(float width, float height, Transform<?> tx) {
+            tx.setPivot(width / 2, height / 2);
+
+            // s0 - initial scale
+            // s1 - new scale
+            // d0 - old size (width or height)
+            // d1 - new dimension (width or height)
+            // r - largestRatio
+            //
+            //      f * r
+            // s0 = -----
+            //        w0
+            //
+            //     s0 * w0
+            // f = -------
+            //        r
+            //
+            //      f * r
+            // s1 = -----
+            //        d1
+            //
+            //      s0 * d0
+            //      ------- * r
+            //         r
+            // s1 = ----------
+            //          d1
+            //
+            //      s0 * d0
+            // s1 = -------
+            //         d1
+            if (width > height) {
+                tx.setScale(tx.getScaleX() * tx.getEngine().getWidth() / width);
+            } else {
+                tx.setScale(tx.getScaleY() * tx.getEngine().getHeight() / height);
+            }
+        }
+
     }
 
     @Override
     public void onAttach(Engine engine) {
         super.onAttach(engine);
         localSpace = engine.createMatrix();
-        adjustViewport(engine.getWidth(), engine.getHeight());
+        adjustStrategy.initViewport(engine.getWidth(), engine.getHeight(), this);
     }
 
     @Override
     public void onSize(float width, float height) {
         super.onSize(width, height);
-        adjustViewport(width, height);
-    }
-
-    void adjustViewport(float width, float height) {
-        setPivot(width / 2, height / 2);
-        this.adjustStrategy.adjustViewport(width, height, this);
+        adjustStrategy.adjustViewport(width, height, this);
     }
 
     public BoundingBox2F getBounds() {

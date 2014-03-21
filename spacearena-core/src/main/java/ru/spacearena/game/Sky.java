@@ -72,10 +72,9 @@ public class Sky extends EngineObject {
         for (float y=startY; y<=bounds.getMaxY(); y += starDistanceScale) {
             for (float x=startX; x<=bounds.getMaxX(); x += starDistanceScale) {
                 random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x<<24) ^ ((long)y));
-                final float x1 = random.nextFloat();
+                final float halfSize = RandomUtils.randomBetween(random, minStarSize, maxStarSize)/2;
                 final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
                 final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
-                final float halfSize = RandomUtils.randomBetween(random, minStarSize, maxStarSize)/2;
 
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);
