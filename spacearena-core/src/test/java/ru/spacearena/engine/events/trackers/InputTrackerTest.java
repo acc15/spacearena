@@ -37,19 +37,28 @@ public class InputTrackerTest {
         assertTracker(it, new float[] {5,5});
 
         it.onInput(event(TouchEvent.Action.DOWN, 1, new float[] {5,5, 10,10}, new int[] {0,1}));
-        assertTracker(it, new float[] {5,5, 10,10});
+        assertTracker(it, new float[]{5, 5, 10, 10});
 
         it.onInput(event(TouchEvent.Action.UP, 0, new float[] {5,5, 10,10}, new int[] {0,1}));
-        assertTracker(it, new float[] {10,10});
+        assertTracker(it, new float[]{10, 10});
 
         it.onInput(event(TouchEvent.Action.MOVE, 1, new float[] {11,11}, new int[] {1}));
-        assertTracker(it, new float[] {11,11});
+        assertTracker(it, new float[]{11, 11});
 
         it.onInput(event(TouchEvent.Action.DOWN, 0, new float[] {5,5, 10,10}, new int[] {0,1}));
-        assertTracker(it, new float[] {10,10, 5,5});
+        assertTracker(it, new float[]{10, 10, 5, 5});
 
         it.onInput(event(TouchEvent.Action.UP, 0, new float[] {5,5, 10,10}, new int[] {0,1}));
-        assertTracker(it, new float[] {10,10});
+        assertTracker(it, new float[]{10, 10});
+
+    }
+
+
+    @Test
+    public void testShift() throws Exception {
+
+        final int v = (5 << 1) + 1;
+        assertThat(v).isEqualTo(11);
 
     }
 }

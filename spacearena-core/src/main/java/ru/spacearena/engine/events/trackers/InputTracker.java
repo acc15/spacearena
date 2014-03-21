@@ -19,7 +19,7 @@ public class InputTracker extends EngineObject {
     private final OpenIntIntHashMap keyboardKeys = new OpenIntIntHashMap();
     private final OpenIntIntHashMap mouseKeys = new OpenIntIntHashMap();
 
-    private final float[] pointers = new float[MAX_POINTER_COUNT*2];
+    private final float[] pointers = new float[MAX_POINTER_COUNT<<1];
     private final int[] pointerSequence = new int[MAX_POINTER_COUNT];
     private int pointerCount = 0;
 
@@ -69,24 +69,16 @@ public class InputTracker extends EngineObject {
         return pointerCount;
     }
 
-    private int getPointerIndex(int id) {
-        final int index = pointerSequence[id];
-        if (index < 0) {
-            throw new IllegalArgumentException("Pointer id " + id + " is unknown");
-        }
-        return index;
-    }
-
     public boolean isPointerActive(int i) {
         return i < pointerCount;
     }
 
-    public float getPointerX(int id) {
-        return pointers[getPointerIndex(id)*2];
+    public float getPointerX(int i) {
+        return pointers[pointerSequence[i] << 1];
     }
 
-    public float getPointerY(int id) {
-        return pointers[getPointerIndex(id)*2+1];
+    public float getPointerY(int i) {
+        return pointers[(pointerSequence[i] << 1) + 1];
     }
 
     @Override
@@ -121,6 +113,10 @@ public class InputTracker extends EngineObject {
                     System.arraycopy(rawPointers, 0, pointers, 0, bufSize);
                     break;
                 }
+                if (touchEvent.getAction() == TouchEvent.Action.CANCEL) {
+                    pointerCount = 0;
+                    break;
+                }
 
                 final int pointerIndex = touchEvent.getPointerIndex();
                 switch (touchEvent.getAction()) {
@@ -139,7 +135,7 @@ public class InputTracker extends EngineObject {
                     final int pointerPosition = pointerIndex << 1;
                     System.arraycopy(rawPointers, 0, pointers, 0, pointerPosition);
                     System.arraycopy(rawPointers, pointerPosition+2, pointers, pointerPosition,
-                            bufSize - pointerPosition-2);
+                            bufSize - pointerPosition - 2);
                     --pointerCount;
 
                     boolean found = false;
