@@ -9,7 +9,8 @@ public class TouchEvent extends InputEvent {
     public static enum Action {
         DOWN,
         UP,
-        MOVE
+        MOVE,
+        CANCEL
     }
 
     private final float[] pointerCoords;

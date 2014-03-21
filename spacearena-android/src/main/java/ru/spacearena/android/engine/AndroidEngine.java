@@ -71,8 +71,10 @@ public class AndroidEngine extends Engine {
             return TouchEvent.Action.UP;
 
         case MotionEvent.ACTION_MOVE:
-        case MotionEvent.ACTION_CANCEL:
             return TouchEvent.Action.MOVE;
+
+        case MotionEvent.ACTION_CANCEL:
+            return TouchEvent.Action.CANCEL;
         }
         throw new IllegalArgumentException(String.format("Unknown action code: 0x%02x", motionAction));
     }
