@@ -57,32 +57,36 @@ public class Sky extends EngineObject {
     }
 
     private void drawStarLayer(DrawContext context, float scale) {
+        final float starDistanceScale = starDistance * scale;
+        final float twoStarDistance = starDistance * 2;
 
         bounds.set(viewport.getBounds());
-
-        final float starDistanceScale = starDistance * scale;
-        final float twoStarDistance = starDistanceScale * 2;
-
         bounds.scale(scale, scale);
-        bounds.inflate(twoStarDistance, twoStarDistance);
+        bounds.inflate(starDistanceScale*2, starDistanceScale*2);
 
-        final float startX = FloatMathUtils.firstVisiblePosition(bounds.getMinX(), starDistanceScale);
-        final float startY = FloatMathUtils.firstVisiblePosition(bounds.getMinY(), starDistanceScale);
+        final float startX = FloatMathUtils.firstVisiblePosition(bounds.getMinX(), starDistanceScale),
+                    startY = FloatMathUtils.firstVisiblePosition(bounds.getMinY(), starDistanceScale),
+                    endX = bounds.getMaxX(), endY = bounds.getMaxY();
 
-        for (float y=startY; y<=bounds.getMaxY(); y += starDistanceScale) {
-            for (float x=startX; x<=bounds.getMaxX(); x += starDistanceScale) {
-                random.setSeed(seed ^ ((long)scale<<48) ^ ((long)x<<24) ^ ((long)y));
+        for (float y=startY; y<= endY; y += starDistanceScale) {
+            for (float x=startX; x<= endX; x += starDistanceScale) {
+                random.setSeed(((long)Float.floatToRawIntBits(scale)<<32) ^
+                               ((long)Float.floatToRawIntBits(x)<<24) ^
+                               ((long)Float.floatToRawIntBits(y)<<16) ^ seed);
+
+                context.setLineWidth(0f);
+
                 final float halfSize = RandomUtils.randomBetween(random, minStarSize, maxStarSize)/2;
-                final float randX = x + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
-                final float randY = y + RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
+                final float dx = RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance),
+                            dy = RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance);
+
+                final float tx = (x + dx - bounds.x) / scale + bounds.x,
+                            ty = (y + dy - bounds.y) / scale + bounds.y;
 
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);
 
                 context.fillColor(color);
-
-                final float tx = (randX - bounds.x) / scale + bounds.x,
-                            ty = (randY - bounds.y) / scale + bounds.y;
                 context.fillRect(tx-halfSize, ty-halfSize, tx+halfSize, ty+halfSize);
             }
         }
