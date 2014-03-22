@@ -57,12 +57,13 @@ public class Sky extends EngineObject {
     }
 
     private void drawStarLayer(DrawContext context, float scale) {
+
         final float starDistanceScale = starDistance * scale;
-        final float twoStarDistance = starDistance * 2;
+        final float twoStarDistance = starDistanceScale * 2;
 
         bounds.set(viewport.getBounds());
         bounds.scale(scale, scale);
-        bounds.inflate(starDistanceScale*2, starDistanceScale*2);
+        bounds.inflate(twoStarDistance, twoStarDistance);
 
         final float startX = FloatMathUtils.firstVisiblePosition(bounds.getMinX(), starDistanceScale),
                     startY = FloatMathUtils.firstVisiblePosition(bounds.getMinY(), starDistanceScale),
@@ -70,11 +71,9 @@ public class Sky extends EngineObject {
 
         for (float y=startY; y<= endY; y += starDistanceScale) {
             for (float x=startX; x<= endX; x += starDistanceScale) {
-                random.setSeed(((long)Float.floatToRawIntBits(scale)<<32) ^
-                               ((long)Float.floatToRawIntBits(x)<<24) ^
-                               ((long)Float.floatToRawIntBits(y)<<16) ^ seed);
-
-                context.setLineWidth(0f);
+                random.setSeed(((long)Float.floatToRawIntBits(scale)<<16) ^
+                               ((long)Float.floatToRawIntBits(x)<<8) ^
+                               ((long)Float.floatToRawIntBits(y)) ^ seed);
 
                 final float halfSize = RandomUtils.randomBetween(random, minStarSize, maxStarSize)/2;
                 final float dx = RandomUtils.randomBetween(random, -twoStarDistance, twoStarDistance),
@@ -82,6 +81,15 @@ public class Sky extends EngineObject {
 
                 final float tx = (x + dx - bounds.x) / scale + bounds.x,
                             ty = (y + dy - bounds.y) / scale + bounds.y;
+
+                final float ax = (x-bounds.x)/scale+bounds.x,
+                            ay = (y-bounds.y)/scale+bounds.y;
+                context.setLineWidth(0f);
+                context.fillColor(Color.WHITE);
+                context.fillCircle(ax, ay, 0.4f);
+
+                context.strokeColor(Color.WHITE);
+                context.drawLine(ax, ay, tx, ty);
 
                 final int bright = random.nextInt(256);
                 final int color = Color.rgb(bright, bright, 0xff);
