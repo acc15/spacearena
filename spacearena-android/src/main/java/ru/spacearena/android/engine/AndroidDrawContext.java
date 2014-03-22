@@ -78,8 +78,7 @@ public class AndroidDrawContext implements DrawContext {
         final android.graphics.Matrix c = matrixPool[matrixIndex];
         ++matrixIndex;
         final android.graphics.Matrix m = matrixPool[matrixIndex];
-        m.set(c);
-        m.preConcat(((AndroidMatrix)matrix).androidMatrix);
+        m.setConcat(c, ((AndroidMatrix)matrix).androidMatrix);
         canvas.setMatrix(m);
     }
 
