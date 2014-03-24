@@ -46,7 +46,7 @@ public class QRand {
 
     public int nextInt() {
         final long l = nextLong();
-        return (int)(l >> 32) ^ (int)l;
+        return (int)(l >>> 32) ^ (int)l;
     }
 
     public int nextInt(int mod) {
