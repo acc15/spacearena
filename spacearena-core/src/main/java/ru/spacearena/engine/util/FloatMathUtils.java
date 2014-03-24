@@ -157,10 +157,6 @@ public class FloatMathUtils {
         return pmod(v, TWO_PI);
     }
 
-    public static float random() {
-        return (float)Math.random();
-    }
-
     public static float copySign(float magnitude, float sign) {
         return Math.copySign(magnitude, sign);
     }

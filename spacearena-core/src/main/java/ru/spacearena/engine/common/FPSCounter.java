@@ -9,7 +9,7 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class FPSCounter extends EngineObject {
 
-    private float frameCount = 0;
+    private int frameCount = 0;
     private float totalTime = 0f;
 
     private float fps = 0f;
@@ -23,7 +23,7 @@ public class FPSCounter extends EngineObject {
         totalTime += seconds;
         if (totalTime > 1f) {
             final float fullSeconds = FloatMathUtils.floor(totalTime);
-            fps = frameCount / fullSeconds;
+            fps = (float)frameCount / fullSeconds;
             totalTime -= fullSeconds;
             frameCount = 0;
         }

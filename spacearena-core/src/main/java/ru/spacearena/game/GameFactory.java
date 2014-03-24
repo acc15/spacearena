@@ -17,7 +17,6 @@ import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 
 import java.awt.event.MouseEvent;
-import java.util.Random;
 
 /**
  * @author Vyacheslav Mayorov
@@ -65,7 +64,7 @@ public class GameFactory implements EngineFactory {
         final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
-        viewport.add(new Sky(viewport, new Random()));
+        viewport.add(new Sky(viewport));
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f));
 
         root.add(viewport);
@@ -80,12 +79,10 @@ public class GameFactory implements EngineFactory {
         box2dWorld.add(ship1);
 
         for (int i=0; i<=10; i++) {
-            for (int j = 0; j < 2; j++) {
-                final Ship ship2 = new Ship();
-                ship2.setInitialPosition((i - 5) * 5, j * 7);
-                ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
-                box2dWorld.add(ship2);
-            }
+            final Ship ship2 = new Ship();
+            ship2.setInitialPosition((i - 5) * 5, 7);
+            ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
+            box2dWorld.add(ship2);
         }
 
         viewport.add(box2dWorld);

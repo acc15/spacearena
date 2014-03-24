@@ -5,10 +5,8 @@ import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.geometry.shapes.Rect2FPR;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.RandomUtils;
-
-import java.util.Random;
 
 /**
  * @author Vyacheslav Mayorov
@@ -16,19 +14,17 @@ import java.util.Random;
  */
 public class Sky extends EngineObject {
 
-    private float starDistance = 20f;
+    private float starDistance = 25f;
     private float minStarSize = 0.05f;
     private float maxStarSize = 0.1f;
 
-    private final Random random;
-    private final long seed;
-    private final Viewport viewport;
+    private final QRand random = new QRand();
+    private final long seed = random.nextLong();
     private final Rect2FPR bounds = new Rect2FPR();
+    private final Viewport viewport;
 
-    public Sky(Viewport viewport, Random random) {
+    public Sky(Viewport viewport) {
         this.viewport = viewport;
-        this.random = random;
-        this.seed = random.nextLong();
     }
 
     public float getStarDistance() {
@@ -70,14 +66,14 @@ public class Sky extends EngineObject {
 
         for (int i = y1; i<=y2; i++) {
             for (int j = x1; j<=x2; j++) {
-                random.setSeed(((long)Float.floatToRawIntBits(scale)<<16) ^
-                               ((long)Float.floatToRawIntBits(i)<<8) ^
-                               ((long)Float.floatToRawIntBits(j)) ^
-                               seed);
+                random.setSeed(seed ^
+                        ((long)Float.floatToRawIntBits(scale) << 32) ^
+                        ((long)i << 16) ^
+                        (long)j);
 
-                final float dx = RandomUtils.randomBetween(random, -sd2, sd2),
-                            dy = RandomUtils.randomBetween(random, -sd2, sd2),
-                            halfSize = RandomUtils.randomBetween(random, minStarSize, maxStarSize);
+                final float dx = random.nextFloatBetween(-sd2, sd2),
+                            dy = random.nextFloatBetween(-sd2, sd2),
+                            halfSize = random.nextFloatBetween(minStarSize, maxStarSize);
 
                 final float x = j * starDistance, y = i * starDistance;
                 final float gx = (x-bounds.position.x)*scale+bounds.position.x,
