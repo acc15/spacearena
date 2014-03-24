@@ -33,7 +33,6 @@ public class DrawUtils {
             final float vx = x2 - x1, vy = y2 - y1;
             final float l = FloatMathUtils.length(vx, vy);
             final float nx = vx/l, ny = vy/l;
-
             p30x = nx * COS_30 - ny * SIN_30;
             p30y = ny * COS_30 + nx * SIN_30;
             s30x = nx * COS_30 + ny * SIN_30;
@@ -41,6 +40,10 @@ public class DrawUtils {
         }
 
         switch (head) {
+        case CIRCLE:
+            context.fillCircle(x1, y1, headSize);
+            break;
+
         case ARROW:
             context.drawLine(x1, y1, x1 + p30x * headSize, y1 + p30y * headSize);
             context.drawLine(x1, y1, x1 + s30x * headSize, y1 + s30y * headSize);
@@ -48,6 +51,10 @@ public class DrawUtils {
         }
 
         switch (tail) {
+        case CIRCLE:
+            context.fillCircle(x2, y2, headSize);
+            break;
+
         case ARROW:
             context.drawLine(x2, y2, x2 - p30x * tailSize, y2 - p30y * tailSize);
             context.drawLine(x2, y2, x2 - s30x * tailSize, y2 - s30y * tailSize);

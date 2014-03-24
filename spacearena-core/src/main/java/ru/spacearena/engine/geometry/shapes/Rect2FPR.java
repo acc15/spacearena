@@ -1,8 +1,6 @@
 package ru.spacearena.engine.geometry.shapes;
 
-import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.FloatMathUtils
-;
+import ru.spacearena.engine.geometry.primitives.Point2F;
 
 /**
  * @author Vyacheslav Mayorov
@@ -10,7 +8,8 @@ import ru.spacearena.engine.util.FloatMathUtils
  */
 public class Rect2FPR extends AbstractRect2F {
 
-    public float x, y, rx, ry;
+    public Point2F position = new Point2F();
+    public Point2F halfSize = new Point2F();
 
     public Rect2FPR() {
     }
@@ -28,85 +27,48 @@ public class Rect2FPR extends AbstractRect2F {
     }
 
     public void set(float x, float y, float rx, float ry) {
-        this.x = x;
-        this.y = y;
-        this.rx = rx;
-        this.ry = ry;
-    }
-
-    public void offset(float dx, float dy) {
-        this.x += dx;
-        this.y += dy;
-    }
-
-    public void moveTo(float x, float y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public void setHalfWidths(float rx, float ry) {
-        this.rx = rx;
-        this.ry = ry;
-    }
-
-    public void scale(float sx, float sy) {
-        rx *= sx;
-        ry *= sy;
-    }
-
-    public void inflate(float dx, float dy) {
-        rx += dx;
-        ry += dy;
+        this.position.set(x,y);
+        this.halfSize.set(rx, ry);
     }
 
     public float getWidth() {
-        return rx * 2;
+        return halfSize.x * 2;
     }
 
     public float getHeight() {
-        return ry * 2;
+        return halfSize.y * 2;
     }
 
     public float getHalfWidth() {
-        return rx;
+        return halfSize.x;
     }
 
     public float getHalfHeight() {
-        return ry;
+        return halfSize.y;
     }
 
     public float getMinX() {
-        return x - rx;
+        return position.x - halfSize.x;
     }
 
     public float getMaxX() {
-        return x + rx;
+        return position.x + halfSize.x;
     }
 
     public float getMinY() {
-        return y - ry;
+        return position.y - halfSize.y;
     }
 
     public float getMaxY() {
-        return y + ry;
+        return position.y + halfSize.y;
     }
 
     public float getCenterX() {
-        return x;
+        return position.x;
     }
 
     public float getCenterY() {
-        return y;
-    }
-
-    public void extend(float dx, float dy) {
-        final float halfdx = dx / 2;
-        rx += FloatMathUtils.abs(halfdx);
-        x += halfdx;
-
-        final float halfdy = dy / 2;
-        ry += FloatMathUtils.abs(halfdy);
-        y += halfdy;
+        return position.y;
     }
 
 }

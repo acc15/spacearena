@@ -32,7 +32,7 @@ public class SkyTest {
         int e = 0;
 
         for (float i=-2f; i<=4f; i+=0.5f, e++) {
-            final float pos = FloatMathUtils.firstVisiblePosition(i, 2);
+            final float pos = FloatMathUtils.startPos(i, 2);
             assertThat(pos).describedAs("for value " + i).isEqualTo(expected[e], Delta.delta(0.000001));
         }
 

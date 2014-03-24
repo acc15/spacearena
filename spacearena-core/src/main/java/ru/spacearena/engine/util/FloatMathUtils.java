@@ -129,8 +129,12 @@ public class FloatMathUtils {
         return x1 * x2 + y1 * y2;
     }
 
-    public static float firstVisiblePosition(float v, float grid) {
+    public static float startPos(float v, float grid) {
         return ceil(v/grid)*grid;
+    }
+
+    public static float endPos(float v, float grid) {
+        return floor(v/grid)*grid;
     }
 
     public static boolean inRange(float v, float min, float max) {
