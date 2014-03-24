@@ -3,9 +3,10 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
-import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.ShapeUtils;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.ShapeUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -85,11 +86,9 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
             //      s0 * d0
             // s1 = -------
             //         d1
-            if (width > height) {
-                tx.setScale(tx.getScaleX() * tx.getEngine().getWidth() / width);
-            } else {
-                tx.setScale(tx.getScaleY() * tx.getEngine().getHeight() / height);
-            }
+            final float w0 = tx.getEngine().getWidth(), h0 = tx.getEngine().getHeight();
+            final float s = w0 > h0 ? tx.getScaleX() * w0 : tx.getScaleY() * h0;
+            tx.setScale(s / FloatMathUtils.max(width, height));
         }
 
     }
