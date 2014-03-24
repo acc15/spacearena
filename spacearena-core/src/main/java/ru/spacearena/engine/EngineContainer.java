@@ -28,6 +28,10 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return engine;
     }
 
+    public void prepend(T entity) {
+
+    }
+
     public void add(T entity) {
         if (engine != null) {
             attach(entity);

@@ -67,25 +67,28 @@ public class GameFactory implements EngineFactory {
         viewport.add(new Sky(viewport));
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f));
 
-        root.add(viewport);
+        final GenericContainer fxContainer = new GenericContainer();
+        viewport.add(fxContainer);
 
         final Box2dWorld box2dWorld = new Box2dWorld();
         box2dWorld.setFPS(60f);
         box2dWorld.add(new LevelBounds(levelBounds));
 
-        final Ship ship1 = new Ship();
+        final Ship ship1 = new Ship(fxContainer);
         ship1.setInitialPosition(0, -10);
         ship1.setInitialAngle(FloatMathUtils.HALF_PI);
         box2dWorld.add(ship1);
 
         for (int i=0; i<=10; i++) {
-            final Ship ship2 = new Ship();
+            final Ship ship2 = new Ship(fxContainer);
             ship2.setInitialPosition((i - 5) * 5, 7);
             ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
             box2dWorld.add(ship2);
         }
 
         viewport.add(box2dWorld);
+
+        root.add(viewport);
         root.add(new InputTracker() {
 
             private boolean canShoot = true;

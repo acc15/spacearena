@@ -1,7 +1,15 @@
 package ru.spacearena.engine.random;
 
 /**
- * @author Vyacheslav Mayorov
+ * <p>Implementation was taken from <a href="http://www.javamex.com/tutorials/random_numbers/numerical_recipes.shtml">
+ *     http://www.javamex.com/tutorials/random_numbers/numerical_recipes.shtml</a> with little changes.</p>
+ *
+ * <p>Numerical Recipes 3rd Edition: The Art of Scientific Computing</p>
+ *
+ * @author William H. Press
+ * @author Saul A. Teukolsky
+ * @author William T. Vetterling
+ * @author Brian P. Flannery
  * @since 2014-24-03
  */
 public class QRand {
@@ -29,7 +37,7 @@ public class QRand {
         v ^= v >>> 17;
         v ^= v << 31;
         v ^= v >>> 8;
-        w = 4294957665L * w + (w >>> 32);
+        w = 4294957665L * (w & 0xffffffffL) + (w >>> 32);
         long x = u ^ (u << 21);
         x ^= x >>> 35;
         x ^= x << 4;

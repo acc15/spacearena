@@ -6,6 +6,8 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
+import ru.spacearena.engine.EngineContainer;
+import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
@@ -41,6 +43,26 @@ public class Ship extends Box2dBody {
         return LOCAL_GUN_POS;
     }
 
+    private class EngineFlame extends EngineObject {
+
+        @Override
+        public void onDraw(DrawContext context) {
+            final Iterator<SteamParticle> iter = engineParticles.descendingIterator();
+
+            int i = 0;
+            while (iter.hasNext()) {
+                final SteamParticle p = iter.next();
+                if (p.active) {
+                    final float size = (float)(engineParticles.size()-i)/engineParticles.size();
+                    context.fillColor(Color.argb(1.f, size, size, 1f));
+                    final float r = size * 0.3f;
+                    context.fillCircle(p.x, p.y, r);
+                }
+                ++i;
+            }
+        }
+    }
+
     private static class SteamParticle {
         float time, x, y;
         boolean active;
@@ -54,6 +76,10 @@ public class Ship extends Box2dBody {
     }
 
     private float timeSum = 0f;
+
+    public Ship(EngineContainer<? super EngineObject> fxContainer) {
+        fxContainer.add(new EngineFlame());
+    }
 
     public void onPreCreate(BodyDef bodyDef) {
         bodyDef.type = BodyType.DYNAMIC;
@@ -97,25 +123,5 @@ public class Ship extends Box2dBody {
         fd.shape = shape;
         body.createFixture(fd);
     }
-
-    @Override
-    public void onDraw(DrawContext context) {
-        super.onDraw(context);
-
-        final Iterator<SteamParticle> iter = engineParticles.descendingIterator();
-
-        int i = 0;
-        while (iter.hasNext()) {
-            final SteamParticle p = iter.next();
-            if (p.active) {
-                final float size = (float)(engineParticles.size()-i)/engineParticles.size();
-                context.fillColor(Color.argb(1.f, size, size, 1f));
-                final float r = size * 0.3f;
-                context.fillCircle(p.x, p.y, r);
-            }
-            ++i;
-        }
-    }
-
 
 }

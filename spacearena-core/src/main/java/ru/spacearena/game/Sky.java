@@ -19,7 +19,7 @@ public class Sky extends EngineObject {
     private float maxStarSize = 0.1f;
 
     private final QRand random = new QRand();
-    private final long seed = random.nextLong();
+    private final int seed = random.nextInt();
     private final Rect2FPR bounds = new Rect2FPR();
     private final Viewport viewport;
 
@@ -67,9 +67,8 @@ public class Sky extends EngineObject {
         for (int i = y1; i<=y2; i++) {
             for (int j = x1; j<=x2; j++) {
                 random.setSeed(seed ^
-                        ((long)Float.floatToRawIntBits(scale) << 32) ^
-                        ((long)i << 16) ^
-                        (long)j);
+                        Integer.rotateLeft(Float.floatToRawIntBits(scale), 16) ^
+                        Integer.rotateLeft(i, 8) ^ j);
 
                 final float dx = random.nextFloatBetween(-sd2, sd2),
                             dy = random.nextFloatBetween(-sd2, sd2),
