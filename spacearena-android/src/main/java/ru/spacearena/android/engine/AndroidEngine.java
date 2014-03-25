@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.MotionEvent;
 import android.view.View;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputType;
@@ -22,8 +20,7 @@ import java.io.InputStream;
  */
 public class AndroidEngine extends Engine {
 
-    private static final Logger logger = LoggerFactory.getLogger(AndroidEngine.class);
-    private View view;
+    private final View view;
 
     public AndroidEngine(EngineFactory factory, View view, float initialWidth, float initialHeight) {
         super(factory);
@@ -45,24 +42,7 @@ public class AndroidEngine extends Engine {
             IOUtils.closeQuietly(inputStream);
         }
     }
-/*
-    @Override
-    public boolean onUpdate() {
-        try {
-            android.os.Debug.startMethodTracing("spacearena-update");
-            return super.onUpdate();
-        } finally {
-            android.os.Debug.stopMethodTracing();
-        }
-    }
 
-    @Override
-    public void onDraw(DrawContext context) {
-        android.os.Debug.startMethodTracing("spacearena-draw");
-        super.onDraw(context);
-        android.os.Debug.stopMethodTracing();
-    }
-*/
     public static TouchEvent.Action mapAction(int motionAction) {
         switch (motionAction) {
         case MotionEvent.ACTION_DOWN:
@@ -80,18 +60,6 @@ public class AndroidEngine extends Engine {
             return TouchEvent.Action.CANCEL;
         }
         throw new IllegalArgumentException(String.format("Unknown action code: 0x%02x", motionAction));
-    }
-
-    private String getActionCode(int code) {
-        switch (code) {
-        case MotionEvent.ACTION_DOWN: return "ACTION_DOWN";
-        case MotionEvent.ACTION_POINTER_DOWN: return "ACTION_POINTER_DOWN";
-        case MotionEvent.ACTION_UP: return "ACTION_UP";
-        case MotionEvent.ACTION_POINTER_UP: return "ACTION_POINTER_UP";
-        case MotionEvent.ACTION_MOVE: return "ACTION_MOVE";
-        case MotionEvent.ACTION_CANCEL: return "ACTION_CANCEL";
-        default: return "UNKNOWN";
-        }
     }
 
     public boolean enableInput(InputType inputType) {
