@@ -79,7 +79,7 @@ public class Ship extends Box2dBody {
     }
 
     private static class FlameParticle {
-        float x, y;
+        float x, y, l;
         long timestamp;
         boolean active;
 
@@ -101,7 +101,7 @@ public class Ship extends Box2dBody {
         bodyDef.angularDamping = 0.2f;
     }
 
-    private void addFlameParticle(boolean engineDisabled) {
+    private void addFlameParticle(boolean active) {
         final Timer timer = getEngine().getTimer();
         final long t = timer.getTimestamp();
 
@@ -110,26 +110,32 @@ public class Ship extends Box2dBody {
             engineParticles.remove();
         }
 
-        if (engineDisabled) {
+        final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
+        final FlameParticle last = engineParticles.peekLast();
+
+        if (active) {
+            if (last == null) {
+                return;
+            }
+            if (pt.equals(last.x, last.y)) {
+                last.active = false;
+            } else {
+                engineParticles.add(new FlameParticle(t, pt.x, pt.y, false));
+            }
             return;
         }
-
-        final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
-
-        final FlameParticle p = engineParticles.peekLast();
-        if (p != null && pt.equals(p.x, p.y)) {
-            p.timestamp = t;
+        if (last != null && pt.equals(last.x, last.y)) {
+            last.timestamp = t;
             return;
         }
         engineParticles.add(new FlameParticle(t, pt.x, pt.y, true));
-
     }
 
     public void flyTo(float dx, float dy, float seconds) {
 
-        final boolean engineDisabled = FloatMathUtils.isZero(dx, dy);
-        addFlameParticle(engineDisabled);
-        if (engineDisabled) {
+        final boolean active = !FloatMathUtils.isZero(dx, dy);
+        addFlameParticle(active);
+        if (!active) {
             return;
         }
 
