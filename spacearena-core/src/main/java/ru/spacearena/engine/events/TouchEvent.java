@@ -16,27 +16,27 @@ public class TouchEvent extends InputEvent {
     private final float[] pointerCoords;
     private final int[] pointerIds;
     private final Action action;
-    private final int pointerId;
+    private final int pointerIndex;
 
-    public TouchEvent(Action action, int pointerCount, int pointerId) {
+    public TouchEvent(Action action, int pointerCount, int pointerIndex) {
         super(InputType.TOUCH);
         this.action = action;
-        this.pointerId = pointerId;
+        this.pointerIndex = pointerIndex;
         pointerCoords = new float[pointerCount*2];
         pointerIds = new int[pointerCount];
     }
 
     private void checkIndex(int i) {
         if (i < 0 || i >= pointerIds.length)  {
-            throw new IndexOutOfBoundsException("Illegal pointer " + i);
+            throw new IndexOutOfBoundsException("Illegal pointer index " + i);
         }
     }
 
-    public void setPointer(int i, int id, float x, float y) {
-        checkIndex(i);
-        pointerCoords[i*2] = x;
-        pointerCoords[i*2+1] = y;
-        pointerIds[i] = id;
+    public void setPointer(int index, int id, float x, float y) {
+        checkIndex(index);
+        pointerCoords[index*2] = x;
+        pointerCoords[index*2+1] = y;
+        pointerIds[index] = id;
     }
 
     public int findPointerIndex(int id) {
@@ -57,11 +57,11 @@ public class TouchEvent extends InputEvent {
     }
 
     public int getPointerId() {
-        return pointerId;
+        return pointerIds[pointerIndex];
     }
 
     public int getPointerIndex() {
-        return findPointerIndex(pointerId);
+        return pointerIndex;
     }
 
     public Action getAction() {

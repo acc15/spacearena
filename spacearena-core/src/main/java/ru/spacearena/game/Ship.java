@@ -12,7 +12,6 @@ import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.Path;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -59,17 +58,21 @@ public class Ship extends Box2dBody {
 
                 final float size = 1f - (float)i / fSize;
                 final float r = size * 0.3f;
+                context.fillColor(Color.argb(1.f, size, size, 1f));
+                context.fillCircle(p.x, p.y, r);
+                /*
                 if (i > 0) {
                     final float prevSize = 1f - (float)(i - 1) / fSize;
                     final Path path = context.preparePath();
                     //path.moveTo();
 
-                    context.fillColor(Color.argb(1.f, prevSize, prevSize, 1f));
+                    context.fillColor(Color.argb(1.f, size, size, 1f));
+                    context.fillCircle(p.x, p.y, size);
                     context.fillPath();
                 }
 
                 prevX = p.x;
-                prevY = p.y;
+                prevY = p.y;*/
                 ++i;
             }
         }
@@ -116,7 +119,6 @@ public class Ship extends Box2dBody {
         final FlameParticle p = engineParticles.peekLast();
         if (p != null && pt.equals(p.x, p.y)) {
             p.timestamp = t;
-            p.active = !engineDisabled;
             return;
         }
         engineParticles.add(new FlameParticle(t, pt.x, pt.y, true));

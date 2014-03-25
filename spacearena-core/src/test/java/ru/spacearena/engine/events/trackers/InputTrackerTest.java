@@ -12,9 +12,17 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class InputTrackerTest {
 
     private TouchEvent event(TouchEvent.Action action, int id, float[] data, int[] ids) {
-        final TouchEvent e = new TouchEvent(action, data.length/2, id);
-        for (int i=0; i<ids.length; i++) {
-            e.setPointer(i, ids[i], data[i*2], data[i*2+1]);
+        int i = 0;
+        while (i < ids.length) {
+            if (ids[i] == id) {
+                break;
+            }
+            ++i;
+        }
+
+        final TouchEvent e = new TouchEvent(action, data.length/2, i);
+        for (int j=0; j<ids.length; j++) {
+            e.setPointer(j, ids[j], data[j*2], data[j*2+1]);
         }
         return e;
     }
