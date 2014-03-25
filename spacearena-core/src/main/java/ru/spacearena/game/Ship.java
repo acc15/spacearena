@@ -113,22 +113,23 @@ public class Ship extends Box2dBody {
         final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
         final FlameParticle last = engineParticles.peekLast();
 
-        if (active) {
-            if (last == null) {
-                return;
-            }
-            if (pt.equals(last.x, last.y)) {
-                last.active = false;
-            } else {
-                engineParticles.add(new FlameParticle(t, pt.x, pt.y, false));
+        if (last == null) {
+            if (active) {
+                engineParticles.add(new FlameParticle(t, pt.x, pt.y, true));
             }
             return;
         }
-        if (last != null && pt.equals(last.x, last.y)) {
-            last.timestamp = t;
+        if (pt.equals(last.x, last.y)) {
+            if (last.active) {
+                last.timestamp = t;
+            }
+            last.active = active;
             return;
         }
-        engineParticles.add(new FlameParticle(t, pt.x, pt.y, true));
+        if (active || last.active) {
+            engineParticles.add(new FlameParticle(t, pt.x, pt.y, active));
+            last.l = pt.sub(last.x, last.y).length();
+        }
     }
 
     public void flyTo(float dx, float dy, float seconds) {
