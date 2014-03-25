@@ -1,5 +1,6 @@
 package ru.spacearena.game;
 
+import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -17,7 +18,6 @@ import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import static ru.spacearena.engine.geometry.primitives.Point2F.p;
@@ -26,16 +26,16 @@ import static ru.spacearena.engine.geometry.primitives.Point2F.p;
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Ship extends Box2dBody {
+public class Ship extends GameBody {
 
     private static final float MAX_SPEED = 30f;
     private static final float ACCELERATION = 30f;
     private static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI * 2;
 
-    private static final float STEAM_TIME = 0.5f;
+    private static final float STEAM_TIME = 50f;
 
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
-    private static final Point2F LOCAL_ENGINE_POS = new Point2F(-1.7f, 0f);
+    private static final Point2F LOCAL_ENGINE_POS = new Point2F(-1.3f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
 
     private final LinkedList<FlameParticle> engineParticles = new LinkedList<FlameParticle>();
@@ -48,32 +48,28 @@ public class Ship extends Box2dBody {
 
         @Override
         public void onDraw(DrawContext context) {
-            final Iterator<FlameParticle> iter = engineParticles.descendingIterator();
-            int i = 0;
-
             final float fSize = (float) engineParticles.size();
             float prevX = 0f, prevY = 0f;
-            while (iter.hasNext()) {
-                final FlameParticle p = iter.next();
 
-                final float size = 1f - (float)i / fSize;
-                final float r = size * 0.3f;
-                context.fillColor(Color.argb(1.f, size, size, 1f));
-                context.fillCircle(p.x, p.y, r);
-                /*
-                if (i > 0) {
-                    final float prevSize = 1f - (float)(i - 1) / fSize;
-                    final Path path = context.preparePath();
-                    //path.moveTo();
+            int i = 0;
+            boolean hasPrev = false;
 
-                    context.fillColor(Color.argb(1.f, size, size, 1f));
-                    context.fillCircle(p.x, p.y, size);
-                    context.fillPath();
+            final float lw = context.getLineWidth();
+            try {
+                for (FlameParticle p: engineParticles) {
+                    if (hasPrev) {
+                        final float prevSize = (float) i / fSize;
+                        context.strokeColor(Color.argb(1.f, prevSize, prevSize, 1f));
+                        context.setLineWidth(prevSize * 0.5f);
+                        context.drawLine(prevX, prevY, p.x, p.y);
+                    }
+                    prevX = p.x;
+                    prevY = p.y;
+                    hasPrev = p.active;
+                    ++i;
                 }
-
-                prevX = p.x;
-                prevY = p.y;*/
-                ++i;
+            } finally {
+                context.setLineWidth(lw);
             }
         }
     }
@@ -93,6 +89,11 @@ public class Ship extends Box2dBody {
 
     public Ship(EngineContainer<? super EngineObject> fxContainer) {
         fxContainer.add(new EngineFlame());
+    }
+
+    @Override
+    public ObjectType getType() {
+        return ObjectType.SHIP;
     }
 
     public void onPreCreate(BodyDef bodyDef) {
@@ -144,6 +145,11 @@ public class Ship extends Box2dBody {
         final float vx = dx * vl, vy = dy * vl;
         accelerateTo(vx, vy, Ship.ACCELERATION * seconds);
         rotateTo(FloatMathUtils.atan2(vy, vx), Ship.ANGULAR_VELOCITY * seconds);
+    }
+
+    @Override
+    public void onCollision(Box2dBody object, boolean isReference, ContactImpulse impulse) {
+
     }
 
     public void onPostCreate(Body body) {

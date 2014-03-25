@@ -61,8 +61,8 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
             public void postSolve(Contact contact, ContactImpulse impulse) {
                 final Box2dBody o1 = (Box2dBody)contact.getFixtureA().getBody().getUserData();
                 final Box2dBody o2 = (Box2dBody)contact.getFixtureB().getBody().getUserData();
-                o1.onCollision(o2);
-                o2.onCollision(o1);
+                o1.onCollision(o2, true, impulse);
+                o2.onCollision(o1, false, impulse);
             }
         });
     }

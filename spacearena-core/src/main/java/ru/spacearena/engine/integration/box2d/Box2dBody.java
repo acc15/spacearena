@@ -1,5 +1,6 @@
 package ru.spacearena.engine.integration.box2d;
 
+import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.collision.shapes.*;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
@@ -37,6 +38,10 @@ public class Box2dBody extends Box2dObject {
 
     public void markDead() {
         this.live = false;
+    }
+
+    public Body getBody() {
+        return body;
     }
 
     public void setAngle(float radians) {
@@ -247,7 +252,7 @@ public class Box2dBody extends Box2dObject {
         context.drawLine(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y, edgeShape.m_vertex2.x, edgeShape.m_vertex2.y);
     }
 
-    public void onCollision(Box2dBody object) {
+    public void onCollision(Box2dBody object, boolean isReference, ContactImpulse impulse) {
     }
 
     public boolean canCollide(Box2dBody object) {

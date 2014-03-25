@@ -1,5 +1,6 @@
 package ru.spacearena.game;
 
+import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
@@ -12,7 +13,7 @@ import ru.spacearena.engine.integration.box2d.Box2dBody;
  * @author Vyacheslav Mayorov
  * @since 2014-16-02
  */
-public class Bullet extends Box2dBody {
+public class Bullet extends GameBody {
 
     public static final float SPEED = 70f;
 
@@ -23,6 +24,11 @@ public class Bullet extends Box2dBody {
         setInitialPosition(x, y);
         setInitialVelocity(rotateX * SPEED, rotateY * SPEED);
         setInitialAngle(angle);
+    }
+
+    @Override
+    public ObjectType getType() {
+        return ObjectType.BULLET;
     }
 
     @Override
@@ -42,14 +48,14 @@ public class Bullet extends Box2dBody {
 
     @Override
     public boolean canCollide(Box2dBody object) {
-        if (object instanceof Bullet) {
+        if (GameBody.getObjectType(object) == ObjectType.BULLET) {
             return ((Bullet)object).owner != owner;
         }
         return object != owner;
     }
 
     @Override
-    public void onCollision(Box2dBody object) {
+    public void onCollision(Box2dBody object, boolean reference, ContactImpulse impulse) {
         markDead();
     }
 
