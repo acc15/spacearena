@@ -6,9 +6,6 @@ package ru.spacearena.engine.timing;
  */
 public abstract class AbstractTimer implements Timer {
 
-    public abstract long getCurrentTime();
-    public abstract float toSeconds(long time);
-
     private boolean started = false;
     private long time = 0;
 
@@ -33,6 +30,10 @@ public abstract class AbstractTimer implements Timer {
         final long diff = ct - time;
         time = ct;
         return toSeconds(diff);
+    }
+
+    public long getTimestamp() {
+        return time;
     }
 
     public float getElapsedSeconds() {

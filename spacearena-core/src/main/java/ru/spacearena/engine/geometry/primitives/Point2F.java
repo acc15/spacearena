@@ -269,13 +269,15 @@ public class Point2F {
         return Float.floatToRawIntBits(x) ^ Float.floatToRawIntBits(y);
     }
 
+    public boolean equals(float x, float y) { return FloatMathUtils.isEqual(this.x, this.y, x, y); }
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Point2F && equals((Point2F) obj);
     }
 
     public boolean equals(Point2F pt) {
-        return FloatMathUtils.isEqual(x, y, pt.x, pt.y);
+        return equals(pt.x, pt.y);
     }
 
     @Override

@@ -12,7 +12,9 @@ import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.Path;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
+import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 
@@ -37,7 +39,7 @@ public class Ship extends Box2dBody {
     private static final Point2F LOCAL_ENGINE_POS = new Point2F(-1.7f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
 
-    private final LinkedList<SteamParticle> engineParticles = new LinkedList<SteamParticle>();
+    private final LinkedList<FlameParticle> engineParticles = new LinkedList<FlameParticle>();
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
@@ -47,35 +49,44 @@ public class Ship extends Box2dBody {
 
         @Override
         public void onDraw(DrawContext context) {
-            final Iterator<SteamParticle> iter = engineParticles.descendingIterator();
-
+            final Iterator<FlameParticle> iter = engineParticles.descendingIterator();
             int i = 0;
+
+            final float fSize = (float) engineParticles.size();
+            float prevX = 0f, prevY = 0f;
             while (iter.hasNext()) {
-                final SteamParticle p = iter.next();
-                if (p.active) {
-                    final float size = (float)(engineParticles.size()-i)/engineParticles.size();
-                    context.fillColor(Color.argb(1.f, size, size, 1f));
-                    final float r = size * 0.3f;
-                    context.fillCircle(p.x, p.y, r);
+                final FlameParticle p = iter.next();
+
+                final float size = 1f - (float)i / fSize;
+                final float r = size * 0.3f;
+                if (i > 0) {
+                    final float prevSize = 1f - (float)(i - 1) / fSize;
+                    final Path path = context.preparePath();
+                    //path.moveTo();
+
+                    context.fillColor(Color.argb(1.f, prevSize, prevSize, 1f));
+                    context.fillPath();
                 }
+
+                prevX = p.x;
+                prevY = p.y;
                 ++i;
             }
         }
     }
 
-    private static class SteamParticle {
-        float time, x, y;
+    private static class FlameParticle {
+        float x, y;
+        long timestamp;
         boolean active;
 
-        public SteamParticle(float time, float x, float y, boolean active) {
-            this.time = time;
+        public FlameParticle(long timestamp, float x, float y, boolean active) {
+            this.timestamp = timestamp;
             this.x = x;
             this.y = y;
             this.active = active;
         }
     }
-
-    private float timeSum = 0f;
 
     public Ship(EngineContainer<? super EngineObject> fxContainer) {
         fxContainer.add(new EngineFlame());
@@ -87,17 +98,35 @@ public class Ship extends Box2dBody {
         bodyDef.angularDamping = 0.2f;
     }
 
+    private void addFlameParticle(boolean engineDisabled) {
+        final Timer timer = getEngine().getTimer();
+        final long t = timer.getTimestamp();
+
+        FlameParticle particle;
+        while ((particle = engineParticles.peek()) != null && timer.toSeconds(t - particle.timestamp) > STEAM_TIME) {
+            engineParticles.remove();
+        }
+
+        if (engineDisabled) {
+            return;
+        }
+
+        final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
+
+        final FlameParticle p = engineParticles.peekLast();
+        if (p != null && pt.equals(p.x, p.y)) {
+            p.timestamp = t;
+            p.active = !engineDisabled;
+            return;
+        }
+        engineParticles.add(new FlameParticle(t, pt.x, pt.y, true));
+
+    }
+
     public void flyTo(float dx, float dy, float seconds) {
 
         final boolean engineDisabled = FloatMathUtils.isZero(dx, dy);
-        final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
-        engineParticles.add(new SteamParticle(seconds, pt.x, pt.y, !engineDisabled));
-        timeSum += seconds;
-
-        SteamParticle particle;
-        while (timeSum > STEAM_TIME && (particle = engineParticles.poll()) != null) {
-            timeSum -= particle.time;
-        }
+        addFlameParticle(engineDisabled);
         if (engineDisabled) {
             return;
         }
