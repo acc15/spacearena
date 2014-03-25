@@ -24,13 +24,15 @@ public class BoundChecker extends EngineObject {
     }
 
     private float computeAxisOffset(float bMin, float bMax, float oMin, float oMax) {
-        if (oMin < bMin) {
-            return bMin - oMin;
+        final float dMin = bMin - oMin;
+        final float dMax = bMax - oMax;
+        if (dMin > 0) {
+            return dMin > dMax ? FloatMathUtils.center(dMin, dMax) : dMin;
         }
-        if (oMax > bMax) {
-            return bMax - oMax;
+        if (dMax < 0) {
+            return dMin > dMax ? FloatMathUtils.center(dMin, dMax) : dMax;
         }
-        return 0f;
+        return 0;
     }
 
     @Override

@@ -32,7 +32,7 @@ public class Ship extends GameBody {
     private static final float ACCELERATION = 30f;
     private static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI * 2;
 
-    private static final float STEAM_TIME = 50f;
+    private static final float STEAM_TIME = 0.5f;
 
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
     private static final Point2F LOCAL_ENGINE_POS = new Point2F(-1.3f, 0f);
@@ -75,7 +75,7 @@ public class Ship extends GameBody {
     }
 
     private static class FlameParticle {
-        float x, y, l;
+        float x, y;
         long timestamp;
         boolean active;
 
@@ -129,7 +129,6 @@ public class Ship extends GameBody {
         }
         if (active || last.active) {
             engineParticles.add(new FlameParticle(t, pt.x, pt.y, active));
-            last.l = pt.sub(last.x, last.y).length();
         }
     }
 
