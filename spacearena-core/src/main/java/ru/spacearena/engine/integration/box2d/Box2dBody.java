@@ -7,6 +7,7 @@ import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
+import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.*;
@@ -252,7 +253,7 @@ public class Box2dBody extends Box2dObject {
         context.drawLine(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y, edgeShape.m_vertex2.x, edgeShape.m_vertex2.y);
     }
 
-    public void onCollision(Box2dBody object, boolean isReference, ContactImpulse impulse) {
+    public void onCollision(Box2dBody object, boolean isReference, Contact contact, ContactImpulse impulse) {
     }
 
     public boolean canCollide(Box2dBody object) {

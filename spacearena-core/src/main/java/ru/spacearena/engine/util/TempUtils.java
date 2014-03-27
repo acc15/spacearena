@@ -3,6 +3,7 @@ package ru.spacearena.engine.util;
 import ru.spacearena.engine.geometry.primitives.Line2F;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.primitives.ProjectionF;
+import ru.spacearena.engine.random.QRand;
 
 /**
  * @author Vyacheslav Mayorov
@@ -10,6 +11,7 @@ import ru.spacearena.engine.geometry.primitives.ProjectionF;
  */
 public class TempUtils {
 
+    public static final QRand RAND = new QRand();
     public static final float[] POINT_BUF = new float[200];
     public static final Line2F EDGE_1 = new Line2F();
     public static final Point2F POINT_1 = new Point2F();

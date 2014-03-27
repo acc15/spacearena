@@ -7,10 +7,13 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
+import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -38,11 +41,12 @@ public class Ship extends GameBody {
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
     private static final Point2F LOCAL_ENGINE_POS = p(-1.3f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
-    public static final float DAMAGE_TIME = 0.1f;
+    public static final float DAMAGE_TIME = 0.2f;
 
     private final LinkedList<FlameParticle> engineParticles = new LinkedList<FlameParticle>();
-
+    private final EngineContainer<? super EngineObject> fxContainer;
     private float damageTime = 0f;
+    private float health = 1f;
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
@@ -53,6 +57,7 @@ public class Ship extends GameBody {
     }
 
     public Ship(EngineContainer<? super EngineObject> fxContainer) {
+        this.fxContainer = fxContainer;
         fxContainer.add(new EngineFlame(this));
     }
 
@@ -111,8 +116,18 @@ public class Ship extends GameBody {
     }
 
     @Override
-    public void onCollision(Box2dBody object, boolean isReference, ContactImpulse impulse) {
-        if (GameBody.getObjectType(object) == ObjectType.BULLET) {
+    public void onCollision(Box2dBody object, boolean isReference, Contact contact, ContactImpulse impulse) {
+
+        final float d = GameBody.getObjectType(object) == ObjectType.BULLET ? 0.05f : impulse.normalImpulses[0] / 20000f;
+        if (d < 0.05f) {
+            return;
+        }
+
+        health -= d;
+        if (health <= 0) {
+            fxContainer.add(new Explosion(getPositionX(), getPositionY(), FloatMathUtils.atan2(getVelocityY(), getVelocityX())));
+            markDead();
+        } else {
             damageTime = DAMAGE_TIME;
         }
     }
@@ -121,14 +136,22 @@ public class Ship extends GameBody {
     public void onSmooth(float dt, float ratio, float prevRatio) {
         super.onSmooth(dt, ratio, prevRatio);
         damageTime = FloatMathUtils.max(0f, damageTime - dt);
-        ((Sprite)getChild(0)).setAlpha(1-damageTime/DAMAGE_TIME);
+        ((Sprite)getChild(1)).setAlpha(damageTime/DAMAGE_TIME);
     }
 
     public void onPostCreate(Body body) {
+
         final Sprite sprite = new Sprite(getEngine().getImage("ship.png"));
-        sprite.setPivot(sprite.getWidth() / 3, sprite.getHeight() / 2);
-        sprite.setScale(6 / sprite.getWidth());
+        final float pivotX = sprite.getWidth() / 3, pivotY = sprite.getHeight() / 2, scale = 6 / sprite.getWidth();
+
+        sprite.setPivot(pivotX, pivotY);
+        sprite.setScale(scale);
         add(sprite);
+
+        final Sprite mask = new Sprite(getEngine().getImage("ship_mask.png"));
+        mask.setPivot(pivotX, pivotY);
+        mask.setScale(scale);
+        add(mask);
 
         final PolygonShape shape = new PolygonShape();
         shape.set(LOCAL_SHAPE, LOCAL_SHAPE.length);
@@ -140,4 +163,16 @@ public class Ship extends GameBody {
         body.createFixture(fd);
     }
 
+    @Override
+    public void onDraw(DrawContext context) {
+        super.onDraw(context);
+        final float left = getPositionX() - 2f,
+                    top = getPositionY() - 5f,
+                    right = getPositionX() + 2f,
+                    bottom = getPositionY() - 4.5f;
+        context.setColor(Color.WHITE);
+        context.drawRect(left, top, right, bottom);
+        context.setColor(Color.GREEN);
+        context.fillRect(left, top, left + (right-left) * health, bottom);
+    }
 }
