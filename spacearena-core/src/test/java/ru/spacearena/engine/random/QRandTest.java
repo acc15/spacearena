@@ -1,5 +1,6 @@
 package ru.spacearena.engine.random;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.spacearena.engine.timing.NanoTimer;
 import ru.spacearena.engine.timing.Timer;
@@ -13,7 +14,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * @since 2014-24-03
  */
 public class QRandTest {
-    @Test
+    @Test @Ignore
     public void testNextFloatPerformance() throws Exception {
 
         final int iterCount = 1000000000;

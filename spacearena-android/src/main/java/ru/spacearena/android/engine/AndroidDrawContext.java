@@ -37,7 +37,7 @@ public class AndroidDrawContext implements DrawContext {
         paint.setStyle(this.style = style);
     }
 
-    public DrawContext wrap(Canvas canvas) {
+    public AndroidDrawContext wrap(Canvas canvas) {
         this.canvas = canvas;
         return this;
     }

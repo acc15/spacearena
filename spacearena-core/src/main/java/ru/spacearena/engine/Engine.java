@@ -128,6 +128,8 @@ public abstract class Engine {
 
     public abstract Matrix createMatrix();
 
+    public abstract Image createImage(int width, int height);
+
     public abstract boolean enableInput(InputType inputType);
 
     public static final class Debug {

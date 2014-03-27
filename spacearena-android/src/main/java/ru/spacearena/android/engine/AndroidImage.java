@@ -1,6 +1,8 @@
 package ru.spacearena.android.engine;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
 
 /**
@@ -9,7 +11,7 @@ import ru.spacearena.engine.graphics.Image;
  */
 public class AndroidImage implements Image {
 
-    Bitmap bitmap;
+    final Bitmap bitmap;
 
     public AndroidImage(Bitmap bitmap) {
         this.bitmap = bitmap;
@@ -21,5 +23,9 @@ public class AndroidImage implements Image {
 
     public int getHeight() {
         return bitmap.getHeight();
+    }
+
+    public DrawContext createContext() {
+        return new AndroidDrawContext().wrap(new Canvas(bitmap));
     }
 }

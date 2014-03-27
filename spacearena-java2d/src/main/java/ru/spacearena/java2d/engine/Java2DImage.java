@@ -1,6 +1,9 @@
 package ru.spacearena.java2d.engine;
 
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.Image;
+
+import java.awt.*;
 
 /**
  * @author Vyacheslav Mayorov
@@ -20,5 +23,9 @@ public class Java2DImage implements Image {
 
     public int getHeight() {
         return image.getHeight(null);
+    }
+
+    public DrawContext createContext() {
+        return new Java2DDrawContext().wrap((Graphics2D)image.getGraphics());
     }
 }

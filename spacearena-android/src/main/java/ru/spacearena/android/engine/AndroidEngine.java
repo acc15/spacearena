@@ -33,6 +33,11 @@ public class AndroidEngine extends Engine {
         return new AndroidMatrix();
     }
 
+    @Override
+    public Image createImage(int width, int height) {
+        return new AndroidImage(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));
+    }
+
     public Image loadImage(String resource) {
         final InputStream inputStream = getFactory().getClass().getResourceAsStream(resource);
         try {

@@ -9,4 +9,6 @@ public interface Image {
     int getWidth();
     int getHeight();
 
+    DrawContext createContext();
+
 }

@@ -13,6 +13,7 @@ import java.awt.event.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
@@ -32,6 +33,11 @@ public class Java2DEngine extends Engine {
     @Override
     public Matrix createMatrix() {
         return new Java2DMatrix();
+    }
+
+    @Override
+    public Image createImage(int width, int height) {
+        return new Java2DImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
     }
 
     public Image loadImage(String resource) {
