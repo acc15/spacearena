@@ -153,7 +153,7 @@ public class CollisionObject extends PhysicalObject {
             return;
         }
         final BoundingBox2F b = getAABB();
-        context.strokeColor(Color.RED);
+        context.setColor(Color.RED);
         context.drawRect(b.getMinX(), b.getMinY(), b.getMaxX(), b.getMaxY());
     }
 
@@ -164,7 +164,7 @@ public class CollisionObject extends PhysicalObject {
         final float lw = context.getLineWidth();
         try {
             context.setLineWidth(3f);
-            context.strokeColor(Color.BLUE);
+            context.setColor(Color.BLUE);
             for (int i=0; i<getShapeCount(); i++) {
                 getWorldShape(i).stroke(context);
             }

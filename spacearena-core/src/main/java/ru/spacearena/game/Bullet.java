@@ -8,6 +8,7 @@ import org.jbox2d.dynamics.BodyType;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
+import ru.spacearena.game.ship.Ship;
 
 /**
  * @author Vyacheslav Mayorov
@@ -61,7 +62,7 @@ public class Bullet extends GameBody {
 
     @Override
     protected void onDrawTransformed(DrawContext context) {
-        context.fillColor(Color.RED);
+        context.setColor(Color.RED);
         drawBodyShapes(context, true);
     }
 

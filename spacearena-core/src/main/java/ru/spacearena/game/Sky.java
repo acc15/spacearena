@@ -86,9 +86,8 @@ public class Sky extends EngineObject {
 //                        DrawUtils.HeadType.ARROW, 1f);
 
                 final int bright = random.nextInt(256);
-                context.fillColor(Color.rgb(bright, bright, 0xff));
+                context.setColor(Color.rgb(bright, bright, 0xff));
                 context.fillRect(sx-halfSize, sy-halfSize, sx+halfSize, sy+halfSize);
-
             }
         }
     }

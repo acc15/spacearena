@@ -1,4 +1,4 @@
-package ru.spacearena.game;
+package ru.spacearena.game.ship;
 
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.collision.shapes.PolygonShape;
@@ -11,14 +11,15 @@ import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
+import ru.spacearena.game.GameBody;
+import ru.spacearena.game.ObjectType;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import static ru.spacearena.engine.geometry.primitives.Point2F.p;
 
@@ -35,60 +36,24 @@ public class Ship extends GameBody {
     private static final float STEAM_TIME = 0.5f;
 
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
-    private static final Point2F LOCAL_ENGINE_POS = new Point2F(-1.3f, 0f);
+    private static final Point2F LOCAL_ENGINE_POS = p(-1.3f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
+    public static final float DAMAGE_TIME = 0.1f;
 
     private final LinkedList<FlameParticle> engineParticles = new LinkedList<FlameParticle>();
+
+    private float damageTime = 0f;
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
     }
 
-    private class EngineFlame extends EngineObject {
-
-        @Override
-        public void onDraw(DrawContext context) {
-            final float fSize = (float) engineParticles.size();
-            float prevX = 0f, prevY = 0f;
-
-            int i = 0;
-            boolean hasPrev = false;
-
-            final float lw = context.getLineWidth();
-            try {
-                for (FlameParticle p: engineParticles) {
-                    if (hasPrev) {
-                        final float prevSize = (float) i / fSize;
-                        context.strokeColor(Color.argb(1.f, prevSize, prevSize, 1f));
-                        context.setLineWidth(prevSize * 0.5f);
-                        context.drawLine(prevX, prevY, p.x, p.y);
-                    }
-                    prevX = p.x;
-                    prevY = p.y;
-                    hasPrev = p.active;
-                    ++i;
-                }
-            } finally {
-                context.setLineWidth(lw);
-            }
-        }
-    }
-
-    private static class FlameParticle {
-        float x, y;
-        long timestamp;
-        boolean active;
-
-        public FlameParticle(long timestamp, float x, float y, boolean active) {
-            this.timestamp = timestamp;
-            this.x = x;
-            this.y = y;
-            this.active = active;
-        }
+    public List<FlameParticle> getEngineParticles() {
+        return engineParticles;
     }
 
     public Ship(EngineContainer<? super EngineObject> fxContainer) {
-        fxContainer.add(new EngineFlame());
+        fxContainer.add(new EngineFlame(this));
     }
 
     @Override
@@ -116,7 +81,7 @@ public class Ship extends GameBody {
 
         if (last == null) {
             if (active) {
-                engineParticles.add(new FlameParticle(t, pt.x, pt.y, true));
+                engineParticles.add(new FlameParticle(t, pt, true));
             }
             return;
         }
@@ -128,12 +93,11 @@ public class Ship extends GameBody {
             return;
         }
         if (active || last.active) {
-            engineParticles.add(new FlameParticle(t, pt.x, pt.y, active));
+            engineParticles.add(new FlameParticle(t, pt, active));
         }
     }
 
     public void flyTo(float dx, float dy, float seconds) {
-
         final boolean active = !FloatMathUtils.isZero(dx, dy);
         addFlameParticle(active);
         if (!active) {
@@ -148,7 +112,16 @@ public class Ship extends GameBody {
 
     @Override
     public void onCollision(Box2dBody object, boolean isReference, ContactImpulse impulse) {
+        if (GameBody.getObjectType(object) == ObjectType.BULLET) {
+            damageTime = DAMAGE_TIME;
+        }
+    }
 
+    @Override
+    public void onSmooth(float dt, float ratio, float prevRatio) {
+        super.onSmooth(dt, ratio, prevRatio);
+        damageTime = FloatMathUtils.max(0f, damageTime - dt);
+        ((Sprite)getChild(0)).setAlpha(1-damageTime/DAMAGE_TIME);
     }
 
     public void onPostCreate(Body body) {

@@ -28,7 +28,7 @@ public class Background extends EngineObject {
     }
 
     public void onDraw(DrawContext context) {
-        context.fillColor(color);
+        context.setColor(color);
         context.fillRect(0, 0, engine.getWidth(), engine.getHeight());
     }
 

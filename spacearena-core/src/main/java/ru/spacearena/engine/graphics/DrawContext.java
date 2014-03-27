@@ -6,8 +6,7 @@ package ru.spacearena.engine.graphics;
  */
 public interface DrawContext {
 
-    void strokeColor(int color);
-    void fillColor(int color);
+    void setColor(int color);
 
     void drawLine(float x1, float y1, float x2, float y2);
     void drawImage(Image image, float x, float y);
@@ -33,5 +32,8 @@ public interface DrawContext {
 
     float getLineWidth();
     void setLineWidth(float width);
+
+    float getAlpha();
+    void setAlpha(float alpha);
 
 }

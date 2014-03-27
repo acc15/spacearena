@@ -33,13 +33,7 @@ public class Java2DDrawContext implements DrawContext {
         return graphics2D.getFontMetrics().getHeight();
     }
 
-    public void strokeColor(int color) {
-        setColor(color);
-    }
-
-    public void fillColor(int color) { setColor(color); }
-
-    private void setColor(int color) {
+    public void setColor(int color) {
         graphics2D.setColor(new Color(color, ru.spacearena.engine.graphics.Color.hasAlpha(color)));
     }
 
@@ -121,6 +115,18 @@ public class Java2DDrawContext implements DrawContext {
 
     public void setLineWidth(float width) {
         graphics2D.setStroke(new BasicStroke(width));
+    }
+
+    public float getAlpha() {
+        final Composite composite = graphics2D.getComposite();
+        if (composite instanceof AlphaComposite) {
+            return ((AlphaComposite)composite).getAlpha();
+        }
+        return 1f;
+    }
+
+    public void setAlpha(float alpha) {
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
     }
 
     private void setRect(float l, float t, float r, float b) {

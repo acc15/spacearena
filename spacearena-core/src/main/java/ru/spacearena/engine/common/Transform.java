@@ -23,6 +23,8 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     private float pivotX = 0f, pivotY = 0f;
     private float angle = 0f;
 
+    private float alpha = 1.0f;
+
     private int dirty = 0;
 
     public boolean isDirty(int field) {
@@ -39,6 +41,14 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     private void resetDirty() {
         this.dirty = 0;
+    }
+
+    public float getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
     }
 
     public float getPositionX() {
@@ -195,6 +205,24 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     @Override
     public void onDraw(DrawContext context) {
+        final float prevAlpha = context.getAlpha();
+        final float newAlpha = alpha * prevAlpha;
+        if (FloatMathUtils.isZero(newAlpha)) {
+            return;
+        }
+        if (FloatMathUtils.isOne(newAlpha)) {
+            onDrawAlpha(context);
+            return;
+        }
+        try {
+            context.setAlpha(newAlpha);
+            onDrawAlpha(context);
+        } finally {
+            context.setAlpha(prevAlpha);
+        }
+    }
+
+    protected void onDrawAlpha(DrawContext context) {
         final Matrix viewMatrix = getViewMatrix();
         if (viewMatrix.isIdentity()) {
             onDrawTransformed(context);

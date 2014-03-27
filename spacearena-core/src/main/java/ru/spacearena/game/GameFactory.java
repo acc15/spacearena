@@ -15,6 +15,7 @@ import ru.spacearena.engine.integration.box2d.Box2dObject;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
+import ru.spacearena.game.ship.Ship;
 
 import java.awt.event.MouseEvent;
 
@@ -26,7 +27,7 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
-        engine.getDebug().setDrawAll(true);
+        //engine.getDebug().setDrawAll(true);
 
         engine.setMaxFPS(100f);
         engine.enableInput(InputType.KEYBOARD);
@@ -61,7 +62,7 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final Rect2FPP levelBounds = new Rect2FPP(-30f, -30f, 30f, 30f);
+        final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
         viewport.add(new Sky(viewport));
