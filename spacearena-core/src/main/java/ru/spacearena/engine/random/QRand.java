@@ -54,6 +54,10 @@ public class QRand {
         return v < 0 ? mod + v : v;
     }
 
+    public int nextIntBetween(int min, int max) {
+        return min + nextInt(max - min + 1);
+    }
+
     public float nextFloat() {
         return (float)(nextLong() & 0xffffff) / ((float)(1<<24));
     }

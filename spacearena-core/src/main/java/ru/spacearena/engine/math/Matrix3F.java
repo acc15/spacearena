@@ -9,19 +9,19 @@ import static ru.spacearena.engine.util.FloatMathUtils.*;
  * @author Vyacheslav Mayorov
  * @since 2014-15-03
  */
-public class Matrix2F {
+public class Matrix3F {
 
     public float m00 = 1f, m01 = 0f, m02 = 0f,
                  m10 = 0f, m11 = 1f, m12 = 0f;
 
-    public Matrix2F() {
+    public Matrix3F() {
     }
 
-    public Matrix2F(Matrix2F m) {
+    public Matrix3F(Matrix3F m) {
         set(m);
     }
 
-    public Matrix2F(float m00, float m01, float m02, float m10, float m11, float m12) {
+    public Matrix3F(float m00, float m01, float m02, float m10, float m11, float m12) {
         this.m00 = m00;
         this.m01 = m01;
         this.m02 = m02;
@@ -30,7 +30,7 @@ public class Matrix2F {
         this.m12 = m12;
     }
 
-    public void set(Matrix2F m) {
+    public void set(Matrix3F m) {
         this.m00 = m.m00;
         this.m01 = m.m01;
         this.m02 = m.m02;
@@ -121,11 +121,11 @@ public class Matrix2F {
                  this);
     }
 
-    public void preMultiply(Matrix2F matrix) {
+    public void preMultiply(Matrix3F matrix) {
         preMultiply(matrix.m00, matrix.m01, matrix.m02, matrix.m10, matrix.m11, matrix.m12);
     }
 
-    public void postMultiply(Matrix2F matrix) {
+    public void postMultiply(Matrix3F matrix) {
         postMultiply(matrix.m00, matrix.m01, matrix.m02, matrix.m10, matrix.m11, matrix.m12);
     }
 
@@ -213,7 +213,7 @@ public class Matrix2F {
         return !isZero(determinant());
     }
 
-    public static void multiply(Matrix2F a, Matrix2F b, Matrix2F out) {
+    public static void multiply(Matrix3F a, Matrix3F b, Matrix3F out) {
         multiply(a.m00, a.m01, a.m02,
                  a.m10, a.m11, a.m12,
                  b.m00, b.m01, b.m02,
@@ -226,7 +226,7 @@ public class Matrix2F {
             float a10, float a11, float a12,
             float b00, float b01, float b02,
             float b10, float b11, float b12,
-            Matrix2F out)
+            Matrix3F out)
     {
         out.m00 = a00 * b00 + a01 * b10;
         out.m01 = a00 * b01 + a01 * b11;
@@ -247,12 +247,28 @@ public class Matrix2F {
                Float.floatToIntBits(m10) ^ Float.floatToIntBits(m11) ^ Float.floatToIntBits(m12);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Matrix2F && equals((Matrix2F)obj);
+    public void getValues6(float[] m) {
+        m[0] = m00;
+        m[1] = m01;
+        m[2] = m02;
+        m[3] = m10;
+        m[4] = m11;
+        m[5] = m12;
     }
 
-    public boolean equals(Matrix2F m) {
+    public void getValues9(float[] m) {
+        getValues6(m);
+        m[6] = 0;
+        m[7] = 0;
+        m[8] = 1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Matrix3F && equals((Matrix3F)obj);
+    }
+
+    public boolean equals(Matrix3F m) {
         return isEqual(m00, m.m00) && isEqual(m01, m.m01) && isEqual(m02, m.m02) &&
                isEqual(m10, m.m10) && isEqual(m11, m.m11) && isEqual(m12, m.m12);
     }

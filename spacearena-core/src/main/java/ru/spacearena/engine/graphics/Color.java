@@ -29,6 +29,8 @@ public class Color {
         return (int)(f * 0xff);
     }
 
+    public static float toFloatComponent(int v) { return (float)v / 255f; }
+
     public static int argb(int a, int r, int g, int b) {
         return a << ALPHA_SHIFT | r << RED_SHIFT | g << GREEN_SHIFT | b;
     }
@@ -49,6 +51,11 @@ public class Color {
     public static int red(int color) { return (color & RED_MASK) >> RED_SHIFT; }
     public static int green(int color) { return (color & GREEN_MASK) >> GREEN_SHIFT; }
     public static int blue(int color) { return color & BLUE_MASK; }
+
+    public static float alphaFloat(int color) { return toFloatComponent(alpha(color)); }
+    public static float redFloat(int color) { return toFloatComponent(red(color)); }
+    public static float greenFloat(int color) { return toFloatComponent(green(color)); }
+    public static float blueFloat(int color) { return toFloatComponent(blue(color)); }
 
     public static boolean hasAlpha(int color) { return (color & ALPHA_MASK) != ALPHA_MASK; }
 

@@ -15,6 +15,7 @@
         <module>spacearena-android</module>
         <module>spacearena-core</module>
         <module>spacearena-java2d</module>
+        <module>spacearena-jogl</module>
     </modules>
 
     <scm>
