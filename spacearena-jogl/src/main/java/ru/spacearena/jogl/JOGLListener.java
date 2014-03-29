@@ -1,13 +1,18 @@
 package ru.spacearena.jogl;
 
+import com.jogamp.common.nio.Buffers;
 import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.math.Matrix3F;
 import ru.spacearena.engine.util.TempUtils;
+import ru.spacearena.jogl.shaders.PositionColorProgram2f;
+import ru.spacearena.jogl.shaders.ShaderProgram;
 
 import javax.media.opengl.*;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +24,10 @@ public class JoglListener implements GLEventListener {
 
     private volatile boolean running = true;
     private int w, h;
-    private int defaultShader;
+
+    private ShaderProgram defaultProgram = new PositionColorProgram2f();
+    private float[] mat3 = new float[] {1, 0, 0, 0, 1, 0, 0, 0, 1};
+    private int[] bufs = new int[1];
 
     private List<Triangle> triangles = new ArrayList<Triangle>();
 
@@ -50,11 +58,12 @@ public class JoglListener implements GLEventListener {
         w.mainLoop(window);
     }
 
+
     public void init(GLAutoDrawable drawable) {
 
         drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             final Triangle t = new Triangle();
             t.positionX = TempUtils.RAND.nextFloat() * drawable.getWidth();
             t.positionY = TempUtils.RAND.nextFloat() * drawable.getHeight();
@@ -66,35 +75,86 @@ public class JoglListener implements GLEventListener {
             t.size = TempUtils.RAND.nextFloat() * 30f;
             triangles.add(t);
         }
+        triangleBuf = Buffers.newDirectFloatBuffer(7 * 3 * triangles.size());
 
-        defaultShader = ShaderUtils.compileProgram(drawable.getGL().getGL2ES2(),
-                "uniform mat3 u_MVPMatrix;      \n"     // Константа отвечающая за комбинацию матриц МОДЕЛЬ/ВИД/ПРОЕКЦИЯ.
-              + "attribute vec3 a_Position;     \n"     // Информация о положении вершин.
-              + "attribute vec4 a_Color;        \n"     // Информация о цвете вершин.
-              + "varying vec4 v_Color;          \n"     // Это будет передано в фрагментный шейдер.
-              + "void main()                    \n"     // Начало программы вершинного шейдера.
-              + "{                              \n"
-              + "   v_Color = a_Color;          \n"     // Передаем цвет для фрагментного шейдера.
-                        // Он будет интерполирован для всего треугольника.
-              + "   gl_Position = u_MVPMatrix   \n"     // gl_Position специальные переменные используемые для хранения конечного положения.
-              + "               * a_Position;   \n"     // Умножаем вершины на матрицу для получения конечного положения
-              + "}                              \n",   // в нормированных координатах экрана.,
+        final GL2ES2 gl = drawable.getGL().getGL2ES2();
 
-                "precision mediump float;       \n"     // Устанавливаем по умолчанию среднюю точность для переменных. Максимальная точность
-              + "varying vec4 v_Color;          \n"     // Цвет вершинного шейдера преобразованного
-              + "void main()                    \n"     // Точка входа для фрагментного шейдера.
-              + "{                              \n"
-              + "   gl_FragColor = v_Color;     \n"     // Передаем значения цветов.
-              + "}                              \n");
+        defaultProgram.compile(gl);
+        gl.glUseProgram(defaultProgram.getId());
 
+        final Triangle t = new Triangle();
+        t.size = 1f;
+        gl.glGenBuffers(bufs.length,bufs,0);
+
+    }
+
+    private FloatBuffer triangleBuf;
+
+    public void makeTriangleBuf(Triangle t, FloatBuffer buf) {
+        for (int i=0; i<t.getVertexCount(); i++) {
+            buf.put(t.getVertexX(i));
+            buf.put(t.getVertexY(i));
+            buf.put(1f);
+            buf.put(Color.redFloat(t.color));
+            buf.put(Color.greenFloat(t.color));
+            buf.put(Color.blueFloat(t.color));
+            buf.put(Color.alphaFloat(t.color));
+        }
     }
 
     public void dispose(GLAutoDrawable drawable) {
     }
 
+
     public void display(GLAutoDrawable drawable) {
         final GL2ES2 gl = drawable.getGL().getGL2ES2();
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL2ES2.GL_COLOR_BUFFER_BIT);
+        if (triangleBuf != null) {
+
+            triangleBuf.rewind();
+            for (Triangle t: triangles) {
+                makeTriangleBuf(t, triangleBuf);
+            }
+            triangleBuf.rewind();
+
+            gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, bufs[0]);
+
+            final int size = triangleBuf.limit() * 4;
+            gl.glBufferData(GL2ES2.GL_ARRAY_BUFFER, size, triangleBuf, GL2ES2.GL_STATIC_DRAW);
+
+
+            final Matrix3F m = new Matrix3F();
+            m.postTranslate(-1f, 1f);
+            m.postScale(2f / w, -2f / h);
+            m.getValues9(mat3);
+
+            defaultProgram.bindAttr(gl, PositionColorProgram2f.POSITION_ATTRIB, 3, 7, 0);
+            defaultProgram.bindAttr(gl, PositionColorProgram2f.COLOR_ATTRIB, 4, 7, 3);
+            defaultProgram.bindUniform(gl, PositionColorProgram2f.MATRIX_UNIFORM, true, mat3);
+
+            gl.glDrawArrays(GL2ES2.GL_TRIANGLES, 0, triangles.size() * 3);
+            defaultProgram.disableVertexAttrib(gl);
+
+            gl.glDeleteBuffers(bufs.length, bufs, 0);
+            gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, 0);
+        }
+
+        //gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, 0);
+
+//
+//        final FloatBuffer fbtest = ByteBuffer.allocateDirect(80).order(ByteOrder.nativeOrder()).asFloatBuffer();
+//
+//        gl.glGenBuffers(1, new int[10], 0);
+//        gl.glBufferData(GL.GL_ARRAY_BUFFER, );
+//
+//        gl.glVertexAttribPointer(positionHandler, 3, GL2ES2.GL_FLOAT, false, 7 * 4, fbtest);
+//        gl.glEnableVertexAttribArray(positionHandler);
+//
+//        gl.glVertexAttribPointer(colorHandler, 4, GL2ES2.GL_FLOAT, false, 7*4, 3*4);
+//        gl.glEnableVertexAttribArray(colorHandler);
+//
+//        gl.glUniformMatrix3fv(matrixHandler, 1, false, mat3, 0);
+//        gl.glDrawArrays(GL2ES2.GL_TRIANGLES, 0, );
         /*
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
