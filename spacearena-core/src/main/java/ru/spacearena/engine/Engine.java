@@ -27,7 +27,7 @@ public abstract class Engine {
 
     private EngineEntity root;
     private float width, height;
-    private float deltaTime = 0;
+    private float secondsPerFrame = 0;
     private float compensationTime = 0f;
 
     private final Timer timer = new NanoTimer();
@@ -56,11 +56,11 @@ public abstract class Engine {
         }
 
         final float secondsElapsed = timer.reset();
-        if (deltaTime <= 0) {
+        if (secondsPerFrame <= 0) {
             return secondsElapsed;
         }
 
-        compensationTime += secondsElapsed - deltaTime;
+        compensationTime += secondsElapsed - secondsPerFrame;
         if (compensationTime > MAX_COMPENSATION_TIME) {
             compensationTime = MAX_COMPENSATION_TIME;
         }
@@ -169,20 +169,20 @@ public abstract class Engine {
         }
     }
 
-    public float getDeltaTime() {
-        return deltaTime;
+    public float getSecondsPerFrame() {
+        return secondsPerFrame;
     }
 
-    public void setDeltaTime(float deltaTime) {
-        this.deltaTime = deltaTime;
+    public void setSecondsPerFrame(float secondsPerFrame) {
+        this.secondsPerFrame = secondsPerFrame;
     }
 
     public float getMaxFPS() {
-        return deltaTime > 0 ? 1/deltaTime : 0;
+        return secondsPerFrame > 0 ? 1/ secondsPerFrame : 0;
     }
 
     public void setMaxFPS(float maxFPS) {
-        this.deltaTime = maxFPS > 0 ? 1/maxFPS : 0;
+        this.secondsPerFrame = maxFPS > 0 ? 1/maxFPS : 0;
     }
 
     public Timer getTimer() {

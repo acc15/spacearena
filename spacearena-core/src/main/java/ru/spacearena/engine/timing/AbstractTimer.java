@@ -23,13 +23,16 @@ public abstract class AbstractTimer implements Timer {
     }
 
     public float reset() {
-        if (!started) {
-            throw new IllegalStateException("Timer not started");
-        }
         final long ct = getCurrentTime();
-        final long diff = ct - time;
-        time = ct;
-        return toSeconds(diff);
+        if (!started) {
+            time = ct;
+            started = true;
+            return 0f;
+        } else {
+            final long diff = ct - time;
+            time = ct;
+            return toSeconds(diff);
+        }
     }
 
     public long getTimestamp() {

@@ -3,6 +3,7 @@ package ru.spacearena.jogl.shaders;
 import cern.colt.list.IntArrayList;
 
 import javax.media.opengl.GL2ES2;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class ShaderProgram extends CompilableObject {
 //                gl.glBindAttribLocation(programId, i, attributeName);
 //            }
         gl.glLinkProgram(programId);
+        // todo check link status
         gl.glValidateProgram(programId);
 
         for (String attribute: attributes) {
@@ -75,8 +77,8 @@ public class ShaderProgram extends CompilableObject {
         gl.glEnableVertexAttribArray(location);
     }
 
-    public void bindUniform(GL2ES2 gl, int index, boolean transpose, float[] matrix) {
-        gl.glUniformMatrix3fv(uniformLocations.get(index), 1, transpose, matrix, 0);
+    public void bindMatrix(GL2ES2 gl, int index, FloatBuffer buf) {
+        gl.glUniformMatrix4fv(uniformLocations.get(index), 1, false, buf);
     }
 
     public void disableVertexAttrib(GL2ES2 gl) {

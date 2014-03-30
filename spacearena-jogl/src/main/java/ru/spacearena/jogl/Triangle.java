@@ -1,7 +1,5 @@
 package ru.spacearena.jogl;
 
-import ru.spacearena.engine.graphics.Color;
-
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-28-03
@@ -10,26 +8,26 @@ public class Triangle {
 
     public static final float COS_30 = 0.86602540378f, SIN_30 = 0.5f;
 
-    public int color = Color.BLACK;
+    public float r, g, b;
     public float size;
     public float velocityX, velocityY;
     public float positionX, positionY;
 
-    public void update(int w, int h, float dt) {
+    public void update(JoglListener l, float dt) {
         positionX += velocityX * dt;
         positionY += velocityY * dt;
-        if (positionX > w) {
-            positionX = w;
+        if (positionX > l.getRight()) {
+            positionX = l.getRight();
             velocityX = -velocityX;
-        } else if (positionX < 0) {
-            positionX = 0;
+        } else if (positionX < l.getLeft()) {
+            positionX = l.getLeft();
             velocityX = -velocityX;
         }
-        if (positionY > h) {
-            positionY = h;
+        if (positionY > l.getBottom()) {
+            positionY = l.getBottom();
             velocityY = -velocityY;
-        } else if (positionY < 0) {
-            positionY = 0;
+        } else if (positionY < l.getTop()) {
+            positionY = l.getTop();
             velocityY = -velocityY;
         }
     }
@@ -49,6 +47,12 @@ public class Triangle {
         case 1: case 2: return positionY + SIN_30 * size;
         default: throw new IllegalArgumentException();
         }
+    }
+
+    public void setColor(float r, float g, float b) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
     }
 
     public int getVertexCount() {

@@ -13,14 +13,15 @@ public class PositionColorProgram2f extends ShaderProgram {
     public static final int MATRIX_UNIFORM = 0;
 
     public PositionColorProgram2f() {
-        addShader(new Shader(GL2ES2.GL_VERTEX_SHADER, "uniform mat3 u_MVPMatrix;" +
-                "attribute vec3 a_Position;" +
+        addShader(new Shader(GL2ES2.GL_VERTEX_SHADER,
+                "uniform mat4 u_MVPMatrix;" +
+                "attribute vec4 a_Position;" +
                 "attribute vec4 a_Color;" +
                 "varying vec4 v_Color;" +
                 "void main()" +
                 "{" +
                 "v_Color = a_Color;" +
-                "gl_Position = vec4(u_MVPMatrix * a_Position, 1);" +
+                "gl_Position = u_MVPMatrix * a_Position;" +
                 "}"));
         addShader(new Shader(GL2ES2.GL_FRAGMENT_SHADER, "precision mediump float;" +
                 "varying vec4 v_Color;" +
