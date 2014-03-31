@@ -8,7 +8,7 @@ import com.jogamp.newt.opengl.GLWindow;
 import ru.spacearena.engine.timing.NanoTimer;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.TempUtils;
-import ru.spacearena.jogl.matrix.Matrix4F;
+import ru.spacearena.engine.math.Matrix2FGL;
 import ru.spacearena.jogl.shaders.PositionColorProgram2f;
 import ru.spacearena.jogl.shaders.ShaderProgram;
 
@@ -25,8 +25,8 @@ public class JoglListener implements GLEventListener {
     private int w, h;
 
     private ShaderProgram defaultProgram = new PositionColorProgram2f();
-    private Matrix4F viewMatrix = new Matrix4F();
-    private Matrix4F viewModelMatrix = new Matrix4F();
+    private Matrix2FGL viewMatrix = new Matrix2FGL();
+    private Matrix2FGL viewModelMatrix = new Matrix2FGL();
     private int[] bufs = new int[1];
 
     private Triangle triangle = new Triangle();
@@ -167,10 +167,9 @@ public class JoglListener implements GLEventListener {
 
         final GL gl = drawable.getGL();
         gl.glViewport(x, y, width, height);
-
         viewMatrix.identity();
-        viewMatrix.postScale(2f / w, -2f / h);
-        viewMatrix.postTranslate(-100f, -100f);
+        viewMatrix.scale(Matrix2FGL.LOCAL, 2f / w, -2f / h);
+        //viewMatrix.translate(Matrix2FGL.LOCAL, -100f, -100f);
     }
 
     public void mainLoop(GLAutoDrawable drawable) {
@@ -178,8 +177,6 @@ public class JoglListener implements GLEventListener {
         while (running) {
             final float dt = timer.reset();
             triangle.update(this, dt);
-
-
             drawable.display();
             Thread.yield();
         }

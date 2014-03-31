@@ -1,7 +1,7 @@
 package ru.spacearena.jogl;
 
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.jogl.matrix.Matrix4F;
+import ru.spacearena.engine.math.Matrix2FGL;
 
 import java.nio.FloatBuffer;
 
@@ -19,7 +19,7 @@ public class Triangle {
     private float positionX, positionY;
     private float rotation;
 
-    public Matrix4F matrix = new Matrix4F();
+    public Matrix2FGL matrix = new Matrix2FGL();
 
     public void setSize(float size) {
         this.size = size;
@@ -55,25 +55,25 @@ public class Triangle {
         rotation += FloatMathUtils.TWO_PI * dt;
 
         matrix.identity();
-        matrix.preRotate(rotation);
-        matrix.preTranslate(positionX, positionY);
-
+        matrix.rotate(Matrix2FGL.WORLD, rotation);
+        matrix.scale(Matrix2FGL.WORLD, size, size);
+        matrix.translate(Matrix2FGL.WORLD, positionX, positionY);
         //matrix.rotate(rotation);
     }
 
     public float getVertexX(int i) {
         switch (i) {
         case 0: return 0;
-        case 1: return -COS_30 * size;
-        case 2: return COS_30 * size;
+        case 1: return -COS_30;
+        case 2: return COS_30;
         default: throw new IllegalArgumentException();
         }
     }
 
     public float getVertexY(int i) {
         switch (i) {
-        case 0: return -size;
-        case 1: case 2: return SIN_30 * size;
+        case 0: return -1;
+        case 1: case 2: return SIN_30;
         default: throw new IllegalArgumentException();
         }
     }

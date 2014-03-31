@@ -9,19 +9,19 @@ import static ru.spacearena.engine.util.FloatMathUtils.*;
  * @author Vyacheslav Mayorov
  * @since 2014-15-03
  */
-public class Matrix3F {
+public class Matrix2F {
 
     public float m00 = 1f, m01 = 0f, m02 = 0f,
                  m10 = 0f, m11 = 1f, m12 = 0f;
 
-    public Matrix3F() {
+    public Matrix2F() {
     }
 
-    public Matrix3F(Matrix3F m) {
+    public Matrix2F(Matrix2F m) {
         set(m);
     }
 
-    public Matrix3F(float m00, float m01, float m02, float m10, float m11, float m12) {
+    public Matrix2F(float m00, float m01, float m02, float m10, float m11, float m12) {
         this.m00 = m00;
         this.m01 = m01;
         this.m02 = m02;
@@ -30,7 +30,7 @@ public class Matrix3F {
         this.m12 = m12;
     }
 
-    public void set(Matrix3F m) {
+    public void set(Matrix2F m) {
         this.m00 = m.m00;
         this.m01 = m.m01;
         this.m02 = m.m02;
@@ -121,11 +121,11 @@ public class Matrix3F {
                  this);
     }
 
-    public void preMultiply(Matrix3F matrix) {
+    public void preMultiply(Matrix2F matrix) {
         preMultiply(matrix.m00, matrix.m01, matrix.m02, matrix.m10, matrix.m11, matrix.m12);
     }
 
-    public void postMultiply(Matrix3F matrix) {
+    public void postMultiply(Matrix2F matrix) {
         postMultiply(matrix.m00, matrix.m01, matrix.m02, matrix.m10, matrix.m11, matrix.m12);
     }
 
@@ -213,7 +213,7 @@ public class Matrix3F {
         return !isZero(determinant());
     }
 
-    public static void multiply(Matrix3F a, Matrix3F b, Matrix3F out) {
+    public static void multiply(Matrix2F a, Matrix2F b, Matrix2F out) {
         multiply(a.m00, a.m01, a.m02,
                  a.m10, a.m11, a.m12,
                  b.m00, b.m01, b.m02,
@@ -226,7 +226,7 @@ public class Matrix3F {
             float a10, float a11, float a12,
             float b00, float b01, float b02,
             float b10, float b11, float b12,
-            Matrix3F out)
+            Matrix2F out)
     {
         out.m00 = a00 * b00 + a01 * b10;
         out.m01 = a00 * b01 + a01 * b11;
@@ -265,10 +265,10 @@ public class Matrix3F {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Matrix3F && equals((Matrix3F)obj);
+        return obj instanceof Matrix2F && equals((Matrix2F)obj);
     }
 
-    public boolean equals(Matrix3F m) {
+    public boolean equals(Matrix2F m) {
         return isEqual(m00, m.m00) && isEqual(m01, m.m01) && isEqual(m02, m.m02) &&
                isEqual(m10, m.m10) && isEqual(m11, m.m11) && isEqual(m12, m.m12);
     }
