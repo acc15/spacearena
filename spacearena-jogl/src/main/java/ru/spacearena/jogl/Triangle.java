@@ -57,6 +57,7 @@ public class Triangle {
         matrix.identity();
         matrix.preRotate(rotation);
         matrix.preTranslate(positionX, positionY);
+
         //matrix.rotate(rotation);
     }
 
@@ -91,5 +92,17 @@ public class Triangle {
         for (int i=0; i<getVertexCount(); i++) {
             buf.put(getVertexX(i)).put(getVertexY(i)).put(r).put(g).put(b);
         }
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    public float getPositionY() {
+        return positionY;
+    }
+
+    public float getPositionX() {
+        return positionX;
     }
 }

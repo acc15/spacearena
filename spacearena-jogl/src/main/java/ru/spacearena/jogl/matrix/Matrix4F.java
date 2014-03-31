@@ -5,13 +5,13 @@ import ru.spacearena.engine.util.FloatMathUtils;
 /**
  * Implementation is optimized for 2D graphics and therefore makes assumption
  * that elements on two lower rows are the equal to identity matrix.
- * Only following elements will be taken into account when performing matrix multiplications:
+ * Only following elements are taken into account when performing matrix multiplications:
  *
  * <pre>
- * A00 A01 [0] A03
- * A04 A05 [0] A07
- * [0] [0] [1] [0]
- * [0] [0] [0] [1]
+ * m0  m4  0   m12
+ * m1  m5  0   m13
+ * 0   0   1   0
+ * 0   0   0   1
  * </pre>
  *
  * The matrix is 4x4 array - only
@@ -139,15 +139,6 @@ public final class Matrix4F {
         m[13] = n[1]*m12+n[5]*m[13]+n[13];
     }
 
-    public void set(Matrix4F matrix) {
-        m[0] = matrix.m[0];
-        m[1] = matrix.m[1];
-        m[4] = matrix.m[4];
-        m[5] = matrix.m[5];
-        m[12] = matrix.m[12];
-        m[13] = matrix.m[13];
-    }
-
     public void postMultiply(Matrix4F a) {
         final float[] n = a.m;
 
@@ -160,6 +151,15 @@ public final class Matrix4F {
         m[1] = m1*n[0]+m5*n[1];
         m[5] = m1*n[4]+m5*n[5];
         m[13] += m1*n[12]+m5*n[13];
+    }
+
+    public void set(Matrix4F matrix) {
+        m[0] = matrix.m[0];
+        m[1] = matrix.m[1];
+        m[4] = matrix.m[4];
+        m[5] = matrix.m[5];
+        m[12] = matrix.m[12];
+        m[13] = matrix.m[13];
     }
 
     public float transformX(float x, float y) {
