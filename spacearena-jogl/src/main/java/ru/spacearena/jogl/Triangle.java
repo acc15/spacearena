@@ -1,5 +1,10 @@
 package ru.spacearena.jogl;
 
+import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.jogl.matrix.Matrix4F;
+
+import java.nio.FloatBuffer;
+
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-28-03
@@ -8,14 +13,31 @@ public class Triangle {
 
     public static final float COS_30 = 0.86602540378f, SIN_30 = 0.5f;
 
-    public float r, g, b;
-    public float size;
-    public float velocityX, velocityY;
-    public float positionX, positionY;
+    private float r, g, b;
+    private float size;
+    private float velocityX, velocityY;
+    private float positionX, positionY;
+    private float rotation;
+
+    public Matrix4F matrix = new Matrix4F();
+
+    public void setSize(float size) {
+        this.size = size;
+    }
+
+    public void setPosition(float x, float y) {
+        this.positionX = x;
+        this.positionY = y;
+    }
+
+    public void setVelocity(float x, float y) {
+        this.velocityX = x;
+        this.velocityY = y;
+    }
 
     public void update(JoglListener l, float dt) {
-        positionX += velocityX * dt;
-        positionY += velocityY * dt;
+
+        setPosition(positionX + velocityX * dt, positionY + velocityY * dt);
         if (positionX > l.getRight()) {
             positionX = l.getRight();
             velocityX = -velocityX;
@@ -30,21 +52,27 @@ public class Triangle {
             positionY = l.getTop();
             velocityY = -velocityY;
         }
+        rotation += FloatMathUtils.TWO_PI * dt;
+
+        matrix.identity();
+        matrix.preRotate(rotation);
+        matrix.preTranslate(positionX, positionY);
+        //matrix.rotate(rotation);
     }
 
     public float getVertexX(int i) {
         switch (i) {
-        case 0: return positionX;
-        case 1: return positionX - COS_30 * size;
-        case 2: return positionX + COS_30 * size;
+        case 0: return 0;
+        case 1: return -COS_30 * size;
+        case 2: return COS_30 * size;
         default: throw new IllegalArgumentException();
         }
     }
 
     public float getVertexY(int i) {
         switch (i) {
-        case 0: return positionY - size;
-        case 1: case 2: return positionY + SIN_30 * size;
+        case 0: return -size;
+        case 1: case 2: return SIN_30 * size;
         default: throw new IllegalArgumentException();
         }
     }
@@ -59,4 +87,9 @@ public class Triangle {
         return 3;
     }
 
+    public void put(FloatBuffer buf) {
+        for (int i=0; i<getVertexCount(); i++) {
+            buf.put(getVertexX(i)).put(getVertexY(i)).put(r).put(g).put(b);
+        }
+    }
 }

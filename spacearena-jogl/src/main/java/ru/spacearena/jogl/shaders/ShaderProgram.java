@@ -77,6 +77,10 @@ public class ShaderProgram extends CompilableObject {
         gl.glEnableVertexAttribArray(location);
     }
 
+    public void bindMatrix(GL2ES2 gl, int index, float[] mat4) {
+        gl.glUniformMatrix4fv(uniformLocations.get(index), 1, false, mat4, 0);
+    }
+
     public void bindMatrix(GL2ES2 gl, int index, FloatBuffer buf) {
         gl.glUniformMatrix4fv(uniformLocations.get(index), 1, false, buf);
     }
