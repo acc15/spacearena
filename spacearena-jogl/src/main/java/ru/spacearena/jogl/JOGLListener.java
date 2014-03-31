@@ -2,16 +2,25 @@ package ru.spacearena.jogl;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.newt.Screen;
+import com.jogamp.newt.event.MouseAdapter;
+import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.PMVMatrix;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.math.Matrix3F;
+import ru.spacearena.engine.timing.NanoTimer;
+import ru.spacearena.engine.timing.Timer;
+import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.jogl.shaders.PositionColorProgram2f;
 import ru.spacearena.jogl.shaders.ShaderProgram;
 
+import javax.imageio.ImageIO;
 import javax.media.opengl.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +35,14 @@ public class JoglListener implements GLEventListener {
     private int w, h;
 
     private ShaderProgram defaultProgram = new PositionColorProgram2f();
-    private float[] mat3 = new float[] {1, 0, 0, 0, 1, 0, 0, 0, 1};
+    private PMVMatrix matrix = new PMVMatrix();
     private int[] bufs = new int[1];
 
-    private List<Triangle> triangles = new ArrayList<Triangle>();
+    private List<Particle> particles = new ArrayList<Particle>();
+
+    //Thread[main-Display-.windows_nil-1-EDT-1,5,main]: Warning: Default-EDT about (2) to stop, task executed.
+    // Remaining tasks: 1 - Thread[main-Display-.windows_nil-1-EDT-1,5,main]
+
 
     public static void main(String[] args) {
 
@@ -38,12 +51,41 @@ public class JoglListener implements GLEventListener {
         final GLProfile glp = GLProfile.getDefault();
         final GLCapabilities caps = new GLCapabilities(glp);
 
+//        final FPSAnimator a = new FPSAnimator(60);
+
         final GLWindow window = GLWindow.create(caps);
         window.setSize(800, 600);
         window.setTitle("SpaceArena");
         window.addWindowListener(new WindowAdapter() {
             public void windowDestroyNotify(WindowEvent arg0) {
                 w.running = false;
+            }
+        });
+        window.addMouseListener(new MouseAdapter() {
+
+            private float mx, my;
+            private boolean init = false;
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                final float x = e.getX() - w.getHalfWidth(), y = e.getY() - w.getHalfHeight();
+                if (init) {
+                    final float vx = x - mx, vy = y - my;
+                    for (Particle p : w.particles) {
+                        final float dx = p.getX() - x, dy = p.getY() - y;
+                        final float l2 = FloatMathUtils.lengthSquare(dx, dy);
+                        if (l2 > 900f || l2 <= 0) {
+                            continue;
+                        }
+
+                        final float l = 1000f / FloatMathUtils.sqrt(l2);
+                        p.setVelocity(vx * l, vy * l);
+
+                    }
+                }
+                mx = x;
+                my = y;
+                init = true;
             }
         });
 
@@ -58,49 +100,108 @@ public class JoglListener implements GLEventListener {
         w.mainLoop(window);
     }
 
+    public float getHalfWidth() {
+        return (float)w/2;
+    }
+
+    public float getHalfHeight() {
+        return (float)h/2;
+    }
+
+    public float getLeft() {
+        return -getHalfWidth();
+    }
+
+    public float getRight() {
+        return getHalfWidth();
+    }
+
+    public float getTop() {
+        return -getHalfHeight();
+    }
+
+    public float getBottom() {
+        return getHalfHeight();
+    }
+
+    private BufferedImage loadImage(String fileName) {
+        try {
+            return ImageIO.read(new File(fileName));
+        } catch (IOException e) {
+            throw new RuntimeException("Can't read image from file: " + fileName, e);
+        }
+    }
+
+    private void initParticles(BufferedImage image) {
+
+        final int iw = image.getWidth(), ih = image.getHeight();
+        final float ihw = (float)iw/2, ihh = (float)ih/2;
+        for (int y=0; y<ih; y++) {
+            for (int x=0; x<iw; x++) {
+                final int pixel = image.getRGB(x, y);
+                final int alpha = Color.alpha(pixel);
+                if (alpha == 0) {
+                    continue;
+                }
+
+
+                final Particle p = new Particle();
+                p.setTarget((float) x - ihw, (float) y - ihh);
+                p.setPosition(TempUtils.RAND.nextFloatBetween(getLeft(), getRight()),
+                        TempUtils.RAND.nextFloatBetween(getTop(), getBottom()));
+
+                p.setColor(Color.redFloat(pixel), Color.greenFloat(pixel), Color.blueFloat(pixel));
+                p.setVelocity(TempUtils.RAND.nextFloatBetween(-100f, 100f), TempUtils.RAND.nextFloatBetween(-100f, 100f));
+                p.setRestitution(TempUtils.RAND.nextFloat());
+                particles.add(p);
+
+//                if (particles.size() > 500) {
+//                    return;
+//                }
+            }
+        }
+
+    }
 
     public void init(GLAutoDrawable drawable) {
 
+        w = drawable.getWidth();
+        h = drawable.getHeight();
+
         drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 
-        for (int i = 0; i < 100000; i++) {
-            final Triangle t = new Triangle();
-            t.positionX = TempUtils.RAND.nextFloat() * drawable.getWidth();
-            t.positionY = TempUtils.RAND.nextFloat() * drawable.getHeight();
-            t.velocityX = TempUtils.RAND.nextFloat() * 100f;
-            t.velocityY = TempUtils.RAND.nextFloat() * 100f;
-            t.color = Color.rgb(TempUtils.RAND.nextIntBetween(128, 255),
-                    TempUtils.RAND.nextIntBetween(128, 255),
-                    TempUtils.RAND.nextIntBetween(128, 255));
-            t.size = TempUtils.RAND.nextFloat() * 30f;
-            triangles.add(t);
-        }
-        triangleBuf = Buffers.newDirectFloatBuffer(7 * 3 * triangles.size());
+        final BufferedImage img = loadImage("1.jpg");
+
+//        final Particle p1 = new Particle();
+//        p1.setPosition(TempUtils.RAND.nextFloatBetween(getLeft(), getRight()),
+//                       TempUtils.RAND.nextFloatBetween(getTop(), getBottom()));
+//        p1.setVelocity(TempUtils.RAND.nextFloatBetween(-100f, 100f), TempUtils.RAND.nextFloatBetween(-100f, 100f));
+//        p1.setColor(1,1,1);
+//        p1.setTarget(TempUtils.RAND.nextFloatBetween(getLeft(), getRight()),
+//                TempUtils.RAND.nextFloatBetween(getTop(), getBottom()));
+//        particles.add(p1);
+//
+//        final Particle p2 = new Particle();
+//        p2.setColor(1,0,0);
+//        p2.setPosition(p1.getTargetX(), p1.getTargetY());
+//        p2.setTarget(p1.getTargetX(), p1.getTargetY());
+//        particles.add(p2);
+//
+
+        initParticles(img);
+
+
+        vertexBuf = Buffers.newDirectFloatBuffer(5 * particles.size());
 
         final GL2ES2 gl = drawable.getGL().getGL2ES2();
 
         defaultProgram.compile(gl);
         gl.glUseProgram(defaultProgram.getId());
-
-        final Triangle t = new Triangle();
-        t.size = 1f;
         gl.glGenBuffers(bufs.length,bufs,0);
 
     }
 
-    private FloatBuffer triangleBuf;
-
-    public void makeTriangleBuf(Triangle t, FloatBuffer buf) {
-        for (int i=0; i<t.getVertexCount(); i++) {
-            buf.put(t.getVertexX(i));
-            buf.put(t.getVertexY(i));
-            buf.put(1f);
-            buf.put(Color.redFloat(t.color));
-            buf.put(Color.greenFloat(t.color));
-            buf.put(Color.blueFloat(t.color));
-            buf.put(Color.alphaFloat(t.color));
-        }
-    }
+    private FloatBuffer vertexBuf;
 
     public void dispose(GLAutoDrawable drawable) {
     }
@@ -109,95 +210,55 @@ public class JoglListener implements GLEventListener {
     public void display(GLAutoDrawable drawable) {
         final GL2ES2 gl = drawable.getGL().getGL2ES2();
         gl.glClear(GL2ES2.GL_COLOR_BUFFER_BIT);
-        if (triangleBuf != null) {
+        if (vertexBuf != null) {
 
-            triangleBuf.rewind();
-            for (Triangle t: triangles) {
-                makeTriangleBuf(t, triangleBuf);
+            vertexBuf.rewind();
+            for (Particle p: particles) {
+                p.put(vertexBuf);
             }
-            triangleBuf.rewind();
+            vertexBuf.rewind();
 
             gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, bufs[0]);
 
-            final int size = triangleBuf.limit() * 4;
-            gl.glBufferData(GL2ES2.GL_ARRAY_BUFFER, size, triangleBuf, GL2ES2.GL_STATIC_DRAW);
+            final int size = vertexBuf.limit() * 4;
+            gl.glBufferData(GL2ES2.GL_ARRAY_BUFFER, size, vertexBuf, GL2ES2.GL_STATIC_DRAW);
 
+            defaultProgram.bindAttr(gl, PositionColorProgram2f.POSITION_ATTRIB, 2, 5, 0);
+            defaultProgram.bindAttr(gl, PositionColorProgram2f.COLOR_ATTRIB, 3, 5, 2);
+            defaultProgram.bindMatrix(gl, PositionColorProgram2f.MATRIX_UNIFORM, matrix.glGetMatrixf());
 
-            final Matrix3F m = new Matrix3F();
-            m.postTranslate(-1f, 1f);
-            m.postScale(2f / w, -2f / h);
-            m.getValues9(mat3);
-
-            defaultProgram.bindAttr(gl, PositionColorProgram2f.POSITION_ATTRIB, 3, 7, 0);
-            defaultProgram.bindAttr(gl, PositionColorProgram2f.COLOR_ATTRIB, 4, 7, 3);
-            defaultProgram.bindUniform(gl, PositionColorProgram2f.MATRIX_UNIFORM, true, mat3);
-
-            gl.glDrawArrays(GL2ES2.GL_TRIANGLES, 0, triangles.size() * 3);
+            gl.glDrawArrays(GL2ES2.GL_POINTS, 0, particles.size());
             defaultProgram.disableVertexAttrib(gl);
 
             gl.glDeleteBuffers(bufs.length, bufs, 0);
             gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, 0);
         }
 
-        //gl.glBindBuffer(GL2ES2.GL_ARRAY_BUFFER, 0);
-
-//
-//        final FloatBuffer fbtest = ByteBuffer.allocateDirect(80).order(ByteOrder.nativeOrder()).asFloatBuffer();
-//
-//        gl.glGenBuffers(1, new int[10], 0);
-//        gl.glBufferData(GL.GL_ARRAY_BUFFER, );
-//
-//        gl.glVertexAttribPointer(positionHandler, 3, GL2ES2.GL_FLOAT, false, 7 * 4, fbtest);
-//        gl.glEnableVertexAttribArray(positionHandler);
-//
-//        gl.glVertexAttribPointer(colorHandler, 4, GL2ES2.GL_FLOAT, false, 7*4, 3*4);
-//        gl.glEnableVertexAttribArray(colorHandler);
-//
-//        gl.glUniformMatrix3fv(matrixHandler, 1, false, mat3, 0);
-//        gl.glDrawArrays(GL2ES2.GL_TRIANGLES, 0, );
-        /*
-        gl.glMatrixMode(GL2.GL_MODELVIEW);
-        gl.glLoadIdentity();
-        gl.glTranslatef(-1f, 1f, 0f);
-        gl.glScalef(2f / w, -2f / h, 1f);
-        */
-
-
-        /*gl.glBegin(GL.GL_TRIANGLES);
-        for (Triangle t : triangles) {
-            gl.glColor3f(Color.redFloat(t.color), Color.greenFloat(t.color), Color.blueFloat(t.color));
-            for (int i=0; i<t.getVertexCount(); i++) {
-                gl.glVertex2d(t.getVertexX(i), t.getVertexY(i));
-            }
-        }
-        gl.glEnd();
-        */
-        //gl.
-
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        final GL gl = drawable.getGL();
-        gl.glViewport(x, y, width, height);
         this.w = width;
         this.h = height;
+
+        final GL gl = drawable.getGL();
+        gl.glViewport(x, y, width, height);
+
+        matrix.glLoadIdentity();
+        //matrix.glTranslatef(-1f, 1f, 0f);
+        matrix.glScalef(2f/w, -2f/h, 1f);
     }
 
     public void mainLoop(GLAutoDrawable drawable) {
-        long t = -1L;
+        final Timer timer = new NanoTimer();
         while (running) {
-
-            final long ct = System.currentTimeMillis();
-            final float dt = (t < 0 ? 0f : (float) (ct - t) / 1000f);
-            t = ct;
-
-            for (Triangle o : triangles) {
-                o.update(w, h, dt);
+            final float dt = timer.reset();
+            for (Particle p: particles) {
+                p.update(this, dt);
             }
-
             drawable.display();
             Thread.yield();
         }
+        System.exit(0);
     }
 
 }
