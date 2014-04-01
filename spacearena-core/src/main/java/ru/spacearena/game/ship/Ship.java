@@ -13,7 +13,6 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;

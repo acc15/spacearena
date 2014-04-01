@@ -1,7 +1,6 @@
 package ru.spacearena.engine.geometry.shapes;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov

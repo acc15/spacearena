@@ -4,7 +4,6 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.geometry.shapes.Rect2FPR;
 import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
 

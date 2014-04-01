@@ -2,8 +2,6 @@ package ru.spacearena.android.engine;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.Image;
 
 /**
  * @author Vyacheslav Mayorov

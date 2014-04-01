@@ -2,10 +2,6 @@ package ru.spacearena.android.engine;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.Image;
-import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.graphics.Path;
 
 /**
  * @author Vyacheslav Mayorov

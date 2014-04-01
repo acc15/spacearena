@@ -1,4 +1,4 @@
-package ru.spacearena.jogl.shaders;
+package ru.spacearena.engine.graphics.shaders;
 
 import ru.spacearena.engine.graphics.OpenGL;
 

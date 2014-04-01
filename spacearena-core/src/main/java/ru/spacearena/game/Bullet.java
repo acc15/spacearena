@@ -7,7 +7,6 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.game.ship.Ship;
 

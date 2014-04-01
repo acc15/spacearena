@@ -410,4 +410,14 @@ public final class Matrix2FGL {
         a[++offset] = m[13];
     }
 
+    public void transformPoints(float[] src, int srcOffset, float[] dst, int dstOffset, int count) {
+        for (int i=0; i<count; i++) {
+            final float srcX = src[i*2+srcOffset];
+            final float srcY = src[i*2+srcOffset+1];
+            final float dstX = transformPointX(srcX, srcY);
+            final float dstY = transformPointY(srcX, srcY);
+            dst[i*2+dstOffset] = dstX;
+            dst[i*2+dstOffset] = dstY;
+        }
+    }
 }

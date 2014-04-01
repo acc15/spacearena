@@ -2,7 +2,6 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.DrawUtils;
 import ru.spacearena.engine.util.FloatMathUtils
 ;

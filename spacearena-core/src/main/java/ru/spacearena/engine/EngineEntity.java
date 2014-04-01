@@ -1,6 +1,5 @@
 package ru.spacearena.engine;
 
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.events.InputEvent;
 
 /**
@@ -18,5 +17,5 @@ public interface EngineEntity {
 
     boolean onUpdate(float seconds);
 
-    void onDraw(DrawContext context);
+    void onDraw(GLDrawContext context);
 }

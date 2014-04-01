@@ -3,8 +3,6 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineEntity;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**

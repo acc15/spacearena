@@ -2,8 +2,6 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.Image;
 
 /**
  * @author Vyacheslav Mayorov

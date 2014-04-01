@@ -1,7 +1,5 @@
 package ru.spacearena.android.engine;
 
-import ru.spacearena.engine.graphics.Path;
-
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-21-03

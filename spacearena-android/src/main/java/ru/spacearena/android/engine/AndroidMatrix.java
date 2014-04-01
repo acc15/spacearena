@@ -1,7 +1,6 @@
 package ru.spacearena.android.engine;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 

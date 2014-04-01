@@ -9,7 +9,6 @@ import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.World;
 import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov

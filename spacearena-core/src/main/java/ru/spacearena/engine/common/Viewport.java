@@ -4,7 +4,6 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
-import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.ShapeUtils;
 

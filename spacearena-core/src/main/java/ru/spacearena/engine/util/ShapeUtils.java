@@ -2,7 +2,7 @@ package ru.spacearena.engine.util;
 
 import ru.spacearena.engine.geometry.shapes.PolyShape2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
-import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.math.Matrix2FGL;
 
 /**
  * @author Vyacheslav Mayorov
@@ -10,17 +10,18 @@ import ru.spacearena.engine.graphics.Matrix;
  */
 public class ShapeUtils {
 
-    public static float[] transformShape(PolyShape2F shape, Matrix matrix) {
+    public static float[] transformShape(PolyShape2F shape, Matrix2FGL matrix) {
         final int pointCount = shape.getPointCount();
         if (pointCount > TempUtils.POINT_BUF.length/2) {
             throw new RuntimeException("POINT_BUF overflow");
         }
         shape.getPoints(TempUtils.POINT_BUF, 0, pointCount);
-        matrix.mapPoints(TempUtils.POINT_BUF, 0, TempUtils.POINT_BUF, 0, pointCount);
+        matrix.transformPoints(TempUtils.POINT_BUF, 0, TempUtils.POINT_BUF, 0, pointCount);
+        //matrix.tranmapPoints(TempUtils.POINT_BUF, 0, TempUtils.POINT_BUF, 0, pointCount);
         return TempUtils.POINT_BUF;
     }
 
-    public static void computeBoundingBox(PolyShape2F shape, Rect2FPP rect, Matrix matrix) {
+    public static void computeBoundingBox(PolyShape2F shape, Rect2FPP rect, Matrix2FGL matrix) {
         final int pointCount = shape.getPointCount();
         if (pointCount > 0) {
             final float[] pts = transformShape(shape, matrix);

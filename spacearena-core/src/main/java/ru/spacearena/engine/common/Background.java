@@ -3,7 +3,6 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov

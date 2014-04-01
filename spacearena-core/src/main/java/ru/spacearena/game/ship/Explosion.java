@@ -2,7 +2,6 @@ package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 

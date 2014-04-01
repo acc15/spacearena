@@ -1,4 +1,4 @@
-package ru.spacearena.jogl.shaders;
+package ru.spacearena.engine.graphics.shaders;
 
 import cern.colt.list.IntArrayList;
 import ru.spacearena.engine.graphics.OpenGL;

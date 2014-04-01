@@ -1,39 +1,47 @@
 package ru.spacearena.engine.graphics;
 
+import ru.spacearena.engine.math.Matrix2FGL;
+
 /**
  * @author Vyacheslav Mayorov
- * @since 2014-12-02
+ * @since 2014-01-04
  */
-public interface DrawContext {
+public class DrawContext {
 
-    void setColor(int color);
+    public static final int MAX_MATRIX_DEPTH = 40;
 
-    void drawLine(float x1, float y1, float x2, float y2);
-    void drawImage(Image image, float x, float y);
-    void drawText(String text, float x, float y);
+    private OpenGL gl;
 
-    void drawRect(float left, float top, float right, float bottom);
-    void fillRect(float left, float top, float right, float bottom);
+    public final Color4F color = new Color4F();
+    private final Matrix2FGL activeMatrix = new Matrix2FGL();
+    private final float[] matrixStack = new float[Matrix2FGL.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
+    private int matrixDepth = 0;
 
-    void drawCircle(float x, float y, float radius);
-    void fillCircle(float x, float y, float radius);
+    public DrawContext(OpenGL gl) {
+        this.gl = gl;
+    }
 
-    Path preparePath();
-    void drawPath();
-    void fillPath();
+    public void pushMatrix(Matrix2FGL m) {
+        activeMatrix.toArrayCompact(matrixStack, matrixDepth * Matrix2FGL.ELEMENTS_PER_MATRIX);
+        activeMatrix.postMultiply(m);
+    }
 
-    float getTextHeight();
+    public void popMatrix() {
+        if (matrixDepth <= 0) {
+            throw new IllegalStateException("Empty matrix stack");
+        }
+        --matrixDepth;
+        activeMatrix.fromArrayCompact(matrixStack, matrixDepth * Matrix2FGL.ELEMENTS_PER_MATRIX);
+    }
 
-    void pushMatrix(Matrix matrix);
-    void popMatrix();
+    public void clear() {
+        gl.clearColor(color.r,color.g,color.b,color.a);
+        gl.clear(OpenGL.COLOR_BUFFER_BIT);
+    }
 
-    void setTextSize(float size);
-    float getTextSize();
+    public void drawLine(float x1, float y1, float x2, float y2) {
 
-    float getLineWidth();
-    void setLineWidth(float width);
 
-    float getAlpha();
-    void setAlpha(float alpha);
+    }
 
 }

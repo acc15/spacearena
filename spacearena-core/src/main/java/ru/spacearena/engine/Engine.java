@@ -3,13 +3,9 @@ package ru.spacearena.engine;
 import ru.spacearena.engine.events.EngineEvent;
 import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.Image;
-import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.timing.NanoTimer;
 import ru.spacearena.engine.timing.Timer;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -22,8 +18,6 @@ public abstract class Engine {
 
     private final Debug debug = new Debug();
     private final EngineFactory factory;
-
-    private final HashMap<String, Image> imageCache = new HashMap<String, Image>();
 
     private EngineEntity root;
     private float width, height;
@@ -116,19 +110,6 @@ public abstract class Engine {
     public void scheduleEvent(EngineEvent event) {
         pendingEvents.add(event);
     }
-
-    public Image getImage(String resource) {
-        Image img = imageCache.get(resource);
-        if (img == null) {
-            img = loadImage(resource);
-            imageCache.put(resource, img);
-        }
-        return img;
-    }
-
-    public abstract Matrix createMatrix();
-
-    public abstract Image createImage(int width, int height);
 
     public abstract boolean enableInput(InputType inputType);
 

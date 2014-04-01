@@ -118,4 +118,20 @@ public class Matrix2FGLGLTest {
         assertThat(m.invertTransformVector(new Point2F(1,0)).near(new Point2F(0,-1))).isTrue();
 
     }
+
+    @Test
+    public void testTransformPoints() throws Exception {
+
+        final float[] buf1 = new float[100];
+        for (int i=0; i<20; i++) {
+            buf1[i*2+50] = i;
+            buf1[i*2+51] = i;
+        }
+
+        final float[] buf2 = new float[100];
+        final Matrix2FGL m = new Matrix2FGL();
+        m.
+
+
+    }
 }

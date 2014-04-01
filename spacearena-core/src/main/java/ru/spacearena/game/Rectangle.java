@@ -3,7 +3,6 @@ package ru.spacearena.game;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 
 /**
