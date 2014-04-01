@@ -12,7 +12,7 @@ import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.ColorU;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
@@ -170,9 +170,9 @@ public class Ship extends GameBody {
                     top = getPositionY() - 5f,
                     right = getPositionX() + 2f,
                     bottom = getPositionY() - 4.5f;
-        context.setColor(Color.WHITE);
+        context.setColor(ColorU.WHITE);
         context.drawRect(left, top, right, bottom);
-        context.setColor(Color.GREEN);
+        context.setColor(ColorU.GREEN);
         context.fillRect(left, top, left + (right-left) * health, bottom);
     }
 }

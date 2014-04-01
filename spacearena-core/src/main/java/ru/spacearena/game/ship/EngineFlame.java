@@ -1,7 +1,7 @@
 package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.ColorU;
 import ru.spacearena.engine.graphics.DrawContext;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class EngineFlame extends EngineObject {
             for (FlameParticle p: particles) {
                 if (hasPrev) {
                     final float prevSize = (float) i / fSize;
-                    context.setColor(Color.rgb(prevSize, prevSize, 1f));
+                    context.setColor(ColorU.rgb(prevSize, prevSize, 1f));
                     context.setLineWidth(prevSize * 0.5f);
                     context.drawLine(prevX, prevY, p.x, p.y);
                 }

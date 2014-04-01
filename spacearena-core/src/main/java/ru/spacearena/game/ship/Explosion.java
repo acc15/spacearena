@@ -1,7 +1,7 @@
 package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.ColorU;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
@@ -38,7 +38,7 @@ public class Explosion extends EngineObject {
             particles[i*2+1] = FloatMathUtils.sin(a) * l;
 
             final float c = TempUtils.RAND.nextFloatBetween(0.6f, 0.8f);
-            colors[i] = Color.rgb(c, c, c);
+            colors[i] = ColorU.rgb(c, c, c);
         }
 //
 //        for (int i=0;i<EXPLOSION_COUNT; i++) {
@@ -46,7 +46,7 @@ public class Explosion extends EngineObject {
 //            final float a = (float)i / EXPLOSION_COUNT * FloatMathUtils.TWO_PI;
 //            explosion[i*2] = FloatMathUtils.cos(a) * l;
 //            explosion[i*2+1] = FloatMathUtils.sin(a) * l;
-//            explosionColors[i] = Color.rgb(1f, TempUtils.RAND.nextFloatBetween(0.2f, 1f), 0f);
+//            explosionColors[i] = ColorU.rgb(1f, TempUtils.RAND.nextFloatBetween(0.2f, 1f), 0f);
 //        }
 
 

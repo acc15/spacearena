@@ -34,7 +34,7 @@ public class Java2DDrawContext implements DrawContext {
     }
 
     public void setColor(int color) {
-        graphics2D.setColor(new Color(color, ru.spacearena.engine.graphics.Color.hasAlpha(color)));
+        graphics2D.setColor(new Color(color, ColorU.hasAlpha(color)));
     }
 
     public void pushMatrix(Matrix matrix) {

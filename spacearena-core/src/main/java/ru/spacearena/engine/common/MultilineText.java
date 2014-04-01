@@ -2,7 +2,7 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.ColorU;
 import ru.spacearena.engine.graphics.DrawContext;
 
 /**
@@ -12,7 +12,7 @@ import ru.spacearena.engine.graphics.DrawContext;
 public class MultilineText extends EngineContainer<MultilineText.Line> {
 
     private float x = 0, y = 0;
-    private int color = Color.WHITE;
+    private int color = ColorU.WHITE;
 
     public static class Line extends EngineObject {
 

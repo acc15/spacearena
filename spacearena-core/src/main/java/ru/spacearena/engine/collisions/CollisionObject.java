@@ -4,7 +4,7 @@ import ru.spacearena.engine.common.PhysicalObject;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.primitives.ProjectionF;
 import ru.spacearena.engine.geometry.shapes.*;
-import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.ColorU;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.util.ShapeUtils;
 
@@ -153,7 +153,7 @@ public class CollisionObject extends PhysicalObject {
             return;
         }
         final BoundingBox2F b = getAABB();
-        context.setColor(Color.RED);
+        context.setColor(ColorU.RED);
         context.drawRect(b.getMinX(), b.getMinY(), b.getMaxX(), b.getMaxY());
     }
 
@@ -164,7 +164,7 @@ public class CollisionObject extends PhysicalObject {
         final float lw = context.getLineWidth();
         try {
             context.setLineWidth(3f);
-            context.setColor(Color.BLUE);
+            context.setColor(ColorU.BLUE);
             for (int i=0; i<getShapeCount(); i++) {
                 getWorldShape(i).stroke(context);
             }

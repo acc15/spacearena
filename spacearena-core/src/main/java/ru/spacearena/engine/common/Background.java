@@ -2,7 +2,7 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.ColorU;
 import ru.spacearena.engine.graphics.DrawContext;
 
 /**
@@ -15,7 +15,7 @@ public class Background extends EngineObject {
     private Engine engine;
 
     public Background() {
-        this(Color.BLACK);
+        this(ColorU.BLACK);
     }
 
     public Background(int color) {

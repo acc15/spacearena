@@ -147,7 +147,7 @@ public class Box2dBody extends Box2dObject {
         }
         if (getEngine().getDebug().isDrawVelocities()) {
             final float vx = body.getLinearVelocity().x, vy = body.getLinearVelocity().y;
-            context.setColor(Color.LIGHT_GRAY);
+            context.setColor(ColorU.LIGHT_GRAY);
             DrawUtils.drawArrow(context, smoothX, smoothY, smoothX + vx, smoothY + vy,
                     DrawUtils.HeadType.NONE, 0, DrawUtils.HeadType.ARROW, 1f);
         }
@@ -190,7 +190,7 @@ public class Box2dBody extends Box2dObject {
     protected void onDrawTransformed(DrawContext context) {
         super.onDraw(context);
         if (getEngine().getDebug().isDrawConvexShapes()) {
-            context.setColor(Color.GREEN);
+            context.setColor(ColorU.GREEN);
             drawBodyShapes(context, false);
         }
     }

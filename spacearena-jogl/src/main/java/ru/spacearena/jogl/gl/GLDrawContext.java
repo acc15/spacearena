@@ -1,5 +1,6 @@
 package ru.spacearena.jogl.gl;
 
+import ru.spacearena.engine.graphics.Color4F;
 import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.math.Matrix2FGL;
 

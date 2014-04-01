@@ -4,7 +4,7 @@ package ru.spacearena.engine.graphics;
  * @author Vyacheslav Mayorov
  * @since 2014-12-02
  */
-public class Color {
+public class ColorU {
 
     public static final int BLACK =         0xff000000;
     public static final int WHITE =         0xffffffff;
