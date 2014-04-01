@@ -1,43 +1,59 @@
 package ru.spacearena.jogl.shaders;
 
-import javax.media.opengl.GL2ES2;
+import ru.spacearena.engine.graphics.OpenGL;
 
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-29-03
 */
-public class Shader extends CompilableObject {
+public class Shader {
 
-    private final String[] source;
-    private final int type;
-    private final int[] status = new int[1];
+    private final String source;
+    private final OpenGL.ShaderType type;
 
-    public Shader(int type, String source) {
+    private int id;
+    private int c;
+
+    public Shader(OpenGL.ShaderType type, String source) {
         this.type = type;
-        this.source = new String[] {source};
+        this.source = source;
     }
 
-    @Override
-    protected int doCompile(GL2ES2 gl) {
-        final int id = gl.glCreateShader(type);
-        gl.glShaderSource(id, source.length, source, null);
-        gl.glCompileShader(id);
+    public boolean isCompiled() {
+        return c > 0;
+    }
 
-        gl.glGetShaderiv(id, GL2ES2.GL_COMPILE_STATUS, status, 0);
-        if (status[0] != GL2ES2.GL_FALSE) {
-            return id;
+    public int getId() {
+        return id;
+    }
+
+    public void compile(OpenGL gl) {
+        if (c == 0) {
+            this.id = doCompile(gl);
         }
-
-        gl.glGetShaderiv(id, GL2ES2.GL_INFO_LOG_LENGTH, status, 0);
-
-        final int logLength = status[0];
-        final byte[] buf = new byte[logLength];
-        gl.glGetShaderInfoLog(id, logLength, null, 0, buf, 0);
-
-        gl.glDeleteShader(id);
-
-        final String str = new String(buf, 0, logLength-1).trim();
-        throw new RuntimeException("Can't compile shader: " + str);
+        ++c;
     }
 
+    public void delete(OpenGL gl) {
+        if (c > 0) {
+            doDelete(gl);
+        }
+        --c;
+    }
+
+    private int doCompile(OpenGL gl) {
+        final int id = gl.createShader(type);
+        gl.shaderSource(id, source);
+        gl.compileShader(id);
+        if (gl.getShader(id, OpenGL.ShaderParam.COMPILE_STATUS) == 0) {
+            final String log = gl.getShaderInfoLog(id);
+            gl.deleteShader(id);
+            throw new RuntimeException("Can't compile shader: " + log);
+        }
+        return id;
+    }
+
+    private void doDelete(OpenGL gl) {
+        gl.deleteShader(getId());
+    }
 }

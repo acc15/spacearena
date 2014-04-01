@@ -26,6 +26,8 @@ import static ru.spacearena.engine.util.FloatMathUtils.isZero;
 */
 public final class Matrix2FGL {
 
+    public static final int ELEMENTS_PER_MATRIX = 6;
+
     public final float[] m = new float[] {
         1,0,0,0,
         0,1,0,0,
@@ -252,15 +254,24 @@ public final class Matrix2FGL {
         return !isZero(determinant());
     }
 
+    public boolean isCloseTo(Matrix2FGL v) {
+        return isEqual(m[0], v.m[0]) && isEqual(m[1], v.m[1]) &&
+                isEqual(m[4], v.m[4]) && isEqual(m[5], v.m[5]) &&
+                isEqual(m[12], v.m[12]) && isEqual(m[13], v.m[13]);
+    }
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Matrix2FGL && equals((Matrix2FGL)obj);
     }
 
     public boolean equals(Matrix2FGL v) {
-        return isEqual(m[0], v.m[0]) && isEqual(m[1], v.m[1]) &&
-               isEqual(m[4], v.m[4]) && isEqual(m[5], v.m[5]) &&
-               isEqual(m[12], v.m[12]) && isEqual(m[13], v.m[13]);
+        return m[0] == v.m[0] &&
+               m[1] == v.m[1] &&
+               m[4] == v.m[4] &&
+               m[5] == v.m[5] &&
+               m[12] == v.m[12] &&
+               m[13] == v.m[13];
     }
 
     @Override
@@ -379,6 +390,24 @@ public final class Matrix2FGL {
 
     public Point2F invertTransformVector(Point2F pt) {
         return invertTransformVector(pt, pt);
+    }
+
+    public void fromArrayCompact(float[] a, int offset) {
+        m[0]  = a[  offset];
+        m[1]  = a[++offset];
+        m[4]  = a[++offset];
+        m[5]  = a[++offset];
+        m[12] = a[++offset];
+        m[13] = a[++offset];
+    }
+
+    public void toArrayCompact(float[] a, int offset) {
+        a[  offset] = m[0];
+        a[++offset] = m[1];
+        a[++offset] = m[4];
+        a[++offset] = m[5];
+        a[++offset] = m[12];
+        a[++offset] = m[13];
     }
 
 }
