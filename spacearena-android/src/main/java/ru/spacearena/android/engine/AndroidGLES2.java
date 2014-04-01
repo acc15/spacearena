@@ -263,4 +263,15 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glUniform4fv(location, count, buf);
     }
 
+    public void drawArrays(PrimitiveType type, int offset, int count) {
+        GLES20.glDrawArrays(type.glCode(), offset, count);
+    }
+
+    public void drawElements(PrimitiveType type, int count, Type indexType, Buffer indices) {
+        GLES20.glDrawElements(type.glCode(), count, indexType.glCode(), indices);
+    }
+
+    public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset) {
+        GLES20.glDrawElements(type.glCode(), count, indexType.glCode(), indexOffset);
+    }
 }

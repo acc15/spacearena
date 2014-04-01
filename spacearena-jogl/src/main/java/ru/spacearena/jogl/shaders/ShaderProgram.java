@@ -4,6 +4,7 @@ import cern.colt.list.IntArrayList;
 import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.math.Matrix2FGL;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +104,11 @@ public class ShaderProgram {
             uniformLocations.add(uniformLoc);
         }
         return programId;
+    }
+
+    public void bindAttr(OpenGL gl, int attr, int count, int stride, Buffer buf) {
+        gl.vertexAttribPointer(attr, count, OpenGL.Type.FLOAT, false, stride, buf);
+        gl.enableVertexAttribArray(attr);
     }
 
     public void bindAttr(OpenGL gl, int attr, int floatsPerAttr, int floatsPerVertex, int offset) {

@@ -1,5 +1,6 @@
 package ru.spacearena.jogl.gl;
 
+import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.math.Matrix2FGL;
 
 /**
@@ -12,51 +13,36 @@ public class GLDrawContext {
 
     private OpenGL gl;
 
-    private float r,g,b,a;
-    private float[] matrixStack = new float[Matrix2FGL.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
+    public final Color4F color = new Color4F();
+    private final Matrix2FGL activeMatrix = new Matrix2FGL();
+    private final float[] matrixStack = new float[Matrix2FGL.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
     private int matrixDepth = 0;
-    private Matrix2FGL activeMatrix = new Matrix2FGL();
+
+    public GLDrawContext(OpenGL gl) {
+        this.gl = gl;
+    }
 
     public void pushMatrix(Matrix2FGL m) {
-        activeMatrix.toArrayCompact(matrixStack, matrixDepth * 6);
-        activeMatrix.set(m);
+        activeMatrix.toArrayCompact(matrixStack, matrixDepth * Matrix2FGL.ELEMENTS_PER_MATRIX);
+        activeMatrix.postMultiply(m);
     }
 
     public void popMatrix() {
+        if (matrixDepth <= 0) {
+            throw new IllegalStateException("Empty matrix stack");
+        }
         --matrixDepth;
-        activeMatrix.fromArrayCompact(matrixStack, matrixDepth * 6);
+        activeMatrix.fromArrayCompact(matrixStack, matrixDepth * Matrix2FGL.ELEMENTS_PER_MATRIX);
     }
 
-    public void setColor(float r, float g, float b) {
-        setColor(r,g,b,1);
-    }
-
-    public void setColor(float r, float g, float b, float a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
-    }
-
-    public void drawRect(float x1, float y1, float x2, float y2) {
-
-    }
-
-    public void drawPoly(float[] points) {
-
+    public void clear() {
+        gl.clearColor(color.r,color.g,color.b,color.a);
+        gl.clear(OpenGL.COLOR_BUFFER_BIT);
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {
 
-    }
-
-    public void fillPoly(float[] points) {
 
     }
-
-    public void fillRect(float x1, float y1, float x2, float y2) {
-
-    }
-
 
 }

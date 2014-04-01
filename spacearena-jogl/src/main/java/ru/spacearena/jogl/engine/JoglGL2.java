@@ -143,14 +143,6 @@ public class JoglGL2 implements OpenGL {
         gl2.glBufferData(type.glCode(), bufferSize, buffer, usage.glCode());
     }
 
-    public void enableVertexAttribArray(int attrIndex) {
-        gl2.glEnableVertexAttribArray(attrIndex);
-    }
-
-    public void disableVertexAttribArray(int attrIndex) {
-        gl2.glDisableVertexAttribArray(attrIndex);
-    }
-
     public void vertexAttribPointer(int attrIndex, int valueCount, Type type, boolean normalized, int stride, Buffer buffer) {
         gl2.glVertexAttribPointer(attrIndex, valueCount, type.glCode(), normalized, stride, buffer);
     }
@@ -279,4 +271,23 @@ public class JoglGL2 implements OpenGL {
         gl2.glUniform4fv(location, count, buf);
     }
 
+    public void enableVertexAttribArray(int attrIndex) {
+        gl2.glEnableVertexAttribArray(attrIndex);
+    }
+
+    public void disableVertexAttribArray(int attrIndex) {
+        gl2.glDisableVertexAttribArray(attrIndex);
+    }
+
+    public void drawArrays(PrimitiveType type, int offset, int count) {
+        gl2.glDrawArrays(type.glCode(), offset, count);
+    }
+
+    public void drawElements(PrimitiveType type, int count, Type indexType, Buffer indices) {
+        gl2.glDrawElements(type.glCode(), count, indexType.glCode(), indices);
+    }
+
+    public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset) {
+        gl2.glDrawElements(type.glCode(), count, indexType.glCode(), indexOffset);
+    }
 }

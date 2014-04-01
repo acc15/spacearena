@@ -24,6 +24,22 @@ public interface OpenGL {
     public static final int STENCIL_BUFFER_BIT = 0x00000400;
     public static final int COLOR_BUFFER_BIT = 0x00004000;
 
+    public enum PrimitiveType {
+        POINTS(0x0000),
+        LINES(0x0001),
+        LINE_LOOP(0x0002),
+        LINE_STRIP(0x0003),
+        TRIANGLES(0x0004),
+        TRIANGLE_STRIP(0x0005),
+        TRIANGLE_FAN(0x0006);
+
+        private int glCode;
+        PrimitiveType(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+    }
+
     public enum BufferUsage {
         STREAM_DRAW(0x88E0),
         STATIC_DRAW(0x88E4),
@@ -184,5 +200,8 @@ public interface OpenGL {
     void enableVertexAttribArray(int attrIndex);
     void disableVertexAttribArray(int attrIndex);
 
+    void drawArrays(PrimitiveType type, int offset, int count);
+    public void drawElements(PrimitiveType type, int count, Type indexType, Buffer indices);
+    public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset);
 
 }

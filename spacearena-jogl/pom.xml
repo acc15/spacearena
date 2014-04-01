@@ -37,7 +37,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.spacearena.jogl.JoglListener</mainClass>
+                            <mainClass>ru.spacearena.jogl.JoglWindow</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
