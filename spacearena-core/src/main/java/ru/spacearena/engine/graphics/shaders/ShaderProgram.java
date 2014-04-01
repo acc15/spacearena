@@ -1,8 +1,8 @@
 package ru.spacearena.engine.graphics.shaders;
 
 import cern.colt.list.IntArrayList;
+import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.math.Matrix2FGL;
 
 import java.nio.Buffer;
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class ShaderProgram {
         gl.enableVertexAttribArray(attr);
     }
 
-    public void bindMatrix(OpenGL gl, int index, Matrix2FGL matrix) {
+    public void bindMatrix(OpenGL gl, int index, Matrix matrix) {
         gl.uniformMatrix4(uniformLocations.get(index), 1, matrix.m, 0);
     }
 

@@ -3,7 +3,7 @@ package ru.spacearena.game;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.geometry.shapes.Rect2FPR;
-import ru.spacearena.engine.graphics.ColorU;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -54,6 +54,8 @@ public class Sky extends EngineObject {
 
         final float sd2 = starDistance*2;
 
+        // TODO
+
         bounds.set(viewport.getBounds());
         bounds.halfSize.add(sd2);
         bounds.halfSize.div(scale);
@@ -85,8 +87,8 @@ public class Sky extends EngineObject {
 //                        DrawUtils.HeadType.ARROW, 1f);
 
                 final int bright = random.nextInt(256);
-                context.setColor(ColorU.rgb(bright, bright, 0xff));
-                context.fillRect(sx-halfSize, sy-halfSize, sx+halfSize, sy+halfSize);
+                //context.setColor(ColorU.rgb(bright, bright, 0xff));
+                //context.fillRect(sx-halfSize, sy-halfSize, sx+halfSize, sy+halfSize);
             }
         }
     }

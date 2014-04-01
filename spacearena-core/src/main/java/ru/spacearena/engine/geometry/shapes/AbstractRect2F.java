@@ -41,13 +41,4 @@ public abstract class AbstractRect2F extends AbstractPolyShape2F implements Boun
         }
     }
 
-    @Override
-    public void stroke(DrawContext drawContext) {
-        drawContext.drawRect(getMinX(), getMinY(), getMaxX(), getMaxY());
-    }
-
-    @Override
-    public void fill(DrawContext drawContext) {
-        drawContext.fillRect(getMinX(), getMinY(), getMaxX(), getMaxY());
-    }
 }

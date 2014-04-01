@@ -3,21 +3,9 @@ package ru.spacearena.game;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
-import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.common.Background;
+import ru.spacearena.engine.common.GenericContainer;
 import ru.spacearena.engine.events.InputType;
-import ru.spacearena.engine.events.KeyCode;
-import ru.spacearena.engine.events.trackers.InputTracker;
-import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
-import ru.spacearena.engine.geometry.shapes.Rect2FPP;
-import ru.spacearena.engine.integration.box2d.Box2dObject;
-import ru.spacearena.engine.integration.box2d.Box2dWorld;
-import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.TempUtils;
-import ru.spacearena.game.ship.Ship;
-
-import java.awt.event.MouseEvent;
 
 /**
  * @author Vyacheslav Mayorov
@@ -35,7 +23,8 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.TOUCH);
 
         final GenericContainer root = new GenericContainer(engine);
-
+        root.add(new Background());
+        /*
         final MultilineText.Line fpsText = new MultilineText.Line();
         final MultilineText.Line positionText = new MultilineText.Line();
         final MultilineText.Line viewportText = new MultilineText.Line();
@@ -185,9 +174,8 @@ public class GameFactory implements EngineFactory {
                 return true;
             }
         });
-
         root.add(multilineText);
-
+        */
         return root;
     }
 

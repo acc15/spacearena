@@ -1,4 +1,4 @@
-package ru.spacearena.engine.math;
+package ru.spacearena.engine.graphics;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -18,13 +18,13 @@ import static ru.spacearena.engine.util.FloatMathUtils.isZero;
  * 0   0   0   1
  * </pre>
  *
- * The matrix is 4x4 array - only
- * just to be compatible with OpenGL 2 [ES 2] graphics pipeline (vertex shader in essence)
+ * The matrix is 4x4 array - only just to be compatible with OpenGL 2 [ES 2] graphics pipeline
+ * (vertex shader in essence)
  *
 * @author Vyacheslav Mayorov
 * @since 2014-31-03
 */
-public final class Matrix2FGL {
+public final class Matrix {
 
     public static final int ELEMENTS_PER_MATRIX = 6;
 
@@ -35,14 +35,14 @@ public final class Matrix2FGL {
         0,0,0,1
     };
 
-    public Matrix2FGL() {
+    public Matrix() {
     }
 
-    public Matrix2FGL(float[] m) {
+    public Matrix(float[] m) {
         set(m);
     }
 
-    public Matrix2FGL(Matrix2FGL m) {
+    public Matrix(Matrix m) {
         set(m);
     }
 
@@ -140,7 +140,7 @@ public final class Matrix2FGL {
         m[5] += m1*sx;
     }
 
-    public void preMultiply(Matrix2FGL a) {
+    public void preMultiply(Matrix a) {
         final float[] n = a.m;
 
         final float m0 = m[0];
@@ -156,7 +156,7 @@ public final class Matrix2FGL {
         m[13] = n[1]*m12+n[5]*m[13]+n[13];
     }
 
-    public void postMultiply(Matrix2FGL a) {
+    public void postMultiply(Matrix a) {
         final float[] n = a.m;
 
         final float m0 = m[0], m4 = m[4];
@@ -188,13 +188,102 @@ public final class Matrix2FGL {
         this.m[13] = m[13];
     }
 
-    public void set(Matrix2FGL matrix) {
+    public void set(Matrix matrix) {
         m[0] = matrix.m[0];
         m[1] = matrix.m[1];
         m[4] = matrix.m[4];
         m[5] = matrix.m[5];
         m[12] = matrix.m[12];
         m[13] = matrix.m[13];
+    }
+
+    /**
+     * Same as <pre>
+     *     identity();
+     *     preRotate(nx, ny);
+     *     preTranslate(tx, ty);
+     * </pre>
+     * @param nx rotate normal X
+     * @param ny rotate normal Y
+     * @param tx translate X
+     * @param ty translate Y
+     */
+    public void setTransform(float nx, float ny, float tx, float ty) {
+        set(nx,ny,-ny,nx,tx,ty);
+    }
+
+    /**
+     * Same as <pre>
+     *     identity();
+     *     preRotate(angrad);
+     *     preTranslate(tx, ty);
+     * </pre>
+     * @param angrad rotate radians
+     * @param tx translate X
+     * @param ty translate Y
+     */
+    public void setTransform(float angrad, float tx, float ty) {
+        setTransform(FloatMathUtils.cos(angrad), FloatMathUtils.sin(angrad), tx, ty);
+    }
+
+    /**
+     * Same as <pre>
+     *     identity();
+     *     preTranslate(-px, -py);
+     *     preScale(sx, sy);
+     *     preShear(kx, ky);
+     *     preRotate(angrad);
+     *     preTranslate(tx, ty);
+     * </pre>
+     * @param px pivot X
+     * @param py pivot Y
+     * @param sx scale X
+     * @param sy scale Y
+     * @param kx shear X
+     * @param ky shear Y
+     * @param angrad rotate radians
+     * @param tx translate X
+     * @param ty translate Y
+     */
+    public void setTransform(float px, float py,
+                             float sx, float sy,
+                             float kx, float ky,
+                             float angrad,
+                             float tx, float ty) {
+        setTransform(px, py, sx, sy, kx, ky, FloatMathUtils.cos(angrad), FloatMathUtils.sin(angrad), tx, ty);
+    }
+
+    /**
+     * Same as <pre>
+     *     identity();
+     *     preTranslate(-px, -py);
+     *     preScale(sx, sy);
+     *     preShear(kx, ky);
+     *     preRotate(nx, ny);
+     *     preTranslate(tx, ty);
+     * </pre>
+     * @param px pivot X
+     * @param py pivot Y
+     * @param sx scale X
+     * @param sy scale Y
+     * @param kx shear X
+     * @param ky shear Y
+     * @param nx rotate normal X
+     * @param ny rotate normal Y
+     * @param tx translate X
+     * @param ty translate Y
+     */
+    public void setTransform(float px, float py,
+                             float sx, float sy,
+                             float kx, float ky,
+                             float nx, float ny,
+                             float tx, float ty) {
+        set(nx*sx - ny*ky*sx,
+            ny*sx + nx*ky*sx,
+            nx*kx*sy - ny*sy,
+            ny*kx*sy + nx*sy,
+            tx + ny*ky*sx*px - nx*sx*px - kx*sy*py - sy*py,
+            ty - nx*ky*sx*px - ny*sx*px - kx*sy*py - sy*py);
     }
 
     public float transformVectorX(float x, float y) { return m[0] * x + m[4] * y; }
@@ -246,6 +335,11 @@ public final class Matrix2FGL {
         return true;
     }
 
+    public void inverse(Matrix matrix) {
+        set(matrix);
+        invert();
+    }
+
     public float determinant() {
         return m[0]*m[5]-m[1]*m[4];
     }
@@ -254,7 +348,7 @@ public final class Matrix2FGL {
         return !isZero(determinant());
     }
 
-    public boolean isCloseTo(Matrix2FGL v) {
+    public boolean isCloseTo(Matrix v) {
         return isEqual(m[0], v.m[0]) && isEqual(m[1], v.m[1]) &&
                 isEqual(m[4], v.m[4]) && isEqual(m[5], v.m[5]) &&
                 isEqual(m[12], v.m[12]) && isEqual(m[13], v.m[13]);
@@ -262,10 +356,10 @@ public final class Matrix2FGL {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Matrix2FGL && equals((Matrix2FGL)obj);
+        return obj instanceof Matrix && equals((Matrix)obj);
     }
 
-    public boolean equals(Matrix2FGL v) {
+    public boolean equals(Matrix v) {
         return m[0] == v.m[0] &&
                m[1] == v.m[1] &&
                m[4] == v.m[4] &&
@@ -392,6 +486,17 @@ public final class Matrix2FGL {
         return invertTransformVector(pt, pt);
     }
 
+    public void transformPoints(float[] src, int srcOffset, float[] dst, int dstOffset, int count) {
+        for (int i=0; i<count; i++) {
+            final float srcX = src[i*2+srcOffset];
+            final float srcY = src[i*2+srcOffset+1];
+            final float dstX = transformPointX(srcX, srcY);
+            final float dstY = transformPointY(srcX, srcY);
+            dst[i*2+dstOffset] = dstX;
+            dst[i*2+dstOffset] = dstY;
+        }
+    }
+
     public void fromArrayCompact(float[] a, int offset) {
         m[0]  = a[  offset];
         m[1]  = a[++offset];
@@ -410,14 +515,4 @@ public final class Matrix2FGL {
         a[++offset] = m[13];
     }
 
-    public void transformPoints(float[] src, int srcOffset, float[] dst, int dstOffset, int count) {
-        for (int i=0; i<count; i++) {
-            final float srcX = src[i*2+srcOffset];
-            final float srcY = src[i*2+srcOffset+1];
-            final float dstX = transformPointX(srcX, srcY);
-            final float dstY = transformPointY(srcX, srcY);
-            dst[i*2+dstOffset] = dstX;
-            dst[i*2+dstOffset] = dstY;
-        }
-    }
 }

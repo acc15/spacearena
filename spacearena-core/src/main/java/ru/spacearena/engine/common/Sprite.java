@@ -1,14 +1,16 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineEntity;
-import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-14-02
  */
-public class Sprite extends Transform<EngineEntity> implements BoundingBox2F {
+public class Sprite extends Transform<EngineEntity> /*implements BoundingBox2F*/ {
 
+
+
+    /*
     private final Image image;
 
     public Sprite(Image image) {
@@ -62,5 +64,6 @@ public class Sprite extends Transform<EngineEntity> implements BoundingBox2F {
         super.onDrawTransformed(context);
         context.drawImage(image, 0, 0);
     }
+    */
 
 }

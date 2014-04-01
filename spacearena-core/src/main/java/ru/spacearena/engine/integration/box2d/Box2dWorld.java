@@ -155,6 +155,7 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         super.onUpdate(dt);
     }
 
+    /* TODO check
     @Override
     public void onDraw(DrawContext context) {
         final float lw = context.getLineWidth();
@@ -164,5 +165,5 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
         } finally {
             context.setLineWidth(lw);
         }
-    }
+    }*/
 }

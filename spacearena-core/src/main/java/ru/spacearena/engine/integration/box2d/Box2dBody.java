@@ -1,16 +1,16 @@
 package ru.spacearena.engine.integration.box2d;
 
 import org.jbox2d.callbacks.ContactImpulse;
-import org.jbox2d.collision.shapes.*;
+import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.contacts.Contact;
-import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.*;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
@@ -19,8 +19,9 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class Box2dBody extends Box2dObject {
 
+    private final Matrix matrix = new Matrix();
+
     private boolean live = true;
-    private Matrix matrix;
     private Body body;
 
 
@@ -81,7 +82,7 @@ public class Box2dBody extends Box2dObject {
         smoothX = prevX = body.getPosition().x;
         smoothY = prevY = body.getPosition().y;
         smoothAngle = prevAngle = body.getAngle();
-        matrix.set(smoothX, smoothY, smoothAngle);
+        matrix.setTransform(smoothAngle, smoothX, smoothY);
     }
 
     protected void onPreCreate(BodyDef bodyDef) {
@@ -90,14 +91,8 @@ public class Box2dBody extends Box2dObject {
     protected void onPostCreate(Body body) {
     }
 
-    @Override
-    public void onAttach(Engine engine) {
-        super.onAttach(engine);
-        matrix = engine.createMatrix();
-    }
-
     public Point2F mapPoint(Point2F pt, Point2F out) {
-        matrix.mapPoint(pt, out);
+        matrix.transformPoint(pt, out);
         return out;
     }
 
@@ -133,7 +128,7 @@ public class Box2dBody extends Box2dObject {
             smoothX = newX;
             smoothY = newY;
             smoothAngle = newAngle;
-            matrix.set(smoothX, smoothY, smoothAngle);
+            matrix.setTransform(smoothAngle, smoothX, smoothY);
         }
     }
 
@@ -147,9 +142,10 @@ public class Box2dBody extends Box2dObject {
         }
         if (getEngine().getDebug().isDrawVelocities()) {
             final float vx = body.getLinearVelocity().x, vy = body.getLinearVelocity().y;
-            context.setColor(ColorU.LIGHT_GRAY);
-            DrawUtils.drawArrow(context, smoothX, smoothY, smoothX + vx, smoothY + vy,
-                    DrawUtils.HeadType.NONE, 0, DrawUtils.HeadType.ARROW, 1f);
+            // TODO
+            //context.color.set(Color.LIGHT_GRAY);
+            //DrawUtils.drawArrow(context, smoothX, smoothY, smoothX + vx, smoothY + vy,
+            //        DrawUtils.HeadType.NONE, 0, DrawUtils.HeadType.ARROW, 1f);
         }
     }
 
@@ -190,23 +186,25 @@ public class Box2dBody extends Box2dObject {
     protected void onDrawTransformed(DrawContext context) {
         super.onDraw(context);
         if (getEngine().getDebug().isDrawConvexShapes()) {
-            context.setColor(ColorU.GREEN);
-            drawBodyShapes(context, false);
+            drawBodyShapes(context, Color.GREEN, false);
         }
     }
 
-    protected final void drawBodyShapes(DrawContext context, boolean fill) {
+    protected final void drawBodyShapes(DrawContext context, Color color, boolean fill) {
         for (Fixture f = body.getFixtureList(); f != null; f = f.getNext()) {
             final Shape shape = f.getShape();
-            drawShape(context, fill, shape);
+            // TODO
+            //drawShape(context, fill, shape);
         }
     }
 
+    /*
     protected final void drawShape(DrawContext context, boolean fill, Shape shape) {
         switch (shape.getType()) {
         case EDGE:
             drawEdge(context, (EdgeShape)shape);
             break;
+
 
         case CIRCLE:
             final CircleShape circle = (CircleShape) shape;
@@ -252,6 +250,7 @@ public class Box2dBody extends Box2dObject {
     private void drawEdge(DrawContext context, EdgeShape edgeShape) {
         context.drawLine(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y, edgeShape.m_vertex2.x, edgeShape.m_vertex2.y);
     }
+    */
 
     public void onCollision(Box2dBody object, boolean isReference, Contact contact, ContactImpulse impulse) {
     }

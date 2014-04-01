@@ -4,6 +4,7 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.ShapeUtils;
 
@@ -15,7 +16,7 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
 
     private final ViewportAdjustStrategy adjustStrategy;
     private final Rect2FPP bounds = new Rect2FPP();
-    private Matrix localSpace;
+    private Matrix localSpace = new Matrix();
 
     public Viewport() {
         this(new DefaultAdjustStrategy());
@@ -95,7 +96,6 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
     @Override
     public void onAttach(Engine engine) {
         super.onAttach(engine);
-        localSpace = engine.createMatrix();
         adjustStrategy.initViewport(engine.getWidth(), engine.getHeight(), this);
     }
 
@@ -113,7 +113,7 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
     @Override
     protected void onMatrixUpdate() {
         localSpace.inverse(getWorldSpace());
-        bounds.set(0, 0, getEngine().getWidth(), getEngine().getHeight());
+        bounds.set(-1, 1, 1, -1);
         ShapeUtils.computeBoundingBox(bounds, bounds, getWorldSpace());
     }
 

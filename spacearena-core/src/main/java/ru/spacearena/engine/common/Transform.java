@@ -1,8 +1,9 @@
 package ru.spacearena.engine.common;
 
-import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineEntity;
+import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
@@ -13,15 +14,13 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     private static final int MATRIX_DIRTY = 1;
 
-    private Matrix worldSpace;
+    private final Matrix worldSpace = new Matrix();
 
     private float positionX = 0f, positionY = 0f;
     private float scaleX = 1f, scaleY = 1f;
     private float skewX = 0f, skewY = 0f;
     private float pivotX = 0f, pivotY = 0f;
     private float angle = 0f;
-
-    private float alpha = 1.0f;
 
     private int dirty = 0;
 
@@ -39,14 +38,6 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     private void resetDirty() {
         this.dirty = 0;
-    }
-
-    public float getAlpha() {
-        return alpha;
-    }
-
-    public void setAlpha(float alpha) {
-        this.alpha = alpha;
     }
 
     public float getPositionX() {
@@ -196,37 +187,9 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
         return getWorldSpace();
     }
 
-    public void onAttach(Engine engine) {
-        this.worldSpace = engine.createMatrix();
-        super.onAttach(engine);
-    }
-
     @Override
     public void onDraw(DrawContext context) {
-        final float prevAlpha = context.getAlpha();
-        final float newAlpha = alpha * prevAlpha;
-        if (FloatMathUtils.isZero(newAlpha)) {
-            return;
-        }
-        if (FloatMathUtils.isOne(newAlpha)) {
-            onDrawAlpha(context);
-            return;
-        }
-        try {
-            context.setAlpha(newAlpha);
-            onDrawAlpha(context);
-        } finally {
-            context.setAlpha(prevAlpha);
-        }
-    }
-
-    protected void onDrawAlpha(DrawContext context) {
-        final Matrix viewMatrix = getViewMatrix();
-        if (viewMatrix.isIdentity()) {
-            onDrawTransformed(context);
-            return;
-        }
-        context.pushMatrix(viewMatrix);
+        context.pushMatrix(getViewMatrix());
         try {
             onDrawTransformed(context);
         } finally {
@@ -248,7 +211,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
             return;
         }
         resetDirty();
-        worldSpace.set(pivotX, pivotY, scaleX, scaleY, skewX, skewY, angle, positionX, positionY);
+        worldSpace.setTransform(pivotX, pivotY, scaleX, scaleY, skewX, skewY, angle, positionX, positionY);
         onMatrixUpdate();
     }
 

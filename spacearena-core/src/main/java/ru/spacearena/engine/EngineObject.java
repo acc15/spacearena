@@ -1,6 +1,7 @@
 package ru.spacearena.engine;
 
 import ru.spacearena.engine.events.InputEvent;
+import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov

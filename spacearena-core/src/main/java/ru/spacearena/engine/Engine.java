@@ -3,6 +3,7 @@ package ru.spacearena.engine;
 import ru.spacearena.engine.events.EngineEvent;
 import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.timing.NanoTimer;
 import ru.spacearena.engine.timing.Timer;
 
@@ -173,7 +174,5 @@ public abstract class Engine {
     public Debug getDebug() {
         return debug;
     }
-
-    protected abstract Image loadImage(String resource);
 
 }

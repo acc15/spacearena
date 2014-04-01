@@ -10,9 +10,8 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.common.Sprite;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.ColorU;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -135,22 +134,23 @@ public class Ship extends GameBody {
     public void onSmooth(float dt, float ratio, float prevRatio) {
         super.onSmooth(dt, ratio, prevRatio);
         damageTime = FloatMathUtils.max(0f, damageTime - dt);
-        ((Sprite)getChild(1)).setAlpha(damageTime/DAMAGE_TIME);
+        //((Sprite)getChild(1)).setAlpha(damageTime/DAMAGE_TIME);
+        // TODO
     }
 
     public void onPostCreate(Body body) {
 
-        final Sprite sprite = new Sprite(getEngine().getImage("ship.png"));
-        final float pivotX = sprite.getWidth() / 3, pivotY = sprite.getHeight() / 2, scale = 6 / sprite.getWidth();
+        //final Sprite sprite = new Sprite(getEngine().getImage("ship.png"));
+        //final float pivotX = sprite.getWidth() / 3, pivotY = sprite.getHeight() / 2, scale = 6 / sprite.getWidth();
 
-        sprite.setPivot(pivotX, pivotY);
-        sprite.setScale(scale);
-        add(sprite);
+        //sprite.setPivot(pivotX, pivotY);
+        //sprite.setScale(scale);
+        //add(sprite);
 
-        final Sprite mask = new Sprite(getEngine().getImage("ship_mask.png"));
-        mask.setPivot(pivotX, pivotY);
-        mask.setScale(scale);
-        add(mask);
+        //final Sprite mask = new Sprite(getEngine().getImage("ship_mask.png"));
+        //mask.setPivot(pivotX, pivotY);
+        //mask.setScale(scale);
+        //add(mask);
 
         final PolygonShape shape = new PolygonShape();
         shape.set(LOCAL_SHAPE, LOCAL_SHAPE.length);
@@ -165,6 +165,7 @@ public class Ship extends GameBody {
     @Override
     public void onDraw(DrawContext context) {
         super.onDraw(context);
+        /* TODO
         final float left = getPositionX() - 2f,
                     top = getPositionY() - 5f,
                     right = getPositionX() + 2f,
@@ -173,5 +174,6 @@ public class Ship extends GameBody {
         context.drawRect(left, top, right, bottom);
         context.setColor(ColorU.GREEN);
         context.fillRect(left, top, left + (right-left) * health, bottom);
+        */
     }
 }

@@ -11,8 +11,6 @@ public interface Shape2F {
 
     boolean obtainAxis(int n, boolean reference, Shape2F shape, Point2F axis);
     void calculateProjection(Point2F axis, ProjectionF projection);
-    void stroke(DrawContext drawContext);
-    void fill(DrawContext drawContext);
     ShapeType getType();
 
 }

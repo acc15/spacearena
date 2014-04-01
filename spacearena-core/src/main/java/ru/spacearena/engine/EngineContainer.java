@@ -1,8 +1,10 @@
 package ru.spacearena.engine;
 
 import ru.spacearena.engine.events.InputEvent;
+import ru.spacearena.engine.graphics.DrawContext;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Vyacheslav Mayorov
@@ -25,10 +27,6 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
             throw new NullPointerException("Attempt to get engine before object initialization");
         }
         return engine;
-    }
-
-    public void prepend(T entity) {
-
     }
 
     public void add(T entity) {

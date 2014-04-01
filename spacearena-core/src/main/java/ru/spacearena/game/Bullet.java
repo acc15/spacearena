@@ -6,7 +6,8 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.contacts.Contact;
-import ru.spacearena.engine.graphics.ColorU;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.game.ship.Ship;
 
@@ -62,15 +63,7 @@ public class Bullet extends GameBody {
 
     @Override
     protected void onDrawTransformed(DrawContext context) {
-        context.setColor(ColorU.RED);
-        drawBodyShapes(context, true);
+        drawBodyShapes(context, Color.RED, true);
     }
 
-    /*
-    @Override
-    public boolean onUpdate(float seconds) {
-        return super.onUpdate(seconds) &&
-               FloatMathUtils.inRange(getX(), bounds.getMinX(), bounds.getMaxX()) &&
-               FloatMathUtils.inRange(getY(), bounds.getMinY(), bounds.getMaxY());
-    }*/
 }

@@ -1,7 +1,7 @@
 package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.ColorU;
+import ru.spacearena.engine.graphics.DrawContext;
 
 import java.util.List;
 
@@ -26,6 +26,7 @@ public class EngineFlame extends EngineObject {
         int i = 0;
         boolean hasPrev = false;
 
+        /* TODO
         final float lw = context.getLineWidth();
         try {
             for (FlameParticle p: particles) {
@@ -43,5 +44,6 @@ public class EngineFlame extends EngineObject {
         } finally {
             context.setLineWidth(lw);
         }
+        */
     }
 }

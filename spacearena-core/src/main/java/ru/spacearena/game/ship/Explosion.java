@@ -1,9 +1,7 @@
 package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.ColorU;
-import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.TempUtils;
+import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov
@@ -29,6 +27,7 @@ public class Explosion extends EngineObject {
         this.x = x;
         this.y = y;
 
+        /* TODO
         for (int i=0;i<PARTICLE_COUNT; i++) {
             final float l = TempUtils.RAND.nextFloatBetween(0, 4f);
             final float a = i < PARTICLE_COUNT/4 ? TempUtils.RAND.nextFloatBetween(0, FloatMathUtils.TWO_PI)
@@ -38,7 +37,7 @@ public class Explosion extends EngineObject {
 
             final float c = TempUtils.RAND.nextFloatBetween(0.6f, 0.8f);
             colors[i] = ColorU.rgb(c, c, c);
-        }
+        }*/
 //
 //        for (int i=0;i<EXPLOSION_COUNT; i++) {
 //            final float l = TempUtils.RAND.nextFloatBetween(3f, 6f);
@@ -64,6 +63,7 @@ public class Explosion extends EngineObject {
 
     @Override
     public void onDraw(DrawContext context) {
+        /*
         final float lw = context.getLineWidth();
         try {
             context.setLineWidth(0f);
@@ -78,25 +78,10 @@ public class Explosion extends EngineObject {
                 context.setColor(color);
                 context.drawLine(px, py, px + dx, py + dy);
             }
-/*
-            for (int i = 0; i < EXPLOSION_COUNT; i++) {
-                final int color = explosionColors[i];
-                final float dx = explosion[i * 2];
-                final float dy = explosion[i * 2 + 1];
-                final float r = 0.2f;
-                for (int j=0; j<3; j++) {
-                    final float m = (float)(j+1)/5;
-                    final float px = x + dx * duration * m;
-                    final float py = y + dy * duration * m;
-                    context.setAlpha(m);
-                    context.setColor(color);
-                    context.fillRect(px - r, py - r, px + r, py + r);
-                }
-            }
             context.setAlpha(1.0f);
- */
         } finally {
             context.setLineWidth(lw);
         }
+        */
     }
 }

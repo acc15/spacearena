@@ -4,32 +4,32 @@ import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
-import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.timing.NanoTimer;
-import ru.spacearena.engine.timing.Timer;
-import ru.spacearena.jogl.engine.JoglAdapter;
-import ru.spacearena.jogl.engine.JoglListener;
+import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.game.GameFactory;
+import ru.spacearena.jogl.engine.JoglEngine;
+import ru.spacearena.jogl.engine.JoglGL2;
 
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLProfile;
+import javax.media.opengl.*;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-28-03
  */
-public class JoglWindow implements JoglListener {
+public class JoglWindow implements GLEventListener {
 
-    private volatile boolean running = true;
+    private final EngineFactory factory;
 
-    public static void main(String[] args) {
+    private JoglEngine engine;
+    private final JoglGL2 gl = new JoglGL2();
+    private final DrawContext context = new DrawContext(gl);
 
-        final JoglWindow w = new JoglWindow();
+    public JoglWindow(EngineFactory factory) {
+        this.factory = factory;
+    }
 
-        final GLProfile glp = GLProfile.getDefault();
-        final GLCapabilities caps = new GLCapabilities(glp);
-
-        final GLWindow window = GLWindow.create(caps);
+    public void start() {
+        final GLWindow window = GLWindow.create(new GLCapabilities(GLProfile.getDefault()));
         window.setSize(800, 600);
         window.setTitle("SpaceArena");
         window.addWindowListener(new WindowAdapter() {
@@ -44,39 +44,50 @@ public class JoglWindow implements JoglListener {
         }
 
         window.setPosition((screen.getWidth() - window.getWidth()) / 2, (screen.getHeight() - window.getHeight()) / 2);
-        window.addGLEventListener(new JoglAdapter(w));
         window.setVisible(true);
-        w.mainLoop(window);
+
+        this.engine = new JoglEngine(factory, window);
+        window.addGLEventListener(this);
+        loop();
     }
 
-    public void init(OpenGL gl) {
-        // TODO implement..
-
-    }
-
-    public void dispose(OpenGL gl) {
-        // TODO implement..
-
-    }
-
-    public void display(OpenGL gl) {
-        gl.clear(OpenGL.COLOR_BUFFER_BIT);
-
-    }
-
-    public void reshape(OpenGL gl, int x, int y, int width, int height) {
-        // TODO implement..
-
-    }
-
-    public void mainLoop(GLAutoDrawable drawable) {
-        final Timer timer = new NanoTimer();
-
-        while (running) {
-            final float dt = timer.reset();
-            drawable.display();
-            Thread.yield();
+    private void loop() {
+        while (true) {
+            if (!engine.onUpdate()) {
+                return;
+            }
+            engine.getWindow().display();
         }
+    }
+
+    public void init(GLAutoDrawable drawable) {
+        drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+    }
+
+    public void dispose(GLAutoDrawable drawable) {
+    }
+
+    public void display(GLAutoDrawable drawable) {
+        try {
+            gl.setGL2(drawable.getGL().getGL2());
+            engine.onDraw(context);
+        } finally {
+            gl.setGL2(null);
+        }
+    }
+
+    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+        try {
+            gl.setGL2(drawable.getGL().getGL2());
+            gl.viewport(x,y,width,height);
+            engine.onSize(width, height);
+        } finally {
+            gl.setGL2(null);
+        }
+    }
+
+    public static void main(String[] args) {
+        new JoglWindow(new GameFactory()).start();
     }
 
 }

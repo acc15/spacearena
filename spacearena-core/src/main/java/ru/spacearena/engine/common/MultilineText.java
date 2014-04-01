@@ -2,16 +2,12 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.ColorU;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-13-02
  */
 public class MultilineText extends EngineContainer<MultilineText.Line> {
-
-    private float x = 0, y = 0;
-    private int color = ColorU.WHITE;
 
     public static class Line extends EngineObject {
 
@@ -32,6 +28,12 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
             this.text = text;
         }
     }
+
+    /*
+    private float x = 0, y = 0;
+    private int color = ColorU.WHITE;
+
+
 
     public float getX() {
         return x;
@@ -73,4 +75,5 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
             y += context.getTextHeight();
         }
     }
+    */
 }

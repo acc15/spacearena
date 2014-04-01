@@ -12,8 +12,8 @@ public abstract class AbstractPolyShape2F implements PolyShape2F, Shape2F {
 
     public void getPoints(float[] points, int start, int pointCount) {
         for (int i=0; i<pointCount; i++) {
-            points[(i+start)*2] = getPointX(i);
-            points[(i+start)*2+1] = getPointY(i);
+            points[i*2] = getPointX(i);
+            points[i*2+start+1] = getPointY(i);
         }
     }
 
@@ -37,30 +37,6 @@ public abstract class AbstractPolyShape2F implements PolyShape2F, Shape2F {
         pt.x = getPointX(i);
         pt.y = getPointY(i);
         return pt;
-    }
-
-    private void preparePath(DrawContext drawContext) {
-
-        final float x0 = getPointX(0), y0 = getPointY(0);
-
-        final Path p = drawContext.preparePath();
-        p.moveTo(x0, y0);
-
-        final int pc = getPointCount();
-        for (int i=1; i<pc; i++) {
-            p.lineTo(getPointX(i), getPointY(i));
-        }
-        p.lineTo(x0, y0);
-    }
-
-    public void stroke(DrawContext drawContext) {
-        preparePath(drawContext);
-        drawContext.drawPath();
-    }
-
-    public void fill(DrawContext drawContext) {
-        preparePath(drawContext);
-        drawContext.fillPath();
     }
 
     public void calculateProjection(Point2F axis, ProjectionF projection) {
