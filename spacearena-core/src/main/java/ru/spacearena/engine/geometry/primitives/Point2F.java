@@ -269,7 +269,11 @@ public class Point2F {
         return Float.floatToRawIntBits(x) ^ Float.floatToRawIntBits(y);
     }
 
-    public boolean equals(float x, float y) { return FloatMathUtils.isEqual(this.x, this.y, x, y); }
+    public boolean near(float x, float y) { return FloatMathUtils.isEqual(this.x, x) && FloatMathUtils.isEqual(this.y, y); }
+
+    public boolean near(Point2F pt) { return near(pt.x, pt.y); }
+
+    public boolean equals(float x, float y) { return this.x == x && this.y == y; }
 
     @Override
     public boolean equals(Object obj) {

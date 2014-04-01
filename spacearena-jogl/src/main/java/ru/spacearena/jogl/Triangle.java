@@ -55,9 +55,9 @@ public class Triangle {
         rotation += FloatMathUtils.TWO_PI * dt;
 
         matrix.identity();
-        matrix.rotate(Matrix2FGL.WORLD, rotation);
-        matrix.scale(Matrix2FGL.WORLD, size, size);
-        matrix.translate(Matrix2FGL.WORLD, positionX, positionY);
+        matrix.preRotate(rotation);
+        matrix.preScale(size, size);
+        matrix.preTranslate(positionX, positionY);
         //matrix.rotate(rotation);
     }
 

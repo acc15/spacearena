@@ -16,21 +16,21 @@ public class Matrix2FTest {
     public void testTranslate() throws Exception {
         final Matrix2F m = new Matrix2F();
         m.preTranslate(-10, -10);
-        assertThat(m.transform(new Point2F(30, 40))).isEqualTo(new Point2F(20, 30));
+        assertThat(m.transform(new Point2F(30, 40)).near(new Point2F(20, 30))).isTrue();
     }
 
     @Test
     public void testScale() throws Exception {
         final Matrix2F m = new Matrix2F();
         m.preScale(2f, -2f);
-        assertThat(m.transform(new Point2F(30, 40))).isEqualTo(new Point2F(60, -80));
+        assertThat(m.transform(new Point2F(30, 40)).near(new Point2F(60, -80))).isTrue();
     }
 
     @Test
     public void testRotate() throws Exception {
         final Matrix2F m = new Matrix2F();
         m.preRotate(FloatMathUtils.toRadians(45f));
-        assertThat(m.transform(new Point2F(1, -1))).isEqualTo(new Point2F(FloatMathUtils.sqrt(2), 0));
+        assertThat(m.transform(new Point2F(1, -1)).near(new Point2F(FloatMathUtils.sqrt(2), 0))).isTrue();
     }
 
     @Test
@@ -40,7 +40,7 @@ public class Matrix2FTest {
         m.preRotate(FloatMathUtils.toRadians(45));
         m.preTranslate(10, 10);
         m.preScale(2f, -1f);
-        assertThat(m.transform(new Point2F(11, 9))).isEqualTo(new Point2F(2 * (10 + FloatMathUtils.sqrt(2)), -10f));
+        assertThat(m.transform(new Point2F(11, 9)).near(new Point2F(2 * (10 + FloatMathUtils.sqrt(2)), -10f))).isTrue();
     }
 
     @Test
@@ -72,6 +72,6 @@ public class Matrix2FTest {
         m.preTranslate(10, 10);
         m.preScale(2f, -1f);
         m.invert();
-        assertThat(m.invertTransform(new Point2F(11, 9))).isEqualTo(new Point2F(2 * (10 + FloatMathUtils.sqrt(2)), -10f));
+        assertThat(m.invertTransform(new Point2F(11, 9)).near(new Point2F(2 * (10 + FloatMathUtils.sqrt(2)), -10f))).isTrue();
     }
 }

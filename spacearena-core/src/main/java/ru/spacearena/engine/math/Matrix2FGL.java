@@ -7,8 +7,8 @@ import static ru.spacearena.engine.util.FloatMathUtils.isEqual;
 import static ru.spacearena.engine.util.FloatMathUtils.isZero;
 
 /**
- * Implementation is optimized for 2D graphics and therefore makes assumption
- * that elements on two lower rows are the equal to identity matrix.
+ * Implementation is optimized for 2D graphics and therefore assumes
+ * that elements on the two lower rows are equal to rows in identity matrix.
  * Only following elements are taken into account when performing matrix multiplications:
  *
  * <pre>
@@ -25,9 +25,6 @@ import static ru.spacearena.engine.util.FloatMathUtils.isZero;
 * @since 2014-31-03
 */
 public final class Matrix2FGL {
-
-    public static final int WORLD = 0;
-    public static final int LOCAL = 1;
 
     public final float[] m = new float[] {
         1,0,0,0,
@@ -54,41 +51,6 @@ public final class Matrix2FGL {
         m[5] = 1f;
         m[12] = 0f;
         m[13] = 0f;
-    }
-
-    public void translate(int mode, float tx, float ty) {
-        switch (mode) {
-        case WORLD: preTranslate(tx, ty); break;
-        case LOCAL: postTranslate(tx, ty); break;
-        }
-    }
-
-    public void scale(int mode, float sx, float sy) {
-        switch (mode) {
-        case WORLD: preScale(sx, sy); break;
-        case LOCAL: postScale(sx, sy); break;
-        }
-    }
-
-    public void rotate(int mode, float nx, float ny) {
-        switch (mode) {
-        case WORLD: preRotate(nx, ny); break;
-        case LOCAL: postRotate(nx, ny); break;
-        }
-    }
-
-    public void rotate(int mode, float angrad) {
-        switch (mode) {
-        case WORLD: preRotate(angrad); break;
-        case LOCAL: postRotate(angrad); break;
-        }
-    }
-
-    public void shear(int mode, float sx, float sy) {
-        switch (mode) {
-        case WORLD: preShear(sx, sy); break;
-        case LOCAL: postShear(sx, sy); break;
-        }
     }
 
     // PRE: M' = T*M
@@ -233,30 +195,16 @@ public final class Matrix2FGL {
         m[13] = matrix.m[13];
     }
 
-    public float transformX(float x, float y) {
+    public float transformVectorX(float x, float y) { return m[0] * x + m[4] * y; }
+
+    public float transformVectorY(float x, float y) { return m[1] * x + m[5] * y; }
+
+    public float transformPointX(float x, float y) {
         return m[0] * x + m[4] * y + m[12];
     }
 
-    public float transformY(float x, float y) {
+    public float transformPointY(float x, float y) {
         return m[1] * x + m[5] * y + m[13];
-    }
-
-    public Point2F transform(float x, float y, Point2F out) {
-        out.x = transformX(x, y);
-        out.y = transformY(x, y);
-        return out;
-    }
-
-    public Point2F transform(float x, float y) {
-        return transform(x, y, new Point2F());
-    }
-
-    public Point2F transform(Point2F pt, Point2F out) {
-        return transform(pt.x, pt.y, out);
-    }
-
-    public Point2F transform(Point2F pt) {
-        return transform(pt, pt);
     }
 
     public boolean isIdentity() {
@@ -265,44 +213,20 @@ public final class Matrix2FGL {
                FloatMathUtils.isZero(m[12]) && FloatMathUtils.isZero(m[13]);
     }
 
-    public float invertTransformX(float x, float y, float det) {
+    public float invertTransformVectorX(float x, float y, float det) {
+        return (x * m[5] - y * m[4])/det;
+    }
+
+    public float invertTransformVectorY(float x, float y, float det) {
+        return (y * m[0] - x * m[1])/det;
+    }
+
+    public float invertTransformPointX(float x, float y, float det) {
         return (x * m[5] - y * m[4] + m[4]*m[13] - m[5]*m[12])/det;
     }
 
-    public float invertTransformY(float x, float y, float det) {
+    public float invertTransformPointY(float x, float y, float det) {
         return (y * m[0] - x * m[1] - m[0]*m[13] + m[1]*m[12])/det;
-    }
-
-    public float invertTransformX(float x, float y) {
-        final float det = determinant();
-        checkDeterminant(det);
-        return invertTransformX(x, y, det);
-    }
-
-    public float invertTransformY(float x, float y) {
-        final float det = determinant();
-        checkDeterminant(det);
-        return invertTransformY(x, y, det);
-    }
-
-    public Point2F invertTransform(float x, float y, Point2F out) {
-        final float det = determinant();
-        checkDeterminant(det);
-        out.x = invertTransformX(x, y, det);
-        out.y = invertTransformY(x, y, det);
-        return out;
-    }
-
-    public Point2F invertTransform(float x, float y) {
-        return invertTransform(x, y, new Point2F());
-    }
-
-    public Point2F invertTransform(Point2F pt, Point2F out) {
-        return invertTransform(pt.x, pt.y, out);
-    }
-
-    public Point2F invertTransform(Point2F pt) {
-        return invertTransform(pt, pt);
     }
 
     public boolean invert() {
@@ -348,6 +272,113 @@ public final class Matrix2FGL {
         if (isZero(det)) {
             throw new RuntimeException("Matrix non-invertible");
         }
+    }
+
+    /* POINT TRANSFORM HELPERS */
+
+    public Point2F transformPoint(float x, float y, Point2F out) {
+        out.x = transformPointX(x, y);
+        out.y = transformPointY(x, y);
+        return out;
+    }
+
+    public Point2F transformPoint(float x, float y) {
+        return transformPoint(x, y, new Point2F());
+    }
+
+    public Point2F transformPoint(Point2F pt, Point2F out) {
+        return transformPoint(pt.x, pt.y, out);
+    }
+
+    public Point2F transformPoint(Point2F pt) {
+        return transformPoint(pt, pt);
+    }
+
+
+    /* VECTOR TRANSFORM HELPERS */
+
+    public Point2F transformVector(float x, float y, Point2F out) {
+        out.x = transformVectorX(x, y);
+        out.y = transformVectorY(x, y);
+        return out;
+    }
+
+    public Point2F transformVector(float x, float y) {
+        return transformVector(x, y, new Point2F());
+    }
+
+    public Point2F transformVector(Point2F pt, Point2F out) {
+        return transformVector(pt.x, pt.y, out);
+    }
+
+    public Point2F transformVector(Point2F pt) {
+        return transformVector(pt, pt);
+    }
+
+    /* INVERT POINT TRANSFORM HELPERS */
+    public float invertTransformPointX(float x, float y) {
+        final float det = determinant();
+        checkDeterminant(det);
+        return invertTransformPointX(x, y, det);
+    }
+
+    public float invertTransformPointY(float x, float y) {
+        final float det = determinant();
+        checkDeterminant(det);
+        return invertTransformPointY(x, y, det);
+    }
+
+    public Point2F invertTransformPoint(float x, float y, Point2F out) {
+        final float det = determinant();
+        checkDeterminant(det);
+        out.x = invertTransformPointX(x, y, det);
+        out.y = invertTransformPointY(x, y, det);
+        return out;
+    }
+
+    public Point2F invertTransformPoint(float x, float y) {
+        return invertTransformPoint(x, y, new Point2F());
+    }
+
+    public Point2F invertTransformPoint(Point2F pt, Point2F out) {
+        return invertTransformPoint(pt.x, pt.y, out);
+    }
+
+    public Point2F invertTransformPoint(Point2F pt) {
+        return invertTransformPoint(pt, pt);
+    }
+
+    /* INVERT VECTOR TRANSFORM HELPERS */
+    public float invertTransformVectorX(float x, float y) {
+        final float det = determinant();
+        checkDeterminant(det);
+        return invertTransformVectorX(x, y, det);
+    }
+
+    public float invertTransformVectorY(float x, float y) {
+        final float det = determinant();
+        checkDeterminant(det);
+        return invertTransformVectorY(x, y, det);
+    }
+
+    public Point2F invertTransformVector(float x, float y, Point2F out) {
+        final float det = determinant();
+        checkDeterminant(det);
+        out.x = invertTransformVectorX(x, y, det);
+        out.y = invertTransformVectorY(x, y, det);
+        return out;
+    }
+
+    public Point2F invertTransformVector(float x, float y) {
+        return invertTransformVector(x, y, new Point2F());
+    }
+
+    public Point2F invertTransformVector(Point2F pt, Point2F out) {
+        return invertTransformVector(pt.x, pt.y, out);
+    }
+
+    public Point2F invertTransformVector(Point2F pt) {
+        return invertTransformVector(pt, pt);
     }
 
 }
