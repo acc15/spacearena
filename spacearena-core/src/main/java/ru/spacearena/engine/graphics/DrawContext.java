@@ -36,9 +36,36 @@ public class DrawContext {
         gl.clear(OpenGL.COLOR_BUFFER_BIT);
     }
 
+    public void fillRect(Color color, float x1, float y1, float x2, float y2) {
+
+    }
+
+    public void drawRect(Color color, float x1, float y1, float x2, float y2) {
+        /*buf.put(x1).put(y1).
+            put(x1).put(y2).
+            put(x2).put(y2).
+            put(x2).put(y1);
+        PositionColorProgram2f.getInstance().use(gl).
+                bind(PositionColorProgram2f.POSITION, buf).
+                bind(PositionColorProgram2f.COLOR, color).
+                bind(PositionColorProgram2f.MATRIX, activeMatrix.m).
+                draw(OpenGL.PrimitiveType.LINES, 0, 2);*/
+    }
+
     public void drawLine(Color color, float x1, float y1, float x2, float y2) {
 
+        /*final FloatBuffer buf = ByteBuffer.allocateDirect(100).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        PositionColorProgram2f.getInstance().use(gl).
+                bind(PositionColorProgram2f.POSITION, buf).
+                bind(PositionColorProgram2f.COLOR, color).
+                bind(PositionColorProgram2f.MATRIX, activeMatrix.m).
+                draw(OpenGL.PrimitiveType.LINES, 0, 2);*/
 
+//        gl.uniform(PositionColorProgram2f.getInstance().getUniformLocation(PositionColorProgram2f.COLOR));
+//        gl.useProgram(PositionColorProgram2f.getInstance().getId());
+//
+//        gl.uniform4(, 1, );
+//        gl.drawArrays(OpenGL.PrimitiveType.LINES, 0, 2);
     }
 
 }

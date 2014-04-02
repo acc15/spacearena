@@ -21,7 +21,6 @@ public abstract class Engine {
     private final EngineFactory factory;
 
     private EngineEntity root;
-    private float width, height;
     private float secondsPerFrame = 0;
     private float compensationTime = 0f;
 
@@ -33,9 +32,7 @@ public abstract class Engine {
         this.factory = factory;
     }
 
-    protected void init(float width, float height) {
-        this.width = width;
-        this.height = height;
+    protected void init() {
         this.root = factory.createRoot(this);
         this.root.onAttach(this);
     }
@@ -87,8 +84,6 @@ public abstract class Engine {
 
     public void onSize(float width, float height) {
         root.onSize(width, height);
-        this.width = width;
-        this.height = height;
     }
 
     public void onDraw(DrawContext context) {
@@ -98,14 +93,6 @@ public abstract class Engine {
     public boolean onInput(InputEvent event) {
         root.onInput(event);
         return true;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public float getHeight() {
-        return height;
     }
 
     public void scheduleEvent(EngineEvent event) {

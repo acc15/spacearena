@@ -10,9 +10,9 @@ public class PositionColorProgram2f extends ShaderProgram {
 
     private static final PositionColorProgram2f instance = new PositionColorProgram2f();
 
-    public static final int POSITION_ATTRIB = 0;
-    public static final int COLOR_ATTRIB = 1;
-    public static final int MATRIX_UNIFORM = 0;
+    public static final int POSITION = 0;
+    public static final int COLOR = 1;
+    public static final int MATRIX = 0;
 
     private PositionColorProgram2f() {
         addShader(new Shader(OpenGL.ShaderType.VERTEX,

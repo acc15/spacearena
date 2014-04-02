@@ -20,7 +20,7 @@ public class JoglEngine extends Engine {
     public JoglEngine(EngineFactory factory, GLWindow window) {
         super(factory);
         this.window = window;
-        init(this.window.getWidth(), this.window.getHeight());
+        init();
     }
 
     private void addKeyEvent(ru.spacearena.engine.events.KeyEvent.Action action, KeyEvent keyEvent) {

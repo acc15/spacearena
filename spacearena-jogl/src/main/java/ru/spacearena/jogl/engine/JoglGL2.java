@@ -97,6 +97,10 @@ public class JoglGL2 implements OpenGL {
         return new String(buf, 0, l-1);
     }
 
+    public void useProgram(int programId) {
+        gl2.glUseProgram(programId);
+    }
+
     public void bindAttribLocation(int programId, int attrIndex, String attribute) {
         gl2.glBindAttribLocation(programId, attrIndex, attribute);
     }

@@ -6,6 +6,7 @@ import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.common.Background;
 import ru.spacearena.engine.common.GenericContainer;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.graphics.Color;
 
 /**
  * @author Vyacheslav Mayorov
@@ -23,7 +24,7 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.TOUCH);
 
         final GenericContainer root = new GenericContainer(engine);
-        root.add(new Background());
+        root.add(new Background(Color.BLACK));
         /*
         final MultilineText.Line fpsText = new MultilineText.Line();
         final MultilineText.Line positionText = new MultilineText.Line();

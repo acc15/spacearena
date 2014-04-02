@@ -24,6 +24,7 @@ public interface OpenGL {
     public static final int STENCIL_BUFFER_BIT = 0x00000400;
     public static final int COLOR_BUFFER_BIT = 0x00004000;
 
+
     public enum PrimitiveType {
         POINTS(0x0000),
         LINES(0x0001),
@@ -147,6 +148,7 @@ public interface OpenGL {
     void validateProgram(int programId);
     int getProgram(int programId, ProgramParam param);
     String getProgramInfoLog(int programId);
+    void useProgram(int programId);
 
     void bindAttribLocation(int programId, int attrIndex, String attribute);
     int getAttribLocation(int programId, String attribute);

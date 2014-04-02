@@ -81,6 +81,10 @@ public class AndroidGLES2 implements OpenGL {
         return GLES20.glGetProgramInfoLog(programId);
     }
 
+    public void useProgram(int programId) {
+        GLES20.glUseProgram(programId);
+    }
+
     public void bindAttribLocation(int programId, int attrIndex, String attribute) {
         GLES20.glBindAttribLocation(programId, attrIndex, attribute);
     }
