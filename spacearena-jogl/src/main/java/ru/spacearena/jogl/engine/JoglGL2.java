@@ -22,6 +22,14 @@ public class JoglGL2 implements OpenGL {
         this.gl2 = gl2;
     }
 
+    public void getInteger(GenericParameter parameter, int[] values, int offset) {
+        gl2.glGetIntegerv(parameter.glCode(), values, offset);
+    }
+
+    public void getInteger(GenericParameter parameter, IntBuffer buf) {
+        gl2.glGetIntegerv(parameter.glCode(), buf);
+    }
+
     public void viewport(int x, int y, int width, int height) {
         gl2.glViewport(x, y, width, height);
     }

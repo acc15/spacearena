@@ -5,6 +5,7 @@ import ru.spacearena.engine.graphics.shaders.PositionColorProgram;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.util.FloatMathUtils;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -14,32 +15,45 @@ import java.util.HashSet;
 public class DrawContext {
 
     public static final int MAX_MATRIX_DEPTH = 40;
+    private static final int MAX_VERTEX_COUNT = 100;
 
     private final OpenGL gl;
 
+    private final VertexBuffer vertexBuffer = new VertexBuffer(MAX_VERTEX_COUNT*2);
+
     private final Matrix activeMatrix = new Matrix();
     private final float[] matrixStack = new float[Matrix.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
-    private int matrixDepth = 0;
+    private int matrixIndex = 0;
 
-    private final HashSet<ShaderProgram> usedPrograms = new HashSet<ShaderProgram>();
+    private final HashMap<ShaderProgram.Definition, ShaderProgram> programs =
+            new HashMap<ShaderProgram.Definition, ShaderProgram>();
+
+    private final HashSet<VertexBufferObject> vbos = new HashSet<VertexBufferObject>();
+
+    private final Binder binder = new Binder();
 
     public DrawContext(OpenGL gl) {
         this.gl = gl;
-        this.usedPrograms.add(PositionColorProgram.getInstance());
+        register(PositionColorProgram.DEFINITION);
+
+        final VertexBufferObject vbo = new VertexBufferObject(OpenGL.BufferType.ARRAY, OpenGL.BufferUsage.STATIC_DRAW);
+        renderNGon(MAX_VERTEX_COUNT,0,0,1,1);
+        upload(vbo, vertexBuffer);
+
     }
 
     public void pushMatrix(Matrix m) {
-        activeMatrix.toArrayCompact(matrixStack, matrixDepth * Matrix.ELEMENTS_PER_MATRIX);
+        activeMatrix.toArrayCompact(matrixStack, matrixIndex);
         activeMatrix.postMultiply(m);
-        ++matrixDepth;
+        matrixIndex += Matrix.ELEMENTS_PER_MATRIX;
     }
 
     public void popMatrix() {
-        if (matrixDepth <= 0) {
+        if (matrixIndex <= 0) {
             throw new IllegalStateException("Empty matrix stack");
         }
-        --matrixDepth;
-        activeMatrix.fromArrayCompact(matrixStack, matrixDepth * Matrix.ELEMENTS_PER_MATRIX);
+        matrixIndex -= Matrix.ELEMENTS_PER_MATRIX;
+        activeMatrix.fromArrayCompact(matrixStack, matrixIndex);
     }
 
     public void clear(Color color) {
@@ -48,14 +62,32 @@ public class DrawContext {
     }
 
     public void init() {
-        for (ShaderProgram program: usedPrograms) {
+        // recompiling early used programs
+        for (ShaderProgram program: programs.values()) {
             program.make(gl);
+        }
+
+        // generating
+        for (VertexBufferObject vbo: vbos) {
+            vbo.create(gl);
         }
     }
 
-    public void dispose() {
-        for (ShaderProgram program: usedPrograms) {
-            program.delete(gl);
+    public void register(VertexBufferObject vbo) {
+        if (vbos.contains(vbo)) {
+            return;
+        }
+        vbo.create(gl);
+        vbos.add(vbo);
+    }
+
+    public void upload(VertexBufferObject vbo, VertexBuffer buffer) {
+        vbo.upload(gl, buffer);
+    }
+
+    public void unregister(VertexBufferObject vbo) {
+        if (vbos.remove(vbo)) {
+            vbo.delete(gl);
         }
     }
 
@@ -65,32 +97,20 @@ public class DrawContext {
 
     public class Binder {
 
-        private ShaderProgram activeProgram;
-
-        private Binder use(ShaderProgram program) {
-            if (program != activeProgram) {
-                usedPrograms.add(program);
-                program.make(gl);
-                gl.useProgram(program.getId());
-                activeProgram = program;
-            }
-            return this;
-        }
+        private ShaderProgram program;
 
         public Binder bindUniform(int index, Point2F point) {
-            gl.uniform(activeProgram.getUniformLocation(index), point.x, point.y);
+            gl.uniform(program.getUniformLocation(index), point.x, point.y);
             return this;
         }
 
         public Binder bindUniform(int index, Matrix matrix) {
-            gl.uniformMatrix4(activeProgram.getUniformLocation(index), 1, matrix.m, 0);
+            gl.uniformMatrix4(program.getUniformLocation(index), 1, matrix.m, 0);
             return this;
         }
 
-        private final float[] c = new float[4];
-
         public Binder bindUniform(int index, Color color) {
-            gl.uniform(activeProgram.getUniformLocation(index), color.r, color.g, color.b, color.a);
+            gl.uniform(program.getUniformLocation(index), color.r, color.g, color.b, color.a);
             return this;
         }
 
@@ -99,6 +119,15 @@ public class DrawContext {
                     buffer.getCount(item), OpenGL.Type.FLOAT, false,
                     buffer.getStride(),
                     buffer.getBuffer(item));
+            gl.enableVertexAttribArray(index);
+            return this;
+        }
+
+        public Binder bindAttr(int index, VertexBufferObject vbo, int item) {
+            vbo.bind(gl);
+            gl.vertexAttribPointer(index,
+                    vbo.getCount(item), OpenGL.Type.FLOAT, false,
+                    vbo.getStride(), 0);
             gl.enableVertexAttribArray(index);
             return this;
         }
@@ -112,46 +141,77 @@ public class DrawContext {
         }
     }
 
-    private final Binder binder = new Binder();
-
-    public Binder use(ShaderProgram program) {
-        return binder.use(program);
+    public ShaderProgram register(ShaderProgram.Definition def) {
+        ShaderProgram p = programs.get(def);
+        if (p != null) {
+            return p;
+        }
+        p = def.createProgram();
+        programs.put(def, p);
+        return p;
     }
 
-    private static final int MAX_VERTEX_SIZE = 100 * 2;
-    private final VertexBuffer vertexBuffer = new VertexBuffer(MAX_VERTEX_SIZE);
+    public void unregister(ShaderProgram.Definition def) {
+        final ShaderProgram p = programs.get(def);
+        if (p == null) {
+            return;
+        }
+        p.delete(gl);
+    }
+
+    public Binder use(ShaderProgram.Definition def) {
+        final ShaderProgram p = register(def);
+        if (p == binder.program) {
+            return binder;
+        }
+        p.make(gl);
+        gl.useProgram(p.getId());
+        binder.program = p;
+        return binder;
+    }
 
     private void drawBuf(OpenGL.PrimitiveType type, Color color, int count) {
-        use(PositionColorProgram.getInstance()).
+        use(PositionColorProgram.DEFINITION).
                 bindAttr(PositionColorProgram.POSITION_ATTR, vertexBuffer, 0).
                 bindUniform(PositionColorProgram.COLOR_UNIFORM, color).
                 bindUniform(PositionColorProgram.MATRIX_UNIFORM, activeMatrix).
                 draw(type, count);
     }
 
-    public void drawNGon(int n, float x, float y, float size, Color color) {
-
+    private int renderNGon(int n, float x, float y, float rx, float ry) {
         if (n < 3) {
             throw new IllegalArgumentException("N-Gon should have at least 3 points");
+        }
+        if (n > MAX_VERTEX_COUNT) {
+            n = MAX_VERTEX_COUNT;
         }
 
         final float a = FloatMathUtils.TWO_PI/n;
         final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);
-
         vertexBuffer.reset().layout(2);
-
         float vx = 1, vy = 0;
         for (int i=0; i<n; i++) {
-            vertexBuffer.put(x + vx*size, y + vy*size);
+            vertexBuffer.put(x + vx*rx, y + vy*ry);
+            final float ny = vx*s+vy*c;
             vx = vx*c-vy*s;
-            vy = vx*s+vy*c;
+            vy = ny;
         }
+        return n;
+    }
+
+    public void fillNGon(int n, float x, float y, float rx, float ry, Color color) {
+        n = renderNGon(n, x, y, rx, ry);
+        drawBuf(OpenGL.PrimitiveType.TRIANGLE_FAN, color, n);
+    }
+
+    public void drawNGon(int n, float x, float y, float rx, float ry, Color color) {
+        n = renderNGon(n, x, y, rx, ry);
         drawBuf(OpenGL.PrimitiveType.LINE_LOOP, color, n);
     }
 
-    public void fillPoly(float[] points, int start, int size, Color color) {
+    public void fillConvexPoly(float[] points, int start, int size, Color color) {
         vertexBuffer.reset().layout(2).put(points, start, size);
-        drawBuf(OpenGL.PrimitiveType.TRIANGLE_STRIP, color, points.length / 2);
+        drawBuf(OpenGL.PrimitiveType.TRIANGLE_FAN, color, points.length / 2);
     }
 
     public void drawPoly(float[] points, Color color) {
@@ -177,6 +237,18 @@ public class DrawContext {
     public void drawLine(float x1, float y1, float x2, float y2, Color color) {
         vertexBuffer.reset().layout(2).put(x1,y1).put(x2, y2);
         drawBuf(OpenGL.PrimitiveType.LINES, color, 2);
+    }
+
+    public void fillEllipse(float x, float y, float rx, float ry, Color color) {
+//        use(PositionColorProgram.DEFINITION).
+//                bindAttr(PositionColorProgram.POSITION_ATTR, vbo, 0).
+//                bindUniform(PositionColorProgram.COLOR_UNIFORM, color).
+//                bindUniform(PositionColorProgram.MATRIX_UNIFORM, activeMatrix).
+//                draw(OpenGL.PrimitiveType.TRIANGLE_FAN, vbo.size()/2);
+    }
+
+    public void drawEllipse(float x, float y, float rx, float ry, Color color) {
+        //draw
     }
 
     public void setLineWidth(float width) {

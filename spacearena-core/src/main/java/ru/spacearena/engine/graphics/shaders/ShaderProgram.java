@@ -12,6 +12,16 @@ import java.util.List;
 */
 public class ShaderProgram {
 
+    private Definition definition;
+
+    public Definition getDefinition() {
+        return definition;
+    }
+
+    public interface Definition {
+        ShaderProgram createProgram();
+    }
+
 
     private final List<Shader> shaders = new ArrayList<Shader>();
     private final List<String> attributes = new ArrayList<String>();
@@ -49,7 +59,7 @@ public class ShaderProgram {
 
     public void delete(OpenGL gl) {
         if (id == 0) {
-            throw new IllegalStateException("Program not linked but wants to be deleted");
+            throw new IllegalStateException("Attempt to delete shader program which isn't present in GL");
         }
         gl.deleteProgram(id);
         for (Shader shader: shaders) {

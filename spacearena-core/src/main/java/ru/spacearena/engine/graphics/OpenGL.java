@@ -94,22 +94,30 @@ public interface OpenGL {
     }
 
     public enum Type {
-        BYTE(0x1400, 1),
-        UNSIGNED_BYTE(0x1401, 1),
-        SHORT(0x1402, 2),
-        FLOAT(0x1406, 4),
-        FIXED(0x140C, 4),
+        BYTE(0x1400, 0),
+        UNSIGNED_BYTE(0x1401, 0),
+        SHORT(0x1402, 1),
+        FLOAT(0x1406, 2),
+        FIXED(0x140C, 2),
         UNSIGNED_SHORT(0x1403, 2);
 
         private int glCode;
-        private int size;
+        private int shift;
 
-        Type(int glCode, int size) {
+        Type(int glCode, int shift) {
             this.glCode = glCode;
-            this.size = size;
+            this.shift = shift;
         }
 
-        public int getSize() { return size; }
+        public int toBytes(int types) {
+            return types << shift;
+        }
+
+        public int toTypes(int bytes) {
+            return bytes >> shift;
+        }
+
+        public int getShift() { return shift; }
         public int glCode() { return glCode; }
     }
 
@@ -130,6 +138,104 @@ public interface OpenGL {
         }
         public int glCode() { return glCode; }
     }
+
+    public enum GenericParameter {
+        ACTIVE_TEXTURE(0x84E0),
+        ALIASED_LINE_WIDTH_RANGE(0x846E),
+        ALIASED_POINT_SIZE_RANGE(0x846D),
+        ALPHA_BITS(0x0D55),
+        ARRAY_BUFFER_BINDING(0x8894),
+        BLEND(0x0BE2),
+        BLEND_COLOR(0x8005),
+        BLEND_DST_ALPHA(0x80CA),
+        BLEND_DST_RGB(0x80C8),
+        BLEND_EQUATION_ALPHA(0x883D),
+        BLEND_EQUATION_RGB(0x8009),
+        BLEND_SRC_ALPHA(0x80CB),
+        BLEND_SRC_RGB(0x80C9),
+        BLUE_BITS(0x0D54),
+        COLOR_CLEAR_VALUE(0x0C22),
+        COLOR_WRITEMASK(0x0C23),
+        COMPRESSED_TEXTURE_FORMATS(0x86A3),
+        CULL_FACE(0x0B44),
+        CULL_FACE_MODE(0x0B45),
+        CURRENT_PROGRAM(0x8B8D),
+        DEPTH_BITS(0x0D56),
+        DEPTH_CLEAR_VALUE(0x0B73),
+        DEPTH_FUNC(0x0B74),
+        DEPTH_RANGE(0x0B70),
+        DEPTH_TEST(0x0B71),
+        DEPTH_WRITEMASK(0x0B72),
+        DITHER(0x0BD0),
+        ELEMENT_ARRAY_BUFFER_BINDING(0x8895),
+        FRAMEBUFFER_BINDING(0x8CA6),
+        FRONT_FACE(0x0B46),
+        GENERATE_MIPMAP_HINT(0x8192),
+        GREEN_BITS(0x0D53),
+        IMPLEMENTATION_COLOR_READ_FORMAT(0x8B9B),
+        IMPLEMENTATION_COLOR_READ_TYPE(0x8B9A),
+        LINE_WIDTH(0x0B21),
+        MAX_COMBINED_TEXTURE_IMAGE_UNITS(0x8B4D),
+        MAX_CUBE_MAP_TEXTURE_SIZE(0x851C),
+        MAX_FRAGMENT_UNIFORM_VECTORS(0x8DFD),
+        MAX_RENDERBUFFER_SIZE(0x84E8),
+        MAX_TEXTURE_IMAGE_UNITS(0x8872),
+        MAX_TEXTURE_SIZE(0x0D33),
+        MAX_VARYING_VECTORS(0x8DFC),
+        MAX_VERTEX_ATTRIBS(0x8869),
+        MAX_VERTEX_TEXTURE_IMAGE_UNITS(0x8B4C),
+        MAX_VERTEX_UNIFORM_VECTORS(0x8DFB),
+        MAX_VIEWPORT_DIMS(0x0D3A),
+        NUM_COMPRESSED_TEXTURE_FORMATS(0x86A2),
+        NUM_SHADER_BINARY_FORMATS(0x8DF9),
+        PACK_ALIGNMENT(0x0D05),
+        POLYGON_OFFSET_FACTOR(0x8038),
+        POLYGON_OFFSET_FILL(0x8037),
+        POLYGON_OFFSET_UNITS(0x2A00),
+        RED_BITS(0x0D52),
+        RENDERBUFFER_BINDING(0x8CA7),
+        SAMPLE_ALPHA_TO_COVERAGE(0x809E),
+        SAMPLE_BUFFERS(0x80A8),
+        SAMPLE_COVERAGE(0x80A0),
+        SAMPLE_COVERAGE_INVERT(0x80AB),
+        SAMPLE_COVERAGE_VALUE(0x80AA),
+        SAMPLES(0x80A9),
+        SCISSOR_BOX(0x0C10),
+        SCISSOR_TEST(0x0C11),
+        SHADER_BINARY_FORMATS(0x8DF8),
+        SHADER_COMPILER(0x8DFA),
+        STENCIL_BACK_FAIL(0x8801),
+        STENCIL_BACK_FUNC(0x8800),
+        STENCIL_BACK_PASS_DEPTH_FAIL(0x8802),
+        STENCIL_BACK_PASS_DEPTH_PASS(0x8803),
+        STENCIL_BACK_REF(0x8CA3),
+        STENCIL_BACK_VALUE_MASK(0x8CA4),
+        STENCIL_BACK_WRITEMASK(0x8CA5),
+        STENCIL_BITS(0x0D57),
+        STENCIL_CLEAR_VALUE(0x0B91),
+        STENCIL_FAIL(0x0B94),
+        STENCIL_FUNC(0x0B92),
+        STENCIL_PASS_DEPTH_FAIL(0x0B95),
+        STENCIL_PASS_DEPTH_PASS(0x0B96),
+        STENCIL_REF(0x0B97),
+        STENCIL_TEST(0x0B90),
+        STENCIL_VALUE_MASK(0x0B93),
+        STENCIL_WRITEMASK(0x0B98),
+        SUBPIXEL_BITS(0x0D50),
+        TEXTURE_BINDING_2D(0x8069),
+        TEXTURE_BINDING_CUBE_MAP(0x8514),
+        UNPACK_ALIGNMENT(0x0CF5),
+        VIEWPORT(0x0BA2);
+
+        private int glCode;
+        GenericParameter(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+    }
+
+    void getInteger(GenericParameter parameter, int[] values, int offset);
+    void getInteger(GenericParameter parameter, IntBuffer buf);
 
     void viewport(int x, int y, int width, int height);
 

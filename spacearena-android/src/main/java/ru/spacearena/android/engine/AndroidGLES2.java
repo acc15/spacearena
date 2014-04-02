@@ -15,6 +15,14 @@ public class AndroidGLES2 implements OpenGL {
 
     private final int[] INT_BUF = new int[1];
 
+    public void getInteger(GenericParameter parameter, int[] values, int offset) {
+        GLES20.glGetIntegerv(parameter.glCode(), values, offset);
+    }
+
+    public void getInteger(GenericParameter parameter, IntBuffer buf) {
+        GLES20.glGetIntegerv(parameter.glCode(), buf);
+    }
+
     public void lineWidth(float width) {
         GLES20.glLineWidth(width);
     }

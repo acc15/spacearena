@@ -35,6 +35,9 @@ public class Shader {
     }
 
     public void delete(OpenGL gl) {
+        if (c == 0) {
+            throw new IllegalStateException("Attempt to delete shader which isn't present in GL");
+        }
         --c;
         if (c == 0) {
             doDelete(gl);

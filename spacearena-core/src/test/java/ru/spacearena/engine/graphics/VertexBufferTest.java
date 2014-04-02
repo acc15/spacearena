@@ -12,6 +12,12 @@ import static org.fest.assertions.api.Assertions.assertThat;
  */
 public class VertexBufferTest {
 
+//    @Test
+//    public void testArray() throws Exception {
+//        final VertexBuffer buf = new VertexBuffer(50);
+//        final Object a = buf.getWholeBuffer().array();
+//        System.out.println(a);
+//    }
 
     @Test
     public void testLayout() throws Exception {
@@ -44,7 +50,5 @@ public class VertexBufferTest {
         assertThat(b.get()).isEqualTo(1);
         assertThat(b.get()).isEqualTo(2);
         assertThat(b.get()).isEqualTo(3);
-
-
     }
 }

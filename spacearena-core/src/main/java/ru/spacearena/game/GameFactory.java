@@ -44,26 +44,20 @@ public class GameFactory implements EngineFactory {
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
         viewport.add(new Transform() {
+
+            private float r = 3f;
+
             @Override
             public boolean onUpdate(float seconds) {
                 rotate(2f * seconds);
+                //translate(-0.001f, 0);
+                r += seconds*10;
                 return true;
             }
 
-            final float[] poly = new float[] {
-                    0, -10,
-                    -3, -3,
-                    -10, 0,
-                    -3, 3,
-                    0, 10,
-                    3, 3,
-                    10, 0,
-                    3, -3};
-
             @Override
             protected void onDrawTransformed(DrawContext context) {
-                //context.drawPoly(poly,Color.GREEN);
-                context.drawNGon(5, 0, 0, 5, Color.GREEN);
+                context.drawNGon(10000, 0, 0, 30, 10, Color.GREEN);
             }
 
         });

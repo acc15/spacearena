@@ -13,9 +13,11 @@ public class VertexBuffer {
     public static final int FLOAT_SIZE = 4;
     public static final int MAX_ITEMS = 8;
 
-    private int item = 0;
-    private final int[] items = new int[MAX_ITEMS];
-    private final FloatBuffer buffer;
+    int item = 0;
+    int size = -1;
+    final int[] items = new int[MAX_ITEMS];
+
+    final FloatBuffer buffer;
 
     public VertexBuffer(int size) {
         buffer = ByteBuffer.allocateDirect(size * FLOAT_SIZE).
@@ -25,6 +27,7 @@ public class VertexBuffer {
 
     public VertexBuffer reset() {
         this.item = 0;
+        this.size = -1;
         buffer.rewind();
         return this;
     }
@@ -47,9 +50,24 @@ public class VertexBuffer {
         return this;
     }
 
-    public FloatBuffer getBuffer(int item) {
-        buffer.position(getOffset(item));
+    private FloatBuffer storeSizeAndRewindTo(int offset) {
+        if (this.size < 0) {
+            this.size = buffer.position() * FLOAT_SIZE;
+        }
+        buffer.position(offset);
         return buffer;
+    }
+
+    public int size() {
+        return size < 0 ? buffer.position() * FLOAT_SIZE : size;
+    }
+
+    public FloatBuffer getBuffer() {
+        return storeSizeAndRewindTo(0);
+    }
+
+    public FloatBuffer getBuffer(int item) {
+        return storeSizeAndRewindTo(getOffset(item));
     }
 
     public VertexBuffer put(float x) {

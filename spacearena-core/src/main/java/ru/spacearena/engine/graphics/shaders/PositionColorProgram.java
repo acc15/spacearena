@@ -8,7 +8,11 @@ import ru.spacearena.engine.graphics.OpenGL;
 */
 public class PositionColorProgram extends ShaderProgram {
 
-    private static final PositionColorProgram instance = new PositionColorProgram();
+    public static final Definition DEFINITION = new Definition() {
+        public ShaderProgram createProgram() {
+            return new PositionColorProgram();
+        }
+    };
 
     public static final int POSITION_ATTR = 0;
     public static final int MATRIX_UNIFORM = 0;
@@ -17,7 +21,7 @@ public class PositionColorProgram extends ShaderProgram {
     private PositionColorProgram() {
         addShader(new Shader(OpenGL.ShaderType.VERTEX,
                 "uniform mat4 u_MVPMatrix;" +
-                "attribute vec4 a_Position;" +
+                "attrSize vec4 a_Position;" +
                 "void main()" +
                 "{" +
                 "gl_Position = u_MVPMatrix * a_Position;" +
@@ -33,9 +37,4 @@ public class PositionColorProgram extends ShaderProgram {
         addUniform("u_MVPMatrix");
         addUniform("u_Color");
     }
-
-    public static PositionColorProgram getInstance() {
-        return instance;
-    }
-
 }
