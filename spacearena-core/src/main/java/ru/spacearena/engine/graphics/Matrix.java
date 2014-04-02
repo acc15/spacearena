@@ -24,7 +24,7 @@ import static ru.spacearena.engine.util.FloatMathUtils.isZero;
 * @author Vyacheslav Mayorov
 * @since 2014-31-03
 */
-public final class Matrix {
+public class Matrix {
 
     public static final int ELEMENTS_PER_MATRIX = 6;
 

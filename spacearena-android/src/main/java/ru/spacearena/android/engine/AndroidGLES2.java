@@ -15,6 +15,10 @@ public class AndroidGLES2 implements OpenGL {
 
     private final int[] INT_BUF = new int[1];
 
+    public void lineWidth(float width) {
+        GLES20.glLineWidth(width);
+    }
+
     public void viewport(int x, int y, int width, int height) {
         GLES20.glViewport(x, y, width, height);
     }

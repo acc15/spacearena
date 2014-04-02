@@ -3,10 +3,10 @@ package ru.spacearena.game;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
-import ru.spacearena.engine.common.Background;
-import ru.spacearena.engine.common.GenericContainer;
+import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov
@@ -18,13 +18,57 @@ public class GameFactory implements EngineFactory {
 
         //engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(100f);
+        engine.setMaxFPS(0);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
 
         final GenericContainer root = new GenericContainer(engine);
-        root.add(new Background(Color.BLACK));
+        root.add(new Background());
+
+        final FPSCounter f = new FPSCounter() {
+            private float x = 0f;
+
+            @Override
+            public boolean onUpdate(float seconds) {
+                x+=seconds;
+                if (x > 1) {
+                    System.out.println("FPS: " + getFps());
+                    x = 0;
+                }
+                return super.onUpdate(seconds);
+            }
+        };
+        root.add(f);
+
+
+        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
+        viewport.add(new Transform() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                rotate(2f * seconds);
+                return true;
+            }
+
+            final float[] poly = new float[] {
+                    0, -10,
+                    -3, -3,
+                    -10, 0,
+                    -3, 3,
+                    0, 10,
+                    3, 3,
+                    10, 0,
+                    3, -3};
+
+            @Override
+            protected void onDrawTransformed(DrawContext context) {
+                //context.drawPoly(poly,Color.GREEN);
+                context.drawNGon(5, 0, 0, 5, Color.GREEN);
+            }
+
+        });
+        root.add(viewport);
+
         /*
         final MultilineText.Line fpsText = new MultilineText.Line();
         final MultilineText.Line positionText = new MultilineText.Line();

@@ -24,6 +24,8 @@ public interface OpenGL {
     public static final int STENCIL_BUFFER_BIT = 0x00000400;
     public static final int COLOR_BUFFER_BIT = 0x00004000;
 
+    void lineWidth(float width);
+
 
     public enum PrimitiveType {
         POINTS(0x0000),

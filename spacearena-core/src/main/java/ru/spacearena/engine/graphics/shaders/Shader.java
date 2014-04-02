@@ -20,7 +20,7 @@ public class Shader {
     }
 
     public boolean isCompiled() {
-        return c > 0;
+        return c != 0;
     }
 
     public int getId() {
@@ -35,10 +35,11 @@ public class Shader {
     }
 
     public void delete(OpenGL gl) {
-        if (c > 0) {
-            doDelete(gl);
-        }
         --c;
+        if (c == 0) {
+            doDelete(gl);
+            this.id = 0;
+        }
     }
 
     private int doCompile(OpenGL gl) {

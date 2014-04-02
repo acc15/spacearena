@@ -24,7 +24,6 @@ public class JoglGL2 implements OpenGL {
 
     public void viewport(int x, int y, int width, int height) {
         gl2.glViewport(x, y, width, height);
-
     }
 
     public void clearColor(float r, float g, float b, float a) {
@@ -33,6 +32,10 @@ public class JoglGL2 implements OpenGL {
 
     public void clear(int mask) {
         gl2.glClear(mask);
+    }
+
+    public void lineWidth(float width) {
+        gl2.glLineWidth(width);
     }
 
     public void shaderSource(int shaderId, String source) {

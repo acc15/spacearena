@@ -1,10 +1,8 @@
 package ru.spacearena.engine.graphics.shaders;
 
 import cern.colt.list.IntArrayList;
-import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.graphics.OpenGL;
 
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +42,7 @@ public class ShaderProgram {
     }
 
     public void make(OpenGL gl) {
-        if (id != 0) {
+        if (id == 0) {
             id = doMake(gl);
         }
     }
@@ -54,6 +52,9 @@ public class ShaderProgram {
             throw new IllegalStateException("Program not linked but wants to be deleted");
         }
         gl.deleteProgram(id);
+        for (Shader shader: shaders) {
+            shader.delete(gl);
+        }
     }
 
     private void doCleanup(OpenGL gl, int id, int index) {
@@ -106,25 +107,6 @@ public class ShaderProgram {
         return programId;
     }
 
-    public void bindAttr(OpenGL gl, int attr, int count, int stride, Buffer buf) {
-        gl.vertexAttribPointer(attr, count, OpenGL.Type.FLOAT, false, stride, buf);
-        gl.enableVertexAttribArray(attr);
-    }
-
-    public void bindAttr(OpenGL gl, int attr, int floatsPerAttr, int floatsPerVertex, int offset) {
-        gl.vertexAttribPointer(attr, floatsPerAttr, OpenGL.Type.FLOAT, false, floatsPerVertex*4, offset*4);
-        gl.enableVertexAttribArray(attr);
-    }
-
-    public void bindMatrix(OpenGL gl, int index, Matrix matrix) {
-        gl.uniformMatrix4(uniformLocations.get(index), 1, matrix.m, 0);
-    }
-
-    public void disableVertexAttrib(OpenGL gl) {
-        for (int i=0; i<attributes.size(); i++) {
-            gl.disableVertexAttribArray(i);
-        }
-    }
     public int getId() {
         return id;
     }

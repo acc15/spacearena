@@ -6,15 +6,15 @@ import ru.spacearena.engine.graphics.OpenGL;
 * @author Vyacheslav Mayorov
 * @since 2014-29-03
 */
-public class PositionColorProgram2f extends ShaderProgram {
+public class PositionColorProgram extends ShaderProgram {
 
-    private static final PositionColorProgram2f instance = new PositionColorProgram2f();
+    private static final PositionColorProgram instance = new PositionColorProgram();
 
-    public static final int POSITION = 0;
-    public static final int COLOR = 1;
-    public static final int MATRIX = 0;
+    public static final int POSITION_ATTR = 0;
+    public static final int MATRIX_UNIFORM = 0;
+    public static final int COLOR_UNIFORM = 1;
 
-    private PositionColorProgram2f() {
+    private PositionColorProgram() {
         addShader(new Shader(OpenGL.ShaderType.VERTEX,
                 "uniform mat4 u_MVPMatrix;" +
                 "attribute vec4 a_Position;" +
@@ -34,7 +34,7 @@ public class PositionColorProgram2f extends ShaderProgram {
         addUniform("u_Color");
     }
 
-    public static PositionColorProgram2f getInstance() {
+    public static PositionColorProgram getInstance() {
         return instance;
     }
 

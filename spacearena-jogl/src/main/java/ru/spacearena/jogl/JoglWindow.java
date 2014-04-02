@@ -29,7 +29,9 @@ public class JoglWindow implements GLEventListener {
     }
 
     public void start() {
-        final GLWindow window = GLWindow.create(new GLCapabilities(GLProfile.getDefault()));
+        final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
+        caps.setHardwareAccelerated(true);
+        final GLWindow window = GLWindow.create(caps);
         window.setSize(800, 600);
         window.setTitle("SpaceArena");
         window.addWindowListener(new WindowAdapter() {
@@ -61,10 +63,22 @@ public class JoglWindow implements GLEventListener {
     }
 
     public void init(GLAutoDrawable drawable) {
-        drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+        //drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+        try {
+            gl.setGL2(drawable.getGL().getGL2());
+            context.init();
+        } finally {
+            gl.setGL2(null);
+        }
     }
 
     public void dispose(GLAutoDrawable drawable) {
+        try {
+            gl.setGL2(drawable.getGL().getGL2());
+            context.dispose();
+        } finally {
+            gl.setGL2(null);
+        }
     }
 
     public void display(GLAutoDrawable drawable) {

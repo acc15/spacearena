@@ -4,7 +4,6 @@ import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FPP;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.ShapeUtils;
 
 /**
@@ -40,11 +39,11 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
 
     public static class LargestSideAdjustStrategy implements ViewportAdjustStrategy {
 
-        private float largestRatio;
+        private float largestSize;
         private float prevWidth = -1, prevHeight = -1;
 
-        public LargestSideAdjustStrategy(float largestRatio) {
-            this.largestRatio = largestRatio;
+        public LargestSideAdjustStrategy(float largestSize) {
+            this.largestSize = largestSize;
         }
 
         public void adjustViewport(float width, float height, Transform<?> tx) {
@@ -52,7 +51,7 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
             // s1 - new scale (need to compute)
             // d0 - old size (width or height)
             // d1 - new dimension (width or height)
-            // r - largestRatio
+            // r - largestSize
             //
             //      f * r
             // s0 = -----
@@ -76,11 +75,13 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
             // s1 = -------
             //         d1
 
-            if (prevWidth < 0 || prevHeight < 0) {
-                tx.setScale(largestRatio / (width > height ? width : height));
+
+
+            final float scale = largestSize/2;
+            if (width > height) {
+                tx.setScale(scale, height/width*scale);
             } else {
-                final float s = prevWidth > prevHeight ? tx.getScaleX() * prevWidth : tx.getScaleY() * prevHeight;
-                tx.setScale(s / FloatMathUtils.max(width, height));
+                tx.setScale(width/height*scale, scale);
             }
             prevWidth = width;
             prevHeight = height;
