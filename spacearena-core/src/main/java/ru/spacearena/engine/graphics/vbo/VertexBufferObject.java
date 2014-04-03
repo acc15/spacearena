@@ -1,21 +1,20 @@
-package ru.spacearena.engine.graphics;
+package ru.spacearena.engine.graphics.vbo;
+
+import ru.spacearena.engine.graphics.OpenGL;
 
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-02-04
 */
-class VertexBufferObject {
+public class VertexBufferObject extends VBODefinition {
 
     private int id;
 
-    private final OpenGL.BufferType type;
-    private final OpenGL.BufferUsage usage;
     private VertexBufferLayout layout = null;
     private int sizeInBytes = -1;
 
     public VertexBufferObject(OpenGL.BufferType type, OpenGL.BufferUsage usage) {
-        this.type = type;
-        this.usage = usage;
+        super(type, usage);
     }
 
     public VertexBufferLayout getLayout() {
@@ -40,7 +39,7 @@ class VertexBufferObject {
 
         create(gl);
         bind(gl);
-        gl.bufferData(type, sizeInBytes, buffer.prepareBuffer(), usage);
+        gl.bufferData(getBufferType(), sizeInBytes, buffer.prepareBuffer(), getBufferUsage());
         unbind(gl);
     }
 
@@ -48,11 +47,11 @@ class VertexBufferObject {
         if (id == 0) {
             throw new IllegalStateException("Buffer not created");
         }
-        gl.bindBuffer(type, id);
+        gl.bindBuffer(getBufferType(), id);
     }
 
     public void unbind(OpenGL gl) {
-        gl.bindBuffer(type, 0);
+        gl.bindBuffer(getBufferType(), 0);
     }
 
     public void delete(OpenGL gl) {

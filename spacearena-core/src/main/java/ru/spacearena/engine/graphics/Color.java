@@ -1,7 +1,5 @@
 package ru.spacearena.engine.graphics;
 
-import java.nio.FloatBuffer;
-
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-01-04
@@ -49,10 +47,6 @@ public class Color {
         this.g = g;
         this.b = b;
         this.a = a;
-    }
-
-    public void put(FloatBuffer buf) {
-        buf.put(r).put(g).put(b).put(a);
     }
 
 }

@@ -45,19 +45,33 @@ public class GameFactory implements EngineFactory {
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
         viewport.add(new Transform() {
 
-            private float r = 3f;
+            private float r = 1f;
+            private float x = 3f;
 
             @Override
             public boolean onUpdate(float seconds) {
-                rotate(2f * seconds);
+                rotate(seconds);
                 //translate(-0.001f, 0);
-                r += seconds;
+
+                r += x*seconds;
+                final float rmin = 0, rmax = 2f;
+                if (r < rmin) {
+                    r = rmin;
+                    x = -x;
+                } else if (r > rmax) {
+                    r = rmax;
+                    x = -x;
+                }
                 return true;
             }
 
             @Override
             protected void onDrawTransformed(DrawContext context) {
-                context.drawNGon((int)r, 0, 0, 30, 10, Color.GREEN);
+                for (int i=-10; i<=10; i++) {
+                    for (int j=-10; j<=10; j++) {
+                        context.fillCircle(j*4,i*4,r,Color.RED);
+                    }
+                }
             }
 
         });

@@ -1,4 +1,6 @@
-package ru.spacearena.engine.graphics;
+package ru.spacearena.engine.graphics.vbo;
+
+import ru.spacearena.engine.graphics.OpenGL;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

@@ -1,6 +1,7 @@
 package ru.spacearena.engine.graphics;
 
 import org.junit.Test;
+import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 

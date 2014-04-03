@@ -51,7 +51,7 @@ public class EngineActivity extends Activity {
         view.setEGLContextClientVersion(2);
         view.setRenderer(new GLSurfaceView.Renderer() {
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-                //context.init();
+                context.init();
             }
 
             public void onSurfaceChanged(GL10 gl, int width, int height) {

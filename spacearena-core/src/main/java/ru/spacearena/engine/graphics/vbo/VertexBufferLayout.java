@@ -1,6 +1,7 @@
-package ru.spacearena.engine.graphics;
+package ru.spacearena.engine.graphics.vbo;
 
 import cern.colt.list.IntArrayList;
+import ru.spacearena.engine.graphics.OpenGL;
 
 /**
  * @author Vyacheslav Mayorov
@@ -93,7 +94,6 @@ public class VertexBufferLayout {
         }
         return arg;
     }
-
 
     public static final class Builder {
 

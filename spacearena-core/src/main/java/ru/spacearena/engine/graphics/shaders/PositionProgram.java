@@ -1,7 +1,7 @@
 package ru.spacearena.engine.graphics.shaders;
 
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.VertexBufferLayout;
+import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
 /**
 * @author Vyacheslav Mayorov

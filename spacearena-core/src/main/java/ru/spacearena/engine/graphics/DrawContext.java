@@ -3,10 +3,12 @@ package ru.spacearena.engine.graphics;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
+import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
+import ru.spacearena.engine.graphics.vbo.VBODefinition;
+import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * @author Vyacheslav Mayorov
@@ -14,13 +16,15 @@ import java.util.HashSet;
  */
 public class DrawContext {
 
+    public static final VBODefinition SIN_COS_VBO = new VBODefinition(
+            OpenGL.BufferType.ARRAY, OpenGL.BufferUsage.STATIC_DRAW);
 
     public static final int MAX_MATRIX_DEPTH = 40;
     public static final int MAX_VERTEX_COUNT = 100;
 
     private final OpenGL gl;
 
-    private final VertexBuffer vertexBuffer = new VertexBuffer(MAX_VERTEX_COUNT*2);
+    private final VertexBuffer vertexBuffer = new VertexBuffer(MAX_VERTEX_COUNT * 2);
 
     private final Matrix activeMatrix = new Matrix();
     private final float[] matrixStack = new float[Matrix.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
@@ -29,7 +33,7 @@ public class DrawContext {
     private final HashMap<Program.Definition, Program> programs =
             new HashMap<Program.Definition, Program>();
 
-    private final HashSet<VertexBufferObject> vbos = new HashSet<VertexBufferObject>();
+    private final HashMap<VBODefinition, VertexBufferObject> vbos = new HashMap<VBODefinition, VertexBufferObject>();
 
     private final Binder binder = new Binder();
 
@@ -53,41 +57,20 @@ public class DrawContext {
     }
 
     public void clear(Color color) {
-        gl.clearColor(color.r,color.g,color.b,color.a);
+        gl.clearColor(color.r, color.g, color.b, color.a);
         gl.clear(OpenGL.COLOR_BUFFER_BIT);
     }
 
     public void init() {
-
-        //final VertexBufferObject vbo = new VertexBufferObject(OpenGL.BufferType.ARRAY, OpenGL.BufferUsage.STATIC_DRAW);
-        //renderNGon(MAX_VERTEX_COUNT,0,0,1,1);
-        //upload(vbo, vertexBuffer);
-
-
-
-//        // recompiling early used programs
-//        for (Program program: programs.values()) {
-//            program.make(gl);
-//        }
-//        // generating
-//        for (VertexBufferObject vbo: vbos) {
-//            vbo.create(gl);
-//        }
-    }
-
-    public void upload(VertexBufferObject vbo, VertexBuffer buffer) {
-        if (!vbos.contains(vbo) && vbo.isCreated()) {
-            throw new IllegalArgumentException("VBO already used in another context");
-        }
-        vbos.add(vbo);
-        vbo.upload(gl, buffer);
+        fillNGonBuf(MAX_VERTEX_COUNT, 0, 0, 1, 1);
+        uploadVBO(SIN_COS_VBO, vertexBuffer);
     }
 
     public void dispose() {
-        for (Program p: programs.values()) {
+        for (Program p : programs.values()) {
             p.markDead();
         }
-        for (VertexBufferObject vbo: vbos) {
+        for (VertexBufferObject vbo : vbos.values()) {
             vbo.markDead();
         }
     }
@@ -118,6 +101,39 @@ public class DrawContext {
         return binder.use(register(def));
     }
 
+    public VertexBufferObject getVBO(VBODefinition definition) {
+        final VertexBufferObject vbo = vbos.get(definition);
+        if (vbo == null) {
+            throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists in context");
+        }
+        return vbo;
+    }
+
+    public VertexBufferObject uploadVBO(VertexBufferObject vbo, VertexBuffer buffer) {
+        if (!vbos.containsKey(vbo) && vbo.isCreated()) {
+            throw new IllegalArgumentException("Can't use one VBO in different contexts");
+        }
+        vbo.upload(gl, buffer);
+        vbos.put(vbo, vbo);
+        return vbo;
+    }
+
+    public VertexBufferObject uploadVBO(VBODefinition definition, VertexBuffer buffer) {
+        VertexBufferObject vbo = vbos.get(definition);
+        if (vbo == null) {
+            vbo = new VertexBufferObject(definition.getBufferType(), definition.getBufferUsage());
+        }
+        vbo.upload(gl, buffer);
+        vbos.put(definition, vbo);
+        return vbo;
+    }
+
+    public void deleteVBO(VBODefinition definition) {
+        final VertexBufferObject vbo = getVBO(definition);
+        vbos.remove(definition);
+        vbo.delete(gl);
+    }
+
     private void drawBuf(OpenGL.PrimitiveType type, Color color) {
         use(PositionProgram.DEFINITION).
                 bindAttr(PositionProgram.POSITION_ATTR, vertexBuffer, 0).
@@ -126,7 +142,7 @@ public class DrawContext {
                 draw(type);
     }
 
-    private void renderNGon(int n, float x, float y, float rx, float ry) {
+    private void fillNGonBuf(int n, float x, float y, float rx, float ry) {
         if (n < 3) {
             throw new IllegalArgumentException("N-Gon should have at least 3 points");
         }
@@ -134,25 +150,25 @@ public class DrawContext {
             n = MAX_VERTEX_COUNT;
         }
 
-        final float a = FloatMathUtils.TWO_PI/n;
+        final float a = FloatMathUtils.TWO_PI / n;
         final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);
         vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2);
         float vx = 1, vy = 0;
-        for (int i=0; i<n; i++) {
-            vertexBuffer.put(x + vx*rx, y + vy*ry);
-            final float ny = vx*s+vy*c;
-            vx = vx*c-vy*s;
+        for (int i = 0; i < n; i++) {
+            vertexBuffer.put(x + vx * rx, y + vy * ry);
+            final float ny = vx * s + vy * c;
+            vx = vx * c - vy * s;
             vy = ny;
         }
     }
 
     public void fillNGon(int n, float x, float y, float rx, float ry, Color color) {
-        renderNGon(n, x, y, rx, ry);
+        fillNGonBuf(n, x, y, rx, ry);
         drawBuf(OpenGL.PrimitiveType.TRIANGLE_FAN, color);
     }
 
     public void drawNGon(int n, float x, float y, float rx, float ry, Color color) {
-        renderNGon(n, x, y, rx, ry);
+        fillNGonBuf(n, x, y, rx, ry);
         drawBuf(OpenGL.PrimitiveType.LINE_LOOP, color);
     }
 
@@ -186,33 +202,40 @@ public class DrawContext {
         drawBuf(OpenGL.PrimitiveType.LINES, color);
     }
 
-    public void fillEllipse(float x, float y, float rx, float ry, Color color) {
-//        use(PositionProgram.DEFINITION).
-//                bindAttr(PositionProgram.POSITION_ATTR, vbo, 0).
-//                bindUniform(PositionProgram.COLOR_UNIFORM, color).
-//                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
-//                draw(OpenGL.PrimitiveType.TRIANGLE_FAN, vbo.size()/2);
+    private void renderEllipse(OpenGL.PrimitiveType type, float x, float y, float rx, float ry, Color color) {
+        // storing current matrix on stack... bad approach
+        final float m0 = activeMatrix.m[0], m1 = activeMatrix.m[1], m4 = activeMatrix.m[4], m5 = activeMatrix.m[5],
+                    m12 = activeMatrix.m[12],m13 = activeMatrix.m[13];
+        activeMatrix.postTranslate(x, y);
+        activeMatrix.postScale(rx, ry);
+        use(PositionProgram.DEFINITION).
+                bindAttr(PositionProgram.POSITION_ATTR, SIN_COS_VBO, 0).
+                bindUniform(PositionProgram.COLOR_UNIFORM, color).
+                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
+                draw(type);
+        activeMatrix.set(m0, m1, m4, m5, m12, m13);
     }
 
-    //public static final Object SIN_COS_VBO = new Object();
+
+    public void fillEllipse(float x, float y, float rx, float ry, Color color) {
+        renderEllipse(OpenGL.PrimitiveType.TRIANGLE_FAN, x, y, rx, ry, color);
+    }
 
     public void drawEllipse(float x, float y, float rx, float ry, Color color) {
+        renderEllipse(OpenGL.PrimitiveType.LINE_LOOP, x, y, rx, ry, color);
+    }
 
-//        final VertexBufferObject vbo = this.getVBO(SIN_COS_VBO);
-//        use(PositionProgram.DEFINITION).
-//                bindAttr(PositionProgram.POSITION_ATTR, context.getVBO(SIN_COS_VBO), 0).
-//                bindUniform(PositionProgram.COLOR_UNIFORM, color).
-//                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
-//                draw(OpenGL.PrimitiveType.LINE_LOOP);
+    public void fillCircle(float x, float y, float r, Color color) {
+        renderEllipse(OpenGL.PrimitiveType.TRIANGLE_FAN, x, y, r, r, color);
+    }
 
-        //draw
+    public void drawCircle(float x, float y, float r, Color color) {
+        renderEllipse(OpenGL.PrimitiveType.LINE_LOOP, x, y, r, r, color);
     }
 
     public void setLineWidth(float width) {
         gl.lineWidth(width);
     }
-
-
 
     public class Binder {
 
@@ -234,17 +257,8 @@ public class DrawContext {
             return this;
         }
 
-        public Binder bindAttr(int index, VertexBuffer buffer, int item) {
-            final int sizeInBytes = buffer.getSizeInBytes(),
-                      stride = buffer.getLayout().getStride(),
-                      floatCount = buffer.getLayout().getCount(item, OpenGL.Type.FLOAT);
-            gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, buffer.prepareBuffer(item));
-            gl.enableVertexAttribArray(index);
-            adjustVertexCount(sizeInBytes, stride);
-            return this;
-        }
-
-        public Binder bindAttr(int index, VertexBufferObject vbo, int item) {
+        public Binder bindAttr(int index, VBODefinition vboDefinition, int item) {
+            final VertexBufferObject vbo = getVBO(vboDefinition);
             final int sizeInBytes = vbo.getSizeInBytes(),
                     stride = vbo.getLayout().getStride(),
                     floatCount = vbo.getLayout().getCount(item, OpenGL.Type.FLOAT),
@@ -252,6 +266,16 @@ public class DrawContext {
 
             vbo.bind(gl);
             gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, offsetInBytes);
+            gl.enableVertexAttribArray(index);
+            adjustVertexCount(sizeInBytes, stride);
+            return this;
+        }
+
+        public Binder bindAttr(int index, VertexBuffer buffer, int item) {
+            final int sizeInBytes = buffer.getSizeInBytes(),
+                    stride = buffer.getLayout().getStride(),
+                    floatCount = buffer.getLayout().getCount(item, OpenGL.Type.FLOAT);
+            gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, buffer.prepareBuffer(item));
             gl.enableVertexAttribArray(index);
             adjustVertexCount(sizeInBytes, stride);
             return this;
@@ -270,7 +294,7 @@ public class DrawContext {
         }
 
         private void adjustVertexCount(int bufferSize, int stride) {
-            final int count = bufferSize/stride;
+            final int count = bufferSize / stride;
             vertexCount = (vertexCount < 0 ? count : Math.min(vertexCount, count));
         }
 

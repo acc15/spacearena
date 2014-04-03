@@ -1,6 +1,8 @@
 package ru.spacearena.engine.graphics;
 
 import org.junit.Test;
+import ru.spacearena.engine.graphics.vbo.VertexBuffer;
+import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
 import java.nio.FloatBuffer;
 
