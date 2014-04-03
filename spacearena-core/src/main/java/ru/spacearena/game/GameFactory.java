@@ -51,7 +51,7 @@ public class GameFactory implements EngineFactory {
             public boolean onUpdate(float seconds) {
                 rotate(2f * seconds);
                 //translate(-0.001f, 0);
-                r += seconds*10;
+                r += seconds;
                 return true;
             }
 

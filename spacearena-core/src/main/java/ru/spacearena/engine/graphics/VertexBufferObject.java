@@ -10,7 +10,8 @@ class VertexBufferObject {
 
     private final OpenGL.BufferType type;
     private final OpenGL.BufferUsage usage;
-    private VertexBufferLayout layout;
+    private VertexBufferLayout layout = null;
+    private int sizeInBytes = -1;
 
     public VertexBufferObject(OpenGL.BufferType type, OpenGL.BufferUsage usage) {
         this.type = type;
@@ -25,14 +26,22 @@ class VertexBufferObject {
         return id != 0;
     }
 
-    public boolean isUploaded() { return layout != null; }
+    public boolean isUploaded() {
+        return sizeInBytes >= 0;
+    }
+
+    public int getSizeInBytes() {
+        return sizeInBytes;
+    }
 
     public void upload(OpenGL gl, VertexBuffer buffer) {
-        create(gl);
-
-        final int size = buffer.getSizeInBytes();
         this.layout = buffer.getLayout();
-        gl.bufferData(type, size, buffer.prepareBuffer(), usage);
+        this.sizeInBytes = buffer.getSizeInBytes();
+
+        create(gl);
+        bind(gl);
+        gl.bufferData(type, sizeInBytes, buffer.prepareBuffer(), usage);
+        unbind(gl);
     }
 
     public void bind(OpenGL gl) {
@@ -42,10 +51,14 @@ class VertexBufferObject {
         gl.bindBuffer(type, id);
     }
 
+    public void unbind(OpenGL gl) {
+        gl.bindBuffer(type, 0);
+    }
+
     public void delete(OpenGL gl) {
         if (this.id != 0) {
             gl.deleteBuffer(id);
-            this.id = 0;
+            markDead();
         }
     }
 
@@ -53,5 +66,14 @@ class VertexBufferObject {
         if (id == 0) {
             id = gl.genBuffer();
         }
+    }
+
+    public void markDead() {
+        this.id = 0;
+        this.layout = null;
+    }
+
+    public int getId() {
+        return id;
     }
 }
