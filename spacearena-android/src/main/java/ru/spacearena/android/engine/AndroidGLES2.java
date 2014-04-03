@@ -321,8 +321,35 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glDeleteTextures(1, INT_BUF, 0);
     }
 
+    public void pixelStore(PixelStore type, int alignment) {
+        GLES20.glPixelStorei(type.glCode(), alignment);
+    }
+
     public void texImage2D(TextureTarget target, int level, int width, int height, TextureFormat format, TexelType type, Buffer data) {
         GLES20.glTexImage2D(target.glCode(), level, format.glCode(), width, height, 0, format.glCode(), type.glCode(), data);
     }
 
+    public void texParameter(TextureType type, TextureParameter parameter, float[] params, int offset) {
+        GLES20.glTexParameterfv(type.glCode(), parameter.glCode(), params, offset);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, FloatBuffer buf) {
+        GLES20.glTexParameterfv(type.glCode(), parameter.glCode(), buf);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, float value) {
+        GLES20.glTexParameterf(type.glCode(), parameter.glCode(), value);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, int[] params, int offset) {
+        GLES20.glTexParameteriv(type.glCode(), parameter.glCode(), params, offset);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, IntBuffer buf) {
+        GLES20.glTexParameteriv(type.glCode(), parameter.glCode(), buf);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, int value) {
+        GLES20.glTexParameteri(type.glCode(), parameter.glCode(), value);
+    }
 }

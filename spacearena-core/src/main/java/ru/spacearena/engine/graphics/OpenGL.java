@@ -288,6 +288,31 @@ public interface OpenGL {
         public int glCode() { return glCode; }
     }
 
+    public enum PixelStore {
+        UNPACK_ALIGNMENT(0x0CF5),
+        PACK_ALIGNMENT(0x0D05);
+
+        private int glCode;
+        PixelStore(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+    }
+
+    public enum TextureParameter {
+        TEXTURE_MAG_FILTER(0x2800),
+        TEXTURE_MIN_FILTER(0x2801),
+        TEXTURE_WRAP_S(0x2802),
+        TEXTURE_WRAP_T(0x2803);
+
+        private int glCode;
+        TextureParameter(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+    }
+
+
     void getInteger(GenericParameter parameter, int[] values, int offset);
     void getInteger(GenericParameter parameter, IntBuffer buf);
 
@@ -380,5 +405,14 @@ public interface OpenGL {
                     TextureFormat format, TexelType type, Buffer data);
 
     void bindTexture(TextureType type, int id);
+
+    void pixelStore(PixelStore type, int alignment);
+
+    void texParameter(TextureType type, TextureParameter parameter, float[] params, int offset);
+    void texParameter(TextureType type, TextureParameter parameter, FloatBuffer buf);
+    void texParameter(TextureType type, TextureParameter parameter, float value);
+    void texParameter(TextureType type, TextureParameter parameter, int[] params, int offset);
+    void texParameter(TextureType type, TextureParameter parameter, IntBuffer buf);
+    void texParameter(TextureType type, TextureParameter parameter, int value);
 
 }

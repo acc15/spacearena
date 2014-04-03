@@ -337,10 +337,38 @@ public class JoglGL2 implements OpenGL {
         gl2.glBindTexture(type.glCode(), id);
     }
 
+    public void pixelStore(PixelStore type, int alignment) {
+        gl2.glPixelStorei(type.glCode(), alignment);
+    }
+
     public void texImage2D(TextureTarget target, int level, int width, int height,
                            TextureFormat format, TexelType type, Buffer data) {
         gl2.glTexImage2D(target.glCode(), level, format.glCode(),
                 width, height, 0,
                 format.glCode(), type.glCode(), data);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, float[] params, int offset) {
+        gl2.glTexParameterfv(type.glCode(), parameter.glCode(), params, offset);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, FloatBuffer buf) {
+        gl2.glTexParameterfv(type.glCode(), parameter.glCode(), buf);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, float value) {
+        gl2.glTexParameterf(type.glCode(), parameter.glCode(), value);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, int[] params, int offset) {
+        gl2.glTexParameteriv(type.glCode(), parameter.glCode(), params, offset);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, IntBuffer buf) {
+        gl2.glTexParameteriv(type.glCode(), parameter.glCode(), buf);
+    }
+
+    public void texParameter(TextureType type, TextureParameter parameter, int value) {
+        gl2.glTexParameteri(type.glCode(), parameter.glCode(), value);
     }
 }
