@@ -47,10 +47,10 @@ public class GameFactory implements EngineFactory {
             @Override
             public boolean onUpdate(float seconds) {
                 rotate(seconds);
-                //translate(-0.001f, 0);
+                translate(-5f*seconds, 0);
 
                 r += x*seconds;
-                final float rmin = 0, rmax = 2f;
+                final float rmin = 0.5f, rmax = 2f;
                 if (r < rmin) {
                     r = rmin;
                     x = -x;

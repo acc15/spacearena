@@ -26,7 +26,6 @@ public interface OpenGL {
 
     void lineWidth(float width);
 
-
     public enum PrimitiveType {
         POINTS(0x0000),
         LINES(0x0001),
@@ -313,5 +312,10 @@ public interface OpenGL {
     void drawArrays(PrimitiveType type, int offset, int count);
     public void drawElements(PrimitiveType type, int count, Type indexType, Buffer indices);
     public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset);
+
+//    void genTextures(int count, int[] textures, int offset);
+//    int getTexture();
+//
+//    void bindTexture(int type, int id);
 
 }
