@@ -108,9 +108,9 @@ public class DrawContext {
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
         VertexBufferObject vbo = vbos.get(definition);
         if (vbo == null) {
-            vbo = new VertexBufferObject(definition);
+            vbo = new VertexBufferObject();
         }
-        vbo.upload(gl, buffer);
+        vbo.upload(gl, definition, buffer);
         vbos.put(definition, vbo);
         return vbo;
     }
@@ -120,8 +120,8 @@ public class DrawContext {
         if (vbo == null) {
             throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists");
         }
-        vbos.remove(definition);
         vbo.delete(gl);
+        vbos.remove(definition);
     }
 
     private void drawBuf(OpenGL.PrimitiveType type, Color color) {
@@ -255,21 +255,24 @@ public class DrawContext {
                 throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists in current context");
             }
             final int sizeInBytes = vbo.getSizeInBytes(),
-                    stride = vbo.getLayout().getStride(),
-                    floatCount = vbo.getLayout().getCount(item, OpenGL.Type.FLOAT),
-                    offsetInBytes = vbo.getLayout().getOffsetInBytes(item);
+                      stride = vbo.getLayout().getStride(),
+                      floatCount = vbo.getLayout().getCount(item, OpenGL.Type.FLOAT),
+                      offsetInBytes = vbo.getLayout().getOffsetInBytes(item);
 
-            vbo.bind(gl);
+            final OpenGL.BufferType bufferType = definition.getBufferType();
+            gl.bindBuffer(bufferType, vbo.getId());
             gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, offsetInBytes);
             gl.enableVertexAttribArray(index);
+            gl.bindBuffer(bufferType, 0);
+
             adjustVertexCount(sizeInBytes, stride);
             return this;
         }
 
         public Binder bindAttr(int index, VertexBuffer buffer, int item) {
             final int sizeInBytes = buffer.getSizeInBytes(),
-                    stride = buffer.getLayout().getStride(),
-                    floatCount = buffer.getLayout().getCount(item, OpenGL.Type.FLOAT);
+                      stride = buffer.getLayout().getStride(),
+                      floatCount = buffer.getLayout().getCount(item, OpenGL.Type.FLOAT);
             gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, buffer.prepareBuffer(item));
             gl.enableVertexAttribArray(index);
             adjustVertexCount(sizeInBytes, stride);
