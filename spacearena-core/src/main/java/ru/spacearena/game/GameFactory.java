@@ -57,7 +57,7 @@ public class GameFactory implements EngineFactory {
 
             @Override
             protected void onDrawTransformed(DrawContext context) {
-                context.drawNGon(10000, 0, 0, 30, 10, Color.GREEN);
+                context.drawNGon((int)r, 0, 0, 30, 10, Color.GREEN);
             }
 
         });

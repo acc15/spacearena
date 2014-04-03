@@ -1,16 +1,17 @@
 package ru.spacearena.engine.graphics.shaders;
 
 import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.VertexBufferLayout;
 
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-29-03
 */
-public class PositionColorProgram extends ShaderProgram {
+public class PositionProgram extends Program {
 
     public static final Definition DEFINITION = new Definition() {
-        public ShaderProgram createProgram() {
-            return new PositionColorProgram();
+        public Program createProgram() {
+            return new PositionProgram();
         }
     };
 
@@ -18,10 +19,12 @@ public class PositionColorProgram extends ShaderProgram {
     public static final int MATRIX_UNIFORM = 0;
     public static final int COLOR_UNIFORM = 1;
 
-    private PositionColorProgram() {
+    public static final VertexBufferLayout LAYOUT_P2 = new VertexBufferLayout.Builder().size(2).build();
+
+    private PositionProgram() {
         addShader(new Shader(OpenGL.ShaderType.VERTEX,
                 "uniform mat4 u_MVPMatrix;" +
-                "attrSize vec4 a_Position;" +
+                "attribute vec4 a_Position;" +
                 "void main()" +
                 "{" +
                 "gl_Position = u_MVPMatrix * a_Position;" +

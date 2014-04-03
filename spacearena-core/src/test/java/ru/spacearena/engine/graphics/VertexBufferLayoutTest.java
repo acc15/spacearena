@@ -14,8 +14,7 @@ public class VertexBufferLayoutTest {
     @Test
     public void testLayout() throws Exception {
 
-        final VertexBufferLayout buf = new VertexBufferLayout();
-        buf.reset().attrSize(2).attrSize(3).attrSize(1);
+        final VertexBufferLayout buf = new VertexBufferLayout.Builder().size(2).size(3).size(1).build();
         assertThat(buf.getStride()).isEqualTo(24);
         assertThat(buf.getCount(0)).isEqualTo(2);
         assertThat(buf.getCount(1)).isEqualTo(3);

@@ -45,6 +45,11 @@ public class Shader {
         }
     }
 
+    public void markDead() {
+        this.c = 0;
+        this.id = 0;
+    }
+
     private int doCompile(OpenGL gl) {
         final int id = gl.createShader(type);
         gl.shaderSource(id, source);
@@ -60,4 +65,5 @@ public class Shader {
     private void doDelete(OpenGL gl) {
         gl.deleteShader(getId());
     }
+
 }

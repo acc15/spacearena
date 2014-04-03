@@ -10,18 +10,11 @@ import java.util.List;
 * @author Vyacheslav Mayorov
 * @since 2014-29-03
 */
-public class ShaderProgram {
-
-    private Definition definition;
-
-    public Definition getDefinition() {
-        return definition;
-    }
+public class Program {
 
     public interface Definition {
-        ShaderProgram createProgram();
+        Program createProgram();
     }
-
 
     private final List<Shader> shaders = new ArrayList<Shader>();
     private final List<String> attributes = new ArrayList<String>();
@@ -115,6 +108,13 @@ public class ShaderProgram {
             uniformLocations.add(uniformLoc);
         }
         return programId;
+    }
+
+    public void markDead() {
+        this.id = 0;
+        for (Shader shader: shaders) {
+            shader.markDead();
+        }
     }
 
     public int getId() {

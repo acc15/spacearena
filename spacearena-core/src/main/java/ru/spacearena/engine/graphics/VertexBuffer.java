@@ -10,64 +10,40 @@ import java.nio.FloatBuffer;
 */
 public class VertexBuffer {
 
-    public static final int FLOAT_SIZE = 4;
-    public static final int MAX_ITEMS = 8;
-
-    int item = 0;
-    int size = -1;
-    final int[] items = new int[MAX_ITEMS];
-
-    final FloatBuffer buffer;
+    private final FloatBuffer buffer;
+    private VertexBufferLayout layout;
 
     public VertexBuffer(int size) {
-        buffer = ByteBuffer.allocateDirect(size * FLOAT_SIZE).
+        buffer = ByteBuffer.allocateDirect(OpenGL.Type.FIXED.toBytes(size)).
                 order(ByteOrder.nativeOrder()).
                 asFloatBuffer();
     }
 
     public VertexBuffer reset() {
-        this.item = 0;
-        this.size = -1;
         buffer.rewind();
         return this;
     }
 
-    public int getCount(int item) {
-        return item > 0 ? items[item] - items[item - 1] : items[item];
+    public VertexBufferLayout getLayout() {
+        return layout;
     }
 
-    public int getOffset(int i) {
-        return i > 0 ? items[i-1] : 0;
-    }
-
-    public int getStride() {
-        return items[item-1] * FLOAT_SIZE;
-    }
-
-    public VertexBuffer layout(int size) {
-        items[item] = item > 0 ? items[item-1] + size : size;
-        ++item;
+    public VertexBuffer layout(VertexBufferLayout l) {
+        this.layout = l;
         return this;
     }
 
-    private FloatBuffer storeSizeAndRewindTo(int offset) {
-        if (this.size < 0) {
-            this.size = buffer.position() * FLOAT_SIZE;
-        }
-        buffer.position(offset);
+    public int getSizeInBytes() {
+        return OpenGL.Type.FLOAT.toBytes(buffer.position());
+    }
+
+    public FloatBuffer prepareBuffer() {
+        return prepareBuffer(0);
+    }
+
+    public FloatBuffer prepareBuffer(int item) {
+        buffer.position(layout.getOffset(item));
         return buffer;
-    }
-
-    public int size() {
-        return size < 0 ? buffer.position() * FLOAT_SIZE : size;
-    }
-
-    public FloatBuffer getBuffer() {
-        return storeSizeAndRewindTo(0);
-    }
-
-    public FloatBuffer getBuffer(int item) {
-        return storeSizeAndRewindTo(getOffset(item));
     }
 
     public VertexBuffer put(float x) {
