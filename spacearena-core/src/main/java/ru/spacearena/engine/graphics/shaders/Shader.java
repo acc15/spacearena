@@ -45,7 +45,7 @@ public class Shader {
         }
     }
 
-    public void markDead() {
+    public void reset() {
         this.c = 0;
         this.id = 0;
     }

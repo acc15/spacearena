@@ -33,13 +33,13 @@ public class DrawContext {
     private final HashMap<Program.Definition, Program> programs =
             new HashMap<Program.Definition, Program>();
 
-    private final HashMap<VBODefinition, VertexBufferObject> vbos = new HashMap<VBODefinition, VertexBufferObject>();
+    private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos =
+            new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
 
     private final Binder binder = new Binder();
 
     public DrawContext(OpenGL gl) {
         this.gl = gl;
-        register(PositionProgram.DEFINITION);
     }
 
     public void pushMatrix(Matrix m) {
@@ -63,16 +63,12 @@ public class DrawContext {
 
     public void init() {
         fillNGonBuf(MAX_VERTEX_COUNT, 0, 0, 1, 1);
-        uploadVBO(SIN_COS_VBO, vertexBuffer);
+        upload(SIN_COS_VBO, vertexBuffer);
     }
 
     public void dispose() {
-        for (Program p : programs.values()) {
-            p.markDead();
-        }
-        for (VertexBufferObject vbo : vbos.values()) {
-            vbo.markDead();
-        }
+        programs.clear();
+        vbos.clear();
     }
 
     public Matrix getActiveMatrix() {
@@ -101,35 +97,29 @@ public class DrawContext {
         return binder.use(register(def));
     }
 
-    public VertexBufferObject getVBO(VBODefinition definition) {
-        final VertexBufferObject vbo = vbos.get(definition);
-        if (vbo == null) {
-            throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists in context");
-        }
-        return vbo;
+    public boolean has(Program.Definition definition) {
+        return programs.containsKey(definition);
     }
 
-    public VertexBufferObject uploadVBO(VertexBufferObject vbo, VertexBuffer buffer) {
-        if (!vbos.containsKey(vbo) && vbo.isCreated()) {
-            throw new IllegalArgumentException("Can't use one VBO in different contexts");
-        }
-        vbo.upload(gl, buffer);
-        vbos.put(vbo, vbo);
-        return vbo;
+    public boolean has(VertexBufferObject.Definition definition) {
+        return vbos.containsKey(definition);
     }
 
-    public VertexBufferObject uploadVBO(VBODefinition definition, VertexBuffer buffer) {
+    public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
         VertexBufferObject vbo = vbos.get(definition);
         if (vbo == null) {
-            vbo = new VertexBufferObject(definition.getBufferType(), definition.getBufferUsage());
+            vbo = new VertexBufferObject(definition);
         }
         vbo.upload(gl, buffer);
         vbos.put(definition, vbo);
         return vbo;
     }
 
-    public void deleteVBO(VBODefinition definition) {
-        final VertexBufferObject vbo = getVBO(definition);
+    public void delete(VertexBufferObject.Definition definition) {
+        final VertexBufferObject vbo = vbos.get(definition);
+        if (vbo == null) {
+            throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists");
+        }
         vbos.remove(definition);
         vbo.delete(gl);
     }
@@ -203,19 +193,21 @@ public class DrawContext {
     }
 
     private void renderEllipse(OpenGL.PrimitiveType type, float x, float y, float rx, float ry, Color color) {
-        // storing current matrix on stack... bad approach
+        // storing current matrix on stack... looks very bad but should work
         final float m0 = activeMatrix.m[0], m1 = activeMatrix.m[1], m4 = activeMatrix.m[4], m5 = activeMatrix.m[5],
-                    m12 = activeMatrix.m[12],m13 = activeMatrix.m[13];
-        activeMatrix.postTranslate(x, y);
-        activeMatrix.postScale(rx, ry);
-        use(PositionProgram.DEFINITION).
-                bindAttr(PositionProgram.POSITION_ATTR, SIN_COS_VBO, 0).
-                bindUniform(PositionProgram.COLOR_UNIFORM, color).
-                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
-                draw(type);
-        activeMatrix.set(m0, m1, m4, m5, m12, m13);
+                    m12 = activeMatrix.m[12], m13 = activeMatrix.m[13];
+        try {
+            activeMatrix.postTranslate(x, y);
+            activeMatrix.postScale(rx, ry);
+            use(PositionProgram.DEFINITION).
+                    bindAttr(PositionProgram.POSITION_ATTR, SIN_COS_VBO, 0).
+                    bindUniform(PositionProgram.COLOR_UNIFORM, color).
+                    bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
+                    draw(type);
+        } finally {
+            activeMatrix.set(m0, m1, m4, m5, m12, m13);
+        }
     }
-
 
     public void fillEllipse(float x, float y, float rx, float ry, Color color) {
         renderEllipse(OpenGL.PrimitiveType.TRIANGLE_FAN, x, y, rx, ry, color);
@@ -257,8 +249,11 @@ public class DrawContext {
             return this;
         }
 
-        public Binder bindAttr(int index, VBODefinition vboDefinition, int item) {
-            final VertexBufferObject vbo = getVBO(vboDefinition);
+        public Binder bindAttr(int index, VertexBufferObject.Definition definition, int item) {
+            final VertexBufferObject vbo = vbos.get(definition);
+            if (vbo == null) {
+                throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists in current context");
+            }
             final int sizeInBytes = vbo.getSizeInBytes(),
                     stride = vbo.getLayout().getStride(),
                     floatCount = vbo.getLayout().getCount(item, OpenGL.Type.FLOAT),

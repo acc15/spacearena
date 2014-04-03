@@ -6,7 +6,7 @@ import ru.spacearena.engine.graphics.OpenGL;
  * @author Vyacheslav Mayorov
  * @since 2014-03-04
  */
-public class VBODefinition {
+public class VBODefinition implements VertexBufferObject.Definition {
 
     private OpenGL.BufferUsage usage;
     private OpenGL.BufferType type;

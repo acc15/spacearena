@@ -113,10 +113,10 @@ public class Program {
         return programId;
     }
 
-    public void markDead() {
+    public void reset() {
         this.id = 0;
         for (Shader shader: shaders) {
-            shader.markDead();
+            shader.reset();
         }
     }
 

@@ -6,27 +6,27 @@ import ru.spacearena.engine.graphics.OpenGL;
 * @author Vyacheslav Mayorov
 * @since 2014-02-04
 */
-public class VertexBufferObject extends VBODefinition {
+public class VertexBufferObject {
+
+    public static interface Definition {
+        OpenGL.BufferType getBufferType();
+        OpenGL.BufferUsage getBufferUsage();
+    }
 
     private int id;
 
     private VertexBufferLayout layout = null;
-    private int sizeInBytes = -1;
+    private int sizeInBytes = 0;
+    private OpenGL.BufferType type;
+    private OpenGL.BufferUsage usage;
 
-    public VertexBufferObject(OpenGL.BufferType type, OpenGL.BufferUsage usage) {
-        super(type, usage);
+    public VertexBufferObject(Definition definition) {
+        this.type = definition.getBufferType();
+        this.usage = definition.getBufferUsage();
     }
 
     public VertexBufferLayout getLayout() {
         return layout;
-    }
-
-    public boolean isCreated() {
-        return id != 0;
-    }
-
-    public boolean isUploaded() {
-        return sizeInBytes >= 0;
     }
 
     public int getSizeInBytes() {
@@ -36,10 +36,11 @@ public class VertexBufferObject extends VBODefinition {
     public void upload(OpenGL gl, VertexBuffer buffer) {
         this.layout = buffer.getLayout();
         this.sizeInBytes = buffer.getSizeInBytes();
-
-        create(gl);
+        if (id == 0) {
+            id = gl.genBuffer();
+        }
         bind(gl);
-        gl.bufferData(getBufferType(), sizeInBytes, buffer.prepareBuffer(), getBufferUsage());
+        gl.bufferData(type, sizeInBytes, buffer.prepareBuffer(), usage);
         unbind(gl);
     }
 
@@ -47,28 +48,23 @@ public class VertexBufferObject extends VBODefinition {
         if (id == 0) {
             throw new IllegalStateException("Buffer not created");
         }
-        gl.bindBuffer(getBufferType(), id);
+        gl.bindBuffer(type, id);
     }
 
     public void unbind(OpenGL gl) {
-        gl.bindBuffer(getBufferType(), 0);
+        gl.bindBuffer(type, 0);
     }
 
     public void delete(OpenGL gl) {
         if (this.id != 0) {
             gl.deleteBuffer(id);
-            markDead();
+            reset();
         }
     }
 
-    public void create(OpenGL gl) {
-        if (id == 0) {
-            id = gl.genBuffer();
-        }
-    }
-
-    public void markDead() {
+    public void reset() {
         this.id = 0;
+        this.sizeInBytes = 0;
         this.layout = null;
     }
 
