@@ -18,7 +18,7 @@ public class GameFactory implements EngineFactory {
 
         //engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(60);
+        engine.setMaxFPS(0);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
@@ -47,7 +47,7 @@ public class GameFactory implements EngineFactory {
             @Override
             public boolean onUpdate(float seconds) {
                 rotate(seconds);
-                translate(-5f*seconds, 0);
+                //translate(-5f*seconds, 0);
 
                 r += x*seconds;
                 final float rmin = 0.5f, rmax = 2f;

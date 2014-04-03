@@ -290,4 +290,39 @@ public class AndroidGLES2 implements OpenGL {
     public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset) {
         GLES20.glDrawElements(type.glCode(), count, indexType.glCode(), indexOffset);
     }
+
+    public void genTextures(int count, IntBuffer buf) {
+        GLES20.glGenTextures(count, buf);
+    }
+
+    public void genTextures(int count, int[] textures, int offset) {
+        GLES20.glGenTextures(count, textures, offset);
+    }
+
+    public int genTexture() {
+        GLES20.glGenTextures(1, INT_BUF, 0);
+        return INT_BUF[0];
+    }
+
+    public void bindTexture(TextureType type, int id) {
+        GLES20.glBindTexture(type.glCode(), id);
+    }
+
+    public void deleteTextures(int count, int[] textures, int offset) {
+        GLES20.glDeleteTextures(count, textures, offset);
+    }
+
+    public void deleteTextures(int count, IntBuffer buf) {
+        GLES20.glDeleteTextures(count, buf);
+    }
+
+    public void deleteTexture(int id) {
+        INT_BUF[0] = id;
+        GLES20.glDeleteTextures(1, INT_BUF, 0);
+    }
+
+    public void texImage2D(TextureTarget target, int level, int width, int height, TextureFormat format, TexelType type, Buffer data) {
+        GLES20.glTexImage2D(target.glCode(), level, format.glCode(), width, height, 0, format.glCode(), type.glCode(), data);
+    }
+
 }

@@ -233,6 +233,61 @@ public interface OpenGL {
         public int glCode() { return glCode; }
     }
 
+    public enum TextureType {
+        TEXTURE_2D(0x0DE1),
+        TEXTURE_CUBE_MAP(0x8513);
+
+        private int glCode;
+        TextureType(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+    }
+
+    public enum TextureTarget {
+        TEXTURE_2D(0x0DE1),
+        TEXTURE_CUBE_MAP_POSITIVE_X(0x8515),
+        TEXTURE_CUBE_MAP_NEGATIVE_X(0x8516),
+        TEXTURE_CUBE_MAP_POSITIVE_Y(0x8517),
+        TEXTURE_CUBE_MAP_NEGATIVE_Y(0x8518),
+        TEXTURE_CUBE_MAP_POSITIVE_Z(0x8519),
+        TEXTURE_CUBE_MAP_NEGATIVE_Z(0x851A);
+
+        private int glCode;
+        TextureTarget(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+    }
+
+    public enum TextureFormat {
+        ALPHA(0x1906),
+        RGB(0x1907),
+        RGBA(0x1908),
+        LUMINANCE(0x1909),
+        LUMINANCE_ALPHA(0x190A);
+
+        private int glCode;
+        TextureFormat(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+
+    }
+
+    public enum TexelType {
+        UNSIGNED_SHORT_4_4_4_4(0x8033),
+        UNSIGNED_SHORT_5_5_5_1(0x8034),
+        UNSIGNED_SHORT_5_6_5(0x8363),
+        UNSIGNED_BYTE(0x1401);
+
+        private int glCode;
+        TexelType(int glCode) {
+            this.glCode = glCode;
+        }
+        public int glCode() { return glCode; }
+    }
+
     void getInteger(GenericParameter parameter, int[] values, int offset);
     void getInteger(GenericParameter parameter, IntBuffer buf);
 
@@ -313,9 +368,17 @@ public interface OpenGL {
     public void drawElements(PrimitiveType type, int count, Type indexType, Buffer indices);
     public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset);
 
-//    void genTextures(int count, int[] textures, int offset);
-//    int getTexture();
-//
-//    void bindTexture(int type, int id);
+    void genTextures(int count, IntBuffer buf);
+    void genTextures(int count, int[] textures, int offset);
+    int genTexture();
+
+    void deleteTextures(int count, int[] textures, int offset);
+    void deleteTextures(int count, IntBuffer buf);
+    void deleteTexture(int id);
+
+    void texImage2D(TextureTarget target, int level, int width, int height,
+                    TextureFormat format, TexelType type, Buffer data);
+
+    void bindTexture(TextureType type, int id);
 
 }

@@ -1,5 +1,6 @@
 package ru.spacearena.engine.graphics;
 
+import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
@@ -19,7 +20,6 @@ public class DrawContext {
     public static final VBODefinition SIN_COS_VBO = new VBODefinition(
             OpenGL.BufferType.ARRAY, OpenGL.BufferUsage.STATIC_DRAW);
 
-    public static final int MAX_MATRIX_DEPTH = 40;
     public static final int MAX_VERTEX_COUNT = 100;
 
     private final OpenGL gl;
@@ -27,8 +27,9 @@ public class DrawContext {
     private final VertexBuffer vertexBuffer = new VertexBuffer(MAX_VERTEX_COUNT * 2);
 
     private final Matrix activeMatrix = new Matrix();
-    private final float[] matrixStack = new float[Matrix.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
-    private int matrixIndex = 0;
+    private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
+    //private final float[] matrixStack = new float[Matrix.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
+    //private int matrixIndex = 0;
 
     private final HashMap<Program.Definition, Program> programs =
             new HashMap<Program.Definition, Program>();
@@ -43,17 +44,19 @@ public class DrawContext {
     }
 
     public void pushMatrix(Matrix m) {
-        activeMatrix.toArrayCompact(matrixStack, matrixIndex);
+        final int offset = matrixStack.size();
+        matrixStack.setSize(offset + Matrix.ELEMENTS_PER_MATRIX);
+        activeMatrix.toArrayCompact(matrixStack.elements(), offset);
         activeMatrix.postMultiply(m);
-        matrixIndex += Matrix.ELEMENTS_PER_MATRIX;
     }
 
     public void popMatrix() {
-        if (matrixIndex <= 0) {
+        if (matrixStack.isEmpty()) {
             throw new IllegalStateException("Empty matrix stack");
         }
-        matrixIndex -= Matrix.ELEMENTS_PER_MATRIX;
-        activeMatrix.fromArrayCompact(matrixStack, matrixIndex);
+        final int newSize = matrixStack.size() - Matrix.ELEMENTS_PER_MATRIX;
+        activeMatrix.fromArrayCompact(matrixStack.elements(), newSize);
+        matrixStack.setSize(newSize);
     }
 
     public void clear(Color color) {
@@ -62,7 +65,7 @@ public class DrawContext {
     }
 
     public void init() {
-        fillNGonBuf(MAX_VERTEX_COUNT, 0, 0, 1, 1);
+        fillNGonBuf(40, 0, 0, 1, 1);
         upload(SIN_COS_VBO, vertexBuffer);
     }
 

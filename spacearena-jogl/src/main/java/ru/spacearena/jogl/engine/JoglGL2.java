@@ -304,5 +304,43 @@ public class JoglGL2 implements OpenGL {
 
     public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset) {
         gl2.glDrawElements(type.glCode(), count, indexType.glCode(), indexOffset);
+
+    }
+
+    public void genTextures(int count, IntBuffer buf) {
+        gl2.glGenTextures(count, buf);
+    }
+
+    public void genTextures(int count, int[] textures, int offset) {
+        gl2.glGenTextures(count, textures, offset);
+    }
+
+    public int genTexture() {
+        gl2.glGenTextures(1, INT_BUF, 0);
+        return INT_BUF[0];
+    }
+
+    public void deleteTextures(int count, int[] textures, int offset) {
+        gl2.glDeleteTextures(count, textures, offset);
+    }
+
+    public void deleteTextures(int count, IntBuffer buf) {
+        gl2.glDeleteTextures(count, buf);
+    }
+
+    public void deleteTexture(int id) {
+        INT_BUF[0] = id;
+        gl2.glDeleteTextures(1, INT_BUF, 0);
+    }
+
+    public void bindTexture(TextureType type, int id) {
+        gl2.glBindTexture(type.glCode(), id);
+    }
+
+    public void texImage2D(TextureTarget target, int level, int width, int height,
+                           TextureFormat format, TexelType type, Buffer data) {
+        gl2.glTexImage2D(target.glCode(), level, format.glCode(),
+                width, height, 0,
+                format.glCode(), type.glCode(), data);
     }
 }
