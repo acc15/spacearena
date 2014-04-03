@@ -27,16 +27,12 @@ public class GameFactory implements EngineFactory {
         root.add(new Background());
 
         final FPSCounter f = new FPSCounter() {
-            private float x = 0f;
-
             @Override
             public boolean onUpdate(float seconds) {
-                x+=seconds;
-                if (x > 1) {
-                    System.out.println("FPS: " + getFps());
-                    x = 0;
+                if (computeFPS(seconds)) {
+                    System.out.println(getFps());
                 }
-                return super.onUpdate(seconds);
+                return true;
             }
         };
         root.add(f);
