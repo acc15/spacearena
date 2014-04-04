@@ -50,8 +50,16 @@ public class EngineActivity extends Activity {
         final DrawContext context = new DrawContext(new AndroidGLES2());
         view.setEGLContextClientVersion(2);
         view.setRenderer(new GLSurfaceView.Renderer() {
+
+            private boolean initialized = false;
+
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+                //engine.onInit();
+                if (initialized) {
+                    context.dispose();
+                }
                 context.init();
+                initialized = true;
             }
 
             public void onSurfaceChanged(GL10 gl, int width, int height) {
@@ -65,9 +73,7 @@ public class EngineActivity extends Activity {
             }
         });
         view.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-
         setContentView(view);
-
     }
 
 }

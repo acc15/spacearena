@@ -63,41 +63,22 @@ public class JoglWindow implements GLEventListener {
     }
 
     public void init(GLAutoDrawable drawable) {
-        //drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
-        try {
-            gl.setGL2(drawable.getGL().getGL2());
-            context.init();
-        } finally {
-            gl.setGL2(null);
-        }
+        gl.setGL2(drawable.getGL().getGL2());
+        context.init();
     }
 
     public void dispose(GLAutoDrawable drawable) {
-        try {
-            gl.setGL2(drawable.getGL().getGL2());
-            context.dispose();
-        } finally {
-            gl.setGL2(null);
-        }
+        context.dispose();
+        gl.setGL2(null);
     }
 
     public void display(GLAutoDrawable drawable) {
-        try {
-            gl.setGL2(drawable.getGL().getGL2());
-            engine.onDraw(context);
-        } finally {
-            gl.setGL2(null);
-        }
+        engine.onDraw(context);
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        try {
-            gl.setGL2(drawable.getGL().getGL2());
-            gl.viewport(x,y,width,height);
-            engine.onSize(width, height);
-        } finally {
-            gl.setGL2(null);
-        }
+        gl.viewport(x,y,width,height);
+        engine.onSize(width, height);
     }
 
     public static void main(String[] args) {

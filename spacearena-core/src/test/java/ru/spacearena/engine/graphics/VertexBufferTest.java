@@ -25,7 +25,7 @@ public class VertexBufferTest {
     public void testGetBuffer() throws Exception {
 
         final VertexBuffer buf = new VertexBuffer(50);
-        buf.reset().layout(new VertexBufferLayout.Builder().size(2).size(3).size(1).build());
+        buf.reset().layout(new VertexBufferLayout.Builder().floats(2).floats(3).floats(1).build());
 
         buf.put(2,2).put(1,2,3).put(4);
 

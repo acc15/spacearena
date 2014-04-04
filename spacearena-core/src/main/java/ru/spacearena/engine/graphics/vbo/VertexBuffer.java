@@ -43,7 +43,7 @@ public class VertexBuffer {
     }
 
     public ByteBuffer prepareBuffer(int item) {
-        buffer.position(layout.getOffsetInBytes(item));
+        buffer.position(layout.getOffset(item));
         return buffer;
     }
 

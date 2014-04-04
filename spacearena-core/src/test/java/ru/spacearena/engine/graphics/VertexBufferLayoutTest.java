@@ -15,14 +15,14 @@ public class VertexBufferLayoutTest {
     @Test
     public void testLayout() throws Exception {
 
-        final VertexBufferLayout buf = new VertexBufferLayout.Builder().size(2).size(3).size(1).build();
+        final VertexBufferLayout buf = new VertexBufferLayout.Builder().floats(2).floats(3).floats(1).build();
         assertThat(buf.getStride()).isEqualTo(24);
-        assertThat(buf.getCount(0)).isEqualTo(2);
-        assertThat(buf.getCount(1)).isEqualTo(3);
-        assertThat(buf.getCount(2)).isEqualTo(1);
+        assertThat(buf.getCount(0)).isEqualTo(8);
+        assertThat(buf.getCount(1)).isEqualTo(12);
+        assertThat(buf.getCount(2)).isEqualTo(4);
         assertThat(buf.getOffset(0)).isEqualTo(0);
-        assertThat(buf.getOffset(1)).isEqualTo(2);
-        assertThat(buf.getOffset(2)).isEqualTo(5);
+        assertThat(buf.getOffset(1)).isEqualTo(8);
+        assertThat(buf.getOffset(2)).isEqualTo(20);
 
     }
 

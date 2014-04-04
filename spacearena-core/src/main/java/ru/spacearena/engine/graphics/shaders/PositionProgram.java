@@ -19,7 +19,7 @@ public class PositionProgram extends Program {
     public static final int MATRIX_UNIFORM = 0;
     public static final int COLOR_UNIFORM = 1;
 
-    public static final VertexBufferLayout LAYOUT_P2 = new VertexBufferLayout.Builder().size(2).build();
+    public static final VertexBufferLayout LAYOUT_P2 = new VertexBufferLayout.Builder().floats(2).build();
 
     private PositionProgram() {
         shader(OpenGL.ShaderType.VERTEX,

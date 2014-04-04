@@ -65,8 +65,7 @@ public class DrawContext {
     }
 
     public void init() {
-        fillNGonBuf(40, 0, 0, 1, 1);
-        upload(SIN_COS_VBO, vertexBuffer);
+
     }
 
     public void dispose() {
@@ -202,6 +201,8 @@ public class DrawContext {
     }
 
     private void renderEllipse(OpenGL.PrimitiveType type, float x, float y, float rx, float ry, Color color) {
+        ensureSinCosVBO();
+
         // storing current matrix on stack... looks very bad but should work
         final float m0 = activeMatrix.m[0], m1 = activeMatrix.m[1], m4 = activeMatrix.m[4], m5 = activeMatrix.m[5],
                     m12 = activeMatrix.m[12], m13 = activeMatrix.m[13];
@@ -216,6 +217,14 @@ public class DrawContext {
         } finally {
             activeMatrix.set(m0, m1, m4, m5, m12, m13);
         }
+    }
+
+    private void ensureSinCosVBO() {
+        if (has(SIN_COS_VBO)) {
+            return;
+        }
+        fillNGonBuf(40, 0, 0, 1, 1);
+        upload(SIN_COS_VBO, vertexBuffer);
     }
 
     public void fillEllipse(float x, float y, float rx, float ry, Color color) {
@@ -237,44 +246,6 @@ public class DrawContext {
     public void setLineWidth(float width) {
         gl.lineWidth(width);
     }
-
-    /*
-    public static int loadTexture(final Context context, final int resourceId)
-    {
-        final int[] textureHandle = new int[1];
-
-        GLES20.glGenTextures(1, textureHandle, 0);
-
-        if (textureHandle[0] != 0)
-        {
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inScaled = false;   // No pre-scaling
-
-            // Read in the resource
-            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-
-            // Bind to the texture in OpenGL
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
-
-            // Set filtering
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-            // Load the bitmap into the bound texture.
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-
-            // Recycle the bitmap, since its data has been loaded into OpenGL.
-            bitmap.recycle();
-        }
-
-        if (textureHandle[0] == 0)
-        {
-            throw new RuntimeException("Error loading texture.");
-        }
-
-        return textureHandle[0];
-    }
-    */
 
     public class Binder {
 
@@ -303,8 +274,8 @@ public class DrawContext {
             }
             final int sizeInBytes = vbo.getSizeInBytes(),
                       stride = vbo.getLayout().getStride(),
-                      floatCount = vbo.getLayout().getCount(item, OpenGL.Type.FLOAT),
-                      offsetInBytes = vbo.getLayout().getOffsetInBytes(item);
+                      floatCount = OpenGL.Type.FLOAT.toTypes(vbo.getLayout().getCount(item)),
+                      offsetInBytes = vbo.getLayout().getOffset(item);
 
             final OpenGL.BufferType bufferType = definition.getBufferType();
             gl.bindBuffer(bufferType, vbo.getId());
@@ -319,7 +290,7 @@ public class DrawContext {
         public Binder bindAttr(int index, VertexBuffer buffer, int item) {
             final int sizeInBytes = buffer.getSizeInBytes(),
                       stride = buffer.getLayout().getStride(),
-                      floatCount = buffer.getLayout().getCount(item, OpenGL.Type.FLOAT);
+                      floatCount = OpenGL.Type.FLOAT.toTypes(buffer.getLayout().getCount(item));
             gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, buffer.prepareBuffer(item));
             gl.enableVertexAttribArray(index);
             adjustVertexCount(sizeInBytes, stride);

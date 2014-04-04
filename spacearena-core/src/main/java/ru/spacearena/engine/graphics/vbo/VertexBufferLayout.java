@@ -9,38 +9,10 @@ import ru.spacearena.engine.graphics.OpenGL;
  */
 public class VertexBufferLayout {
 
-    public static final OpenGL.Type DEFAULT_TYPE = OpenGL.Type.FLOAT;
-
     private final int[] offsets;
-
-//    public VertexBufferLayout(OpenGL.Type type, int... offsets) {
-//        this.offsets = offsets;
-//        offsets[0] = type.toBytes(offsets[0]);
-//        for (int i=1; i<offsets.length; i++) {
-//            offsets[i] = type.toBytes(offsets[i]) + offsets[i-1];
-//        }
-//    }
 
     private VertexBufferLayout(int... byteOffsets) {
         this.offsets = byteOffsets;
-    }
-
-    /**
-     * Returns vertex attribute data offset in {@link OpenGL.Type} elements
-     * @param index attrSize index
-     * @return vertex attrSize data offset in {@link OpenGL.Type} elements
-     */
-    public int getOffset(int index, OpenGL.Type type) {
-        return type.toTypes(getOffsetInBytes(index));
-    }
-
-    /**
-     * Returns vertex attribute data offset in {@link #DEFAULT_TYPE} elements
-     * @param index attrSize index
-     * @return vertex attrSize data offset in {@link #DEFAULT_TYPE} elements
-     */
-    public int getOffset(int index) {
-        return DEFAULT_TYPE.toTypes(getOffsetInBytes(index));
     }
 
     /**
@@ -48,27 +20,8 @@ public class VertexBufferLayout {
      * @param index attrSize index
      * @return vertex attribute data attrSize in bytes
      */
-    public int getOffsetInBytes(int index) {
+    public int getOffset(int index) {
         return checkArg(index) > 0 ? offsets[index-1] : 0;
-    }
-
-    /**
-     * Returns count of {@link OpenGL.Type type} elements used for vertex attribute
-     * @param index attribute index
-     * @param type attribute type
-     * @return count of elements measured using specified {@link OpenGL.Type}
-     */
-    public int getCount(int index, OpenGL.Type type) {
-        return type.toTypes(getCountInBytes(index));
-    }
-
-    /**
-     * Returns count of {@link #DEFAULT_TYPE} elements used for vertex attribute
-     * @param index attribute index
-     * @return count of elements measured using specified {@link OpenGL.Type}
-     */
-    public int getCount(int index) {
-        return DEFAULT_TYPE.toTypes(getCountInBytes(index));
     }
 
     /**
@@ -76,7 +29,7 @@ public class VertexBufferLayout {
      * @param index attrSize index
      * @return count of bytes
      */
-    public int getCountInBytes(int index) {
+    public int getCount(int index) {
         return checkArg(index) > 0 ? offsets[index] - offsets[index-1] : offsets[index];
     }
 
@@ -99,15 +52,15 @@ public class VertexBufferLayout {
 
         private IntArrayList list = new IntArrayList();
 
-        public Builder size(int amount, OpenGL.Type type) {
-            return sizeInBytes(type.toBytes(amount));
+        public Builder shorts(int amount) {
+            return bytes(OpenGL.Type.SHORT.toBytes(amount));
         }
 
-        public Builder size(int amount) {
-            return sizeInBytes(DEFAULT_TYPE.toBytes(amount));
+        public Builder floats(int amount) {
+            return bytes(OpenGL.Type.FLOAT.toBytes(amount));
         }
 
-        public Builder sizeInBytes(int bytes) {
+        public Builder bytes(int bytes) {
             list.add((list.isEmpty() ? 0 : list.get(list.size()-1)) + bytes);
             return this;
         }
