@@ -4,6 +4,7 @@ import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.Animator;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.game.GameFactory;
@@ -50,16 +51,10 @@ public class JoglWindow implements GLEventListener {
 
         this.engine = new JoglEngine(factory, window);
         window.addGLEventListener(this);
-        loop();
-    }
 
-    private void loop() {
-        while (true) {
-            if (!engine.onUpdate()) {
-                return;
-            }
-            engine.getWindow().display();
-        }
+        final Animator animator = new Animator(window);
+        animator.setRunAsFastAsPossible(true);
+        animator.start();
     }
 
     public void init(GLAutoDrawable drawable) {
@@ -73,6 +68,7 @@ public class JoglWindow implements GLEventListener {
     }
 
     public void display(GLAutoDrawable drawable) {
+        engine.onUpdate();
         engine.onDraw(context);
     }
 

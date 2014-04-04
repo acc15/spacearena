@@ -1,5 +1,7 @@
 package ru.spacearena.engine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.spacearena.engine.events.EngineEvent;
 import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
@@ -16,6 +18,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class Engine {
 
     private static final float MAX_COMPENSATION_TIME = 0.5f;
+
+    private static final Logger logger = LoggerFactory.getLogger(Engine.class);
 
     private final Debug debug = new Debug();
     private final EngineFactory factory;
@@ -41,7 +45,7 @@ public abstract class Engine {
         return factory;
     }
 
-    private float pauseBeforeNextFrame() {
+    private float pauseBeforeNextFrameIfNeeded() {
         if (!timer.isStarted()) {
             timer.start();
             return 0;
@@ -65,7 +69,7 @@ public abstract class Engine {
         try {
             Thread.sleep(timeToSleep);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Frame sleep interrupted", e);
         }
 
         final float realSleepTime = timer.reset();
@@ -74,7 +78,11 @@ public abstract class Engine {
     }
 
     public boolean onUpdate() {
-        final float secondsElapsed = pauseBeforeNextFrame();
+        // probably this isn't right place for sleep
+        // because this method is called from Android onDrawFrame and JOGL display
+        // OpenGL context should be already initialized and update call should be able to manipulate OpenGL objects
+        // (for example - load texture or upload VBO)
+        final float secondsElapsed = pauseBeforeNextFrameIfNeeded();
         EngineEvent inputEvent;
         while ((inputEvent = pendingEvents.poll()) != null) {
             inputEvent.run(this);

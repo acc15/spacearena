@@ -18,7 +18,7 @@ public class GameFactory implements EngineFactory {
 
         //engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(0);
+        engine.setMaxFPS(100);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);

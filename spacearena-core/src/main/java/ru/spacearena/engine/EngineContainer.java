@@ -33,7 +33,6 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         if (engine != null) {
             attach(entity);
         }
-        onAddChild(entity);
         children.add(entity);
     }
 
@@ -42,7 +41,6 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         if (engine != null) {
             detach(e);
         }
-        onRemoveChild(e);
         children.remove(index);
     }
 
@@ -54,12 +52,6 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
     private void attach(T entity) {
         entity.onAttach(engine);
         onAttachChild(entity);
-    }
-
-    protected void onAddChild(T entity) {
-    }
-
-    protected void onRemoveChild(T entity) {
     }
 
     protected void onAttachChild(T entity) {
