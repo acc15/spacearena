@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 */
 public class VertexBuffer {
 
-    private final ByteBuffer buffer;
+    private ByteBuffer buffer;
     private VertexBufferLayout layout;
 
     public VertexBuffer(int bytes) {
