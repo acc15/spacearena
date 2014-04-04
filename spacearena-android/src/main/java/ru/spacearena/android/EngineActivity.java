@@ -45,9 +45,9 @@ public class EngineActivity extends Activity {
 
         final GLSurfaceView view = new GLSurfaceView(this);
 
-        final AndroidEngine engine = new AndroidEngine(factory,view);
         final AndroidGLES2 gles2 = new AndroidGLES2();
         final DrawContext context = new DrawContext(new AndroidGLES2());
+        final AndroidEngine engine = new AndroidEngine(factory,view);
         view.setEGLContextClientVersion(2);
         view.setRenderer(new GLSurfaceView.Renderer() {
 
