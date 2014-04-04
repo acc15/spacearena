@@ -42,12 +42,9 @@ public class EngineActivity extends Activity {
             getWindow().addFlags(FLAG_HARDWARE_ACCELERATED);
         }
 
-
         final GLSurfaceView view = new GLSurfaceView(this);
-
         final AndroidGLES2 gles2 = new AndroidGLES2();
-        final DrawContext context = new DrawContext(new AndroidGLES2());
-        final AndroidEngine engine = new AndroidEngine(factory,view);
+        final AndroidEngine engine = new AndroidEngine(factory,new DrawContext(gles2),view);
         view.setEGLContextClientVersion(2);
         view.setRenderer(new GLSurfaceView.Renderer() {
 
@@ -56,9 +53,9 @@ public class EngineActivity extends Activity {
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
                 //engine.onInit();
                 if (initialized) {
-                    context.dispose();
+                    engine.onDispose();
                 }
-                context.init();
+                engine.onInit();
                 initialized = true;
             }
 
@@ -69,7 +66,7 @@ public class EngineActivity extends Activity {
 
             public void onDrawFrame(GL10 gl) {
                 engine.onUpdate();
-                engine.onDraw(context);
+                engine.onDraw();
             }
         });
         view.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);

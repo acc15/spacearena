@@ -6,6 +6,7 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.events.TouchEvent;
+import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov
@@ -15,8 +16,8 @@ public class AndroidEngine extends Engine {
 
     private final View view;
 
-    public AndroidEngine(EngineFactory factory, View view) {
-        super(factory);
+    public AndroidEngine(EngineFactory factory, DrawContext context, View view) {
+        super(factory, context);
         this.view = view;
         init();
     }

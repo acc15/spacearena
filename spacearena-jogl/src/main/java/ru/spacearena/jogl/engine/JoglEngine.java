@@ -8,6 +8,7 @@ import com.jogamp.newt.opengl.GLWindow;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov
@@ -17,8 +18,8 @@ public class JoglEngine extends Engine {
 
     private final GLWindow window;
 
-    public JoglEngine(EngineFactory factory, GLWindow window) {
-        super(factory);
+    public JoglEngine(EngineFactory factory, DrawContext context, GLWindow window) {
+        super(factory, context);
         this.window = window;
         init();
     }

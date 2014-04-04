@@ -23,7 +23,6 @@ public class JoglWindow implements GLEventListener {
 
     private JoglEngine engine;
     private final JoglGL2 gl = new JoglGL2();
-    private final DrawContext context = new DrawContext(gl);
 
     public JoglWindow(EngineFactory factory) {
         this.factory = factory;
@@ -49,7 +48,7 @@ public class JoglWindow implements GLEventListener {
         window.setPosition((screen.getWidth() - window.getWidth()) / 2, (screen.getHeight() - window.getHeight()) / 2);
         window.setVisible(true);
 
-        this.engine = new JoglEngine(factory, window);
+        this.engine = new JoglEngine(factory, new DrawContext(gl), window);
         window.addGLEventListener(this);
 
         final Animator animator = new Animator(window);
@@ -59,17 +58,17 @@ public class JoglWindow implements GLEventListener {
 
     public void init(GLAutoDrawable drawable) {
         gl.setGL2(drawable.getGL().getGL2());
-        context.init();
+        engine.onInit();
     }
 
     public void dispose(GLAutoDrawable drawable) {
-        context.dispose();
+        engine.onDispose();
         gl.setGL2(null);
     }
 
-    public void display(GLAutoDrawable drawable) {
+     public void display(GLAutoDrawable drawable) {
         engine.onUpdate();
-        engine.onDraw(context);
+        engine.onDraw();
     }
 
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
