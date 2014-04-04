@@ -28,8 +28,6 @@ public class DrawContext {
 
     private final Matrix activeMatrix = new Matrix();
     private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
-    //private final float[] matrixStack = new float[Matrix.ELEMENTS_PER_MATRIX * MAX_MATRIX_DEPTH];
-    //private int matrixIndex = 0;
 
     private final HashMap<Program.Definition, Program> programs =
             new HashMap<Program.Definition, Program>();
@@ -78,31 +76,27 @@ public class DrawContext {
     }
 
     public Program make(Program.Definition def) {
-        final Program p = register(def);
-        p.make(gl);
-        return p;
-    }
-
-    public Program register(Program.Definition def) {
         Program p = programs.get(def);
         if (p != null) {
             return p;
         }
         p = def.createProgram();
         programs.put(def, p);
+        p.make(gl);
         return p;
     }
 
-    public void unregister(Program.Definition def) {
-        final Program p = programs.get(def);
+    public void delete(Program.Definition definition) {
+        final Program p = programs.get(definition);
         if (p == null) {
             return;
         }
         p.delete(gl);
+        programs.remove(definition);
     }
 
-    public Binder use(Program.Definition def) {
-        return binder.use(register(def));
+    public Binder use(Program.Definition definition) {
+        return binder.use(make(definition));
     }
 
     public boolean has(Program.Definition definition) {
@@ -130,34 +124,6 @@ public class DrawContext {
         }
         vbo.delete(gl);
         vbos.remove(definition);
-    }
-
-    private void drawBuf(OpenGL.PrimitiveType type, Color color) {
-        use(PositionProgram.DEFINITION).
-                bindAttr(PositionProgram.POSITION_ATTR, vertexBuffer, 0).
-                bindUniform(PositionProgram.COLOR_UNIFORM, color).
-                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
-                draw(type);
-    }
-
-    private void fillNGonBuf(int n, float x, float y, float rx, float ry) {
-        if (n < 3) {
-            throw new IllegalArgumentException("N-Gon should have at least 3 points");
-        }
-        if (n > MAX_VERTEX_COUNT) {
-            n = MAX_VERTEX_COUNT;
-        }
-
-        final float a = FloatMathUtils.TWO_PI / n;
-        final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2);
-        float vx = 1, vy = 0;
-        for (int i = 0; i < n; i++) {
-            vertexBuffer.put(x + vx * rx, y + vy * ry);
-            final float ny = vx * s + vy * c;
-            vx = vx * c - vy * s;
-            vy = ny;
-        }
     }
 
     public void fillNGon(int n, float x, float y, float rx, float ry, Color color) {
@@ -319,10 +285,37 @@ public class DrawContext {
             if (this.program == program) {
                 return binder;
             }
-            program.make(gl);
             gl.useProgram(program.getId());
             this.program = program;
             return binder;
+        }
+    }
+
+    private void drawBuf(OpenGL.PrimitiveType type, Color color) {
+        use(PositionProgram.DEFINITION).
+                bindAttr(PositionProgram.POSITION_ATTR, vertexBuffer, 0).
+                bindUniform(PositionProgram.COLOR_UNIFORM, color).
+                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
+                draw(type);
+    }
+
+    private void fillNGonBuf(int n, float x, float y, float rx, float ry) {
+        if (n < 3) {
+            throw new IllegalArgumentException("N-Gon should have at least 3 points");
+        }
+        if (n > MAX_VERTEX_COUNT) {
+            n = MAX_VERTEX_COUNT;
+        }
+
+        final float a = FloatMathUtils.TWO_PI / n;
+        final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);
+        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2);
+        float vx = 1, vy = 0;
+        for (int i = 0; i < n; i++) {
+            vertexBuffer.put(x + vx * rx, y + vy * ry);
+            final float ny = vx * s + vy * c;
+            vx = vx * c - vy * s;
+            vy = ny;
         }
     }
 
