@@ -24,7 +24,7 @@ public class DrawContext {
 
     private final OpenGL gl;
 
-    private final VertexBuffer vertexBuffer = new VertexBuffer(MAX_VERTEX_COUNT * 2);
+    private final VertexBuffer vertexBuffer = new VertexBuffer(OpenGL.Type.FLOAT.toBytes(MAX_VERTEX_COUNT * 2));
 
     private final Matrix activeMatrix = new Matrix();
     private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
@@ -254,7 +254,7 @@ public class DrawContext {
         }
 
         public Binder bindAttr(int index, VertexBuffer buffer, int item) {
-            final int sizeInBytes = buffer.getSizeInBytes(),
+            final int sizeInBytes = buffer.getSize(),
                       stride = buffer.getLayout().getStride(),
                       floatCount = OpenGL.Type.FLOAT.toTypes(buffer.getLayout().getCount(item));
             gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, buffer.prepareBuffer(item));

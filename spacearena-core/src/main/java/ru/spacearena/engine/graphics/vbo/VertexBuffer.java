@@ -1,7 +1,6 @@
 package ru.spacearena.engine.graphics.vbo;
 
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.OpenGL;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -15,9 +14,8 @@ public class VertexBuffer {
     private final ByteBuffer buffer;
     private VertexBufferLayout layout;
 
-    public VertexBuffer(int size) {
-        buffer = ByteBuffer.allocateDirect(OpenGL.Type.FIXED.toBytes(size)).
-                order(ByteOrder.nativeOrder());
+    public VertexBuffer(int bytes) {
+        buffer = ByteBuffer.allocateDirect(bytes).order(ByteOrder.nativeOrder());
     }
 
     public VertexBuffer reset() {
@@ -34,7 +32,7 @@ public class VertexBuffer {
         return this;
     }
 
-    public int getSizeInBytes() {
+    public int getSize() {
         return buffer.position();
     }
 

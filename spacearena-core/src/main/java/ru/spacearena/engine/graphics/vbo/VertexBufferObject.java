@@ -27,7 +27,7 @@ public class VertexBufferObject {
 
     public void upload(OpenGL gl, VertexBufferObject.Definition definition, VertexBuffer buffer) {
         this.layout = buffer.getLayout();
-        this.sizeInBytes = buffer.getSizeInBytes();
+        this.sizeInBytes = buffer.getSize();
         if (id == 0) {
             id = gl.genBuffer();
         }
