@@ -4,7 +4,7 @@ import org.junit.Test;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -29,12 +29,12 @@ public class VertexBufferTest {
 
         buf.put(2,2).put(1,2,3).put(4);
 
-        final FloatBuffer a = buf.prepareBuffer(2);
-        assertThat(a.get()).isEqualTo(4);
+        final ByteBuffer a = buf.prepareBuffer(2);
+        assertThat(a.getFloat()).isEqualTo(4);
 
-        final FloatBuffer b = buf.prepareBuffer(1);
-        assertThat(b.get()).isEqualTo(1);
-        assertThat(b.get()).isEqualTo(2);
-        assertThat(b.get()).isEqualTo(3);
+        final ByteBuffer b = buf.prepareBuffer(1);
+        assertThat(b.getFloat()).isEqualTo(1);
+        assertThat(b.getFloat()).isEqualTo(2);
+        assertThat(b.getFloat()).isEqualTo(3);
     }
 }

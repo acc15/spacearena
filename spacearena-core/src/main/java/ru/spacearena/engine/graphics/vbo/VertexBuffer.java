@@ -1,10 +1,10 @@
 package ru.spacearena.engine.graphics.vbo;
 
+import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.OpenGL;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 /**
 * @author Vyacheslav Mayorov
@@ -12,13 +12,12 @@ import java.nio.FloatBuffer;
 */
 public class VertexBuffer {
 
-    private final FloatBuffer buffer;
+    private final ByteBuffer buffer;
     private VertexBufferLayout layout;
 
     public VertexBuffer(int size) {
         buffer = ByteBuffer.allocateDirect(OpenGL.Type.FIXED.toBytes(size)).
-                order(ByteOrder.nativeOrder()).
-                asFloatBuffer();
+                order(ByteOrder.nativeOrder());
     }
 
     public VertexBuffer reset() {
@@ -36,45 +35,54 @@ public class VertexBuffer {
     }
 
     public int getSizeInBytes() {
-        return OpenGL.Type.FLOAT.toBytes(buffer.position());
+        return buffer.position();
     }
 
-    public FloatBuffer prepareBuffer() {
+    public ByteBuffer prepareBuffer() {
         return prepareBuffer(0);
     }
 
-    public FloatBuffer prepareBuffer(int item) {
-        buffer.position(layout.getOffset(item));
+    public ByteBuffer prepareBuffer(int item) {
+        buffer.position(layout.getOffsetInBytes(item));
         return buffer;
     }
 
     public VertexBuffer put(float x) {
-        buffer.put(x);
+        buffer.putFloat(x);
         return this;
     }
 
     public VertexBuffer put(float x, float y) {
-        buffer.put(x).put(y);
+        buffer.putFloat(x).putFloat(y);
         return this;
     }
 
     public VertexBuffer put(float x, float y, float z) {
-        buffer.put(x).put(y).put(z);
+        buffer.putFloat(x).putFloat(y).putFloat(z);
         return this;
     }
 
     public VertexBuffer put(float x, float y, float z, float w) {
-        buffer.put(x).put(y).put(z).put(w);
+        buffer.putFloat(x).putFloat(y).putFloat(z).putFloat(w);
         return this;
+    }
+
+    public VertexBuffer putRGB(Color color) {
+        return put(color.r, color.g, color.b);
+    }
+
+    public VertexBuffer putRGBA(Color color) {
+        return put(color.r, color.g, color.b, color.a);
     }
 
     public VertexBuffer put(float[] points) {
-        buffer.put(points);
-        return this;
+        return put(points, 0, points.length);
     }
 
     public VertexBuffer put(float[] points, int start, int size) {
-        buffer.put(points, start, size);
+        for (int i=0; i<size; i++) {
+            buffer.putFloat(points[start+i]);
+        }
         return this;
     }
 }
