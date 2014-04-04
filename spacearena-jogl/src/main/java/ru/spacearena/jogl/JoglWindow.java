@@ -5,10 +5,12 @@ import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.Animator;
+import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.events.InputContext;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.game.GameFactory;
-import ru.spacearena.jogl.engine.JoglEngine;
+import ru.spacearena.jogl.engine.NewtInputContext;
 import ru.spacearena.jogl.engine.JoglGL2;
 
 import javax.media.opengl.*;
@@ -21,7 +23,7 @@ public class JoglWindow implements GLEventListener {
 
     private final EngineFactory factory;
 
-    private JoglEngine engine;
+    private Engine engine;
     private final JoglGL2 gl = new JoglGL2();
 
     public JoglWindow(EngineFactory factory) {
@@ -48,7 +50,10 @@ public class JoglWindow implements GLEventListener {
         window.setPosition((screen.getWidth() - window.getWidth()) / 2, (screen.getHeight() - window.getHeight()) / 2);
         window.setVisible(true);
 
-        this.engine = new JoglEngine(factory, new DrawContext(gl), window);
+        final InputContext inputContext = new NewtInputContext(window);
+        final DrawContext drawContext = new DrawContext(gl);
+        this.engine = new Engine(factory, drawContext, inputContext);
+
         window.addGLEventListener(this);
 
         final Animator animator = new Animator(window);

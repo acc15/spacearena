@@ -9,10 +9,10 @@ import ru.spacearena.engine.graphics.DrawContext;
  */
 public class EngineObject implements EngineEntity {
 
-    public void onAttach(Engine engine) {
+    public void onInit(Engine engine) {
     }
 
-    public void onDetach(Engine engine) {
+    public void onDispose(Engine engine) {
     }
 
     public void onSize(float width, float height) {

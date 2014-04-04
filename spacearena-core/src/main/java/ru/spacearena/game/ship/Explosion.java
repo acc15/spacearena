@@ -51,7 +51,7 @@ public class Explosion extends EngineObject {
     }
 //
 //    @Override
-//    public void onAttach(Engine engine) {
+//    public void onInit(Engine engine) {
 //        this.image = engine.createImage();
 //    }
 

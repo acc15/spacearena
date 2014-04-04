@@ -6,9 +6,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
-import ru.spacearena.android.engine.AndroidEngine;
+import ru.spacearena.android.engine.AndroidInputContext;
 import ru.spacearena.android.engine.AndroidGLES2;
+import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.events.InputContext;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.game.GameFactory;
 
@@ -44,7 +46,9 @@ public class EngineActivity extends Activity {
 
         final GLSurfaceView view = new GLSurfaceView(this);
         final AndroidGLES2 gles2 = new AndroidGLES2();
-        final AndroidEngine engine = new AndroidEngine(factory,new DrawContext(gles2),view);
+        final DrawContext drawContext = new DrawContext(gles2);
+        final InputContext inputContext = new AndroidInputContext(view);
+        final Engine engine = new Engine(factory, drawContext, inputContext);
         view.setEGLContextClientVersion(2);
         view.setRenderer(new GLSurfaceView.Renderer() {
 

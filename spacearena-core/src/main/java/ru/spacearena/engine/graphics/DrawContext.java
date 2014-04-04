@@ -63,7 +63,6 @@ public class DrawContext {
     }
 
     public void init() {
-
     }
 
     public void dispose() {

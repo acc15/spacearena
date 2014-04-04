@@ -46,11 +46,11 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
     private void detach(T entity) {
         onDetachChild(entity);
-        entity.onDetach(engine);
+        entity.onDispose(engine);
     }
 
     private void attach(T entity) {
-        entity.onAttach(engine);
+        entity.onInit(engine);
         onAttachChild(entity);
     }
 
@@ -73,7 +73,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return children.get(index);
     }
 
-    public void onAttach(Engine engine) {
+    public void onInit(Engine engine) {
         if (this.engine == engine) {
             return;
         } else if (this.engine != null) {
@@ -85,7 +85,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         }
     }
 
-    public void onDetach(Engine engine) {
+    public void onDispose(Engine engine) {
         if (this.engine != engine) {
             throw new IllegalStateException("Not initialized");
         }

@@ -3,6 +3,7 @@ package ru.spacearena.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.spacearena.engine.events.EngineEvent;
+import ru.spacearena.engine.events.InputContext;
 import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.DrawContext;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Vyacheslav Mayorov
  * @since 2014-28-01
  */
-public abstract class Engine {
+public final class Engine {
 
     private static final float MAX_COMPENSATION_TIME = 0.5f;
 
@@ -23,8 +24,9 @@ public abstract class Engine {
 
     private final Debug debug = new Debug();
     private final EngineFactory factory;
-    private final DrawContext context;
-    private EngineEntity root;
+    private final DrawContext drawContext;
+    private final InputContext inputContext;
+    private final EngineEntity root;
 
     private float secondsPerFrame = 0;
     private float compensationTime = 0f;
@@ -33,12 +35,12 @@ public abstract class Engine {
 
     private final ConcurrentLinkedQueue<EngineEvent> pendingEvents = new ConcurrentLinkedQueue<EngineEvent>();
 
-    protected Engine(EngineFactory factory, DrawContext context) {
+    public Engine(EngineFactory factory,
+                  DrawContext drawContext,
+                  InputContext inputContext) {
         this.factory = factory;
-        this.context = context;
-    }
-
-    protected void init() {
+        this.drawContext = drawContext;
+        this.inputContext = inputContext;
         this.root = factory.createRoot(this);
     }
 
@@ -46,7 +48,7 @@ public abstract class Engine {
         return factory;
     }
 
-    public DrawContext getContext() { return context; }
+    public DrawContext getDrawContext() { return drawContext; }
 
     private float pauseBeforeNextFrameIfNeeded() {
         if (!timer.isStarted()) {
@@ -80,7 +82,7 @@ public abstract class Engine {
         return secondsElapsed + realSleepTime;
     }
 
-    public boolean onUpdate() {
+    public void onUpdate() {
         // probably this isn't right place for sleep
         // because this method is called from Android onDrawFrame and JOGL display
         // OpenGL context should be already initialized and update call should be able to manipulate OpenGL objects
@@ -90,7 +92,7 @@ public abstract class Engine {
         while ((inputEvent = pendingEvents.poll()) != null) {
             inputEvent.run(this);
         }
-        return root.onUpdate(secondsElapsed);
+        root.onUpdate(secondsElapsed);
     }
 
     public void onSize(float width, float height) {
@@ -98,7 +100,7 @@ public abstract class Engine {
     }
 
     public void onDraw() {
-        root.onDraw(context);
+        root.onDraw(drawContext);
     }
 
     public boolean onInput(InputEvent event) {
@@ -107,20 +109,22 @@ public abstract class Engine {
     }
 
     public void onInit() {
-        context.init();
-        root.onAttach(this);
+        drawContext.init();
+        root.onInit(this);
     }
 
     public void onDispose() {
-        root.onDetach(this);
-        context.dispose();
+        root.onDispose(this);
+        drawContext.dispose();
     }
 
     public void scheduleEvent(EngineEvent event) {
         pendingEvents.add(event);
     }
 
-    public abstract boolean enableInput(InputType inputType);
+    public boolean enableInput(InputType inputType) {
+        return inputContext.enableInput(this, inputType);
+    }
 
     public static final class Debug {
 
