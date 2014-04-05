@@ -22,14 +22,14 @@ public class PositionProgram extends Program {
     public static final VertexBufferLayout LAYOUT_P2 = new VertexBufferLayout.Builder().floats(2).build();
 
     private PositionProgram() {
-        shader(OpenGL.ShaderType.VERTEX,
+        shader(OpenGL.VERTEX_SHADER,
                 "uniform mat4 u_MVPMatrix;" +
                 "attribute vec4 a_Position;" +
                 "void main()" +
                 "{" +
                 "gl_Position = u_MVPMatrix * a_Position;" +
                 "}").
-        shader(OpenGL.ShaderType.FRAGMENT,
+        shader(OpenGL.FRAGMENT_SHADER,
                 "precision mediump float;" +
                 "uniform vec4 u_Color;" +
                 "void main()" +

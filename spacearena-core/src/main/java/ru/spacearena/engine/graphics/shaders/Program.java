@@ -24,7 +24,7 @@ public class Program {
 
     private int id = 0;
 
-    protected Program shader(OpenGL.ShaderType type, String source) {
+    protected Program shader(int type, String source) {
         this.shaders.add(new Shader(type, source));
         return this;
     }
@@ -95,13 +95,13 @@ public class Program {
             gl.bindAttribLocation(programId, i, attributeName);
         }
         gl.linkProgram(programId);
-        if (gl.getProgram(programId, OpenGL.ProgramParam.LINK_STATUS) == 0) {
+        if (gl.getProgram(programId, OpenGL.LINK_STATUS) == 0) {
             final String log = gl.getProgramInfoLog(programId);
             doCleanup(gl, programId, shaders.size());
             throw new RuntimeException("Can't link program: " + log);
         }
         gl.validateProgram(programId);
-        if (gl.getProgram(programId, OpenGL.ProgramParam.VALIDATE_STATUS) == 0) {
+        if (gl.getProgram(programId, OpenGL.VALIDATE_STATUS) == 0) {
             final String log = gl.getProgramInfoLog(programId);
             doCleanup(gl, programId, shaders.size());
             throw new RuntimeException("Can't validate program: " + log);

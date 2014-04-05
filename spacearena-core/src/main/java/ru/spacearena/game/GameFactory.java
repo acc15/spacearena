@@ -7,6 +7,7 @@ import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.util.TempUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -44,13 +45,22 @@ public class GameFactory implements EngineFactory {
             private float r = 1f;
             private float x = 3f;
 
+            private Color[] colors = new Color[441];
+
+            @Override
+            public void onInit(Engine engine) {
+                for (int i=0; i<colors.length; i++) {
+                    colors[i] = new Color(TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), 1);
+                }
+            }
+
             @Override
             public boolean onUpdate(float seconds) {
                 rotate(seconds);
                 //translate(-5f*seconds, 0);
 
                 r += x*seconds;
-                final float rmin = 0.5f, rmax = 2f;
+                final float rmin = 0.3f, rmax = 1f;
                 if (r < rmin) {
                     r = rmin;
                     x = -x;
@@ -65,7 +75,7 @@ public class GameFactory implements EngineFactory {
             protected void onDrawTransformed(DrawContext context) {
                 for (int i=-10; i<=10; i++) {
                     for (int j=-10; j<=10; j++) {
-                        context.fillCircle(j*4,i*4,r,Color.RED);
+                        context.fillCircle(j*2,i*2,r,colors[(i+10) * 21 + (j+10)]);
                     }
                 }
             }

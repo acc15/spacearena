@@ -1,6 +1,7 @@
 package ru.spacearena.engine.graphics.vbo;
 
 import cern.colt.list.IntArrayList;
+import ru.spacearena.engine.graphics.DrawUtils;
 import ru.spacearena.engine.graphics.OpenGL;
 
 /**
@@ -53,11 +54,11 @@ public class VertexBufferLayout {
         private IntArrayList list = new IntArrayList();
 
         public Builder shorts(int amount) {
-            return bytes(OpenGL.Type.SHORT.toBytes(amount));
+            return bytes(DrawUtils.getByteCount(OpenGL.SHORT, amount));
         }
 
         public Builder floats(int amount) {
-            return bytes(OpenGL.Type.FLOAT.toBytes(amount));
+            return bytes(DrawUtils.getByteCount(OpenGL.FLOAT, amount));
         }
 
         public Builder bytes(int bytes) {

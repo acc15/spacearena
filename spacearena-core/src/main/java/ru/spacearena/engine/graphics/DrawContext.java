@@ -4,11 +4,13 @@ import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
-import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
+import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.vbo.VBODefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
+import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
 import ru.spacearena.engine.util.FloatMathUtils;
 
+import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -18,13 +20,13 @@ import java.util.HashMap;
 public class DrawContext {
 
     public static final VBODefinition SIN_COS_VBO = new VBODefinition(
-            OpenGL.BufferType.ARRAY, OpenGL.BufferUsage.STATIC_DRAW);
+            OpenGL.ARRAY_BUFFER, OpenGL.STATIC_DRAW);
 
     public static final int MAX_VERTEX_COUNT = 100;
 
     private final OpenGL gl;
 
-    private final VertexBuffer vertexBuffer = new VertexBuffer(OpenGL.Type.FLOAT.toBytes(MAX_VERTEX_COUNT * 2));
+    private final VertexBuffer vertexBuffer = new VertexBuffer(DrawUtils.getByteCount(OpenGL.FLOAT, MAX_VERTEX_COUNT * 2));
 
     private final Matrix activeMatrix = new Matrix();
     private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
@@ -125,47 +127,65 @@ public class DrawContext {
         vbos.remove(definition);
     }
 
+    public Texture load(Texture.Definition definition, URL url) {
+
+        final int id = gl.genTexture();
+        gl.bindTexture(OpenGL.TEXTURE_2D, id);
+        gl.texImage2D(OpenGL.TEXTURE_2D, 0, url);
+
+        //gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MIN_FILTER, );
+
+        //final BufferedImage image = ImageIO.read();
+
+        //final ByteBuffer buffer = By
+        //gl.texImage2D(OpenGL.TextureTarget.TEXTURE_2D, 0, );
+        //gl.
+
+        return new Texture();
+
+    }
+
     public void fillNGon(int n, float x, float y, float rx, float ry, Color color) {
         fillNGonBuf(n, x, y, rx, ry);
-        drawBuf(OpenGL.PrimitiveType.TRIANGLE_FAN, color);
+        drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
 
     public void drawNGon(int n, float x, float y, float rx, float ry, Color color) {
         fillNGonBuf(n, x, y, rx, ry);
-        drawBuf(OpenGL.PrimitiveType.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP, color);
     }
 
     public void fillConvexPoly(float[] points, int start, int size, Color color) {
         vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(points, start, size);
-        drawBuf(OpenGL.PrimitiveType.TRIANGLE_FAN, color);
+        drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
 
     public void drawPoly(float[] points, Color color) {
         vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(points);
-        drawBuf(OpenGL.PrimitiveType.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP, color);
     }
 
     public void drawPoly(float[] points, int start, int size, Color color) {
         vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(points, start, size);
-        drawBuf(OpenGL.PrimitiveType.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP, color);
     }
 
     public void fillRect(float x1, float y1, float x2, float y2, Color color) {
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(x1, y2).put(x2, y2).put(x1, y1).put(x2, y1);
-        drawBuf(OpenGL.PrimitiveType.TRIANGLE_STRIP, color);
+        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(x1, y2).put(x1, y2).put(x2, y2).put(x2, y1);
+        drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
 
     public void drawRect(float x1, float y1, float x2, float y2, Color color) {
         vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
-        drawBuf(OpenGL.PrimitiveType.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP, color);
     }
 
     public void drawLine(float x1, float y1, float x2, float y2, Color color) {
         vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
-        drawBuf(OpenGL.PrimitiveType.LINES, color);
+        drawBuf(OpenGL.LINES, color);
     }
 
-    private void renderEllipse(OpenGL.PrimitiveType type, float x, float y, float rx, float ry, Color color) {
+    private void renderEllipse(int type, float x, float y, float rx, float ry, Color color) {
         ensureSinCosVBO();
 
         // storing current matrix on stack... looks very bad but should work
@@ -193,19 +213,19 @@ public class DrawContext {
     }
 
     public void fillEllipse(float x, float y, float rx, float ry, Color color) {
-        renderEllipse(OpenGL.PrimitiveType.TRIANGLE_FAN, x, y, rx, ry, color);
+        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, rx, ry, color);
     }
 
     public void drawEllipse(float x, float y, float rx, float ry, Color color) {
-        renderEllipse(OpenGL.PrimitiveType.LINE_LOOP, x, y, rx, ry, color);
+        renderEllipse(OpenGL.LINE_LOOP, x, y, rx, ry, color);
     }
 
     public void fillCircle(float x, float y, float r, Color color) {
-        renderEllipse(OpenGL.PrimitiveType.TRIANGLE_FAN, x, y, r, r, color);
+        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, r, r, color);
     }
 
     public void drawCircle(float x, float y, float r, Color color) {
-        renderEllipse(OpenGL.PrimitiveType.LINE_LOOP, x, y, r, r, color);
+        renderEllipse(OpenGL.LINE_LOOP, x, y, r, r, color);
     }
 
     public void setLineWidth(float width) {
@@ -237,14 +257,14 @@ public class DrawContext {
             if (vbo == null) {
                 throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists in current context");
             }
-            final int sizeInBytes = vbo.getSizeInBytes(),
+            final int sizeInBytes = vbo.getSize(),
                       stride = vbo.getLayout().getStride(),
-                      floatCount = OpenGL.Type.FLOAT.toTypes(vbo.getLayout().getCount(item)),
+                      floatCount = DrawUtils.getTypeCount(OpenGL.FLOAT, vbo.getLayout().getCount(item)),
                       offsetInBytes = vbo.getLayout().getOffset(item);
 
-            final OpenGL.BufferType bufferType = definition.getBufferType();
+            final int bufferType = definition.getBufferType();
             gl.bindBuffer(bufferType, vbo.getId());
-            gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, offsetInBytes);
+            gl.vertexAttribPointer(index, floatCount, OpenGL.FLOAT, false, stride, offsetInBytes);
             gl.enableVertexAttribArray(index);
             gl.bindBuffer(bufferType, 0);
 
@@ -255,22 +275,22 @@ public class DrawContext {
         public Binder bindAttr(int index, VertexBuffer buffer, int item) {
             final int sizeInBytes = buffer.getSize(),
                       stride = buffer.getLayout().getStride(),
-                      floatCount = OpenGL.Type.FLOAT.toTypes(buffer.getLayout().getCount(item));
-            gl.vertexAttribPointer(index, floatCount, OpenGL.Type.FLOAT, false, stride, buffer.prepareBuffer(item));
+                      floatCount = DrawUtils.getTypeCount(OpenGL.FLOAT, buffer.getLayout().getCount(item));
+            gl.vertexAttribPointer(index, floatCount, OpenGL.FLOAT, false, stride, buffer.prepareBuffer(item));
             gl.enableVertexAttribArray(index);
             adjustVertexCount(sizeInBytes, stride);
             return this;
         }
 
-        public void draw(OpenGL.PrimitiveType type) {
+        public void draw(int type) {
             gl.drawArrays(type, 0, vertexCount);
         }
 
-        public void draw(OpenGL.PrimitiveType type, int count) {
+        public void draw(int type, int count) {
             gl.drawArrays(type, 0, count);
         }
 
-        public void draw(OpenGL.PrimitiveType type, int start, int count) {
+        public void draw(int type, int start, int count) {
             gl.drawArrays(type, start, count);
         }
 
@@ -290,7 +310,7 @@ public class DrawContext {
         }
     }
 
-    private void drawBuf(OpenGL.PrimitiveType type, Color color) {
+    private void drawBuf(int type, Color color) {
         use(PositionProgram.DEFINITION).
                 bindAttr(PositionProgram.POSITION_ATTR, vertexBuffer, 0).
                 bindUniform(PositionProgram.COLOR_UNIFORM, color).

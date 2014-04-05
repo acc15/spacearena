@@ -9,31 +9,31 @@ import ru.spacearena.engine.graphics.OpenGL;
 public class VertexBufferObject {
 
     public static interface Definition {
-        OpenGL.BufferType getBufferType();
-        OpenGL.BufferUsage getBufferUsage();
+        int getBufferType();
+        int getBufferUsage();
     }
 
     private int id;
     private VertexBufferLayout layout = null;
-    private int sizeInBytes = 0;
+    private int size = 0;
 
     public VertexBufferLayout getLayout() {
         return layout;
     }
 
-    public int getSizeInBytes() {
-        return sizeInBytes;
+    public int getSize() {
+        return size;
     }
 
     public void upload(OpenGL gl, VertexBufferObject.Definition definition, VertexBuffer buffer) {
         this.layout = buffer.getLayout();
-        this.sizeInBytes = buffer.getSize();
+        this.size = buffer.getSize();
         if (id == 0) {
             id = gl.genBuffer();
         }
-        final OpenGL.BufferType bufferType = definition.getBufferType();
+        final int bufferType = definition.getBufferType();
         gl.bindBuffer(bufferType, id);
-        gl.bufferData(bufferType, sizeInBytes, buffer.prepareBuffer(), definition.getBufferUsage());
+        gl.bufferData(bufferType, size, buffer.prepareBuffer(), definition.getBufferUsage());
         gl.bindBuffer(bufferType, 0);
     }
 
@@ -46,7 +46,7 @@ public class VertexBufferObject {
 
     public void reset() {
         this.id = 0;
-        this.sizeInBytes = 0;
+        this.size = 0;
         this.layout = null;
     }
 

@@ -9,12 +9,12 @@ import ru.spacearena.engine.graphics.OpenGL;
 public class Shader {
 
     private final String source;
-    private final OpenGL.ShaderType type;
+    private final int type;
 
     private int id;
     private int c;
 
-    public Shader(OpenGL.ShaderType type, String source) {
+    public Shader(int type, String source) {
         this.type = type;
         this.source = source;
     }
@@ -54,7 +54,7 @@ public class Shader {
         final int id = gl.createShader(type);
         gl.shaderSource(id, source);
         gl.compileShader(id);
-        if (gl.getShader(id, OpenGL.ShaderParam.COMPILE_STATUS) == 0) {
+        if (gl.getShader(id, OpenGL.COMPILE_STATUS) == 0) {
             final String log = gl.getShaderInfoLog(id);
             gl.deleteShader(id);
             throw new RuntimeException("Can't compile shader: " + log);

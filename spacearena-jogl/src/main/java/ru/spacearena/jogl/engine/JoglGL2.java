@@ -1,8 +1,12 @@
 package ru.spacearena.jogl.engine;
 
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.TextureIO;
 import ru.spacearena.engine.graphics.OpenGL;
 
 import javax.media.opengl.GL2;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -22,12 +26,12 @@ public class JoglGL2 implements OpenGL {
         this.gl2 = gl2;
     }
 
-    public void getInteger(GenericParameter parameter, int[] values, int offset) {
-        gl2.glGetIntegerv(parameter.glCode(), values, offset);
+    public void getInteger(int parameter, int[] values, int offset) {
+        gl2.glGetIntegerv(parameter, values, offset);
     }
 
-    public void getInteger(GenericParameter parameter, IntBuffer buf) {
-        gl2.glGetIntegerv(parameter.glCode(), buf);
+    public void getInteger(int parameter, IntBuffer buf) {
+        gl2.glGetIntegerv(parameter, buf);
     }
 
     public void viewport(int x, int y, int width, int height) {
@@ -52,21 +56,21 @@ public class JoglGL2 implements OpenGL {
         STRING_BUF[0] = null;
     }
 
-    public int createShader(ShaderType type) {
-        return gl2.glCreateShader(type.glCode());
+    public int createShader(int type) {
+        return gl2.glCreateShader(type);
     }
 
     public void compileShader(int shaderId) {
         gl2.glCompileShader(shaderId);
     }
 
-    public int getShader(int shaderId, ShaderParam param) {
-        gl2.glGetShaderiv(shaderId, param.glCode(), INT_BUF, 0);
+    public int getShader(int shaderId, int param) {
+        gl2.glGetShaderiv(shaderId, param, INT_BUF, 0);
         return INT_BUF[0];
     }
 
     public String getShaderInfoLog(int shaderId) {
-        final int l = getShader(shaderId, ShaderParam.INFO_LOG_LENGTH);
+        final int l = getShader(shaderId, OpenGL.INFO_LOG_LENGTH);
         final byte[] buf = new byte[l];
         gl2.glGetShaderInfoLog(shaderId, l, null, 0, buf, 0);
         return new String(buf, 0, l-1);
@@ -96,13 +100,13 @@ public class JoglGL2 implements OpenGL {
         gl2.glValidateProgram(programId);
     }
 
-    public int getProgram(int programId, ProgramParam param) {
-        gl2.glGetProgramiv(programId, param.glCode(), INT_BUF, 0);
+    public int getProgram(int programId, int param) {
+        gl2.glGetProgramiv(programId, param, INT_BUF, 0);
         return INT_BUF[0];
     }
 
     public String getProgramInfoLog(int programId) {
-        final int l = getProgram(programId, ProgramParam.INFO_LOG_LENGTH);
+        final int l = getProgram(programId, OpenGL.INFO_LOG_LENGTH);
         final byte[] buf = new byte[l];
         gl2.glGetProgramInfoLog(programId, l, null, 0, buf, 0);
         return new String(buf, 0, l-1);
@@ -150,20 +154,20 @@ public class JoglGL2 implements OpenGL {
         gl2.glDeleteBuffers(length, bufs, offset);
     }
 
-    public void bindBuffer(BufferType type, int bufferId) {
-        gl2.glBindBuffer(type.glCode(), bufferId);
+    public void bindBuffer(int type, int bufferId) {
+        gl2.glBindBuffer(type, bufferId);
     }
 
-    public void bufferData(BufferType type, int bufferSize, Buffer buffer, BufferUsage usage) {
-        gl2.glBufferData(type.glCode(), bufferSize, buffer, usage.glCode());
+    public void bufferData(int type, int bufferSize, Buffer buffer, int usage) {
+        gl2.glBufferData(type, bufferSize, buffer, usage);
     }
 
-    public void vertexAttribPointer(int attrIndex, int valueCount, Type type, boolean normalized, int stride, Buffer buffer) {
-        gl2.glVertexAttribPointer(attrIndex, valueCount, type.glCode(), normalized, stride, buffer);
+    public void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, Buffer buffer) {
+        gl2.glVertexAttribPointer(attrIndex, valueCount, type, normalized, stride, buffer);
     }
 
-    public void vertexAttribPointer(int attrIndex, int valueCount, Type type, boolean normalized, int stride, int offset) {
-        gl2.glVertexAttribPointer(attrIndex, valueCount, type.glCode(), normalized, stride, offset);
+    public void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, int offset) {
+        gl2.glVertexAttribPointer(attrIndex, valueCount, type, normalized, stride, offset);
     }
 
     public void vertexAttrib(int attrIndex, float x) {
@@ -294,16 +298,16 @@ public class JoglGL2 implements OpenGL {
         gl2.glDisableVertexAttribArray(attrIndex);
     }
 
-    public void drawArrays(PrimitiveType type, int offset, int count) {
-        gl2.glDrawArrays(type.glCode(), offset, count);
+    public void drawArrays(int type, int offset, int count) {
+        gl2.glDrawArrays(type, offset, count);
     }
 
-    public void drawElements(PrimitiveType type, int count, Type indexType, Buffer indices) {
-        gl2.glDrawElements(type.glCode(), count, indexType.glCode(), indices);
+    public void drawElements(int type, int count, int indexType, Buffer indices) {
+        gl2.glDrawElements(type, count, indexType, indices);
     }
 
-    public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset) {
-        gl2.glDrawElements(type.glCode(), count, indexType.glCode(), indexOffset);
+    public void drawElements(int type, int count, int indexType, int indexOffset) {
+        gl2.glDrawElements(type, count, indexType, indexOffset);
 
     }
 
@@ -333,42 +337,52 @@ public class JoglGL2 implements OpenGL {
         gl2.glDeleteTextures(1, INT_BUF, 0);
     }
 
-    public void bindTexture(TextureType type, int id) {
-        gl2.glBindTexture(type.glCode(), id);
+    public void bindTexture(int type, int id) {
+        gl2.glBindTexture(type, id);
     }
 
-    public void pixelStore(PixelStore type, int alignment) {
-        gl2.glPixelStorei(type.glCode(), alignment);
+    public void pixelStore(int type, int alignment) {
+        gl2.glPixelStorei(type, alignment);
     }
 
-    public void texImage2D(TextureTarget target, int level, int width, int height,
-                           TextureFormat format, TexelType type, Buffer data) {
-        gl2.glTexImage2D(target.glCode(), level, format.glCode(),
-                width, height, 0,
-                format.glCode(), type.glCode(), data);
+    public void texImage2D(int target, int level, int width, int height,
+                           int format, int type, Buffer data) {
+        gl2.glTexImage2D(target, level, format, width, height, 0, format, type, data);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, float[] params, int offset) {
-        gl2.glTexParameterfv(type.glCode(), parameter.glCode(), params, offset);
+    public void texParameter(int type, int parameter, float[] params, int offset) {
+        gl2.glTexParameterfv(type, parameter, params, offset);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, FloatBuffer buf) {
-        gl2.glTexParameterfv(type.glCode(), parameter.glCode(), buf);
+    public void texParameter(int type, int parameter, FloatBuffer buf) {
+        gl2.glTexParameterfv(type, parameter, buf);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, float value) {
-        gl2.glTexParameterf(type.glCode(), parameter.glCode(), value);
+    public void texParameter(int type, int parameter, float value) {
+        gl2.glTexParameterf(type, parameter, value);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, int[] params, int offset) {
-        gl2.glTexParameteriv(type.glCode(), parameter.glCode(), params, offset);
+    public void texParameter(int type, int parameter, int[] params, int offset) {
+        gl2.glTexParameteriv(type, parameter, params, offset);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, IntBuffer buf) {
-        gl2.glTexParameteriv(type.glCode(), parameter.glCode(), buf);
+    public void texParameter(int type, int parameter, IntBuffer buf) {
+        gl2.glTexParameteriv(type, parameter, buf);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, int value) {
-        gl2.glTexParameteri(type.glCode(), parameter.glCode(), value);
+    public void texParameter(int type, int parameter, int value) {
+        gl2.glTexParameteri(type, parameter, value);
     }
+
+    public void texImage2D(int target, int level, URL url) {
+        final TextureData td;
+        try {
+            td = TextureIO.newTextureData(gl2.getGLProfile(), url, false, null);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't load texture data from URL: " + url, e);
+        }
+        gl2.glTexImage2D(target, level, td.getInternalFormat(),
+                td.getWidth(), td.getHeight(), 0, td.getInternalFormat(), td.getPixelType(), td.getBuffer());
+    }
+
 }

@@ -15,6 +15,48 @@ public class DrawUtils {
     private static final float SIN_30 = 0.5f;
     private static final float COS_30 = 0.86602540378f;
 
+    public static int getByteCount(int type, int amount) {
+        switch (type) {
+        case OpenGL.BYTE:
+        case OpenGL.UNSIGNED_BYTE:
+            return amount;
+
+        case OpenGL.SHORT:
+        case OpenGL.UNSIGNED_SHORT:
+            return amount << 1;
+
+        case OpenGL.FIXED:
+        case OpenGL.FLOAT:
+        case OpenGL.INT:
+        case OpenGL.UNSIGNED_INT:
+            return amount << 2;
+
+        default:
+            throw new UnsupportedOperationException("Unknown type: " + type);
+        }
+    }
+
+    public static int getTypeCount(int type, int bytes) {
+        switch (type) {
+        case OpenGL.BYTE:
+        case OpenGL.UNSIGNED_BYTE:
+            return bytes;
+
+        case OpenGL.SHORT:
+        case OpenGL.UNSIGNED_SHORT:
+            return bytes >> 1;
+
+        case OpenGL.FIXED:
+        case OpenGL.FLOAT:
+        case OpenGL.INT:
+        case OpenGL.UNSIGNED_INT:
+            return bytes >> 2;
+
+        default:
+            throw new UnsupportedOperationException("Unknown type: " + type);
+        }
+    }
+
     /*
     public static void drawArrow(DrawContext context, float x1, float y1, float x2, float y2,
                                  HeadType head, float headSize,

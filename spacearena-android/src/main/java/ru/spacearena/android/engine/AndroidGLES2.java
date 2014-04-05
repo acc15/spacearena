@@ -1,8 +1,16 @@
 package ru.spacearena.android.engine;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
+import android.opengl.GLUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.spacearena.engine.graphics.OpenGL;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -13,14 +21,16 @@ import java.nio.IntBuffer;
  */
 public class AndroidGLES2 implements OpenGL {
 
+    private static final Logger logger = LoggerFactory.getLogger(AndroidGLES2.class);
+
     private final int[] INT_BUF = new int[1];
 
-    public void getInteger(GenericParameter parameter, int[] values, int offset) {
-        GLES20.glGetIntegerv(parameter.glCode(), values, offset);
+    public void getInteger(int parameter, int[] values, int offset) {
+        GLES20.glGetIntegerv(parameter, values, offset);
     }
 
-    public void getInteger(GenericParameter parameter, IntBuffer buf) {
-        GLES20.glGetIntegerv(parameter.glCode(), buf);
+    public void getInteger(int parameter, IntBuffer buf) {
+        GLES20.glGetIntegerv(parameter, buf);
     }
 
     public void lineWidth(float width) {
@@ -39,8 +49,8 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glClear(mask);
     }
 
-    public int createShader(ShaderType type) {
-        return GLES20.glCreateShader(type.glCode());
+    public int createShader(int type) {
+        return GLES20.glCreateShader(type);
     }
 
     public void shaderSource(int shaderId, String source) {
@@ -51,8 +61,8 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glCompileShader(shaderId);
     }
 
-    public int getShader(int shaderId, ShaderParam param) {
-        GLES20.glGetShaderiv(shaderId, param.glCode(), INT_BUF, 0);
+    public int getShader(int shaderId, int param) {
+        GLES20.glGetShaderiv(shaderId, param, INT_BUF, 0);
         return INT_BUF[0];
     }
 
@@ -84,8 +94,8 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glValidateProgram(programId);
     }
 
-    public int getProgram(int programId, ProgramParam param) {
-        GLES20.glGetProgramiv(programId, param.glCode(), INT_BUF, 0);
+    public int getProgram(int programId, int param) {
+        GLES20.glGetProgramiv(programId, param, INT_BUF, 0);
         return INT_BUF[0];
     }
 
@@ -109,12 +119,12 @@ public class AndroidGLES2 implements OpenGL {
         return GLES20.glGetUniformLocation(programId, uniform);
     }
 
-    public void bindBuffer(BufferType type, int bufferId) {
-        GLES20.glBindBuffer(type.glCode(), bufferId);
+    public void bindBuffer(int type, int bufferId) {
+        GLES20.glBindBuffer(type, bufferId);
     }
 
-    public void bufferData(BufferType type, int bufferSize, Buffer buffer, BufferUsage usage) {
-        GLES20.glBufferData(type.glCode(), bufferSize, buffer, usage.glCode());
+    public void bufferData(int type, int bufferSize, Buffer buffer, int usage) {
+        GLES20.glBufferData(type, bufferSize, buffer, usage);
     }
 
     public int genBuffer() {
@@ -151,12 +161,12 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glDisableVertexAttribArray(attrIndex);
     }
 
-    public void vertexAttribPointer(int attrIndex, int valueCount, Type type, boolean normalized, int stride, Buffer buffer) {
-        GLES20.glVertexAttribPointer(attrIndex, valueCount, type.glCode(), normalized, stride, buffer);
+    public void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, Buffer buffer) {
+        GLES20.glVertexAttribPointer(attrIndex, valueCount, type, normalized, stride, buffer);
     }
 
-    public void vertexAttribPointer(int attrIndex, int valueCount, Type type, boolean normalized, int stride, int offset) {
-        GLES20.glVertexAttribPointer(attrIndex, valueCount, type.glCode(), normalized, stride, offset);
+    public void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, int offset) {
+        GLES20.glVertexAttribPointer(attrIndex, valueCount, type, normalized, stride, offset);
     }
 
     public void vertexAttrib(int attrIndex, float x) {
@@ -279,16 +289,16 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glUniform4fv(location, count, buf);
     }
 
-    public void drawArrays(PrimitiveType type, int offset, int count) {
-        GLES20.glDrawArrays(type.glCode(), offset, count);
+    public void drawArrays(int type, int offset, int count) {
+        GLES20.glDrawArrays(type, offset, count);
     }
 
-    public void drawElements(PrimitiveType type, int count, Type indexType, Buffer indices) {
-        GLES20.glDrawElements(type.glCode(), count, indexType.glCode(), indices);
+    public void drawElements(int type, int count, int indexType, Buffer indices) {
+        GLES20.glDrawElements(type, count, indexType, indices);
     }
 
-    public void drawElements(PrimitiveType type, int count, Type indexType, int indexOffset) {
-        GLES20.glDrawElements(type.glCode(), count, indexType.glCode(), indexOffset);
+    public void drawElements(int type, int count, int indexType, int indexOffset) {
+        GLES20.glDrawElements(type, count, indexType, indexOffset);
     }
 
     public void genTextures(int count, IntBuffer buf) {
@@ -304,8 +314,8 @@ public class AndroidGLES2 implements OpenGL {
         return INT_BUF[0];
     }
 
-    public void bindTexture(TextureType type, int id) {
-        GLES20.glBindTexture(type.glCode(), id);
+    public void bindTexture(int type, int id) {
+        GLES20.glBindTexture(type, id);
     }
 
     public void deleteTextures(int count, int[] textures, int offset) {
@@ -321,35 +331,58 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glDeleteTextures(1, INT_BUF, 0);
     }
 
-    public void pixelStore(PixelStore type, int alignment) {
-        GLES20.glPixelStorei(type.glCode(), alignment);
+    public void pixelStore(int type, int alignment) {
+        GLES20.glPixelStorei(type, alignment);
     }
 
-    public void texImage2D(TextureTarget target, int level, int width, int height, TextureFormat format, TexelType type, Buffer data) {
-        GLES20.glTexImage2D(target.glCode(), level, format.glCode(), width, height, 0, format.glCode(), type.glCode(), data);
+    public void texImage2D(int target, int level, int width, int height, int format, int type, Buffer data) {
+        GLES20.glTexImage2D(target, level, format, width, height, 0, format, type, data);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, float[] params, int offset) {
-        GLES20.glTexParameterfv(type.glCode(), parameter.glCode(), params, offset);
+    public void texImage2D(int target, int level, URL url) {
+        InputStream stream = null;
+        Bitmap bitmap = null;
+        try {
+            stream = url.openStream();
+            bitmap = BitmapFactory.decodeStream(stream);
+            GLUtils.texImage2D(target, level, bitmap, 0);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't read texture from URL: " + url, e);
+        } finally {
+            if (bitmap != null) {
+                bitmap.recycle();
+            }
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    logger.error("Can't close stream opened from URL \"" + url + "\" to load texture", e);
+                }
+            }
+        }
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, FloatBuffer buf) {
-        GLES20.glTexParameterfv(type.glCode(), parameter.glCode(), buf);
+    public void texParameter(int type, int parameter, float[] params, int offset) {
+        GLES20.glTexParameterfv(type, parameter, params, offset);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, float value) {
-        GLES20.glTexParameterf(type.glCode(), parameter.glCode(), value);
+    public void texParameter(int type, int parameter, FloatBuffer buf) {
+        GLES20.glTexParameterfv(type, parameter, buf);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, int[] params, int offset) {
-        GLES20.glTexParameteriv(type.glCode(), parameter.glCode(), params, offset);
+    public void texParameter(int type, int parameter, float value) {
+        GLES20.glTexParameterf(type, parameter, value);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, IntBuffer buf) {
-        GLES20.glTexParameteriv(type.glCode(), parameter.glCode(), buf);
+    public void texParameter(int type, int parameter, int[] params, int offset) {
+        GLES20.glTexParameteriv(type, parameter, params, offset);
     }
 
-    public void texParameter(TextureType type, TextureParameter parameter, int value) {
-        GLES20.glTexParameteri(type.glCode(), parameter.glCode(), value);
+    public void texParameter(int type, int parameter, IntBuffer buf) {
+        GLES20.glTexParameteriv(type, parameter, buf);
+    }
+
+    public void texParameter(int type, int parameter, int value) {
+        GLES20.glTexParameteri(type, parameter, value);
     }
 }
