@@ -26,6 +26,7 @@ public final class Engine {
     private final EngineFactory factory;
     private final InputContext inputContext;
     private final EngineEntity root;
+    private DrawContext drawContext = null;
 
     private float secondsPerFrame = 0;
     private float compensationTime = 0f;
@@ -34,15 +35,19 @@ public final class Engine {
 
     private final ConcurrentLinkedQueue<EngineEvent> pendingEvents = new ConcurrentLinkedQueue<EngineEvent>();
 
-    public Engine(EngineFactory factory, InputContext inputContext) {
+    public Engine(EngineFactory factory,
+                  InputContext inputContext) {
         this.factory = factory;
         this.inputContext = inputContext;
         this.root = factory.createRoot(this);
+        this.root.onAttach(this);
     }
 
     public EngineFactory getFactory() {
         return factory;
     }
+
+    public DrawContext getDrawContext() { return drawContext; }
 
     private float pauseBeforeNextFrameIfNeeded() {
         if (!timer.isStarted()) {
@@ -93,8 +98,8 @@ public final class Engine {
         root.onSize(width, height);
     }
 
-    public void onDraw(DrawContext context) {
-        root.onDraw(context);
+    public void onDraw() {
+        root.onDraw(drawContext);
     }
 
     public boolean onInput(InputEvent event) {
@@ -103,13 +108,18 @@ public final class Engine {
     }
 
     public void onInit(DrawContext context) {
-        context.init();
-        root.onInit(context);
+        if (this.drawContext != null) {
+            throw new IllegalArgumentException("Draw context already initialized");
+        }
+        this.drawContext = context;
+        drawContext.init();
+        root.onInit(drawContext);
     }
 
-    public void onDispose(DrawContext context) {
-        root.onDispose(context);
-        context.dispose();
+    public void onDispose() {
+        root.onDispose(drawContext);
+        drawContext.dispose();
+        this.drawContext = null;
     }
 
     public void scheduleEvent(EngineEvent event) {

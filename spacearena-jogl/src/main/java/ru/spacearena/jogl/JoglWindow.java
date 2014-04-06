@@ -22,12 +22,9 @@ import javax.media.opengl.GLProfile;
  * @author Vyacheslav Mayorov
  * @since 2014-28-03
  */
-public class JoglWindow implements GLEventListener {
+public class JoglWindow {
 
     private final EngineFactory factory;
-
-    private Engine engine;
-    private final JoglGL2 gl = new JoglGL2();
 
     public JoglWindow(EngineFactory factory) {
         this.factory = factory;
@@ -54,35 +51,34 @@ public class JoglWindow implements GLEventListener {
         window.setVisible(true);
 
         final InputContext inputContext = new NewtInputContext(window);
+        final JoglGL2 gl = new JoglGL2();
         final DrawContext drawContext = new DrawContext(gl);
-        this.engine = new Engine(factory, drawContext, inputContext);
+        final Engine engine = new Engine(factory, inputContext);
+        window.addGLEventListener(new GLEventListener() {
+            public void init(GLAutoDrawable drawable) {
+                gl.setGL2(drawable.getGL().getGL2());
+                engine.onInit(drawContext);
+            }
 
+            public void dispose(GLAutoDrawable drawable) {
+                engine.onDispose();
+                gl.setGL2(null);
+            }
 
-        window.addGLEventListener(this);
+            public void display(GLAutoDrawable drawable) {
+                engine.onUpdate();
+                engine.onDraw();
+            }
+
+            public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+                gl.viewport(x,y,width,height);
+                engine.onSize(width, height);
+            }
+        });
 
         final Animator animator = new Animator(window);
         animator.setRunAsFastAsPossible(true);
         animator.start();
-    }
-
-    public void init(GLAutoDrawable drawable) {
-        gl.setGL2(drawable.getGL().getGL2());
-        engine.onInit();
-    }
-
-    public void dispose(GLAutoDrawable drawable) {
-        engine.onDispose();
-        gl.setGL2(null);
-    }
-
-     public void display(GLAutoDrawable drawable) {
-        engine.onUpdate();
-        engine.onDraw();
-    }
-
-    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        gl.viewport(x,y,width,height);
-        engine.onSize(width, height);
     }
 
     public static void main(String[] args) {

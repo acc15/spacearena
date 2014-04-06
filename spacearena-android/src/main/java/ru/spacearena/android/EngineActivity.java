@@ -48,18 +48,17 @@ public class EngineActivity extends Activity {
         final AndroidGLES2 gles2 = new AndroidGLES2();
         final DrawContext drawContext = new DrawContext(gles2);
         final InputContext inputContext = new AndroidInputContext(view);
-        final Engine engine = new Engine(factory, drawContext, inputContext);
+        final Engine engine = new Engine(factory, inputContext);
         view.setEGLContextClientVersion(2);
         view.setRenderer(new GLSurfaceView.Renderer() {
 
             private boolean initialized = false;
 
             public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-                //engine.onInit();
                 if (initialized) {
                     engine.onDispose();
                 }
-                engine.onInit();
+                engine.onInit(drawContext);
                 initialized = true;
             }
 
