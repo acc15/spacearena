@@ -453,4 +453,6 @@ public interface OpenGL {
 
     void enable(int what);
     void disable(int what);
+
+    void activeTexture(int unit);
 }

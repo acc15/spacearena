@@ -440,4 +440,8 @@ public class JoglGL2 implements OpenGL {
     public void disable(int what) {
         gl2.glDisable(what);
     }
+
+    public void activeTexture(int unit) {
+        gl2.glActiveTexture(unit);
+    }
 }

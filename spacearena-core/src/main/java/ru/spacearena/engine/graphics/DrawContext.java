@@ -4,6 +4,7 @@ import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
+import ru.spacearena.engine.graphics.shaders.TextureProgram;
 import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.vbo.VBODefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
@@ -129,8 +130,11 @@ public class DrawContext {
         vbos.remove(definition);
     }
 
-    public Texture load(Texture.Definition definition, int target, URL url) {
+    public Texture load(Texture.Definition definition, URL url) {
+        return load(definition, OpenGL.TEXTURE_2D, 0, url);
+    }
 
+    public Texture load(Texture.Definition definition, int target, int level, URL url) {
         Texture t = textures.get(definition);
         if (t == null) {
             t = new Texture();
@@ -138,15 +142,43 @@ public class DrawContext {
         }
 
         gl.bindTexture(definition.getType(), t.getId());
-        gl.texImage2D(OpenGL.TEXTURE_2D, 0, url);
-        gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
-        gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
-
+        gl.texImage2D(target, level, url);
+        if (definition.getMinFilter() != 0) {
+            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
+        }
+        if (definition.getMagFilter() != 0) {
+            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
+        }
+        if (definition.getWrapS() != 0) {
+            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
+        }
+        if (definition.getWrapT() != 0) {
+            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
+        }
         return t;
     }
 
-    public void drawTexture(float l, float t, float r, float b, Texture.Definition definition) {
+    public void delete(Texture.Definition definition) {
+        final Texture t = textures.get(definition);
+        if (t == null) {
+            throw new IllegalArgumentException("Texture with definition " + definition + " doesn't exists");
+        }
+        gl.deleteTexture(t.getId());
+        textures.remove(t);
+    }
 
+    public void drawTexture(float l, float t, float r, float b, Texture.Definition definition) {
+        vertexBuffer.layout(TextureProgram.LAYOUT_PT2).
+                     put(l, t).put(0,1).
+                     put(l,b).put(0,0).
+                     put(r,b).put(1,0).
+                     put(r,t).put(1,1);
+        use(TextureProgram.DEFINITION).
+                bindAttr(TextureProgram.POSITION_ATTR, vertexBuffer, 0).
+                bindAttr(TextureProgram.TEXCOORD_ATTR, vertexBuffer, 1).
+                bindUniform(TextureProgram.MATRIX_UNIFORM, activeMatrix).
+                bindUniform(TextureProgram.TEXTURE_UNIFORM, definition, 0).
+                draw(OpenGL.TRIANGLE_FAN);
     }
 
     public void fillNGon(int n, float x, float y, float rx, float ry, Color color) {
@@ -240,14 +272,20 @@ public class DrawContext {
 
         private Program program;
         private int vertexCount = -1;
+        private boolean texturing = false;
 
         public Binder bindUniform(int index, Texture.Definition def, int unit) {
-
             final Texture t = textures.get(def);
-            final int loc = program.getUniformLocation(index);
-
-            //gl.activeTexture()
-            //gl.uniform4()
+            if (t == null) {
+                throw new IllegalArgumentException("Unknown texture with definition " + def);
+            }
+            if (!texturing) {
+                texturing = true;
+                gl.enable(OpenGL.TEXTURE_2D);
+            }
+            gl.activeTexture(OpenGL.TEXTURE0 + unit);
+            gl.bindTexture(def.getType(), t.getId());
+            gl.uniform(program.getUniformLocation(index), unit);
             return this;
         }
 
@@ -297,15 +335,19 @@ public class DrawContext {
         }
 
         public void draw(int type) {
-            gl.drawArrays(type, 0, vertexCount);
+            draw(type, 0, vertexCount);
         }
 
         public void draw(int type, int count) {
-            gl.drawArrays(type, 0, count);
+            draw(type, 0, count);
         }
 
         public void draw(int type, int start, int count) {
             gl.drawArrays(type, start, count);
+            if (texturing) {
+                gl.disable(OpenGL.TEXTURE_2D);
+                texturing = false;
+            }
         }
 
         private void adjustVertexCount(int bufferSize, int stride) {

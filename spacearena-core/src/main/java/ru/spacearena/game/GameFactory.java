@@ -47,8 +47,11 @@ public class GameFactory implements EngineFactory {
 
             private Color[] colors = new Color[441];
 
+
             @Override
             public void onInit(Engine engine) {
+
+
                 for (int i=0; i<colors.length; i++) {
                     colors[i] = new Color(TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), 1);
                 }

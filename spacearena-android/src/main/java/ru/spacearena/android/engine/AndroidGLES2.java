@@ -441,4 +441,8 @@ public class AndroidGLES2 implements OpenGL {
     public void disable(int what) {
         GLES20.glDisable(what);
     }
+
+    public void activeTexture(int unit) {
+        GLES20.glActiveTexture(unit);
+    }
 }
