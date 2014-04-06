@@ -444,4 +444,8 @@ public class JoglGL2 implements OpenGL {
     public void activeTexture(int unit) {
         gl2.glActiveTexture(unit);
     }
+
+    public void blendFunc(int sfactor, int dfactor) {
+        gl2.glBlendFunc(sfactor, dfactor);
+    }
 }

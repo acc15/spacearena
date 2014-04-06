@@ -445,4 +445,8 @@ public class AndroidGLES2 implements OpenGL {
     public void activeTexture(int unit) {
         GLES20.glActiveTexture(unit);
     }
+
+    public void blendFunc(int sfactor, int dfactor) {
+        GLES20.glBlendFunc(sfactor, dfactor);
+    }
 }

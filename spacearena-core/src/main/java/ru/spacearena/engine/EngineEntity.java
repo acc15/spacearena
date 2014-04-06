@@ -9,6 +9,9 @@ import ru.spacearena.engine.graphics.DrawContext;
  */
 public interface EngineEntity {
 
+    void onAttach(Engine engine);
+    void onDetach(Engine engine);
+
     /**
      * Called after OpenGL subsystem was initialized.
      * It is a good point to load textures, {@link ru.spacearena.engine.graphics.DrawContext#upload(
@@ -18,15 +21,15 @@ public interface EngineEntity {
      *  ru.spacearena.engine.graphics.shaders.Program.Definition) make programs}.
      *  However you can make this things later - on the fly.
      *  It's just a notification - "i'm ready to start drawing".
-     * @param engine an object from which you can get whatever you want.
+     * @param context an object from which you can get whatever you want.
      */
-    void onInit(Engine engine);
+    void onInit(DrawContext context);
 
     /**
      * Called when OpenGL subsystem is going down.
-     * @param engine an object from which you can get whatever you want.
+     * @param context an object from which you can get whatever you want.
      */
-    void onDispose(Engine engine);
+    void onDispose(DrawContext context);
 
     /**
      * Called when rendering area was re-sized

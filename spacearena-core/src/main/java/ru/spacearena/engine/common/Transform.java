@@ -180,6 +180,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
         setPosition(positionX + dx, positionY + dy);
     }
 
+    public void scale(float sx, float sy) {
+        setScale(scaleX + sx, scaleY + sy);
+    }
+
     protected void onMatrixUpdate() {
     }
 

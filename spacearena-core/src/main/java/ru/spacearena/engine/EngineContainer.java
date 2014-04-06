@@ -13,20 +13,13 @@ import java.util.List;
 public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
     protected final List<T> children = new ArrayList<T>();
-    private Engine engine = null;
+    private DrawContext context = null;
 
     public EngineContainer() {
     }
 
-    public Engine getEngine() {
-        if (engine == null) {
-            throw new NullPointerException("Attempt to get engine before object initialization");
-        }
-        return engine;
-    }
-
     public void add(T entity) {
-        if (engine != null) {
+        if (context != null) {
             attach(entity);
         }
         children.add(entity);
@@ -34,7 +27,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
     public void remove(int index) {
         final T e = children.get(index);
-        if (engine != null) {
+        if (context != null) {
             detach(e);
         }
         children.remove(index);
@@ -42,11 +35,11 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
     private void detach(T entity) {
         onDetachChild(entity);
-        entity.onDispose(engine);
+        entity.onDispose(context);
     }
 
     private void attach(T entity) {
-        entity.onInit(engine);
+        entity.onInit(context);
         onAttachChild(entity);
     }
 
@@ -69,26 +62,26 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return children.get(index);
     }
 
-    public void onInit(Engine engine) {
-        if (this.engine == engine) {
+    public void onInit(DrawContext context) {
+        if (this.context == context) {
             return;
-        } else if (this.engine != null) {
+        } else if (this.context != null) {
             throw new IllegalStateException("Already initialized");
         }
-        this.engine = engine;
+        this.context = context;
         for (T child : children) {
             attach(child);
         }
     }
 
-    public void onDispose(Engine engine) {
-        if (this.engine != engine) {
+    public void onDispose(DrawContext context) {
+        if (this.context != context) {
             throw new IllegalStateException("Not initialized");
         }
         for (T child: children) {
             detach(child);
         }
-        this.engine = null;
+        this.context = null;
     }
 
     public void onSize(float width, float height) {

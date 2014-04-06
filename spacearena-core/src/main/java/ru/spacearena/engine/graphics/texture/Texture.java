@@ -15,6 +15,8 @@ public class Texture {
     }
 
     private int id;
+    private int width;
+    private int height;
 
     public int getId() {
         return id;
@@ -23,4 +25,13 @@ public class Texture {
     public void setId(int id) {
         this.id = id;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
 }

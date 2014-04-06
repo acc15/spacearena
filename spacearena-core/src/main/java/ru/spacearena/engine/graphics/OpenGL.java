@@ -455,4 +455,7 @@ public interface OpenGL {
     void disable(int what);
 
     void activeTexture(int unit);
+
+    void blendFunc(int sfactor, int dfactor);
+
 }

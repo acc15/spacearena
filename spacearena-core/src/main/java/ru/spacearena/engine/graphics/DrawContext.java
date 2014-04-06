@@ -68,12 +68,14 @@ public class DrawContext {
     }
 
     public void init() {
-        //gl.enable(OpenGL.TEXTURE_2D);
+        gl.enable(OpenGL.BLEND);
+        gl.blendFunc(OpenGL.SRC_ALPHA, OpenGL.ONE_MINUS_SRC_ALPHA);
     }
 
     public void dispose() {
         programs.clear();
         vbos.clear();
+        textures.clear();
     }
 
     public Matrix getActiveMatrix() {

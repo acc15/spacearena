@@ -24,7 +24,6 @@ public final class Engine {
 
     private final Debug debug = new Debug();
     private final EngineFactory factory;
-    private final DrawContext drawContext;
     private final InputContext inputContext;
     private final EngineEntity root;
 
@@ -35,11 +34,8 @@ public final class Engine {
 
     private final ConcurrentLinkedQueue<EngineEvent> pendingEvents = new ConcurrentLinkedQueue<EngineEvent>();
 
-    public Engine(EngineFactory factory,
-                  DrawContext drawContext,
-                  InputContext inputContext) {
+    public Engine(EngineFactory factory, InputContext inputContext) {
         this.factory = factory;
-        this.drawContext = drawContext;
         this.inputContext = inputContext;
         this.root = factory.createRoot(this);
     }
@@ -47,8 +43,6 @@ public final class Engine {
     public EngineFactory getFactory() {
         return factory;
     }
-
-    public DrawContext getDrawContext() { return drawContext; }
 
     private float pauseBeforeNextFrameIfNeeded() {
         if (!timer.isStarted()) {
@@ -99,8 +93,8 @@ public final class Engine {
         root.onSize(width, height);
     }
 
-    public void onDraw() {
-        root.onDraw(drawContext);
+    public void onDraw(DrawContext context) {
+        root.onDraw(context);
     }
 
     public boolean onInput(InputEvent event) {
@@ -108,14 +102,14 @@ public final class Engine {
         return true;
     }
 
-    public void onInit() {
-        drawContext.init();
-        root.onInit(this);
+    public void onInit(DrawContext context) {
+        context.init();
+        root.onInit(context);
     }
 
-    public void onDispose() {
-        root.onDispose(this);
-        drawContext.dispose();
+    public void onDispose(DrawContext context) {
+        root.onDispose(context);
+        context.dispose();
     }
 
     public void scheduleEvent(EngineEvent event) {

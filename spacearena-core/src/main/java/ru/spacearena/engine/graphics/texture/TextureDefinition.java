@@ -15,7 +15,7 @@ public class TextureDefinition implements Texture.Definition {
     }
 
     public TextureDefinition(int type) {
-        this(type, OpenGL.NEAREST, OpenGL.NEAREST);
+        this(type, OpenGL.LINEAR, OpenGL.LINEAR);
     }
 
     public TextureDefinition(int type, int minFilter, int magFilter) {
