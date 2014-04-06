@@ -10,8 +10,12 @@ public class TextureDefinition implements Texture.Definition {
 
     private final int type, wrapS, wrapT, minFilter, magFilter;
 
+    public TextureDefinition() {
+        this(OpenGL.TEXTURE_2D);
+    }
+
     public TextureDefinition(int type) {
-        this(type, OpenGL.NEAREST, OpenGL.NEAREST, 0, 0);
+        this(type, OpenGL.NEAREST, OpenGL.NEAREST);
     }
 
     public TextureDefinition(int type, int minFilter, int magFilter) {

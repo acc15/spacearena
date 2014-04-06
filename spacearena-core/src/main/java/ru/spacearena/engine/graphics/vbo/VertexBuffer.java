@@ -13,27 +13,25 @@ public class VertexBuffer {
 
     private ByteBuffer buffer;
     private VertexBufferLayout layout;
+    private int size = -1;
 
     public VertexBuffer(int bytes) {
         buffer = ByteBuffer.allocateDirect(bytes).order(ByteOrder.nativeOrder());
-    }
-
-    public VertexBuffer reset() {
-        buffer.rewind();
-        return this;
     }
 
     public VertexBufferLayout getLayout() {
         return layout;
     }
 
-    public VertexBuffer layout(VertexBufferLayout l) {
+    public VertexBuffer reset(VertexBufferLayout l) {
         this.layout = l;
+        buffer.rewind();
+        this.size = -1;
         return this;
     }
 
     public int getSize() {
-        return buffer.position();
+        return size < 0 ? buffer.position() : size;
     }
 
     public ByteBuffer prepareBuffer() {
@@ -41,6 +39,9 @@ public class VertexBuffer {
     }
 
     public ByteBuffer prepareBuffer(int item) {
+        if (size < 0) {
+            size = buffer.position();
+        }
         buffer.position(layout.getOffset(item));
         return buffer;
     }

@@ -68,6 +68,7 @@ public class DrawContext {
     }
 
     public void init() {
+        //gl.enable(OpenGL.TEXTURE_2D);
     }
 
     public void dispose() {
@@ -138,23 +139,26 @@ public class DrawContext {
         Texture t = textures.get(definition);
         if (t == null) {
             t = new Texture();
+            textures.put(definition, t);
             t.setId(gl.genTexture());
-        }
 
-        gl.bindTexture(definition.getType(), t.getId());
+            gl.bindTexture(definition.getType(), t.getId());
+            if (definition.getMinFilter() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
+            }
+            if (definition.getMagFilter() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
+            }
+            if (definition.getWrapS() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
+            }
+            if (definition.getWrapT() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
+            }
+        } else {
+            gl.bindTexture(definition.getType(), t.getId());
+        }
         gl.texImage2D(target, level, url);
-        if (definition.getMinFilter() != 0) {
-            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
-        }
-        if (definition.getMagFilter() != 0) {
-            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
-        }
-        if (definition.getWrapS() != 0) {
-            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
-        }
-        if (definition.getWrapT() != 0) {
-            gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
-        }
         return t;
     }
 
@@ -164,20 +168,21 @@ public class DrawContext {
             throw new IllegalArgumentException("Texture with definition " + definition + " doesn't exists");
         }
         gl.deleteTexture(t.getId());
-        textures.remove(t);
+        textures.remove(definition);
     }
 
-    public void drawTexture(float l, float t, float r, float b, Texture.Definition definition) {
-        vertexBuffer.layout(TextureProgram.LAYOUT_PT2).
-                     put(l, t).put(0,1).
-                     put(l,b).put(0,0).
-                     put(r,b).put(1,0).
-                     put(r,t).put(1,1);
+    public void drawTexture(float l, float t, float r, float b, Texture.Definition texture) {
+//        fillRect(l,t,r,b,Color.RED);
+        vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
+                     put(l,t).put(0f,1f).
+                     put(l,b).put(0f,0f).
+                     put(r,b).put(1f,0f).
+                     put(r,t).put(1f,1f);
         use(TextureProgram.DEFINITION).
                 bindAttr(TextureProgram.POSITION_ATTR, vertexBuffer, 0).
                 bindAttr(TextureProgram.TEXCOORD_ATTR, vertexBuffer, 1).
                 bindUniform(TextureProgram.MATRIX_UNIFORM, activeMatrix).
-                bindUniform(TextureProgram.TEXTURE_UNIFORM, definition, 0).
+                bindUniform(TextureProgram.TEXTURE_UNIFORM, texture, 0).
                 draw(OpenGL.TRIANGLE_FAN);
     }
 
@@ -192,32 +197,32 @@ public class DrawContext {
     }
 
     public void fillConvexPoly(float[] points, int start, int size, Color color) {
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(points, start, size);
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
 
     public void drawPoly(float[] points, Color color) {
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(points);
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points);
         drawBuf(OpenGL.LINE_LOOP, color);
     }
 
     public void drawPoly(float[] points, int start, int size, Color color) {
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(points, start, size);
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.LINE_LOOP, color);
     }
 
     public void fillRect(float x1, float y1, float x2, float y2, Color color) {
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(x1, y2).put(x1, y2).put(x2, y2).put(x2, y1);
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
         drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
 
     public void drawRect(float x1, float y1, float x2, float y2, Color color) {
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
         drawBuf(OpenGL.LINE_LOOP, color);
     }
 
     public void drawLine(float x1, float y1, float x2, float y2, Color color) {
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
         drawBuf(OpenGL.LINES, color);
     }
 
@@ -285,7 +290,9 @@ public class DrawContext {
             }
             gl.activeTexture(OpenGL.TEXTURE0 + unit);
             gl.bindTexture(def.getType(), t.getId());
-            gl.uniform(program.getUniformLocation(index), unit);
+
+            final int loc = program.getUniformLocation(index);
+            gl.uniform(loc, unit);
             return this;
         }
 
@@ -384,7 +391,7 @@ public class DrawContext {
 
         final float a = FloatMathUtils.TWO_PI / n;
         final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);
-        vertexBuffer.reset().layout(PositionProgram.LAYOUT_P2);
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2);
         float vx = 1, vy = 0;
         for (int i = 0; i < n; i++) {
             vertexBuffer.put(x + vx * rx, y + vy * ry);

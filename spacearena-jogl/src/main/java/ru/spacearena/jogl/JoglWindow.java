@@ -5,7 +5,6 @@ import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.Animator;
-import com.jogamp.opengl.util.texture.TextureIO;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputContext;
@@ -18,7 +17,6 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
-import java.io.IOException;
 
 /**
  * @author Vyacheslav Mayorov
@@ -70,17 +68,6 @@ public class JoglWindow implements GLEventListener {
     public void init(GLAutoDrawable drawable) {
         gl.setGL2(drawable.getGL().getGL2());
         engine.onInit();
-
-
-        final com.jogamp.opengl.util.texture.Texture t;
-        try {
-            t = TextureIO.newTexture(GameFactory.class.getResource("ship.png"), false, null);
-            System.out.println(t.getWidth());
-            System.out.println(t.getHeight());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void dispose(GLAutoDrawable drawable) {

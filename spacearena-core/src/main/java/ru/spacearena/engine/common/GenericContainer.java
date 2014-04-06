@@ -12,7 +12,4 @@ public class GenericContainer extends EngineContainer<EngineEntity> {
     public GenericContainer() {
     }
 
-    public GenericContainer(Engine engine) {
-        super(engine);
-    }
 }

@@ -3,10 +3,12 @@ package ru.spacearena.game;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.util.TempUtils;
 
 /**
@@ -24,7 +26,7 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
 
-        final GenericContainer root = new GenericContainer(engine);
+        final GenericContainer root = new GenericContainer();
         root.add(new Background());
 
         final FPSCounter f = new FPSCounter() {
@@ -47,11 +49,8 @@ public class GameFactory implements EngineFactory {
 
             private Color[] colors = new Color[441];
 
-
             @Override
             public void onInit(Engine engine) {
-
-
                 for (int i=0; i<colors.length; i++) {
                     colors[i] = new Color(TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), 1);
                 }
@@ -83,6 +82,21 @@ public class GameFactory implements EngineFactory {
                 }
             }
 
+        });
+
+        viewport.add(new EngineObject() {
+
+            private final TextureDefinition td = new TextureDefinition();
+
+            @Override
+            public void onInit(Engine engine) {
+                engine.getDrawContext().load(td, GameFactory.class.getResource("ship.png"));
+            }
+
+            @Override
+            public void onDraw(DrawContext context) {
+                context.drawTexture(-20, -20, 20, 20, td);
+            }
         });
         root.add(viewport);
 

@@ -430,7 +430,7 @@ public class JoglGL2 implements OpenGL {
             throw new RuntimeException("Can't load texture data from URL: " + url, e);
         }
         gl2.glTexImage2D(target, level, td.getInternalFormat(),
-                td.getWidth(), td.getHeight(), 0, td.getInternalFormat(), td.getPixelType(), td.getBuffer());
+                td.getWidth(), td.getHeight(), 0, td.getPixelFormat(), td.getPixelType(), td.getBuffer());
     }
 
     public void enable(int what) {

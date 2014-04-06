@@ -18,10 +18,6 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
     public EngineContainer() {
     }
 
-    public EngineContainer(Engine engine) {
-        this.engine = engine;
-    }
-
     public Engine getEngine() {
         if (engine == null) {
             throw new NullPointerException("Attempt to get engine before object initialization");
