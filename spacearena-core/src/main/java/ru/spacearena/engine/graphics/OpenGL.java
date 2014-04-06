@@ -399,6 +399,20 @@ public interface OpenGL {
     void uniform3(int location, int count, FloatBuffer buf);
     void uniform4(int location, int count, FloatBuffer buf);
 
+    void uniform(int location, int x);
+    void uniform(int location, int x, int y);
+    void uniform(int location, int x, int y, int z);
+    void uniform(int location, int x, int y, int z, int w);
+    void uniform1(int location, int count, int[] values, int offset);
+    void uniform2(int location, int count, int[] values, int offset);
+    void uniform3(int location, int count, int[] values, int offset);
+    void uniform4(int location, int count, int[] values, int offset);
+    void uniform1(int location, int count, IntBuffer buf);
+    void uniform2(int location, int count, IntBuffer buf);
+    void uniform3(int location, int count, IntBuffer buf);
+    void uniform4(int location, int count, IntBuffer buf);
+
+
     void enableVertexAttribArray(int attrIndex);
     void disableVertexAttribArray(int attrIndex);
 
@@ -437,4 +451,6 @@ public interface OpenGL {
     void texParameter(int type, int parameter, IntBuffer buf);
     void texParameter(int type, int parameter, int value);
 
+    void enable(int what);
+    void disable(int what);
 }

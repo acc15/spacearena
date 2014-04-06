@@ -290,6 +290,54 @@ public class JoglGL2 implements OpenGL {
         gl2.glUniform4fv(location, count, buf);
     }
 
+    public void uniform(int location, int x) {
+        gl2.glUniform1i(location, x);
+    }
+
+    public void uniform(int location, int x, int y) {
+        gl2.glUniform2i(location, x, y);
+    }
+
+    public void uniform(int location, int x, int y, int z) {
+        gl2.glUniform3i(location, x, y, z);
+    }
+
+    public void uniform(int location, int x, int y, int z, int w) {
+        gl2.glUniform4i(location, x, y, z, w);
+    }
+
+    public void uniform1(int location, int count, int[] values, int offset) {
+        gl2.glUniform1iv(location, count, values, offset);
+    }
+
+    public void uniform2(int location, int count, int[] values, int offset) {
+        gl2.glUniform2iv(location, count, values, offset);
+    }
+
+    public void uniform3(int location, int count, int[] values, int offset) {
+        gl2.glUniform3iv(location, count, values, offset);
+    }
+
+    public void uniform4(int location, int count, int[] values, int offset) {
+        gl2.glUniform4iv(location, count, values, offset);
+    }
+
+    public void uniform1(int location, int count, IntBuffer buf) {
+        gl2.glUniform1iv(location, count, buf);
+    }
+
+    public void uniform2(int location, int count, IntBuffer buf) {
+        gl2.glUniform2iv(location, count, buf);
+    }
+
+    public void uniform3(int location, int count, IntBuffer buf) {
+        gl2.glUniform3iv(location, count, buf);
+    }
+
+    public void uniform4(int location, int count, IntBuffer buf) {
+        gl2.glUniform4iv(location, count, buf);
+    }
+
     public void enableVertexAttribArray(int attrIndex) {
         gl2.glEnableVertexAttribArray(attrIndex);
     }
@@ -385,4 +433,11 @@ public class JoglGL2 implements OpenGL {
                 td.getWidth(), td.getHeight(), 0, td.getInternalFormat(), td.getPixelType(), td.getBuffer());
     }
 
+    public void enable(int what) {
+        gl2.glEnable(what);
+    }
+
+    public void disable(int what) {
+        gl2.glDisable(what);
+    }
 }

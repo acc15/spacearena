@@ -62,7 +62,7 @@ public class Sprite extends Transform<EngineEntity> /*implements BoundingBox2F*/
     @Override
     protected void onDrawTransformed(DrawContext context) {
         super.onDrawTransformed(context);
-        context.drawImage(image, 0, 0);
+        context.drawTexture(image, 0, 0);
     }
     */
 

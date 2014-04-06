@@ -37,6 +37,8 @@ public class DrawContext {
     private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos =
             new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
 
+    private final HashMap<Texture.Definition, Texture> textures = new HashMap<Texture.Definition, Texture>();
+
     private final Binder binder = new Binder();
 
     public DrawContext(OpenGL gl) {
@@ -127,21 +129,23 @@ public class DrawContext {
         vbos.remove(definition);
     }
 
-    public Texture load(Texture.Definition definition, URL url) {
+    public Texture load(Texture.Definition definition, int target, URL url) {
 
-        final int id = gl.genTexture();
-        gl.bindTexture(OpenGL.TEXTURE_2D, id);
+        Texture t = textures.get(definition);
+        if (t == null) {
+            t = new Texture();
+            t.setId(gl.genTexture());
+        }
+
+        gl.bindTexture(definition.getType(), t.getId());
         gl.texImage2D(OpenGL.TEXTURE_2D, 0, url);
+        gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
+        gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
 
-        //gl.texParameter(OpenGL.TEXTURE_2D, OpenGL.TEXTURE_MIN_FILTER, );
+        return t;
+    }
 
-        //final BufferedImage image = ImageIO.read();
-
-        //final ByteBuffer buffer = By
-        //gl.texImage2D(OpenGL.TextureTarget.TEXTURE_2D, 0, );
-        //gl.
-
-        return new Texture();
+    public void drawTexture(float l, float t, float r, float b, Texture.Definition definition) {
 
     }
 
@@ -236,6 +240,16 @@ public class DrawContext {
 
         private Program program;
         private int vertexCount = -1;
+
+        public Binder bindUniform(int index, Texture.Definition def, int unit) {
+
+            final Texture t = textures.get(def);
+            final int loc = program.getUniformLocation(index);
+
+            //gl.activeTexture()
+            //gl.uniform4()
+            return this;
+        }
 
         public Binder bindUniform(int index, Point2F point) {
             gl.uniform(program.getUniformLocation(index), point.x, point.y);

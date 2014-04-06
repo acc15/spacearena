@@ -289,6 +289,54 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glUniform4fv(location, count, buf);
     }
 
+    public void uniform(int location, int x) {
+        GLES20.glUniform1i(location, x);
+    }
+
+    public void uniform(int location, int x, int y) {
+        GLES20.glUniform2i(location, x, y);
+    }
+
+    public void uniform(int location, int x, int y, int z) {
+        GLES20.glUniform3i(location, x, y, z);
+    }
+
+    public void uniform(int location, int x, int y, int z, int w) {
+        GLES20.glUniform4i(location, x, y, z, w);
+    }
+
+    public void uniform1(int location, int count, int[] values, int offset) {
+        GLES20.glUniform1iv(location, count, values, offset);
+    }
+
+    public void uniform2(int location, int count, int[] values, int offset) {
+        GLES20.glUniform2iv(location, count, values, offset);
+    }
+
+    public void uniform3(int location, int count, int[] values, int offset) {
+        GLES20.glUniform3iv(location, count, values, offset);
+    }
+
+    public void uniform4(int location, int count, int[] values, int offset) {
+        GLES20.glUniform4iv(location, count, values, offset);
+    }
+
+    public void uniform1(int location, int count, IntBuffer buf) {
+        GLES20.glUniform1iv(location, count, buf);
+    }
+
+    public void uniform2(int location, int count, IntBuffer buf) {
+        GLES20.glUniform2iv(location, count, buf);
+    }
+
+    public void uniform3(int location, int count, IntBuffer buf) {
+        GLES20.glUniform3iv(location, count, buf);
+    }
+
+    public void uniform4(int location, int count, IntBuffer buf) {
+        GLES20.glUniform4iv(location, count, buf);
+    }
+
     public void drawArrays(int type, int offset, int count) {
         GLES20.glDrawArrays(type, offset, count);
     }
@@ -384,5 +432,13 @@ public class AndroidGLES2 implements OpenGL {
 
     public void texParameter(int type, int parameter, int value) {
         GLES20.glTexParameteri(type, parameter, value);
+    }
+
+    public void enable(int what) {
+        GLES20.glEnable(what);
+    }
+
+    public void disable(int what) {
+        GLES20.glDisable(what);
     }
 }
