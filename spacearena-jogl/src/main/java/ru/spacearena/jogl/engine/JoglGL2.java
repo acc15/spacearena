@@ -3,6 +3,7 @@ package ru.spacearena.jogl.engine;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.texture.Texture;
 
 import javax.media.opengl.GL2;
 import java.io.IOException;
@@ -422,15 +423,18 @@ public class JoglGL2 implements OpenGL {
         gl2.glTexParameteri(type, parameter, value);
     }
 
-    public void texImage2D(int target, int level, URL url) {
+    public void texImage2D(Texture texture, URL url) {
         final TextureData td;
         try {
             td = TextureIO.newTextureData(gl2.getGLProfile(), url, false, null);
         } catch (IOException e) {
             throw new RuntimeException("Can't load texture data from URL: " + url, e);
         }
-        gl2.glTexImage2D(target, level, td.getInternalFormat(),
-                td.getWidth(), td.getHeight(), 0, td.getPixelFormat(), td.getPixelType(), td.getBuffer());
+
+        final int w = td.getWidth(), h = td.getHeight(), tf = td.getInternalFormat(), pf = td.getPixelFormat(),
+                pt = td.getPixelType();
+        gl2.glTexImage2D(TEXTURE_2D, 0, tf, w, h, 0, pf, pt, td.getBuffer());
+        texture.setDimension(w, h);
     }
 
     public void enable(int what) {

@@ -1,13 +1,12 @@
 package ru.spacearena.game;
 
-import org.fest.assertions.Delta;
+import org.fest.assertions.data.Offset;
 import org.junit.Test;
-import ru.spacearena.engine.util.FloatMathUtils
-;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 import java.util.Random;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * @author Vyacheslav Mayorov
@@ -33,7 +32,7 @@ public class SkyTest {
 
         for (float i=-2f; i<=4f; i+=0.5f, e++) {
             final float pos = FloatMathUtils.startPos(i, 2);
-            assertThat(pos).describedAs("for value " + i).isEqualTo(expected[e], Delta.delta(0.000001));
+            assertThat(pos).describedAs("for value " + i).isEqualTo(expected[e], Offset.offset(0.000001f));
         }
 
     }

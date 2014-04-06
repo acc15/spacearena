@@ -5,11 +5,9 @@ import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
-import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.TempUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -19,7 +17,7 @@ public class GameFactory implements EngineFactory {
 
     private static final class Ship extends Transform {
 
-        private final TextureDefinition td = new TextureDefinition();
+        private static final TextureDefinition td = new TextureDefinition();
 
         public Ship(float x, float y) {
             setPosition(x, y);
@@ -27,7 +25,9 @@ public class GameFactory implements EngineFactory {
 
         @Override
         public void onInit(DrawContext context) {
-            context.load(td, GameFactory.class.getResource("ship.png"));
+            if (!context.has(td)) {
+                context.load(td, GameFactory.class.getResource("ship.png"));
+            }
         }
 
         @Override
@@ -47,7 +47,7 @@ public class GameFactory implements EngineFactory {
 
         //engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(0);
+        engine.setMaxFPS(100);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
@@ -68,47 +68,6 @@ public class GameFactory implements EngineFactory {
 
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
-        viewport.add(new Transform() {
-
-            private float r = 1f;
-            private float x = 3f;
-
-            private Color[] colors = new Color[441];
-
-            @Override
-            public void onInit(DrawContext context) {
-                for (int i=0; i<colors.length; i++) {
-                    colors[i] = new Color(TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), TempUtils.RAND.nextFloat(), 1);
-                }
-            }
-
-            @Override
-            public boolean onUpdate(float seconds) {
-                rotate(seconds);
-                //translate(-5f*seconds, 0);
-
-                r += x*seconds;
-                final float rmin = 0.3f, rmax = 1f;
-                if (r < rmin) {
-                    r = rmin;
-                    x = -x;
-                } else if (r > rmax) {
-                    r = rmax;
-                    x = -x;
-                }
-                return true;
-            }
-
-            @Override
-            protected void onDrawTransformed(DrawContext context) {
-                for (int i=-10; i<=10; i++) {
-                    for (int j=-10; j<=10; j++) {
-                        context.fillCircle(j*2,i*2,r,colors[(i+10) * 21 + (j+10)]);
-                    }
-                }
-            }
-
-        });
 
         viewport.add(new Ship(-2, -2));
         viewport.add(new Ship(2, 2));

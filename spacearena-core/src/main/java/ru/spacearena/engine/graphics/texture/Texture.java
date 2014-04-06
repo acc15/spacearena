@@ -34,4 +34,13 @@ public class Texture {
         return height;
     }
 
+    public void setDimension(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public float getAspectRatio() {
+        return (float)width/height;
+    }
+
 }

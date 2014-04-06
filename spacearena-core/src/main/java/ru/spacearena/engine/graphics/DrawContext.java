@@ -114,6 +114,8 @@ public class DrawContext {
         return vbos.containsKey(definition);
     }
 
+    public boolean has(Texture.Definition definition) { return textures.containsKey(definition); }
+
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
         VertexBufferObject vbo = vbos.get(definition);
         if (vbo == null) {
@@ -134,33 +136,26 @@ public class DrawContext {
     }
 
     public Texture load(Texture.Definition definition, URL url) {
-        return load(definition, OpenGL.TEXTURE_2D, 0, url);
-    }
-
-    public Texture load(Texture.Definition definition, int target, int level, URL url) {
         Texture t = textures.get(definition);
         if (t == null) {
             t = new Texture();
             textures.put(definition, t);
             t.setId(gl.genTexture());
-
-            gl.bindTexture(definition.getType(), t.getId());
-            if (definition.getMinFilter() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
-            }
-            if (definition.getMagFilter() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
-            }
-            if (definition.getWrapS() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
-            }
-            if (definition.getWrapT() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
-            }
-        } else {
-            gl.bindTexture(definition.getType(), t.getId());
         }
-        gl.texImage2D(target, level, url);
+        gl.bindTexture(definition.getType(), t.getId());
+        if (definition.getMinFilter() != 0) {
+            gl.texParameter(definition.getType(), OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
+        }
+        if (definition.getMagFilter() != 0) {
+            gl.texParameter(definition.getType(), OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
+        }
+        if (definition.getWrapS() != 0) {
+            gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
+        }
+        if (definition.getWrapT() != 0) {
+            gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
+        }
+        gl.texImage2D(t, url);
         return t;
     }
 
@@ -173,8 +168,12 @@ public class DrawContext {
         textures.remove(definition);
     }
 
+    public void drawTexture(float x, float y, Texture.Definition texture) {
+        final Texture t = getTexture(texture);
+        drawTexture(x, y, x + t.getWidth(), y + t.getHeight(), texture);
+    }
+
     public void drawTexture(float l, float t, float r, float b, Texture.Definition texture) {
-//        fillRect(l,t,r,b,Color.RED);
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
                      put(l,t).put(0f,1f).
                      put(l,b).put(0f,0f).
@@ -275,6 +274,14 @@ public class DrawContext {
         gl.lineWidth(width);
     }
 
+    public Texture getTexture(Texture.Definition definition) {
+        final Texture t = textures.get(definition);
+        if (t == null) {
+            throw new IllegalArgumentException("Texture with definition " + definition + " doesn't exists");
+        }
+        return t;
+    }
+
     public class Binder {
 
         private Program program;
@@ -282,10 +289,7 @@ public class DrawContext {
         private boolean texturing = false;
 
         public Binder bindUniform(int index, Texture.Definition def, int unit) {
-            final Texture t = textures.get(def);
-            if (t == null) {
-                throw new IllegalArgumentException("Unknown texture with definition " + def);
-            }
+            final Texture t = getTexture(def);
             if (!texturing) {
                 texturing = true;
                 gl.enable(OpenGL.TEXTURE_2D);

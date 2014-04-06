@@ -15,6 +15,7 @@
         <module>spacearena-android</module>
         <module>spacearena-core</module>
         <module>spacearena-jogl</module>
+        <module>font-import</module>
     </modules>
 
     <scm>

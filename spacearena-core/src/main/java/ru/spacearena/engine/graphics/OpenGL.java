@@ -1,5 +1,7 @@
 package ru.spacearena.engine.graphics;
 
+import ru.spacearena.engine.graphics.texture.Texture;
+
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -433,11 +435,10 @@ public interface OpenGL {
 
     /**
      * Not a part of OpenGL interface. Allows to load texture by url
-     * @param target texture target
-     * @param level mipmap level
+     * @param texture texture
      * @param url url
      */
-    void texImage2D(int target, int level, URL url);
+    void texImage2D(Texture texture, URL url);
 
 
     void bindTexture(int type, int id);

@@ -7,6 +7,7 @@ import android.opengl.GLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.texture.Texture;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -387,13 +388,14 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glTexImage2D(target, level, format, width, height, 0, format, type, data);
     }
 
-    public void texImage2D(int target, int level, URL url) {
+    public void texImage2D(Texture texture, URL url) {
         InputStream stream = null;
         Bitmap bitmap = null;
         try {
             stream = url.openStream();
             bitmap = BitmapFactory.decodeStream(stream);
-            GLUtils.texImage2D(target, level, bitmap, 0);
+            GLUtils.texImage2D(TEXTURE_2D, 0, bitmap, 0);
+            texture.setDimension(bitmap.getWidth(), bitmap.getHeight());
         } catch (IOException e) {
             throw new RuntimeException("Can't read texture from URL: " + url, e);
         } finally {

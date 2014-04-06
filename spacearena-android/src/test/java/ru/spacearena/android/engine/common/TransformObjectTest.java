@@ -1,10 +1,10 @@
 package ru.spacearena.android.engine.common;
 
-import org.fest.assertions.Delta;
+import org.fest.assertions.data.Offset;
 import org.junit.Test;
 import ru.spacearena.game.Matrix;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 /**
  * @author Vyacheslav Mayorov
@@ -23,8 +23,8 @@ public class TransformObjectTest {
         m = Matrix.translate(10, 10).mul(m);
 
         Matrix r = m.mul(new Matrix(1, new float[]{15,15,1}));
-        assertThat(r.getValue(0, 0)).isEqualTo(-40, Delta.delta(0.0001));
-        assertThat(r.getValue(1,0)).isEqualTo(60, Delta.delta(0.0001));
+        assertThat(r.getValue(0, 0)).isEqualTo(-40f, Offset.offset(0.0001f));
+        assertThat(r.getValue(1,0)).isEqualTo(60f, Offset.offset(0.0001f));
 
     }
 }
