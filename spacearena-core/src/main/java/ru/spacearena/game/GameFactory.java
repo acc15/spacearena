@@ -3,8 +3,10 @@ package ru.spacearena.game;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -39,7 +41,7 @@ public class GameFactory implements EngineFactory {
 
         @Override
         public void onDrawTransformed(DrawContext context) {
-            context.drawTexture(-10, -6, 10, 6, td);
+            context.drawImage(-10, -6, 10, 6, td);
         }
     }
 
@@ -71,6 +73,12 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(new Ship(-2, -2));
         viewport.add(new Ship(2, 2));
+        viewport.add(new EngineObject() {
+            @Override
+            public void onDraw(DrawContext context) {
+                context.drawText("Testing text...", 0, 0, null, 2, Color.GREEN);
+            }
+        });
         root.add(viewport);
 
         /*

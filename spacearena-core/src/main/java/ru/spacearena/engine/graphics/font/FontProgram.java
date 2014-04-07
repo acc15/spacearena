@@ -1,17 +1,17 @@
-package ru.spacearena.engine.graphics.shaders;
+package ru.spacearena.engine.graphics.font;
 
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
+import ru.spacearena.engine.graphics.shaders.Program;
 
 /**
  * @author Vyacheslav Mayorov
- * @since 2014-06-04
+ * @since 2014-07-04
  */
-public class TextureProgram extends Program {
+public class FontProgram extends Program {
 
     public static final Program.Definition DEFINITION = new Program.Definition() {
         public Program createProgram() {
-            return new TextureProgram();
+            return new FontProgram();
         }
     };
 
@@ -19,10 +19,9 @@ public class TextureProgram extends Program {
     public static final int TEXCOORD_ATTR = 1;
     public static final int MATRIX_UNIFORM = 0;
     public static final int TEXTURE_UNIFORM = 1;
+    public static final int COLOR_UNIFORM = 1;
 
-    public static final VertexBufferLayout LAYOUT_PT2 = new VertexBufferLayout.Builder().floats(2).floats(2).build();
-
-    private TextureProgram() {
+    private FontProgram() {
         shader(OpenGL.VERTEX_SHADER,
                 "uniform mat4 u_MVPMatrix;" +
                 "attribute vec4 a_Position;" +
@@ -32,19 +31,24 @@ public class TextureProgram extends Program {
                 "{" +
                 "v_TexCoord = a_TexCoord;" +
                 "gl_Position = u_MVPMatrix * a_Position;" +
-                "}").
+                "}");
         shader(OpenGL.FRAGMENT_SHADER,
                 "precision mediump float;" +
                 "varying vec2 v_TexCoord;" +
                 "uniform sampler2D u_Texture;" +
+                "uniform vec4 u_Color;" +
                 "void main()" +
                 "{" +
-                "gl_FragColor = texture2D(u_Texture, v_TexCoord);" +
-                "}").
+                "vec4 t_Color = texture2D(u_Texture, v_TexCoord);" +
+                "gl_FragColor = u_Color;" +
+                "gl_FragColor.w *= (t_Color.x + t_Color.y + t_Color.z)/3.0;" +
+                "}");
         attribute("a_Position");
         attribute("a_TexCoord");
         uniform("u_MVPMatrix");
         uniform("u_Texture");
+        uniform("u_Color");
     }
+
 
 }

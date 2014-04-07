@@ -11,5 +11,13 @@
 
     <artifactId>font-import</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>ru.spacearena</groupId>
+            <artifactId>spacearena-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
 
 </project>

@@ -2,15 +2,21 @@ package ru.spacearena.engine.graphics;
 
 import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.graphics.font.CharGlyph;
+import ru.spacearena.engine.graphics.font.Font;
+import ru.spacearena.engine.graphics.font.FontProgram;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
-import ru.spacearena.engine.graphics.shaders.TextureProgram;
 import ru.spacearena.engine.graphics.texture.Texture;
+import ru.spacearena.engine.graphics.texture.TextureProgram;
 import ru.spacearena.engine.graphics.vbo.VBODefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.IOUtils;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -34,11 +40,10 @@ public class DrawContext {
 
     private final HashMap<Program.Definition, Program> programs =
             new HashMap<Program.Definition, Program>();
-
     private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos =
             new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
-
     private final HashMap<Texture.Definition, Texture> textures = new HashMap<Texture.Definition, Texture>();
+    private final HashMap<Font.Definition, Font> fonts = new HashMap<Font.Definition, Font>();
 
     private final Binder binder = new Binder();
 
@@ -159,6 +164,27 @@ public class DrawContext {
         return t;
     }
 
+    public Font load(Font.Definition definition) {
+        Font font = fonts.get(definition);
+        if (font != null) {
+            return font;
+        }
+        try {
+            final ObjectInputStream inputStream = new ObjectInputStream(definition.getFontUrl().openStream());
+            try {
+                font = (Font) inputStream.readObject();
+            } finally {
+                IOUtils.closeQuietly(inputStream);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Can't read font object from stream", e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Can't load class from stream", e);
+        }
+        load(definition.getTexture(), definition.getTextureUrl());
+        return font;
+    }
+
     public void delete(Texture.Definition definition) {
         final Texture t = textures.get(definition);
         if (t == null) {
@@ -168,12 +194,12 @@ public class DrawContext {
         textures.remove(definition);
     }
 
-    public void drawTexture(float x, float y, Texture.Definition texture) {
+    public void drawImage(float x, float y, Texture.Definition texture) {
         final Texture t = getTexture(texture);
-        drawTexture(x, y, x + t.getWidth(), y + t.getHeight(), texture);
+        drawImage(x, y, x + t.getWidth(), y + t.getHeight(), texture);
     }
 
-    public void drawTexture(float l, float t, float r, float b, Texture.Definition texture) {
+    public void drawImage(float l, float t, float r, float b, Texture.Definition texture) {
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
                      put(l,t).put(0f,1f).
                      put(l,b).put(0f,0f).
@@ -185,6 +211,58 @@ public class DrawContext {
                 bindUniform(TextureProgram.MATRIX_UNIFORM, activeMatrix).
                 bindUniform(TextureProgram.TEXTURE_UNIFORM, texture, 0).
                 draw(OpenGL.TRIANGLE_FAN);
+    }
+
+
+    public void drawText(String text, float x, float y, Font.Definition font, float size, Color color) {
+
+        final Font f = load(font);
+        final float scale = size/f.getOriginalSize();
+        final float lineHeight = f.getLineHeight() * scale;
+
+        float currentX = x, currentY = y;
+
+        vertexBuffer.reset(TextureProgram.LAYOUT_PT2);
+        for (int i=0; i<text.length(); i++) {
+            final char ch = text.charAt(i);
+            if (ch == '\n') {
+                currentY += lineHeight;
+                currentX = x;
+                continue;
+            }
+
+            final CharGlyph ci = f.getCharInfo(ch);
+            final float charOffset = ci.getOffset() * scale;
+            final float charWidth = ci.getWidth() * scale;
+            final float charAdvance = ci.getAdvance() * scale;
+
+            final float tl = (float)ci.getX() / f.getImageWidth();
+            final float tt = 1f - (float)ci.getY() / f.getImageHeight();
+            final float tr = (float)(ci.getX() + ci.getWidth()) / f.getImageWidth();
+            final float tb = 1f - (float)(ci.getY() + f.getLineHeight()) / f.getImageHeight();
+
+            final float ll = currentX + charOffset,
+                        lt = currentY,
+                        lr = ll + charWidth,
+                        lb = lt + lineHeight;
+            vertexBuffer.// first triangle
+                         put(ll, lt).put(tl, tt).
+                         put(ll, lb).put(tl, tb).
+                         put(lr, lb).put(tr, tb).
+                         // second triangle
+                         put(ll, lt).put(tl, tt).
+                         put(lr, lb).put(tr, tb).
+                         put(lr, lt).put(tr, tt);
+            currentX += charAdvance;
+        }
+
+        use(FontProgram.DEFINITION).
+                bindAttr(FontProgram.POSITION_ATTR, vertexBuffer, 0).
+                bindAttr(FontProgram.TEXCOORD_ATTR, vertexBuffer, 1).
+                bindUniform(FontProgram.MATRIX_UNIFORM, activeMatrix).
+                bindUniform(FontProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
+                bindUniform(FontProgram.COLOR_UNIFORM, color).
+                draw(OpenGL.TRIANGLES);
     }
 
     public void fillNGon(int n, float x, float y, float rx, float ry, Color color) {

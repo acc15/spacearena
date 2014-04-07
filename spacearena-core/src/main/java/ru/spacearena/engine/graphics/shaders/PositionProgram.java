@@ -28,14 +28,14 @@ public class PositionProgram extends Program {
                 "void main()" +
                 "{" +
                 "gl_Position = u_MVPMatrix * a_Position;" +
-                "}").
+                "}");
         shader(OpenGL.FRAGMENT_SHADER,
                 "precision mediump float;" +
                 "uniform vec4 u_Color;" +
                 "void main()" +
                 "{" +
                 "gl_FragColor = u_Color;" +
-                "}").
+                "}");
         attribute("a_Position");
         uniform("u_MVPMatrix");
         uniform("u_Color");

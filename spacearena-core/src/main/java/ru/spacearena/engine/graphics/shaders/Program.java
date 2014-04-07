@@ -24,19 +24,16 @@ public class Program {
 
     private int id = 0;
 
-    protected Program shader(int type, String source) {
+    protected void shader(int type, String source) {
         this.shaders.add(new Shader(type, source));
-        return this;
     }
 
-    protected Program attribute(String name) {
+    protected void attribute(String name) {
         this.attributes.add(name);
-        return this;
     }
 
-    protected Program uniform(String name) {
+    protected void uniform(String name) {
         this.uniforms.add(name);
-        return this;
     }
 
     public int getUniformLocation(int uniformIndex) {
