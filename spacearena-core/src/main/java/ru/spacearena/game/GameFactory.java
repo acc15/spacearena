@@ -8,6 +8,7 @@ import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.font.FontRepository;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -68,18 +69,20 @@ public class GameFactory implements EngineFactory {
         };
         root.add(f);
 
-
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
+        viewport.add(new Ship(0, 0));
+        viewport.add(new Ship(5, 5));
+        root.add(viewport);
 
-        viewport.add(new Ship(-2, -2));
-        viewport.add(new Ship(2, 2));
-        viewport.add(new EngineObject() {
+        final Viewport hud = new Viewport(new Viewport.RealSizeAdjustStrategy());
+        hud.add(new EngineObject() {
             @Override
             public void onDraw(DrawContext context) {
-                context.drawText("Testing text...", 0, 0, null, 2, Color.GREEN);
+                context.drawText("FPS: " + f.getFps(), 0, 0, FontRepository.SEGOE_UI_LIGHT, 18, Color.YELLOW);
+                context.drawText("fest-assert forward fg", 0, 40, FontRepository.SEGOE_UI_LIGHT, 18, Color.WHITE);
             }
         });
-        root.add(viewport);
+        root.add(hud);
 
         /*
         final MultilineText.Line fpsText = new MultilineText.Line();

@@ -27,7 +27,7 @@ public class DrawContext {
     public static final VBODefinition SIN_COS_VBO = new VBODefinition(
             OpenGL.ARRAY_BUFFER, OpenGL.STATIC_DRAW);
 
-    public static final int MAX_VERTEX_COUNT = 100;
+    public static final int MAX_VERTEX_COUNT = 500;
 
     private final OpenGL gl;
 
@@ -167,10 +167,17 @@ public class DrawContext {
         if (font != null) {
             return font;
         }
-
         font = FontIO.load(definition.getFontUrl());
-        load(definition.getTexture(), definition.getTextureUrl());
+        if (!has(definition.getTexture())) {
+            load(definition.getTexture(), definition.getTextureUrl());
+        }
+        fonts.put(definition, font);
         return font;
+    }
+
+    public void delete(Font.Definition definition) {
+        fonts.remove(definition);
+        delete(definition.getTexture());
     }
 
     public void delete(Texture.Definition definition) {

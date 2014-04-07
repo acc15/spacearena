@@ -19,7 +19,7 @@ public class FontProgram extends Program {
     public static final int TEXCOORD_ATTR = 1;
     public static final int MATRIX_UNIFORM = 0;
     public static final int TEXTURE_UNIFORM = 1;
-    public static final int COLOR_UNIFORM = 1;
+    public static final int COLOR_UNIFORM = 2;
 
     private FontProgram() {
         shader(OpenGL.VERTEX_SHADER,
@@ -41,7 +41,7 @@ public class FontProgram extends Program {
                 "{" +
                 "vec4 t_Color = texture2D(u_Texture, v_TexCoord);" +
                 "gl_FragColor = u_Color;" +
-                "gl_FragColor.w *= (t_Color.x + t_Color.y + t_Color.z)/3.0;" +
+                "gl_FragColor.w *= t_Color.x;" +
                 "}");
         attribute("a_Position");
         attribute("a_TexCoord");

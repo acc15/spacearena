@@ -13,7 +13,7 @@ import java.net.URL;
  */
 public class FontDefinition implements Font.Definition {
 
-    private final TextureDefinition td = new TextureDefinition(OpenGL.TEXTURE_2D, OpenGL.LINEAR, OpenGL.LINEAR);
+    private final TextureDefinition td = new TextureDefinition(OpenGL.TEXTURE_2D, OpenGL.NEAREST, OpenGL.NEAREST);
     private final URL fontUrl;
     private final URL textureUrl;
 

@@ -37,10 +37,17 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
         }
     }
 
+    public static class RealSizeAdjustStrategy implements ViewportAdjustStrategy {
+        public void adjustViewport(float width, float height, Transform<?> tx) {
+            final float hw = width / 2, hh = height / 2;
+            tx.setScale(hw, -hh);
+            tx.setPosition(hw, hh);
+        }
+    }
+
     public static class LargestSideAdjustStrategy implements ViewportAdjustStrategy {
 
         private float largestSize;
-        private float prevWidth = -1, prevHeight = -1;
 
         public LargestSideAdjustStrategy(float largestSize) {
             this.largestSize = largestSize;
@@ -75,16 +82,12 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
             // s1 = -------
             //         d1
 
-
-
             final float scale = largestSize/2;
             if (width > height) {
-                tx.setScale(scale, height/width*scale);
+                tx.setScale(scale, -height/width*scale);
             } else {
-                tx.setScale(width/height*scale, scale);
+                tx.setScale(width/height*scale, -scale);
             }
-            prevWidth = width;
-            prevHeight = height;
         }
 
     }

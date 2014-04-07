@@ -25,7 +25,8 @@ public class GLFontGenerator {
 
     public static Font computeFontInfo(java.awt.Font font, int maxWidth, int pad, char[] alphabet) {
 
-        final FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
+        final AffineTransform t = new AffineTransform();
+        final FontRenderContext frc = new FontRenderContext(t, true, true);
         final Font fi = new Font();
 
         final LineMetrics lm = font.getLineMetrics(alphabet, 0, alphabet.length, frc);
@@ -67,13 +68,24 @@ public class GLFontGenerator {
         return x+1;
     }
 
+    private static String flatten(String str) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i=0; i<str.length(); i++) {
+            final char ch = str.charAt(i);
+            if (Character.isLetter(ch) || Character.isDigit(ch)) {
+                sb.append(Character.toLowerCase(ch));
+            }
+        }
+        return sb.toString();
+    }
+
     public static void main(String[] args) {
 
-        final String fontName = "Segoe UI, Light";
+        final String fontName = "Segoe UI Light";
         final int style = java.awt.Font.PLAIN;
-        final int size = 24;
+        final int size = 72;
 
-        final char[] alphabet = "!@#$%^&*()_+0123456789-=/|\\?.,[]`~ abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        final char[] alphabet = "!@#$%^&*()_+0123456789-=/|\\?.,:;[]`~ abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
         final int imageWidth = pow2RoundUp(512);
 
         final java.awt.Font font = new java.awt.Font(fontName, style, size);
@@ -94,13 +106,14 @@ public class GLFontGenerator {
             g.drawChars(alphabet, i, 1, ci.getX() - ci.getOffset(), ci.getY() + ascent);
         }
 
-        FontIO.store(fi, new File(font.getName() + ".fnt"));
+        final String flatName = flatten(font.getName());
+
+        FontIO.store(fi, new File(flatName + ".fnt"));
         try {
-            ImageIO.write(img, "png", new File(font.getName() + ".png"));
+            ImageIO.write(img, "png", new File(flatName + ".png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }
