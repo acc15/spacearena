@@ -28,6 +28,9 @@ public class DrawContext {
             OpenGL.ARRAY_BUFFER, OpenGL.STATIC_DRAW);
 
     public static final int MAX_VERTEX_COUNT = 500;
+    public static final float DEFAULT_DENSITY_SCALE = 1f;
+    public static final float DEFAULT_FONT_SCALE = 1f;
+    public static final float DENSITY_SCALE_PPI = 160f;
 
     private final OpenGL gl;
 
@@ -44,6 +47,9 @@ public class DrawContext {
     private final HashMap<Font.Definition, Font> fonts = new HashMap<Font.Definition, Font>();
 
     private final Binder binder = new Binder();
+
+    private float densityScale = DEFAULT_DENSITY_SCALE;
+    private float fontScale = DEFAULT_FONT_SCALE;
 
     public DrawContext(OpenGL gl) {
         this.gl = gl;
@@ -233,7 +239,7 @@ public class DrawContext {
 
         final Font f = load(font);
         final Texture t = getTexture(font.getTexture());
-        final float scale = size/f.getOriginalSize();
+        final float scale = size/f.getOriginalSize() * fontScale;
         final float lineHeight = f.getLineHeight() * scale;
 
         float currentX = x, currentY = y;
@@ -241,39 +247,51 @@ public class DrawContext {
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2);
         for (int i=0; i<text.length(); i++) {
             final char ch = text.charAt(i);
-            if (ch == '\n') {
+            switch (ch) {
+            case '\n':
                 currentY += lineHeight;
                 currentX = x;
-                continue;
-            }
+                break;
 
-            final CharGlyph ci = f.getCharInfo(ch);
-            final float charOffset = ci.getOffset() * scale;
-            final float charWidth = ci.getWidth() * scale;
-            final float charAdvance = ci.getAdvance() * scale;
+            case ' ':
+                currentX += f.getSpaceAdvance() * scale;
+                break;
 
-            float tl = (float)ci.getX() / f.getImageWidth();
-            float tt = (float)ci.getY() / f.getImageHeight();
-            float tr = (float)(ci.getX() + ci.getWidth()) / f.getImageWidth();
-            float tb = (float)(ci.getY() + f.getLineHeight()) / f.getImageHeight();
-            if (t.isFlipY()) {
-                tt = 1 - tt;
-                tb = 1 - tb;
-            }
+            case '\t':
+                currentX += f.getTabAdvance() * scale;
+                break;
 
-            final float ll = currentX + charOffset,
+            default:
+
+                final CharGlyph ci = f.getCharInfo(ch);
+                final float charOffset = ci.getOffset() * scale;
+                final float charWidth = ci.getWidth() * scale;
+                final float charAdvance = ci.getAdvance() * scale;
+
+                float tl = (float)ci.getX() / f.getImageWidth();
+                float tt = (float)ci.getY() / f.getImageHeight();
+                float tr = (float)(ci.getX() + ci.getWidth()) / f.getImageWidth();
+                float tb = (float)(ci.getY() + f.getLineHeight()) / f.getImageHeight();
+                if (t.isFlipY()) {
+                    tt = 1 - tt;
+                    tb = 1 - tb;
+                }
+
+                final float ll = currentX + charOffset,
                         lt = currentY,
                         lr = ll + charWidth,
                         lb = lt + lineHeight;
-            vertexBuffer.// first triangle
-                         put(ll, lt).put(tl, tt).
-                         put(ll, lb).put(tl, tb).
-                         put(lr, lb).put(tr, tb).
-                         // second triangle
-                         put(ll, lt).put(tl, tt).
-                         put(lr, lb).put(tr, tb).
-                         put(lr, lt).put(tr, tt);
-            currentX += charAdvance;
+                vertexBuffer.// first triangle
+                        put(ll, lt).put(tl, tt).
+                        put(ll, lb).put(tl, tb).
+                        put(lr, lb).put(tr, tb).
+                        // second triangle
+                        put(ll, lt).put(tl, tt).
+                        put(lr, lb).put(tr, tb).
+                        put(lr, lt).put(tr, tt);
+                currentX += charAdvance;
+                break;
+            }
         }
 
         use(FontProgram.DEFINITION).
@@ -380,11 +398,53 @@ public class DrawContext {
         return t;
     }
 
+    public float getDensityScale() {
+        return densityScale;
+    }
+
+    public void setDensityScale(float densityScale) {
+        this.fontScale *= densityScale / this.densityScale;
+        this.densityScale = densityScale;
+    }
+
+    public void setDensityScale(float densityScale, float fontScale) {
+        this.densityScale = densityScale;
+        this.fontScale = fontScale;
+    }
+
+    public float getFontScale() {
+        return fontScale;
+    }
+
+    public void setFontScale(float fontScale) {
+        this.fontScale = this.densityScale * fontScale;
+    }
+
     public class Binder {
 
         private Program program;
         private int vertexCount = -1;
         private boolean texturing = false;
+
+        public Binder bindUniform(int index, float x) {
+            gl.uniform(program.getUniformLocation(index), x);
+            return this;
+        }
+
+        public Binder bindUniform(int index, float x, float y) {
+            gl.uniform(program.getUniformLocation(index), x, y);
+            return this;
+        }
+
+        public Binder bindUniform(int index, float x, float y, float z) {
+            gl.uniform(program.getUniformLocation(index), x, y, z);
+            return this;
+        }
+
+        public Binder bindUniform(int index, float x, float y, float z, float w) {
+            gl.uniform(program.getUniformLocation(index), x, y, z, w);
+            return this;
+        }
 
         public Binder bindUniform(int index, Texture.Definition def, int unit) {
             final Texture t = getTexture(def);

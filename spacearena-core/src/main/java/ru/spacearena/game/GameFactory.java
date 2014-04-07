@@ -77,9 +77,9 @@ public class GameFactory implements EngineFactory {
         final Viewport hud = new Viewport(new Viewport.RealSizeAdjustStrategy());
         hud.add(new EngineObject() {
             private float size = 10f;
-            private float sizeV = 20f;
+            private float sizeV = 50f;
             private final float minSize = 10f;
-            private final float maxSize = 256f;
+            private final float maxSize = 128f;
             @Override
             public boolean onUpdate(float seconds) {
                 size += sizeV * seconds;

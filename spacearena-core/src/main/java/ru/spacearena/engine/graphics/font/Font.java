@@ -29,6 +29,8 @@ public class Font implements Serializable {
     private int maxMipMap = 0;
     private int lineHeight;
     private int originalSize;
+    private int spaceAdvance;
+    private int tabAdvance;
     private Map<Character, CharGlyph> info = new HashMap<Character, CharGlyph>();
 
     public void setFontMetrics(int imageWidth, int imageHeight, int lineHeight, int size) {
@@ -46,6 +48,38 @@ public class Font implements Serializable {
         cm.offset = offset;
         cm.advance = advance;
         info.put(ch, cm);
+    }
+
+    public int getSpaceAdvance() {
+        return spaceAdvance;
+    }
+
+    public void setSpaceAdvance(int spaceAdvance) {
+        this.spaceAdvance = spaceAdvance;
+    }
+
+    public int getTabAdvance() {
+        return tabAdvance;
+    }
+
+    public void setTabAdvance(int tabAdvance) {
+        this.tabAdvance = tabAdvance;
+    }
+
+    public int getCharOffset(char ch) {
+        switch (ch) {
+        case ' ':case '\t':case '\n':case '\r': return 0;
+        default: return getCharInfo(ch).getOffset();
+        }
+    }
+
+    public int getCharAdvance(char ch) {
+        switch (ch) {
+        case ' ': return spaceAdvance;
+        case '\t': return tabAdvance;
+        case '\n':case '\r': return 0;
+        default: return getCharInfo(ch).getAdvance();
+        }
     }
 
     public int getOriginalSize() {
@@ -66,6 +100,15 @@ public class Font implements Serializable {
             throw new IllegalArgumentException("Character '" + ch + "' isn't supported by current font and therefore can't be displayed");
         }
         return ci;
+    }
+
+    public float getStringWidth(String str) {
+        int w = 0;
+        for (int i=0; i<str.length(); i++) {
+            final char ch = str.charAt(i);
+            w += getCharAdvance(ch);
+        }
+        return w;
     }
 
     public int getMaxMipMap() { return maxMipMap; }

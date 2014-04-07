@@ -1,5 +1,7 @@
 package ru.spacearena.engine.graphics.font;
 
+import ru.spacearena.engine.parse.Arguments;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -17,9 +19,43 @@ import java.io.IOException;
  */
 public class GLFontGenerator {
 
-    public static int getAsInt(double w) {
-        return (int)Math.ceil(w);
+
+    public static class Args {
+        public String fontName;
+        public int fontSize;
+        public int fontStyle;
+        public int width;
+        public int pad;
+        public boolean mipmap;
+        public boolean hq;
     }
+
+    public static int parseFontStyle(String n) {
+        if (n.isEmpty() || "p".equals(n) || "plain".equals(n)) {
+            return java.awt.Font.PLAIN;
+        }
+        if ("b".equals(n) || "bold".equals(n)) {
+            return java.awt.Font.BOLD;
+        }
+        if ("i".equals(n) || "italic".equals(n)) {
+            return java.awt.Font.ITALIC;
+        }
+        throw new IllegalArgumentException("Unknown font style: " + n);
+    }
+
+    public static Args parseArgs(String[] args) {
+        final Arguments a = Arguments.parse(args);
+        final Args p = new Args();
+        p.fontName = a.getValue("font");
+        p.fontSize = a.getInt("size", 24);
+        p.fontStyle = parseFontStyle(a.getValue("style"));
+        p.pad = a.getInt("pad", 2);
+        p.width = a.getInt("width", 512);
+        p.hq = a.has("hq");
+        p.mipmap = a.has("mipmap");
+        return p;
+    }
+
 
     public static Font computeFontInfo(java.awt.Font font, int maxWidth, int pad, char[] alphabet) {
 
@@ -29,6 +65,9 @@ public class GLFontGenerator {
 
         final LineMetrics lm = font.getLineMetrics(alphabet, 0, alphabet.length, frc);
         final int lineHeight = getAsInt(lm.getHeight());
+
+        fi.setSpaceAdvance(getAsInt(font.getStringBounds(" ", frc).getWidth()));
+        fi.setTabAdvance(fi.getSpaceAdvance() * 4);
 
         int x = 0, y = 0;
         for (int i=0; i<alphabet.length; i++) {
@@ -66,41 +105,30 @@ public class GLFontGenerator {
         return x+1;
     }
 
-    private static String flatten(String str) {
+    private static String suggestFileName(java.awt.Font font) {
+        final String name = font.getFontName();
         final StringBuilder sb = new StringBuilder();
-        for (int i=0; i<str.length(); i++) {
-            final char ch = str.charAt(i);
+        for (int i=0; i<name.length(); i++) {
+            final char ch = name.charAt(i);
             if (Character.isLetter(ch) || Character.isDigit(ch)) {
                 sb.append(Character.toLowerCase(ch));
             }
         }
+        switch (font.getStyle()) {
+        case java.awt.Font.BOLD: sb.append("_b"); break;
+        case java.awt.Font.ITALIC: sb.append("_i"); break;
+        }
         return sb.toString();
     }
 
-    public static int alpha(int c) {
-        return (c & 0xff000000) >> 24;
-    }
-
-    public static int red(int c) {
-        return (c & 0x00ff0000) >> 16;
-    }
-
-    public static int green(int c) {
-        return (c & 0x0000ff00) >> 8;
-    }
-
-    public static int blue(int c) {
-        return (c & 0x000000ff);
-    }
-
-    public static int storeWithMipMaps(BufferedImage image, Arguments arguments, int level, String format) {
+    public static int storeWithMipMaps(BufferedImage image, Args args, int level, String format) {
         try {
             ImageIO.write(image, "png", new File(String.format(format,level)));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (!arguments.mipmap) {
+        if (!args.mipmap) {
             return level;
         }
 
@@ -114,10 +142,10 @@ public class GLFontGenerator {
         h = Math.max(h,1);
 
         final BufferedImage mipmap = new BufferedImage(w,h,image.getType());
-        final Graphics2D g = getGraphics(mipmap, arguments.hq);
+        final Graphics2D g = getGraphics(mipmap, args.hq);
         g.drawImage(image, 0, 0, w, h, 0, 0, iw, ih, null);
         g.dispose();
-        return storeWithMipMaps(mipmap, arguments, level+1, format);
+        return storeWithMipMaps(mipmap, args, level+1, format);
 
     }
 
@@ -134,13 +162,13 @@ public class GLFontGenerator {
 
     public static void main(String[] args) {
 
-        final Arguments parsedArgs = ArgumentParser.parseArgs(args);
+        final Args parsedArgs = parseArgs(args);
 
         final String fontName = parsedArgs.fontName;
         final int style = parsedArgs.fontStyle;
         final int size = parsedArgs.fontSize;
 
-        final char[] alphabet = "!@#$%^&*()_+0123456789-=/|\\?.,:;[]`~ abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        final char[] alphabet = "!@#$%^&*()_+0123456789-=/|\\?.,:;[]`~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
         final int imageWidth = pow2RoundUp(parsedArgs.width);
 
         final java.awt.Font font = new java.awt.Font(fontName, style, size);
@@ -159,11 +187,14 @@ public class GLFontGenerator {
         }
         g.dispose();
 
-        final String flatName = flatten(font.getName());
-
-        final int maxMipMap = storeWithMipMaps(img, parsedArgs, 0, flatName + "%d.png");
+        final String filePrefix = suggestFileName(font);
+        final int maxMipMap = storeWithMipMaps(img, parsedArgs, 0, filePrefix + "_%d.png");
         fi.setMaxMipMap(maxMipMap);
-        FontIO.store(fi, new File(flatName + ".fnt"));
+        FontIO.store(fi, new File(filePrefix + ".fnt"));
+    }
+
+    public static int getAsInt(double w) {
+        return (int)Math.ceil(w);
     }
 
 }

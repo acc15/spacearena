@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Window;
 import android.view.WindowManager;
 import ru.spacearena.android.engine.AndroidGLES2;
@@ -58,6 +59,9 @@ public class EngineActivity extends Activity {
                 if (initialized) {
                     engine.onDispose();
                 }
+
+                final DisplayMetrics metrics = getResources().getDisplayMetrics();
+                drawContext.setDensityScale(metrics.density, metrics.scaledDensity);
                 engine.onInit(drawContext);
                 initialized = true;
             }
