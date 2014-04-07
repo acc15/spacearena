@@ -7,6 +7,6 @@ package ru.spacearena.engine.graphics.font;
 public class FontRepository {
 
     public static final FontDefinition SEGOE_UI_LIGHT =
-            new FontDefinition(FontRepository.class, "segoeuilight");
+            new FontDefinition(FontRepository.class, FontDefinition.Quality.HIGH, "segoeuilight");
 
 }

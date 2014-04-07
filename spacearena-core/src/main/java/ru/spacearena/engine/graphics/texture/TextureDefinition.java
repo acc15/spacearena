@@ -18,6 +18,8 @@ public class TextureDefinition implements Texture.Definition {
         this(type, OpenGL.LINEAR, OpenGL.LINEAR);
     }
 
+    public TextureDefinition(int minFilter, int magFilter) { this(OpenGL.TEXTURE_2D, minFilter, magFilter); }
+
     public TextureDefinition(int type, int minFilter, int magFilter) {
         this(type, minFilter, magFilter, 0, 0);
     }

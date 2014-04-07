@@ -423,18 +423,32 @@ public class JoglGL2 implements OpenGL {
         gl2.glTexParameteri(type, parameter, value);
     }
 
-    public void texImage2D(Texture texture, URL url) {
-        final TextureData td;
+    public void texImage2D(Texture texture, int level, int format, int type, URL url) {
         try {
-            td = TextureIO.newTextureData(gl2.getGLProfile(), url, false, null);
+            texImage2D(texture, TextureIO.newTextureData(gl2.getGLProfile(), url, format, format, false, null), level, type);
         } catch (IOException e) {
             throw new RuntimeException("Can't load texture data from URL: " + url, e);
         }
+    }
 
+    public void texImage2D(Texture texture, int level, URL url) {
+        try {
+            texImage2D(texture, TextureIO.newTextureData(gl2.getGLProfile(), url, false, null), level, 0);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't load texture data from URL: " + url, e);
+        }
+    }
+
+    private void texImage2D(Texture t, TextureData td, int level, int type) {
         final int w = td.getWidth(), h = td.getHeight(), tf = td.getInternalFormat(), pf = td.getPixelFormat(),
-                pt = td.getPixelType();
-        gl2.glTexImage2D(TEXTURE_2D, 0, tf, w, h, 0, pf, pt, td.getBuffer());
-        texture.setDimension(w, h);
+                pt = type != 0 ? type : td.getPixelType();
+        final Buffer buf = td.getBuffer();
+        gl2.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT,td.getAlignment());
+        gl2.glTexImage2D(TEXTURE_2D, level, tf, w, h, 0, pf, pt, buf);
+        if (level == 0) {
+            t.setDimension(w, h);
+            t.setFlipY(true);
+        }
     }
 
     public void enable(int what) {

@@ -4,7 +4,6 @@ import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -13,21 +12,39 @@ import java.net.URL;
  */
 public class FontDefinition implements Font.Definition {
 
-    private final TextureDefinition td = new TextureDefinition(OpenGL.TEXTURE_2D, OpenGL.NEAREST, OpenGL.NEAREST);
-    private final URL fontUrl;
-    private final URL textureUrl;
-
-    public FontDefinition(Class<?> baseClass, String fontName) {
-        this(baseClass.getResource("."), fontName);
+    public enum Quality {
+        HIGH,
+        MEDIUM,
+        LOW
     }
 
-    public FontDefinition(URL context, String name) {
-        try {
-            this.fontUrl = new URL(context, name + ".fnt");
-            this.textureUrl = new URL(context, name + ".png");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Can't compose font urls", e);
+
+    private final TextureDefinition td;
+    private final Class<?> baseClass;
+    private final String name;
+
+    public static int getMinFilter(Quality quality) {
+        switch (quality) {
+        case LOW: return OpenGL.NEAREST_MIPMAP_NEAREST;
+        case MEDIUM: return OpenGL.NEAREST_MIPMAP_LINEAR;
+        case HIGH: return OpenGL.LINEAR_MIPMAP_LINEAR;
         }
+        throw new IllegalArgumentException("unknown quality");
+    }
+
+    public static int getMagFilter(Quality quality) {
+        switch (quality) {
+        case LOW: return OpenGL.NEAREST;
+        case MEDIUM:
+        case HIGH: return OpenGL.LINEAR;
+        }
+        throw new IllegalArgumentException("unknown quality");
+    }
+
+    public FontDefinition(Class<?> baseClass, Quality quality, String fontName) {
+        this.baseClass = baseClass;
+        this.name = fontName;
+        this.td = new TextureDefinition(getMinFilter(quality), getMagFilter(quality));
     }
 
     public Texture.Definition getTexture() {
@@ -35,11 +52,11 @@ public class FontDefinition implements Font.Definition {
     }
 
     public URL getFontUrl() {
-        return fontUrl;
+        return baseClass.getResource(name + ".fnt");
     }
 
-    public URL getTextureUrl() {
-        return textureUrl;
+    public URL getTextureUrl(int level) {
+        return baseClass.getResource(name + level + ".png");
     }
 
 }

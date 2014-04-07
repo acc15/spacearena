@@ -17,6 +17,7 @@ public class Texture {
     private int id;
     private int width;
     private int height;
+    private boolean flipY = false;
 
     public int getId() {
         return id;
@@ -43,4 +44,11 @@ public class Texture {
         return (float)width/height;
     }
 
+    public boolean isFlipY() {
+        return flipY;
+    }
+
+    public void setFlipY(boolean flipY) {
+        this.flipY = flipY;
+    }
 }

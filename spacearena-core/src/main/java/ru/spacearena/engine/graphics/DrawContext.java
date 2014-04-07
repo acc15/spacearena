@@ -139,26 +139,43 @@ public class DrawContext {
     }
 
     public Texture load(Texture.Definition definition, URL url) {
+        return load(definition, 0, url);
+    }
+
+    private Texture prepareTexture(Texture.Definition definition) {
         Texture t = textures.get(definition);
         if (t == null) {
             t = new Texture();
             textures.put(definition, t);
             t.setId(gl.genTexture());
+            gl.bindTexture(definition.getType(), t.getId());
+            if (definition.getMinFilter() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
+            }
+            if (definition.getMagFilter() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
+            }
+            if (definition.getWrapS() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
+            }
+            if (definition.getWrapT() != 0) {
+                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
+            }
+        } else {
+            gl.bindTexture(definition.getType(), t.getId());
         }
-        gl.bindTexture(definition.getType(), t.getId());
-        if (definition.getMinFilter() != 0) {
-            gl.texParameter(definition.getType(), OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
-        }
-        if (definition.getMagFilter() != 0) {
-            gl.texParameter(definition.getType(), OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
-        }
-        if (definition.getWrapS() != 0) {
-            gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
-        }
-        if (definition.getWrapT() != 0) {
-            gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
-        }
-        gl.texImage2D(t, url);
+        return t;
+    }
+
+    public Texture load(Texture.Definition definition, int level, int format, int type, URL url) {
+        final Texture t = prepareTexture(definition);
+        gl.texImage2D(t, level, format, type, url);
+        return t;
+    }
+
+    public Texture load(Texture.Definition definition, int level, URL url) {
+        final Texture t = prepareTexture(definition);
+        gl.texImage2D(t, level, url);
         return t;
     }
 
@@ -169,7 +186,10 @@ public class DrawContext {
         }
         font = FontIO.load(definition.getFontUrl());
         if (!has(definition.getTexture())) {
-            load(definition.getTexture(), definition.getTextureUrl());
+            final int maxMipMap = font.getMaxMipMap();
+            for (int i=0; i<= maxMipMap; i++) {
+                load(definition.getTexture(), i, definition.getTextureUrl(i));
+            }
         }
         fonts.put(definition, font);
         return font;
@@ -212,6 +232,7 @@ public class DrawContext {
     public void drawText(String text, float x, float y, Font.Definition font, float size, Color color) {
 
         final Font f = load(font);
+        final Texture t = getTexture(font.getTexture());
         final float scale = size/f.getOriginalSize();
         final float lineHeight = f.getLineHeight() * scale;
 
@@ -231,10 +252,14 @@ public class DrawContext {
             final float charWidth = ci.getWidth() * scale;
             final float charAdvance = ci.getAdvance() * scale;
 
-            final float tl = (float)ci.getX() / f.getImageWidth();
-            final float tt = 1f - (float)ci.getY() / f.getImageHeight();
-            final float tr = (float)(ci.getX() + ci.getWidth()) / f.getImageWidth();
-            final float tb = 1f - (float)(ci.getY() + f.getLineHeight()) / f.getImageHeight();
+            float tl = (float)ci.getX() / f.getImageWidth();
+            float tt = (float)ci.getY() / f.getImageHeight();
+            float tr = (float)(ci.getX() + ci.getWidth()) / f.getImageWidth();
+            float tb = (float)(ci.getY() + f.getLineHeight()) / f.getImageHeight();
+            if (t.isFlipY()) {
+                tt = 1 - tt;
+                tb = 1 - tb;
+            }
 
             final float ll = currentX + charOffset,
                         lt = currentY,

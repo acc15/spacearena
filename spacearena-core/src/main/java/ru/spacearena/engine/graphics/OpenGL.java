@@ -438,8 +438,8 @@ public interface OpenGL {
      * @param texture texture
      * @param url url
      */
-    void texImage2D(Texture texture, URL url);
-
+    void texImage2D(Texture texture, int level, URL url);
+    void texImage2D(Texture texture, int level, int format, int pixelFormat, URL url);
 
     void bindTexture(int type, int id);
 

@@ -388,14 +388,24 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glTexImage2D(target, level, format, width, height, 0, format, type, data);
     }
 
-    public void texImage2D(Texture texture, URL url) {
+    public void texImage2D(Texture texture, int level, URL url) {
+        texImage2D(texture, level, 0, 0, url);
+    }
+
+    public void texImage2D(Texture texture, int level, int format, int type, URL url) {
         InputStream stream = null;
         Bitmap bitmap = null;
         try {
             stream = url.openStream();
             bitmap = BitmapFactory.decodeStream(stream);
-            GLUtils.texImage2D(TEXTURE_2D, 0, bitmap, 0);
-            texture.setDimension(bitmap.getWidth(), bitmap.getHeight());
+            if (format == 0 || type == 0) {
+                GLUtils.texImage2D(TEXTURE_2D, level, bitmap, 0);
+            } else {
+                GLUtils.texImage2D(TEXTURE_2D, level, format, bitmap, type, 0);
+            }
+            if (level == 0) {
+                texture.setDimension(bitmap.getWidth(), bitmap.getHeight());
+            }
         } catch (IOException e) {
             throw new RuntimeException("Can't read texture from URL: " + url, e);
         } finally {

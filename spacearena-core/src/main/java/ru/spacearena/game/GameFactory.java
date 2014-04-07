@@ -76,10 +76,32 @@ public class GameFactory implements EngineFactory {
 
         final Viewport hud = new Viewport(new Viewport.RealSizeAdjustStrategy());
         hud.add(new EngineObject() {
+            private float size = 10f;
+            private float sizeV = 20f;
+            private final float minSize = 10f;
+            private final float maxSize = 256f;
+            @Override
+            public boolean onUpdate(float seconds) {
+                size += sizeV * seconds;
+                if (size > maxSize) {
+                    size = maxSize;
+                    sizeV = -sizeV;
+                } else if (size < minSize) {
+                    size = minSize;
+                    sizeV = -sizeV;
+                }
+                return true;
+            }
+
             @Override
             public void onDraw(DrawContext context) {
-                context.drawText("FPS: " + f.getFps(), 0, 0, FontRepository.SEGOE_UI_LIGHT, 18, Color.YELLOW);
-                context.drawText("fest-assert forward fg", 0, 40, FontRepository.SEGOE_UI_LIGHT, 18, Color.WHITE);
+//                for (int i=0; i<10; i++) {
+//                    for (int j=0; j<10; j++) {
+//                        context.drawText("i=" + i, j * 50, i * 30, FontRepository.SEGOE_UI_LIGHT, 24, Color.YELLOW);
+//                    }
+//                }
+                context.drawText("FPS: " + f.getFps(), 0, 0, FontRepository.SEGOE_UI_LIGHT, size, Color.YELLOW);
+                context.drawText("Size: " + size, 0, 100, FontRepository.SEGOE_UI_LIGHT, 18f, Color.GREEN);
             }
         });
         root.add(hud);

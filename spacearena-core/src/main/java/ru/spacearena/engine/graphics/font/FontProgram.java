@@ -39,9 +39,12 @@ public class FontProgram extends Program {
                 "uniform vec4 u_Color;" +
                 "void main()" +
                 "{" +
-                "vec4 t_Color = texture2D(u_Texture, v_TexCoord);" +
+                "float t_Alpha = texture2D(u_Texture, v_TexCoord).x;" +
                 "gl_FragColor = u_Color;" +
-                "gl_FragColor.w *= t_Color.x;" +
+                "if (t_Alpha > 0.01) {" +
+                "t_Alpha = t_Alpha + 0.3;" +
+                "}" +
+                "gl_FragColor.w *= t_Alpha;" +
                 "}");
         attribute("a_Position");
         attribute("a_TexCoord");

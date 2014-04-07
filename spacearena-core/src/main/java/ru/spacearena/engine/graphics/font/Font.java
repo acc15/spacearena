@@ -13,14 +13,20 @@ import java.util.Map;
 */
 public class Font implements Serializable {
 
+
+    public void setMaxMipMap(int maxMipMap) {
+        this.maxMipMap = maxMipMap;
+    }
+
     public static interface Definition {
         URL getFontUrl();
-        URL getTextureUrl();
+        URL getTextureUrl(int level);
         Texture.Definition getTexture();
     }
 
     private int imageWidth,
                 imageHeight;
+    private int maxMipMap = 0;
     private int lineHeight;
     private int originalSize;
     private Map<Character, CharGlyph> info = new HashMap<Character, CharGlyph>();
@@ -61,6 +67,8 @@ public class Font implements Serializable {
         }
         return ci;
     }
+
+    public int getMaxMipMap() { return maxMipMap; }
 
     public int getLineHeight() {
         return lineHeight;
