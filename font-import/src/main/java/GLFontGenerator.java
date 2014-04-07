@@ -1,5 +1,6 @@
-import ru.spacearena.engine.graphics.font.*;
+import ru.spacearena.engine.graphics.font.CharGlyph;
 import ru.spacearena.engine.graphics.font.Font;
+import ru.spacearena.engine.graphics.font.FontIO;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -10,9 +11,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 /**
  * @author Vyacheslav Mayorov
@@ -95,15 +94,7 @@ public class GLFontGenerator {
             g.drawChars(alphabet, i, 1, ci.getX() - ci.getOffset(), ci.getY() + ascent);
         }
 
-        try {
-            final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("f.bin"));
-            oos.writeObject(fi);
-            ImageIO.write(img, "png", new File(font.getName() + ".png"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        FontIO.store(fi, new File(font.getName() + ".fnt"));
         try {
             ImageIO.write(img, "png", new File(font.getName() + ".png"));
         } catch (IOException e) {

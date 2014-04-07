@@ -4,6 +4,7 @@ import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.font.CharGlyph;
 import ru.spacearena.engine.graphics.font.Font;
+import ru.spacearena.engine.graphics.font.FontIO;
 import ru.spacearena.engine.graphics.font.FontProgram;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
@@ -13,10 +14,7 @@ import ru.spacearena.engine.graphics.vbo.VBODefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.IOUtils;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -169,18 +167,8 @@ public class DrawContext {
         if (font != null) {
             return font;
         }
-        try {
-            final ObjectInputStream inputStream = new ObjectInputStream(definition.getFontUrl().openStream());
-            try {
-                font = (Font) inputStream.readObject();
-            } finally {
-                IOUtils.closeQuietly(inputStream);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("Can't read font object from stream", e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Can't load class from stream", e);
-        }
+
+        font = FontIO.load(definition.getFontUrl());
         load(definition.getTexture(), definition.getTextureUrl());
         return font;
     }
