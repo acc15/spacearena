@@ -3,13 +3,16 @@ package ru.spacearena.game;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
-import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.font.FontRepository;
+import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.font.DistanceFieldProgram;
+import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
+import ru.spacearena.engine.graphics.texture.TextureProgram;
+import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
@@ -50,7 +53,7 @@ public class GameFactory implements EngineFactory {
 
         //engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(100);
+        engine.setMaxFPS(0);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
@@ -70,18 +73,29 @@ public class GameFactory implements EngineFactory {
         root.add(f);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
-        viewport.add(new Ship(0, 0));
-        viewport.add(new Ship(5, 5));
+//        viewport.add(new Ship(0, 0));
+//        viewport.add(new Ship(5, 5));
         root.add(viewport);
 
-        final Viewport hud = new Viewport(new Viewport.RealSizeAdjustStrategy());
-        hud.add(new EngineObject() {
-            private float size = 10f;
-            private float sizeV = 50f;
-            private final float minSize = 10f;
-            private final float maxSize = 128f;
+        //final Viewport hud = new Viewport(new Viewport.RealSizeAdjustStrategy());
+        viewport.add(new Transform() {
+            private float sizeV = 0f;
+            private final float minSize = 100f;
+            private final float maxSize = 500f;
+            private float size = minSize;
+
+            private final TextureDefinition td = new TextureDefinition(OpenGL.LINEAR, OpenGL.LINEAR);
+
+            private final VertexBuffer vb = new VertexBuffer(100);
+
+            @Override
+            public void onInit(DrawContext context) {
+                context.load(td, GameFactory.class.getResource("df-size-segoe.png"));
+            }
+
             @Override
             public boolean onUpdate(float seconds) {
+                sizeV += 100f * seconds;
                 size += sizeV * seconds;
                 if (size > maxSize) {
                     size = maxSize;
@@ -90,21 +104,35 @@ public class GameFactory implements EngineFactory {
                     size = minSize;
                     sizeV = -sizeV;
                 }
+                rotate(FloatMathUtils.HALF_PI * seconds);
                 return true;
             }
 
             @Override
-            public void onDraw(DrawContext context) {
-//                for (int i=0; i<10; i++) {
-//                    for (int j=0; j<10; j++) {
-//                        context.drawText("i=" + i, j * 50, i * 30, FontRepository.SEGOE_UI_LIGHT, 24, Color.YELLOW);
-//                    }
-//                }
-                context.drawText("FPS: " + f.getFps(), 0, 0, FontRepository.SEGOE_UI_LIGHT, size, Color.YELLOW);
-                context.drawText("Size: " + size, 0, 100, FontRepository.SEGOE_UI_LIGHT, 18f, Color.GREEN);
+            public void onDrawTransformed(DrawContext context) {
+                final Texture t = context.getTexture(td);
+                final float tScale = 0.002f;
+                final float hw = size * t.getAspectRatio() * tScale, hh = size * tScale;
+                vb.reset(TextureProgram.LAYOUT_PT2).
+                   put(-size * hw, -size * hh).put(0, 1).
+                   put(-size * hw, size * hh).put(0, 0).
+                   put(size * hw, size * hh).put(1, 0).
+                   put(-size * hw, -size * hh).put(0, 1).
+                   put(size * hw, size * hh).put(1, 0).
+                   put(size * hw, -size * hh).put(1, 1);
+                context.use(DistanceFieldProgram.DEFINITION).
+                        bindAttr(DistanceFieldProgram.POSITION_ATTR, vb, 0).
+                        bindAttr(DistanceFieldProgram.TEXCOORD_ATTR, vb, 1).
+                        bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, context.getActiveMatrix()).
+                        bindUniform(DistanceFieldProgram.COLOR_UNIFORM, Color.WHITE).
+                        bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, td, 0).
+                        draw(OpenGL.TRIANGLES);
+
+//                context.drawText("FPS: " + f.getFps(), 0, 0, FontRepository.SEGOE_UI_LIGHT, size, Color.YELLOW);
+//                context.drawText("Size: " + size, 0, 100, FontRepository.SEGOE_UI_LIGHT, 18f, Color.GREEN);
             }
         });
-        root.add(hud);
+        //root.add(hud);
 
         /*
         final MultilineText.Line fpsText = new MultilineText.Line();

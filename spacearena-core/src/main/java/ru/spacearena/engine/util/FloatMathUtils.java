@@ -215,4 +215,11 @@ public class FloatMathUtils {
         return Math.round(v);
     }
 
+    public static float sq(float v) {
+        return v*v;
+    }
+
+    public static float addMagnitude(float v, float a) {
+        return v < 0 ? v - a : v + a;
+    }
 }

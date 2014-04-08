@@ -39,9 +39,8 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
 
     public static class RealSizeAdjustStrategy implements ViewportAdjustStrategy {
         public void adjustViewport(float width, float height, Transform<?> tx) {
-            final float hw = width / 2, hh = height / 2;
-            tx.setScale(hw, -hh);
-            tx.setPosition(hw, hh);
+            tx.setPivot(-1, 1);
+            tx.setScale(width/2, -height/2);
         }
     }
 

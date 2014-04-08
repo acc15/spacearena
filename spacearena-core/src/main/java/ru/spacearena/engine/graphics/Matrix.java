@@ -278,12 +278,18 @@ public class Matrix {
                              float kx, float ky,
                              float nx, float ny,
                              float tx, float ty) {
-        set(nx*sx - ny*ky*sx,
-            ny*sx + nx*ky*sx,
-            nx*kx*sy - ny*sy,
-            ny*kx*sy + nx*sy,
-            tx + ny*ky*sx*px - nx*sx*px - kx*sy*py - sy*py,
-            ty - nx*ky*sx*px - ny*sx*px - kx*sy*py - sy*py);
+        identity();
+        preTranslate(-px, -py);
+        preScale(sx, sy);
+        preShear(kx, ky);
+        preRotate(nx, ny);
+        preTranslate(tx, ty);
+//        set(nx*sx - ny*ky*sx,
+//            ny*sx + nx*ky*sx,
+//            nx*kx*sy - ny*sy,
+//            ny*kx*sy + nx*sy,
+//            tx + ny*ky*sx*px - nx*sx*px - kx*sy*py - sy*py,
+//            ty - nx*ky*sx*px - ny*sx*px - kx*sy*py - sy*py);
     }
 
     public float transformVectorX(float x, float y) { return m[0] * x + m[4] * y; }
