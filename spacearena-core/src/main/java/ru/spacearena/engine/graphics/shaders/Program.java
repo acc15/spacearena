@@ -2,7 +2,12 @@ package ru.spacearena.engine.graphics.shaders;
 
 import cern.colt.list.IntArrayList;
 import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.util.IOUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +28,41 @@ public class Program {
     private final IntArrayList uniformLocations = new IntArrayList();
 
     private int id = 0;
+
+    public static String readStream(InputStream i) throws IOException {
+        final Reader r = new InputStreamReader(i);
+        final StringBuilder sb = new StringBuilder(100);
+        final char[] ch = new char[64];
+        int readed;
+        while ((readed = r.read(ch)) >= 0) {
+            sb.append(ch, 0, readed);
+        }
+        return sb.toString();
+    }
+
+    protected void shader(String resourceName) {
+        final int type;
+        if (resourceName.endsWith(".vert")) {
+            type = OpenGL.VERTEX_SHADER;
+        } else if (resourceName.endsWith(".frag")) {
+            type = OpenGL.FRAGMENT_SHADER;
+        } else {
+            throw new IllegalArgumentException("Unknown shader resource (use '.vert' " +
+                    "for vertex shaders and '.frag' for fragment): " + resourceName);
+        }
+
+        final InputStream i = getClass().getResourceAsStream(resourceName);
+        if (i == null) {
+            throw new IllegalArgumentException("Can't find shader resource: " + resourceName);
+        }
+        try {
+            shader(type, readStream(i));
+        } catch (IOException e) {
+            throw new RuntimeException("Can't read shader source from resource " + getClass() + "." + resourceName, e);
+        } finally {
+            IOUtils.closeQuietly(i);
+        }
+    }
 
     protected void shader(int type, String source) {
         this.shaders.add(new Shader(type, source));
