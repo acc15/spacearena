@@ -1,6 +1,6 @@
-package ru.spacearena.engine.graphics.font.df;
+package ru.spacearena.engine.graphics.font.gen.df;
 
-import ru.spacearena.engine.graphics.font.GLFontGenerator;
+import ru.spacearena.engine.graphics.font.gen.FontGenerator;
 import ru.spacearena.engine.util.FloatMathUtils;
 
 import javax.imageio.ImageIO;
@@ -199,7 +199,7 @@ public class DeadReckoning {
         final int oldWidth = image.getWidth(), oldHeight = image.getHeight();
         final int newWidth = (int)(oldWidth * scale), newHeight = (int)(oldHeight * scale);
         final BufferedImage sized = new BufferedImage(newWidth, newHeight, image.getType());
-        final Graphics2D g2d = GLFontGenerator.getGraphics(sized, true);
+        final Graphics2D g2d = FontGenerator.getGraphics(sized, true);
         g2d.drawImage(image,0,0,newWidth,newHeight,0,0,oldWidth,oldHeight,null);
         g2d.dispose();
         return sized;

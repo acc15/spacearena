@@ -1,4 +1,4 @@
-package ru.spacearena.engine.graphics.font.df;
+package ru.spacearena.engine.graphics.font.gen.df;
 
 /**
  * @author Vyacheslav Mayorov
