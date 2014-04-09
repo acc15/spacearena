@@ -90,7 +90,7 @@ public class FontData implements Serializable {
         return info.containsKey(ch);
     }
 
-    public Map<Character, CharGlyph> getInfo() {
+    public Map<Character, CharGlyph> getGlyphs() {
         return info;
     }
 

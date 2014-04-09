@@ -1,8 +1,5 @@
 package ru.spacearena.engine.graphics.font.gen;
 
-import ru.spacearena.engine.util.ResourceUtils;
-import ru.spacearena.game.GameFactory;
-
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -18,9 +15,13 @@ import java.awt.event.ActionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Vyacheslav Mayorov
@@ -28,7 +29,7 @@ import java.text.DecimalFormat;
  */
 public class FontGeneratorPanel extends JPanel {
 
-    public static final int GENERATE_TIMEOUT = 2000;
+    public static final int GENERATE_TIMEOUT = 500;
 
     public static final int DEFAULT_COMPONENT_HEIGHT = 24;
 
@@ -45,67 +46,27 @@ public class FontGeneratorPanel extends JPanel {
     private final JSlider distanceFieldScaleSlider;
     private final JCheckBox hqCheckBox;
     private final JLabel statusLabel;
-
+    private final ImagePanel fontImagePane;
+    private final ImagePanel dfImagePane;
 
     private final Timer timer = new Timer(GENERATE_TIMEOUT, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            final SwingWorker<Object,Object> worker = new SwingWorker<Object, Object>() {
-                @Override
-                protected Object doInBackground() throws Exception {
-                    for (int i=0; i<100; i++) {
-                        if (isCancelled()) {
-                            return null;
-                        }
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                        setProgress(i);
-                    }
-                    return null;
-                }
-            };
-            worker.addPropertyChangeListener(new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent evt) {
-                    if (worker.isCancelled()) {
-                        return;
-                    }
-                    if ("progress".equals(evt.getPropertyName())) {
-                        final int progress = (Integer) evt.getNewValue();
-                        progressBar.setValue(progress);
-                    } else if ("state".equals(evt.getPropertyName())) {
-                        final SwingWorker.StateValue state = (SwingWorker.StateValue) evt.getNewValue();
-                        switch (state) {
-                        case DONE:
-                            progressBar.setValue(progressBar.getMaximum());
-                            progressBar.setString("Done");
-                            break;
-
-                        case STARTED:
-                            progressBar.setValue(0);
-                            progressBar.setString("Generating...");
-                            break;
-                        }
-                    }
-                }
-            });
-            worker.execute();
-            currentWorker = worker;
+            startGenerationWorker();
         }
     });
+
+    private FontGeneratorResult lastResult = null;
 
 
     // Swing Worker implementation is bound to use progress value from 0 to 100. After call setProgress(100)
     // task will be reported as DONE - EVEN if task is still running... looks very bad
-    private SwingWorker<Object,Object> currentWorker;
+    private SwingWorker<?,?> currentWorker;
 
     public FontGeneratorPanel() {
 
         setLayout(new BorderLayout());
 
         timer.setRepeats(false);
-
 
         final JPanel alphabetPane = new JPanel(new BorderLayout(10, 5));
         alphabetPane.setBorder(new EmptyBorder(10, 10, 0, 10));
@@ -176,7 +137,7 @@ public class FontGeneratorPanel extends JPanel {
         });
 
         controlPane.add(new JLabel("Distance field scale: "));
-        controlPane.add(distanceFieldScaleSlider = new JSlider(-100, 100, 20));
+        controlPane.add(distanceFieldScaleSlider = new JSlider(1, 100, 20));
         distanceFieldScaleSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 onParameterChange();
@@ -197,51 +158,74 @@ public class FontGeneratorPanel extends JPanel {
         add(controlPane, BorderLayout.EAST);
 
         final JPanel imagesPane = new JPanel();
-        imagesPane.setLayout(new BoxLayout(imagesPane, BoxLayout.Y_AXIS));
+        imagesPane.setLayout(new GridBagLayout());
 
-        final JPanel fontPane = new JPanel();
-        fontPane.setLayout(new BoxLayout(fontPane, BoxLayout.Y_AXIS));
-        fontPane.setBorder(new CompoundBorder(new CompoundBorder(new EmptyBorder(10,10,10,10),
-                new LineBorder(Color.DARK_GRAY, 2)),
-                new EmptyBorder(10, 10, 10, 10)));
-        final ImagePanel fontImagePane = new ImagePanel();
-        fontImagePane.setAlignmentX(0.5f);
-        fontPane.add(fontImagePane);
-        fontPane.add(Box.createVerticalStrut(10));
+        final GridBagConstraints gbcFont = new GridBagConstraints();
+        gbcFont.gridx = 0;
+        gbcFont.gridy = 0;
+        gbcFont.ipadx = 5;
+        gbcFont.ipady = 5;
+        gbcFont.weightx = 0.5;
+        gbcFont.weighty = 1;
+        gbcFont.fill = GridBagConstraints.BOTH;
+        imagesPane.add(createImagePane(fontImagePane = new ImagePanel(), "Font"), gbcFont);
 
-        final JButton fontSaveButton = new JButton("Save!");
-        fontSaveButton.setAlignmentX(0.5f);
-        fontPane.add(fontSaveButton);
-        imagesPane.add(fontPane);
-
-        final JPanel dfPane = new JPanel();
-        dfPane.setLayout(new BoxLayout(dfPane, BoxLayout.Y_AXIS));
-        dfPane.setBorder(new CompoundBorder(new CompoundBorder(new EmptyBorder(0,10,10,10),
-                new LineBorder(Color.DARK_GRAY, 2)),
-                new EmptyBorder(10, 10, 10, 10)));
-        final ImagePanel dfImagePane = new ImagePanel(ImageUtils.loadImage(ResourceUtils.getUrl(GameFactory.class, "df-original.png")));
-        dfImagePane.setAlignmentX(0.5f);
-        dfPane.add(dfImagePane);
-        dfPane.add(Box.createVerticalStrut(10));
-
-        final JButton dfSaveButton = new JButton("Save!");
-        dfSaveButton.setAlignmentX(0.5f);
-        dfPane.add(dfSaveButton);
-        imagesPane.add(dfPane);
+        final GridBagConstraints gbcDF = new GridBagConstraints();
+        gbcDF.gridx = 1;
+        gbcDF.gridy = 0;
+        gbcDF.ipadx = 5;
+        gbcDF.ipady = 5;
+        gbcDF.weightx = 0.5;
+        gbcDF.weighty = 1;
+        gbcDF.fill = GridBagConstraints.BOTH;
+        imagesPane.add(createImagePane(dfImagePane = new ImagePanel(), "DF"), gbcDF);
         add(imagesPane, BorderLayout.CENTER);
 
-        progressBar = new JProgressBar(0, 100);
-        progressBar.setStringPainted(true);
+        progressBar = new JProgressBar();
         progressBar.setPreferredSize(new Dimension(0, DEFAULT_COMPONENT_HEIGHT));
-        progressBar.setIndeterminate(false);
-        progressBar.setValue(0);
-        progressBar.setString("Ready");
+        progressBar.setStringPainted(true);
         add(progressBar, BorderLayout.SOUTH);
 
-
+        startGenerationWorker();
     }
 
-    public void onParameterChange() {
+    private JPanel createImagePane(final ImagePanel image, final String label) {
+        final JPanel imagePane = new JPanel();
+
+        imagePane.setLayout(new BoxLayout(imagePane, BoxLayout.Y_AXIS));
+        imagePane.setBorder(new CompoundBorder(new CompoundBorder(new EmptyBorder(10,5,10,5),
+                new LineBorder(Color.DARK_GRAY, 2)),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+
+
+        final JLabel imageLabel = new JLabel(label);
+        imageLabel.setAlignmentX(0.5f);
+        imagePane.add(imageLabel);
+
+        image.addPropertyChangeListener("image", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                final BufferedImage i = (BufferedImage)evt.getNewValue();
+                final int w = i.getWidth(), h = i.getHeight(), t = i.getType();
+                imageLabel.setText(label + " (" + w + "x" + h + "x" +
+                        ImageUtils.getImageTypeBits(t) + ", " + ImageUtils.getImageTypeFormat(t) + ")");
+
+            }
+        });
+        image.setAlignmentX(0.5f);
+        imagePane.add(image);
+        imagePane.add(Box.createVerticalStrut(10));
+
+        return imagePane;
+    }
+
+    private void onGenerationDone(FontGeneratorResult result) {
+        this.lastResult = result;
+        this.fontImagePane.setImage(result.getFontTexture());
+        this.dfImagePane.setImage(result.getDistanceFieldTexture());
+    }
+
+    private void onParameterChange() {
         timer.stop();
         if (currentWorker != null) {
             currentWorker.cancel(false);
@@ -250,6 +234,58 @@ public class FontGeneratorPanel extends JPanel {
         progressBar.setValue(0);
         progressBar.setString("Preparing...");
         timer.start();
+    }
+
+    private void startGenerationWorker() {
+
+        final FontGeneratorInput input = new FontGeneratorInput();
+        input.setAlphabet(alphabetText.getText());
+        input.setHq(hqCheckBox.isSelected());
+        input.setPad((Integer)charPadField.getValue());
+        input.setImageScale(1f/4);
+
+        final String fontName = (String)fontFaceComboBox.getSelectedItem();
+        final int fontSize = (Integer)fontSizeField.getValue();
+        final int fontStyle = fontStyleCombobox.getSelectedIndex();
+        input.setFont(new Font(fontName, fontStyle, fontSize));
+        input.setDistanceFieldOffset(distanceFieldOffsetSlider.getValue());
+        input.setDistanceFieldScale(distanceFieldScaleSlider.getValue());
+
+        final FontGeneratorWorker worker = new FontGeneratorWorker(input);
+        worker.addPropertyChangeListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (worker.isCancelled()) {
+                    return;
+                }
+                if ("state".equals(evt.getPropertyName())) {
+                    final SwingWorker.StateValue state = (SwingWorker.StateValue) evt.getNewValue();
+                    switch (state) {
+                    case DONE:
+                        progressBar.setIndeterminate(false);
+                        progressBar.setValue(progressBar.getMaximum());
+                        progressBar.setString("Done");
+                        try {
+                            onGenerationDone(worker.get(1, TimeUnit.NANOSECONDS));
+                        } catch (InterruptedException e1) {
+                            throw new RuntimeException(e1);
+                        } catch (ExecutionException e1) {
+                            throw new RuntimeException(e1);
+                        } catch (TimeoutException e1) {
+                            throw new RuntimeException(e1);
+                        }
+                        break;
+
+                    case STARTED:
+                        progressBar.setIndeterminate(true);
+                        break;
+                    }
+                } else if ("what".equals(evt.getPropertyName())) {
+                    progressBar.setString((String) evt.getNewValue());
+                }
+            }
+        });
+        worker.execute();
+        currentWorker = worker;
     }
 
     private JFormattedTextField createIntegerTextField(int value) {

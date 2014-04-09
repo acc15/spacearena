@@ -32,7 +32,13 @@ public class ImagePanel extends JPanel {
     }
 
     public void setImage(Image image) {
+        if (this.image == image) {
+            return;
+        }
+        final Image old = this.image;
         this.image = image;
+        firePropertyChange("image", old, image);
+        repaint();
     }
 
     public float getAlignX() {
@@ -41,6 +47,7 @@ public class ImagePanel extends JPanel {
 
     public void setAlignX(float alignX) {
         this.alignX = alignX;
+        repaint();
     }
 
     public float getAlignY() {
@@ -49,6 +56,7 @@ public class ImagePanel extends JPanel {
 
     public void setAlignY(float alignY) {
         this.alignY = alignY;
+        repaint();
     }
 
     @Override

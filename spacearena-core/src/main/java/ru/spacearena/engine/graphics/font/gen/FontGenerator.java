@@ -1,5 +1,6 @@
 package ru.spacearena.engine.graphics.font.gen;
 
+import ru.spacearena.engine.graphics.font.CharGlyph;
 import ru.spacearena.engine.graphics.font.FontData;
 
 import java.awt.*;
@@ -9,6 +10,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 /**
  * @author Vyacheslav Mayorov
@@ -54,22 +56,39 @@ public class FontGenerator {
 //        return p;
 //    }
 
+    public static BufferedImage generateFontImage(Font font, FontData fd, boolean hq) {
+        final BufferedImage img = new BufferedImage(fd.getImageWidth(), fd.getImageHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        final Graphics2D g = getGraphics(img, hq);
+        g.setFont(font);
+        g.setColor(Color.WHITE);
 
-    public static FontData computeFontInfo(java.awt.Font font, int maxWidth, int pad, char[] alphabet) {
+        final int ascent = g.getFontMetrics().getAscent();
+
+        final char[] ch = new char[1];
+        for (Map.Entry<Character, CharGlyph> glyph: fd.getGlyphs().entrySet()) {
+            ch[0] = glyph.getKey();
+            final CharGlyph ci = glyph.getValue();
+            g.drawChars(ch, 0, 1, ci.getX() - ci.getOffset(), ci.getY() + ascent);
+        }
+        g.dispose();
+        return img;
+    }
+
+    public static FontData computeFontData(Font font, int maxWidth, int pad, String alphabet) {
 
         final AffineTransform t = new AffineTransform();
         final FontRenderContext frc = new FontRenderContext(t, true, true);
         final FontData fi = new FontData();
 
-        final LineMetrics lm = font.getLineMetrics(alphabet, 0, alphabet.length, frc);
+        final LineMetrics lm = font.getLineMetrics(alphabet, frc);
         final int lineHeight = getAsInt(lm.getHeight());
 
         fi.setSpaceAdvance(getAsInt(font.getStringBounds(" ", frc).getWidth()));
         fi.setTabAdvance(fi.getSpaceAdvance() * 4);
 
         int x = 0, y = 0;
-        for (int i=0; i<alphabet.length; i++) {
-            final TextLayout textLayout = new TextLayout(Character.toString(alphabet[i]), font, frc);
+        for (int i=0; i<alphabet.length(); i++) {
+            final TextLayout textLayout = new TextLayout(alphabet.substring(i, i + 1), font, frc);
 
             final Rectangle2D tr = textLayout.getBounds();
             final Rectangle2D fr = font.getStringBounds(alphabet, i, i + 1, frc);
@@ -82,7 +101,7 @@ public class FontGenerator {
                 y += lineHeight;
             }
 
-            fi.setCharMetrics(alphabet[i], x, y, offset, advance, width);
+            fi.setCharMetrics(alphabet.charAt(i), x, y, offset, advance, width);
             x += width;
 
         }
@@ -103,21 +122,21 @@ public class FontGenerator {
         return x+1;
     }
 
-    private static String suggestFileName(java.awt.Font font) {
-        final String name = font.getFontName();
-        final StringBuilder sb = new StringBuilder();
-        for (int i=0; i<name.length(); i++) {
-            final char ch = name.charAt(i);
-            if (Character.isLetter(ch) || Character.isDigit(ch)) {
-                sb.append(Character.toLowerCase(ch));
-            }
-        }
-        switch (font.getStyle()) {
-        case java.awt.Font.BOLD: sb.append("_b"); break;
-        case java.awt.Font.ITALIC: sb.append("_i"); break;
-        }
-        return sb.toString();
-    }
+//    private static String suggestFileName(java.awt.Font font) {
+//        final String name = font.getFontName();
+//        final StringBuilder sb = new StringBuilder();
+//        for (int i=0; i<name.length(); i++) {
+//            final char ch = name.charAt(i);
+//            if (Character.isLetter(ch) || Character.isDigit(ch)) {
+//                sb.append(Character.toLowerCase(ch));
+//            }
+//        }
+//        switch (font.getStyle()) {
+//        case java.awt.Font.BOLD: sb.append("_b"); break;
+//        case java.awt.Font.ITALIC: sb.append("_i"); break;
+//        }
+//        return sb.toString();
+//    }
 
 //    public static int storeWithMipMaps(BufferedImage image, Args args, int level, String format) {
 //        try {
@@ -172,7 +191,7 @@ public class FontGenerator {
     final int imageWidth = pow2RoundUp(parsedArgs.width);
 
     final java.awt.Font font = new java.awt.Font(fontName, style, size);
-    final ru.spacearena.engine.graphics.font.Font fi = computeFontInfo(font, imageWidth, parsedArgs.pad, alphabet);
+    final ru.spacearena.engine.graphics.font.Font fi = computeFontData(font, imageWidth, parsedArgs.pad, alphabet);
 
     final BufferedImage img = new BufferedImage(fi.getImageWidth(), fi.getImageHeight(), BufferedImage.TYPE_BYTE_GRAY);
     final Graphics2D g = getGraphics(img, parsedArgs.hq);
