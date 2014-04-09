@@ -28,6 +28,8 @@ import java.text.DecimalFormat;
  */
 public class FontGeneratorPanel extends JPanel {
 
+    public static final int GENERATE_TIMEOUT = 2000;
+
     public static final int DEFAULT_COMPONENT_HEIGHT = 24;
 
     public static final String DEFAULT_ALPHABET =
@@ -42,20 +44,71 @@ public class FontGeneratorPanel extends JPanel {
     private final JSlider distanceFieldOffsetSlider;
     private final JSlider distanceFieldScaleSlider;
     private final JCheckBox hqCheckBox;
+    private final JLabel statusLabel;
 
-    private final Timer timer = new Timer(2000, new ActionListener() {
+
+    private final Timer timer = new Timer(GENERATE_TIMEOUT, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            System.out.println("Generate!");
+            final SwingWorker<Object,Object> worker = new SwingWorker<Object, Object>() {
+                @Override
+                protected Object doInBackground() throws Exception {
+                    for (int i=0; i<100; i++) {
+                        if (isCancelled()) {
+                            return null;
+                        }
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                        setProgress(i);
+                    }
+                    return null;
+                }
+            };
+            worker.addPropertyChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                    if (worker.isCancelled()) {
+                        return;
+                    }
+                    if ("progress".equals(evt.getPropertyName())) {
+                        final int progress = (Integer) evt.getNewValue();
+                        progressBar.setValue(progress);
+                    } else if ("state".equals(evt.getPropertyName())) {
+                        final SwingWorker.StateValue state = (SwingWorker.StateValue) evt.getNewValue();
+                        switch (state) {
+                        case DONE:
+                            progressBar.setValue(progressBar.getMaximum());
+                            progressBar.setString("Done");
+                            break;
+
+                        case STARTED:
+                            progressBar.setValue(0);
+                            progressBar.setString("Generating...");
+                            break;
+                        }
+                    }
+                }
+            });
+            worker.execute();
+            currentWorker = worker;
         }
     });
 
+
+    // Swing Worker implementation is bound to use progress value from 0 to 100. After call setProgress(100)
+    // task will be reported as DONE - EVEN if task is still running... looks very bad
+    private SwingWorker<Object,Object> currentWorker;
+
     public FontGeneratorPanel() {
-        timer.setRepeats(false);
 
         setLayout(new BorderLayout());
 
-        final JPanel alphabetPane = new JPanel(new BorderLayout(10, 10));
-        alphabetPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        timer.setRepeats(false);
+
+
+        final JPanel alphabetPane = new JPanel(new BorderLayout(10, 5));
+        alphabetPane.setBorder(new EmptyBorder(10, 10, 0, 10));
 
         final JLabel alphabetLabel = new JLabel("Alphabet: ");
         alphabetPane.add(alphabetLabel, BorderLayout.WEST);
@@ -74,6 +127,10 @@ public class FontGeneratorPanel extends JPanel {
                 onParameterChange();
             }
         });
+
+        alphabetPane.add(statusLabel = new JLabel(), BorderLayout.SOUTH);
+        statusLabel.setForeground(Color.RED);
+        statusLabel.setPreferredSize(new Dimension(0, DEFAULT_COMPONENT_HEIGHT));
         add(alphabetPane, BorderLayout.NORTH);
 
         final JPanel controlPane = new JPanel();
@@ -87,6 +144,7 @@ public class FontGeneratorPanel extends JPanel {
         fontStyleCombobox = new JComboBox(new String[] {"Normal", "Bold", "Italic"});
         fontStyleCombobox.setBackground(Color.WHITE);
         fontStyleCombobox.setMaximumSize(new Dimension(Short.MAX_VALUE, DEFAULT_COMPONENT_HEIGHT));
+        fontStyleCombobox.setFont(fontStyleCombobox.getFont().deriveFont(0));
         fontStyleCombobox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fontStyleCombobox.setFont(
@@ -172,14 +230,26 @@ public class FontGeneratorPanel extends JPanel {
         imagesPane.add(dfPane);
         add(imagesPane, BorderLayout.CENTER);
 
-        progressBar = new JProgressBar(0, 5000);
-        progressBar.setValue(2500);
+        progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
-        progressBar.setString("Loading...");
         progressBar.setPreferredSize(new Dimension(0, DEFAULT_COMPONENT_HEIGHT));
         progressBar.setIndeterminate(false);
+        progressBar.setValue(0);
+        progressBar.setString("Ready");
         add(progressBar, BorderLayout.SOUTH);
 
+
+    }
+
+    public void onParameterChange() {
+        timer.stop();
+        if (currentWorker != null) {
+            currentWorker.cancel(false);
+            currentWorker = null;
+        }
+        progressBar.setValue(0);
+        progressBar.setString("Preparing...");
+        timer.start();
     }
 
     private JFormattedTextField createIntegerTextField(int value) {
@@ -263,15 +333,9 @@ public class FontGeneratorPanel extends JPanel {
                 onParameterChange();
             }
         });
-
+        fontFaceCombobox.setFont(fonts[fontIndex]);
         return fontFaceCombobox;
     }
-
-    public void onParameterChange() {
-        timer.restart();
-        System.out.println("Changed!");
-    }
-
 
     public static void main(String[] args) {
         final JFrame frame = new JFrame("FontGenerator");
