@@ -80,9 +80,8 @@ public class GameFactory implements EngineFactory {
         //final Viewport hud = new Viewport(new Viewport.RealSizeAdjustStrategy());
         viewport.add(new Transform() {
             private float sizeV = 0f;
-            private final float minSize = 100f;
-            private final float maxSize = 500f;
-            private float size = minSize;
+            private final float maxSpeed = 500f;
+            private float size = 0;
 
             private final TextureDefinition td = new TextureDefinition(OpenGL.LINEAR, OpenGL.LINEAR);
 
@@ -96,14 +95,10 @@ public class GameFactory implements EngineFactory {
             @Override
             public boolean onUpdate(float seconds) {
                 sizeV += 100f * seconds;
-                size += sizeV * seconds;
-                if (size > maxSize) {
-                    size = maxSize;
-                    sizeV = -sizeV;
-                } else if (size < minSize) {
-                    size = minSize;
-                    sizeV = -sizeV;
+                if (FloatMathUtils.abs(sizeV) > maxSpeed) {
+                    sizeV = FloatMathUtils.copySign(maxSpeed, -sizeV);
                 }
+                size += sizeV * seconds;
                 rotate(FloatMathUtils.HALF_PI * seconds);
                 return true;
             }

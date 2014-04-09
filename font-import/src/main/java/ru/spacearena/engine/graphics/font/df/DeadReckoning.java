@@ -30,20 +30,27 @@ public class DeadReckoning {
         return v > 0.5f;
     }
 
-    public static void setPoint(Grid g, int x, int y, float d, int x1, int y1) {
-        final Point p = g.get(x1,y1);
-        if (g.getDistance(x,y) + d < p.d) {
-            p.set(g.getX(x,y), g.getY(x,y));
-            p.d = FloatMathUtils.length(x1-p.x,y1-p.y);
+    public static void compare(DistanceField g, int x, int y, int xNeighbor, int yNeighbor, float d) {
+        if (g.getDistance(xNeighbor, yNeighbor) + d < g.getDistance(x, y)) {
+            final int borderX = g.getBorderX(xNeighbor, yNeighbor), borderY = g.getBorderY(xNeighbor, yNeighbor);
+            g.set(x, y, borderX, borderY, FloatMathUtils.length(x - borderX, y - borderY));
         }
     }
 
-    public static Grid createGrid(BufferedImage image, float d1, float d2) {
+//    public static void setPoint(Grid g, int x, int y, float d, int x1, int y1) {
+//        final Point p = g.get(x1,y1);
+//        if (g.getDistance(x,y) + d < p.d) {
+//            p.set(g.getX(x,y), g.getY(x,y));
+//            p.d = FloatMathUtils.length(x1-p.x,y1-p.y);
+//    }
+
+    public static DistanceField computeDistanceField(BufferedImage image, float d1, float d2) {
 
         final int w = image.getWidth(), h = image.getHeight();
 
-        final Grid g = new Grid(w, h);
+        final DistanceField g = new DistanceField(w, h);
 
+        // initializing df
         for (int y=0; y<h; y++) {
             for (int x=0;x<w;x++) {
                 final boolean c = getPixel(image, x, y);
@@ -51,35 +58,36 @@ public class DeadReckoning {
                     c != getPixel(image, x, y-1) ||
                     c != getPixel(image, x+1, y) ||
                     c != getPixel(image, x, y+1)) {
-                    g.get(x, y).set(x, y, 0);
+                    g.set(x,y, x,y, 0);
+                } else {
+                    g.set(x,y, DistanceField.DEFAULT_BORDER, DistanceField.DEFAULT_BORDER, DistanceField.DEFAULT_DISTANCE);
                 }
             }
         }
 
         for (int y=0; y<h; y++) {
             for (int x=0;x<w;x++) {
-                setPoint(g, x - 1, y - 1, d2, x, y);
-                setPoint(g, x, y - 1, d1, x, y);
-                setPoint(g, x + 1, y - 1, d2, x, y);
-                setPoint(g, x - 1, y, d1, x, y);
+                compare(g, x, y, x - 1, y - 1, d2);
+                compare(g, x, y, x, y - 1, d1);
+                compare(g, x, y, x + 1, y - 1, d2);
+                compare(g, x, y, x - 1, y, d1);
             }
         }
 
         for (int y=h-1; y>=0; y--) {
             for (int x=w-1;x>=0;x--) {
-                setPoint(g, x + 1, y, d1, x, y);
-                setPoint(g, x - 1, y + 1, d2, x, y);
-                setPoint(g, x, y + 1, d1, x, y);
-                setPoint(g, x + 1, y + 1, d2, x, y);
+                compare(g, x, y, x + 1, y, d1);
+                compare(g, x, y, x - 1, y + 1, d2);
+                compare(g, x, y, x, y + 1, d1);
+                compare(g, x, y, x + 1, y + 1, d2);
             }
         }
 
         for (int y=0; y<h; y++) {
             for (int x=0;x<w;x++) {
                 final boolean c = getPixel(image, x, y);
-                final Point p = g.get(x,y);
                 if (!c) {
-                    p.d = -p.d;
+                    g.negateDistance(x,y);
                 }
             }
         }
@@ -102,13 +110,13 @@ public class DeadReckoning {
         private float offset;
         private float invScale;
 
-        public ManualMap(float scale, float offset) {
+        public ManualMap(float offset, float scale) {
             this.offset = offset;
             this.invScale = 1/scale;
         }
 
         public float mapDistance(float d) {
-            return offset + d * invScale;
+            return (d + offset) * invScale;
         }
     }
 
@@ -117,7 +125,7 @@ public class DeadReckoning {
 
         private float min = 0, max = 0;
 
-        public MixMap(Grid g) {
+        public MixMap(DistanceField g) {
             for (int y=0; y<g.getHeight(); y++) {
                 for (int x=0;x<g.getWidth(); x++) {
                     final float d = g.getDistance(x,y);
@@ -144,7 +152,7 @@ public class DeadReckoning {
             this.minMaxDistance = minMaxDistance;
         }
 
-        public float mapDistance(Grid grid, float d) {
+        public float mapDistance(DistanceField grid, float d) {
             float min = grid.getMinDistance(), max = grid.getMaxDistance();
             if (max < minMaxDistance) {
                 final float v = minMaxDistance - max;
@@ -164,7 +172,7 @@ public class DeadReckoning {
     public static class SpreadMap implements DistanceMap {
         private float spread;
 
-        public SpreadMap(Grid g, int scale) {
+        public SpreadMap(DistanceField g, int scale) {
             this.spread = (float)Math.min(g.getWidth(), g.getHeight()) / (1 << scale);
         }
 
@@ -175,7 +183,7 @@ public class DeadReckoning {
         }
     }
 
-    public static BufferedImage toImage(Grid g, DistanceMap map) {
+    public static BufferedImage toImage(DistanceField g, DistanceMap map) {
         final BufferedImage b = new BufferedImage(g.getWidth(), g.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
         for (int y=0; y<g.getHeight(); y++) {
             for (int x=0;x<g.getWidth(); x++) {
@@ -201,8 +209,9 @@ public class DeadReckoning {
         final File file = new File("df-original-segoe.png");
         final BufferedImage i = ImageIO.read(file);
 
-        final Grid g = createGrid(i, 3,4);
-        final BufferedImage df = toImage(g, new MixMap(g));
+        final float d = 1;
+        final DistanceField g = computeDistanceField(i, d, FloatMathUtils.length(d,d));
+        final BufferedImage df = toImage(g, new ManualMap(16, 20));
         ImageIO.write(df, "png", new File("df-transform-segoe.png"));
 
         final BufferedImage sf = resizeTo(df, 1/4f);
