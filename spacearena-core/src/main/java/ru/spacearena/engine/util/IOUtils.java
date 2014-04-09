@@ -3,8 +3,7 @@ package ru.spacearena.engine.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * @author Vyacheslav Mayorov
@@ -22,4 +21,14 @@ public class IOUtils {
         }
     }
 
+    public static String readStream(InputStream i) throws IOException {
+        final Reader r = new InputStreamReader(i);
+        final StringBuilder sb = new StringBuilder(100);
+        final char[] ch = new char[64];
+        int readed;
+        while ((readed = r.read(ch)) >= 0) {
+            sb.append(ch, 0, readed);
+        }
+        return sb.toString();
+    }
 }

@@ -11,7 +11,6 @@ public class Grid {
 
     private Point[] values;
     private int w, h;
-    private float minDistance, maxDistance;
 
     public Grid(int w, int h) {
         this.w = w;
@@ -52,19 +51,4 @@ public class Grid {
         return inRange(x,y) ? get(x,y).y : P;
     }
 
-    public float getMinDistance() {
-        return minDistance;
-    }
-
-    public void setMinDistance(float minDistance) {
-        this.minDistance = minDistance;
-    }
-
-    public float getMaxDistance() {
-        return maxDistance;
-    }
-
-    public void setMaxDistance(float maxDistance) {
-        this.maxDistance = maxDistance;
-    }
 }

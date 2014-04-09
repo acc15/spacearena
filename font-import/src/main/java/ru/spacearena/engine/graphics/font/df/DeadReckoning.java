@@ -74,21 +74,12 @@ public class DeadReckoning {
             }
         }
 
-
-        g.setMinDistance(0);
-        g.setMaxDistance(0);
         for (int y=0; y<h; y++) {
             for (int x=0;x<w;x++) {
                 final boolean c = getPixel(image, x, y);
                 final Point p = g.get(x,y);
                 if (!c) {
                     p.d = -p.d;
-                }
-                if (p.d < g.getMinDistance()) {
-                    g.setMinDistance(p.d);
-                }
-                if (p.d > g.getMaxDistance()) {
-                    g.setMaxDistance(p.d);
                 }
             }
         }
@@ -124,11 +115,20 @@ public class DeadReckoning {
 
     public static class MixMap implements DistanceMap {
 
-        private float min, max;
+        private float min = 0, max = 0;
 
         public MixMap(Grid g) {
-            this.min = g.getMinDistance();
-            this.max = g.getMaxDistance();
+            for (int y=0; y<g.getHeight(); y++) {
+                for (int x=0;x<g.getWidth(); x++) {
+                    final float d = g.getDistance(x,y);
+                    if (d < min) {
+                        min = d;
+                    }
+                    if (d > max) {
+                        max = d;
+                    }
+                }
+            }
         }
 
         public float mapDistance(float d) {
