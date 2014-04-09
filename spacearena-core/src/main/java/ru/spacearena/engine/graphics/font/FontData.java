@@ -11,7 +11,7 @@ import java.util.Map;
 * @author Vyacheslav Mayorov
 * @since 2014-07-04
 */
-public class Font implements Serializable {
+public class FontData implements Serializable {
 
 
     public void setMaxMipMap(int maxMipMap) {

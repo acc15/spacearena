@@ -11,7 +11,7 @@ import java.net.URL;
  */
 public class FontIO {
 
-    public static Font load(File file) {
+    public static FontData load(File file) {
         try {
             final InputStream is = new FileInputStream(file);
             try {
@@ -24,7 +24,7 @@ public class FontIO {
         }
     }
 
-    public static Font load(URL url) {
+    public static FontData load(URL url) {
         try {
             final InputStream is = url.openStream();
             try {
@@ -37,9 +37,9 @@ public class FontIO {
         }
     }
 
-    public static Font load(InputStream is) {
+    public static FontData load(InputStream is) {
         try {
-            return (Font) new ObjectInputStream(is).readObject();
+            return (FontData) new ObjectInputStream(is).readObject();
         } catch (IOException e) {
             throw new RuntimeException("Can't read font object from stream", e);
         } catch (ClassNotFoundException e) {
@@ -47,19 +47,19 @@ public class FontIO {
         }
     }
 
-    public static void store(Font font, OutputStream os) {
+    public static void store(FontData fontData, OutputStream os) {
         try {
-            new ObjectOutputStream(os).writeObject(font);
+            new ObjectOutputStream(os).writeObject(fontData);
         } catch (IOException e) {
             throw new RuntimeException("Can't write font object", e);
         }
     }
 
-    public static void store(Font font, File file) {
+    public static void store(FontData fontData, File file) {
         try {
             final OutputStream os = new FileOutputStream(file);
             try {
-                store(font, os);
+                store(fontData, os);
             } finally {
                 IOUtils.closeQuietly(os);
             }

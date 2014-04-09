@@ -15,7 +15,7 @@ public class FontIOTest {
     @Test
     public void testLoad() throws Exception {
 
-        final Font f = new Font();
+        final FontData f = new FontData();
         f.setFontMetrics(1, 2, 3, 4);
         f.setCharMetrics('a', 5, 6, 7, 8, 9);
 
@@ -23,7 +23,7 @@ public class FontIOTest {
         FontIO.store(f, baos);
 
         final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-        final Font f2 = FontIO.load(bais);
+        final FontData f2 = FontIO.load(bais);
 
         assertThat(f2.getImageWidth()).isEqualTo(f.getImageWidth());
         assertThat(f2.getImageHeight()).isEqualTo(f.getImageHeight());

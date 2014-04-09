@@ -10,7 +10,7 @@ import java.net.URL;
  * @author Vyacheslav Mayorov
  * @since 2014-07-04
  */
-public class FontDefinition implements Font.Definition {
+public class FontDefinition implements FontData.Definition {
 
     public enum Quality {
         HIGH,

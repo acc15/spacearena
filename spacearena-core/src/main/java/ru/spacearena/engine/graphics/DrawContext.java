@@ -3,7 +3,7 @@ package ru.spacearena.engine.graphics;
 import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.font.CharGlyph;
-import ru.spacearena.engine.graphics.font.Font;
+import ru.spacearena.engine.graphics.font.FontData;
 import ru.spacearena.engine.graphics.font.FontIO;
 import ru.spacearena.engine.graphics.font.FontProgram;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
@@ -44,7 +44,7 @@ public class DrawContext {
     private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos =
             new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
     private final HashMap<Texture.Definition, Texture> textures = new HashMap<Texture.Definition, Texture>();
-    private final HashMap<Font.Definition, Font> fonts = new HashMap<Font.Definition, Font>();
+    private final HashMap<FontData.Definition, FontData> fonts = new HashMap<FontData.Definition, FontData>();
 
     private final Binder binder = new Binder();
 
@@ -185,23 +185,23 @@ public class DrawContext {
         return t;
     }
 
-    public Font load(Font.Definition definition) {
-        Font font = fonts.get(definition);
-        if (font != null) {
-            return font;
+    public FontData load(FontData.Definition definition) {
+        FontData fontData = fonts.get(definition);
+        if (fontData != null) {
+            return fontData;
         }
-        font = FontIO.load(definition.getFontUrl());
+        fontData = FontIO.load(definition.getFontUrl());
         if (!has(definition.getTexture())) {
-            final int maxMipMap = font.getMaxMipMap();
+            final int maxMipMap = fontData.getMaxMipMap();
             for (int i=0; i<= maxMipMap; i++) {
                 load(definition.getTexture(), i, definition.getTextureUrl(i));
             }
         }
-        fonts.put(definition, font);
-        return font;
+        fonts.put(definition, fontData);
+        return fontData;
     }
 
-    public void delete(Font.Definition definition) {
+    public void delete(FontData.Definition definition) {
         fonts.remove(definition);
         delete(definition.getTexture());
     }
@@ -235,9 +235,9 @@ public class DrawContext {
     }
 
 
-    public void drawText(String text, float x, float y, Font.Definition font, float size, Color color) {
+    public void drawText(String text, float x, float y, FontData.Definition font, float size, Color color) {
 
-        final Font f = load(font);
+        final FontData f = load(font);
         final Texture t = getTexture(font.getTexture());
         final float scale = size/f.getOriginalSize() * fontScale;
         final float lineHeight = f.getLineHeight() * scale;
