@@ -12,6 +12,7 @@ public class VertexBufferLayout {
 
     private final int[] offsets;
 
+    // TODO Add type information
     private VertexBufferLayout(int... byteOffsets) {
         this.offsets = byteOffsets;
     }

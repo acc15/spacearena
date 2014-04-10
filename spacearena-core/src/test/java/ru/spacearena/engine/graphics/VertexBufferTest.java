@@ -37,4 +37,14 @@ public class VertexBufferTest {
         assertThat(b.getFloat()).isEqualTo(2);
         assertThat(b.getFloat()).isEqualTo(3);
     }
+
+
+    @Test
+    public void testLimit() throws Exception {
+
+        final VertexBuffer vb = new VertexBuffer();
+        // TODO check that limit = sizeof data
+        vb.reset(new VertexBufferLayout.Builder().floats(2).floats(3).build());
+
+    }
 }

@@ -11,12 +11,20 @@ import java.nio.ByteOrder;
 */
 public class VertexBuffer {
 
+    public static final int DEFAULT_CAPACITY = 128;
+
     private ByteBuffer buffer;
     private VertexBufferLayout layout;
     private int size = -1;
 
-    public VertexBuffer(int bytes) {
-        buffer = ByteBuffer.allocateDirect(bytes).order(ByteOrder.nativeOrder());
+    // TODO add possibility to grow or shrink buffer
+
+    public VertexBuffer() {
+        this(DEFAULT_CAPACITY);
+    }
+
+    public VertexBuffer(int capacity) {
+        buffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder());
     }
 
     public VertexBufferLayout getLayout() {
