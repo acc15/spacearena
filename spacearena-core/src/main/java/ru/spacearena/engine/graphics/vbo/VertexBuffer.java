@@ -15,7 +15,7 @@ public class VertexBuffer {
 
     private ByteBuffer buffer;
     private VertexBufferLayout layout;
-    private int size = -1;
+    private boolean flipped;
 
     // TODO add possibility to grow or shrink buffer
 
@@ -33,13 +33,13 @@ public class VertexBuffer {
 
     public VertexBuffer reset(VertexBufferLayout l) {
         this.layout = l;
-        buffer.rewind();
-        this.size = -1;
+        this.flipped = false;
+        buffer.clear();
         return this;
     }
 
     public int getSize() {
-        return size < 0 ? buffer.position() : size;
+        return flipped ? buffer.limit() : buffer.position();
     }
 
     public ByteBuffer prepareBuffer() {
@@ -47,8 +47,9 @@ public class VertexBuffer {
     }
 
     public ByteBuffer prepareBuffer(int item) {
-        if (size < 0) {
-            size = buffer.position();
+        if (!flipped) {
+            buffer.flip();
+            flipped = true;
         }
         buffer.position(layout.getOffset(item));
         return buffer;

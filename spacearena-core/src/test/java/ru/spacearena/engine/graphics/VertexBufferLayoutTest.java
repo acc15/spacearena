@@ -15,14 +15,24 @@ public class VertexBufferLayoutTest {
     @Test
     public void testLayout() throws Exception {
 
-        final VertexBufferLayout buf = new VertexBufferLayout.Builder().floats(2).floats(3).floats(1).build();
-        assertThat(buf.getStride()).isEqualTo(24);
-        assertThat(buf.getCount(0)).isEqualTo(8);
-        assertThat(buf.getCount(1)).isEqualTo(12);
-        assertThat(buf.getCount(2)).isEqualTo(4);
+        final VertexBufferLayout buf = new VertexBufferLayout.Builder().uints(2).shorts(3).floats(1).build();
+        assertThat(buf.getStride()).isEqualTo(18);
+
+        assertThat(buf.getSize(0)).isEqualTo(8);
+        assertThat(buf.getSize(1)).isEqualTo(6);
+        assertThat(buf.getSize(2)).isEqualTo(4);
+
+        assertThat(buf.getCount(0)).isEqualTo(2);
+        assertThat(buf.getCount(1)).isEqualTo(3);
+        assertThat(buf.getCount(2)).isEqualTo(1);
+
+        assertThat(buf.getType(0)).isEqualTo(OpenGL.UNSIGNED_INT);
+        assertThat(buf.getType(1)).isEqualTo(OpenGL.SHORT);
+        assertThat(buf.getType(2)).isEqualTo(OpenGL.FLOAT);
+
         assertThat(buf.getOffset(0)).isEqualTo(0);
         assertThat(buf.getOffset(1)).isEqualTo(8);
-        assertThat(buf.getOffset(2)).isEqualTo(20);
+        assertThat(buf.getOffset(2)).isEqualTo(14);
 
     }
 

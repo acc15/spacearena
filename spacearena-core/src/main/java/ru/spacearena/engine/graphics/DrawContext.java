@@ -12,6 +12,7 @@ import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureProgram;
 import ru.spacearena.engine.graphics.vbo.VBODefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
+import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -34,7 +35,7 @@ public class DrawContext {
 
     private final OpenGL gl;
 
-    private final VertexBuffer vertexBuffer = new VertexBuffer(DrawUtils.getByteCount(OpenGL.FLOAT, MAX_VERTEX_COUNT * 2));
+    private final VertexBuffer vertexBuffer = new VertexBuffer(VertexBufferLayout.toBytes(MAX_VERTEX_COUNT * 2, OpenGL.FLOAT));
 
     private final Matrix activeMatrix = new Matrix();
     private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
@@ -480,28 +481,32 @@ public class DrawContext {
             if (vbo == null) {
                 throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists in current context");
             }
-            final int sizeInBytes = vbo.getSize(),
-                      stride = vbo.getLayout().getStride(),
-                      floatCount = DrawUtils.getTypeCount(OpenGL.FLOAT, vbo.getLayout().getCount(item)),
-                      offsetInBytes = vbo.getLayout().getOffset(item);
+
+            final VertexBufferLayout vbl = vbo.getLayout();
+            final int size = vbo.getSize(),
+                      stride = vbl.getStride(),
+                      type = vbl.getType(item),
+                      count = VertexBufferLayout.toTypes(vbl.getSize(item), type),
+                      offset = vbl.getOffset(item);
 
             final int bufferType = definition.getBufferType();
             gl.bindBuffer(bufferType, vbo.getId());
-            gl.vertexAttribPointer(index, floatCount, OpenGL.FLOAT, false, stride, offsetInBytes);
+            gl.vertexAttribPointer(index, count, type, false, stride, offset);
             gl.enableVertexAttribArray(index);
             gl.bindBuffer(bufferType, 0);
-
-            adjustVertexCount(sizeInBytes, stride);
+            adjustVertexCount(size, stride);
             return this;
         }
 
         public Binder bindAttr(int index, VertexBuffer buffer, int item) {
-            final int sizeInBytes = buffer.getSize(),
-                      stride = buffer.getLayout().getStride(),
-                      floatCount = DrawUtils.getTypeCount(OpenGL.FLOAT, buffer.getLayout().getCount(item));
-            gl.vertexAttribPointer(index, floatCount, OpenGL.FLOAT, false, stride, buffer.prepareBuffer(item));
+            final VertexBufferLayout vbl = buffer.getLayout();
+            final int size = buffer.getSize(),
+                      stride = vbl.getStride(),
+                      type = vbl.getType(item),
+                      count = VertexBufferLayout.toTypes(vbl.getSize(item), type);
+            gl.vertexAttribPointer(index, count, type, false, stride, buffer.prepareBuffer(item));
             gl.enableVertexAttribArray(index);
-            adjustVertexCount(sizeInBytes, stride);
+            adjustVertexCount(size, stride);
             return this;
         }
 
