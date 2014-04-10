@@ -145,11 +145,16 @@ public class FontGeneratorPanel extends JPanel {
         });
 
         controlPane.add(hqCheckBox = new JCheckBox("HQ", true));
+        hqCheckBox.setMaximumSize(new Dimension(Short.MAX_VALUE, DEFAULT_COMPONENT_HEIGHT));
         hqCheckBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onParameterChange();
             }
         });
+
+        final JButton saveButton = new JButton("Save!");
+        saveButton.setMaximumSize(new Dimension(Short.MAX_VALUE, DEFAULT_COMPONENT_HEIGHT));
+        controlPane.add(saveButton);
 
         for (int i=0; i<controlPane.getComponentCount(); i++) {
             final JComponent jc = (JComponent)controlPane.getComponent(i);
@@ -160,25 +165,8 @@ public class FontGeneratorPanel extends JPanel {
         final JPanel imagesPane = new JPanel();
         imagesPane.setLayout(new GridBagLayout());
 
-        final GridBagConstraints gbcFont = new GridBagConstraints();
-        gbcFont.gridx = 0;
-        gbcFont.gridy = 0;
-        gbcFont.ipadx = 5;
-        gbcFont.ipady = 5;
-        gbcFont.weightx = 0.5;
-        gbcFont.weighty = 1;
-        gbcFont.fill = GridBagConstraints.BOTH;
-        imagesPane.add(createImagePane(fontImagePane = new ImagePanel(), "Font"), gbcFont);
-
-        final GridBagConstraints gbcDF = new GridBagConstraints();
-        gbcDF.gridx = 1;
-        gbcDF.gridy = 0;
-        gbcDF.ipadx = 5;
-        gbcDF.ipady = 5;
-        gbcDF.weightx = 0.5;
-        gbcDF.weighty = 1;
-        gbcDF.fill = GridBagConstraints.BOTH;
-        imagesPane.add(createImagePane(dfImagePane = new ImagePanel(), "DF"), gbcDF);
+        imagesPane.add(createImagePane(fontImagePane = new ImagePanel(), "Font"), createGBC(0,0,5,0.5,0.9,GridBagConstraints.BOTH));
+        imagesPane.add(createImagePane(dfImagePane = new ImagePanel(), "DF"), createGBC(1,0,5,0.5,0.9,GridBagConstraints.BOTH));
         add(imagesPane, BorderLayout.CENTER);
 
         progressBar = new JProgressBar();
@@ -189,12 +177,22 @@ public class FontGeneratorPanel extends JPanel {
         startGenerationWorker();
     }
 
+    private GridBagConstraints createGBC(int x, int y, int inset, double wx, double wy, int fill) {
+        final GridBagConstraints gbcDF = new GridBagConstraints();
+        gbcDF.gridx = x;
+        gbcDF.gridy = y;
+        gbcDF.insets = new Insets(inset,inset,inset,inset);
+        gbcDF.weightx = wx;
+        gbcDF.weighty = wy;
+        gbcDF.fill = fill;
+        return gbcDF;
+    }
+
     private JPanel createImagePane(final ImagePanel image, final String label) {
         final JPanel imagePane = new JPanel();
 
         imagePane.setLayout(new BoxLayout(imagePane, BoxLayout.Y_AXIS));
-        imagePane.setBorder(new CompoundBorder(new CompoundBorder(new EmptyBorder(10,5,10,5),
-                new LineBorder(Color.DARK_GRAY, 2)),
+        imagePane.setBorder(new CompoundBorder(new LineBorder(Color.DARK_GRAY, 2),
                 new EmptyBorder(10, 10, 10, 10)
         ));
 

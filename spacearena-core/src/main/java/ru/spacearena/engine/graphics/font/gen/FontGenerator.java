@@ -105,7 +105,7 @@ public class FontGenerator {
             x += width;
 
         }
-        fi.setFontMetrics(y == 0 ? x : maxWidth, pow2RoundUp(y+lineHeight), lineHeight, font.getSize());
+        fi.setFontMetrics(maxWidth, pow2RoundUp(y+lineHeight), lineHeight, font.getSize());
         return fi;
     }
 
@@ -121,6 +121,8 @@ public class FontGenerator {
         x |= x >> 16;
         return x+1;
     }
+
+
 
 //    private static String suggestFileName(java.awt.Font font) {
 //        final String name = font.getFontName();
@@ -214,5 +216,6 @@ public class FontGenerator {
     public static int getAsInt(double w) {
         return (int)Math.ceil(w);
     }
+
 
 }
