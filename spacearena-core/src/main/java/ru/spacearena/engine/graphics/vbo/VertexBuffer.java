@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 */
 public class VertexBuffer {
 
-    public static final int DEFAULT_CAPACITY = 128;
+    public static final int DEFAULT_CAPACITY = 128; // 16 float 2D points
 
     private ByteBuffer buffer;
     private VertexBufferLayout layout;
