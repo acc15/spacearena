@@ -1,6 +1,7 @@
 package ru.spacearena.engine.graphics;
 
 import org.junit.Test;
+import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
@@ -43,8 +44,24 @@ public class VertexBufferTest {
     public void testLimit() throws Exception {
 
         final VertexBuffer vb = new VertexBuffer();
-        // TODO check that limit = sizeof data
         vb.reset(new VertexBufferLayout.Builder().floats(2).floats(3).build());
+
+    }
+
+    @Test
+    public void testBufferMustGrow() throws Exception {
+
+        final VertexBuffer vb = new VertexBuffer(4);
+        vb.reset(PositionProgram.LAYOUT_P2);
+
+        vb.put(1);
+        vb.put(1,2,3,4);
+        final ByteBuffer bb = vb.prepareBuffer();
+        assertThat(bb.getFloat()).isEqualTo(1);
+        assertThat(bb.getFloat()).isEqualTo(1);
+        assertThat(bb.getFloat()).isEqualTo(2);
+        assertThat(bb.getFloat()).isEqualTo(3);
+        assertThat(bb.getFloat()).isEqualTo(4);
 
     }
 }

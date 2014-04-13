@@ -269,6 +269,8 @@ public class DrawContext {
                 final float charWidth = ci.getWidth() * scale;
                 final float charAdvance = ci.getAdvance() * scale;
 
+                // a * x + b * (1-x) = ax + b - bx
+
                 float tl = (float)ci.getX() / f.getImageWidth();
                 float tt = (float)ci.getY() / f.getImageHeight();
                 float tr = (float)(ci.getX() + ci.getWidth()) / f.getImageWidth();

@@ -77,8 +77,6 @@ public class JoglWindow {
         final GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
         caps.setHardwareAccelerated(true);
         final GLWindow window = GLWindow.create(caps);
-        window.setSize(a.width, a.height);
-        window.setTitle("SpaceArena");
         window.addWindowListener(new WindowAdapter() {
             public void windowDestroyNotify(WindowEvent arg0) {
                 System.exit(0);
@@ -90,6 +88,8 @@ public class JoglWindow {
             screen.createNative();
         }
 
+        window.setSize(a.width, a.height);
+        window.setTitle("SpaceArena");
         window.setPosition((screen.getWidth() - window.getWidth()) / 2, (screen.getHeight() - window.getHeight()) / 2);
         window.setVisible(true);
 
