@@ -222,4 +222,8 @@ public class FloatMathUtils {
     public static float addMagnitude(float v, float a) {
         return v < 0 ? v - a : v + a;
     }
+
+    public static float clamp(float v, float min, float max) {
+        return v < min ? min : v > max ? max : v;
+    }
 }

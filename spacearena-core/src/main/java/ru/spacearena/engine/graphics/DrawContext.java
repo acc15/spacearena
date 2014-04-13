@@ -28,14 +28,13 @@ public class DrawContext {
     public static final VBODefinition SIN_COS_VBO = new VBODefinition(
             OpenGL.ARRAY_BUFFER, OpenGL.STATIC_DRAW);
 
-    public static final int MAX_VERTEX_COUNT = 500;
     public static final float DEFAULT_DENSITY_SCALE = 1f;
     public static final float DEFAULT_FONT_SCALE = 1f;
     public static final float DENSITY_SCALE_PPI = 160f;
 
     private final OpenGL gl;
 
-    private final VertexBuffer vertexBuffer = new VertexBuffer(VertexBufferLayout.toBytes(MAX_VERTEX_COUNT * 2, OpenGL.FLOAT));
+    private final VertexBuffer vertexBuffer = new VertexBuffer();
 
     private final Matrix activeMatrix = new Matrix();
     private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
@@ -556,9 +555,7 @@ public class DrawContext {
         if (n < 3) {
             throw new IllegalArgumentException("N-Gon should have at least 3 points");
         }
-        if (n > MAX_VERTEX_COUNT) {
-            n = MAX_VERTEX_COUNT;
-        }
+        n = Math.min(n,360);
 
         final float a = FloatMathUtils.TWO_PI / n;
         final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);

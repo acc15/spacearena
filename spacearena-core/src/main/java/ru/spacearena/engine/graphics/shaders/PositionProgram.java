@@ -1,6 +1,5 @@
 package ru.spacearena.engine.graphics.shaders;
 
-import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
 /**
@@ -22,20 +21,8 @@ public class PositionProgram extends Program {
     public static final VertexBufferLayout LAYOUT_P2 = new VertexBufferLayout.Builder().floats(2).build();
 
     private PositionProgram() {
-        shader(OpenGL.VERTEX_SHADER,
-                "uniform mat4 u_MVPMatrix;" +
-                "attribute vec4 a_Position;" +
-                "void main()" +
-                "{" +
-                "gl_Position = u_MVPMatrix * a_Position;" +
-                "}");
-        shader(OpenGL.FRAGMENT_SHADER,
-                "precision mediump float;" +
-                "uniform vec4 u_Color;" +
-                "void main()" +
-                "{" +
-                "gl_FragColor = u_Color;" +
-                "}");
+        shader("p.vert");
+        shader("p.frag");
         attribute("a_Position");
         uniform("u_MVPMatrix");
         uniform("u_Color");

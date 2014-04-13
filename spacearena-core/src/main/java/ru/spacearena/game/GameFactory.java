@@ -8,10 +8,8 @@ import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.font.DistanceFieldProgram;
-import ru.spacearena.engine.graphics.texture.Texture;
+import ru.spacearena.engine.graphics.shaders.PositionColorProgram;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
-import ru.spacearena.engine.graphics.texture.TextureProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -72,62 +70,52 @@ public class GameFactory implements EngineFactory {
         };
         root.add(f);
 
-        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
+        //final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
 //        viewport.add(new Ship(0, 0));
 //        viewport.add(new Ship(5, 5));
+
+
+        final Viewport viewport = new Viewport(new Viewport.RealSizeAdjustStrategy());
         root.add(viewport);
-
-        //final Viewport hud = new Viewport(new Viewport.RealSizeAdjustStrategy());
         viewport.add(new Transform() {
-            private float sizeV = 0f;
-            private final float maxSpeed = 500f;
-            private float size = 0;
 
-            private final TextureDefinition td = new TextureDefinition(OpenGL.LINEAR, OpenGL.LINEAR);
+            private final VertexBuffer vb = new VertexBuffer();
 
-            private final VertexBuffer vb = new VertexBuffer(100);
+            private void drawBevelRect(DrawContext dc, float l, float t, float r, float b, float pad, Color color) {
+                vb.reset(PositionColorProgram.LAYOUT_P2C3);
 
-            @Override
-            public void onInit(DrawContext context) {
-                context.load(td, GameFactory.class.getResource("df-size-segoe.png"));
-            }
+                final Color light = color.copy().bright(-0.25f);
+                vb.put(l,t).putRGB(light).
+                   put(l,b).putRGB(light).
+                   put(r,b).putRGB(light);
 
-            @Override
-            public boolean onUpdate(float seconds) {
-                sizeV += 100f * seconds;
-                if (FloatMathUtils.abs(sizeV) > maxSpeed) {
-                    sizeV = FloatMathUtils.copySign(maxSpeed, -sizeV);
-                }
-                size += sizeV * seconds;
-                rotate(FloatMathUtils.HALF_PI * seconds);
-                return true;
-            }
+                final Color dark = color.copy().bright(0.25f);
+                vb.put(l,t).putRGB(dark).
+                   put(r,b).putRGB(dark).
+                   put(r,t).putRGB(dark);
 
-            @Override
-            public void onDrawTransformed(DrawContext context) {
-                final Texture t = context.getTexture(td);
-                final float tScale = 0.002f;
-                final float hw = size * t.getAspectRatio() * tScale, hh = size * tScale;
-                vb.reset(TextureProgram.LAYOUT_PT2).
-                   put(-size * hw, -size * hh).put(0, 1).
-                   put(-size * hw, size * hh).put(0, 0).
-                   put(size * hw, size * hh).put(1, 0).
-                   put(-size * hw, -size * hh).put(0, 1).
-                   put(size * hw, size * hh).put(1, 0).
-                   put(size * hw, -size * hh).put(1, 1);
-                context.use(DistanceFieldProgram.DEFINITION).
-                        bindAttr(DistanceFieldProgram.POSITION_ATTR, vb, 0).
-                        bindAttr(DistanceFieldProgram.TEXCOORD_ATTR, vb, 1).
-                        bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, context.getActiveMatrix()).
-                        bindUniform(DistanceFieldProgram.COLOR_UNIFORM, Color.WHITE).
-                        bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, td, 0).
+                final float lm = l + pad, tm = t + pad, rm = r - pad, bm = b - pad;
+                vb.put(lm,tm).putRGB(color).
+                   put(lm, bm).putRGB(color).
+                   put(rm, bm).putRGB(color);
+                vb.put(lm,tm).putRGB(color).
+                   put(rm, bm).putRGB(color).
+                   put(rm, tm).putRGB(color);
+
+                dc.use(PositionColorProgram.DEFINITION).
+                        bindAttr(PositionColorProgram.POSITION_ATTR, vb, 0).
+                        bindAttr(PositionColorProgram.COLOR_ATTR, vb, 1).
+                        bindUniform(PositionColorProgram.MATRIX_UNIFORM, dc.getActiveMatrix()).
                         draw(OpenGL.TRIANGLES);
+            }
 
-//                context.drawText("FPS: " + f.getFps(), 0, 0, FontRepository.SEGOE_UI_LIGHT, size, Color.YELLOW);
-//                context.drawText("Size: " + size, 0, 100, FontRepository.SEGOE_UI_LIGHT, 18f, Color.GREEN);
+            @Override
+            public void onDraw(DrawContext context) {
+
+                drawBevelRect(context, 0, 0, 100, 50, 2, Color.LIGHT_GREEN);
+
             }
         });
-        //root.add(hud);
 
         /*
         final MultilineText.Line fpsText = new MultilineText.Line();

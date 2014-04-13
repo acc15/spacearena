@@ -1,5 +1,7 @@
 package ru.spacearena.engine.graphics;
 
+import ru.spacearena.engine.util.FloatMathUtils;
+
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-01-04
@@ -9,7 +11,11 @@ public class Color {
     public static final Color BLACK =         new Color(0,0,0,1);
     public static final Color WHITE =         new Color(1,1,1,1);
     public static final Color RED =           new Color(1,0,0,1);
+
     public static final Color GREEN =         new Color(0,1,0,1);
+    public static final Color LIGHT_GREEN =   new Color(0,0.75f,0,1);
+    public static final Color DARK_GREEN =    new Color(0,0.5f,0,1);
+
     public static final Color BLUE =          new Color(0,0,1,1);
     public static final Color YELLOW =        new Color(1,1,0,1);
     public static final Color GRAY =          new Color(0.5f,0.5f,0.5f,1);
@@ -47,6 +53,17 @@ public class Color {
         this.g = g;
         this.b = b;
         this.a = a;
+    }
+
+    public Color copy() {
+        return new Color(r,g,b,a);
+    }
+
+    public Color bright(float a) {
+        this.r = FloatMathUtils.clamp(this.r + a, 0, 1);
+        this.g = FloatMathUtils.clamp(this.g + a, 0, 1);
+        this.b = FloatMathUtils.clamp(this.b + a, 0, 1);
+        return this;
     }
 
 }
