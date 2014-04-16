@@ -2,7 +2,7 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
-import ru.spacearena.engine.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.ShapeUtils;
 
@@ -13,7 +13,7 @@ import ru.spacearena.engine.util.ShapeUtils;
 public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bounded {
 
     private final ViewportAdjustStrategy adjustStrategy;
-    private final Rect2FPP bounds = new Rect2FPP();
+    private final Rect2FP bounds = new Rect2FP();
     private Matrix localSpace = new Matrix();
 
     public Viewport() {

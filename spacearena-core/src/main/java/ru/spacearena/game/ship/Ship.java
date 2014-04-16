@@ -141,7 +141,7 @@ public class Ship extends GameBody {
     public void onPostCreate(Body body) {
 
         //final Sprite sprite = new Sprite(getEngine().getImage("ship.png"));
-        //final float pivotX = sprite.getWidth() / 3, pivotY = sprite.getHeight() / 2, scale = 6 / sprite.getWidth();
+        //final float pivotX = sprite.getWidth() / 3, pivotY = sprite.getH() / 2, scale = 6 / sprite.getWidth();
 
         //sprite.setPivot(pivotX, pivotY);
         //sprite.setScale(scale);

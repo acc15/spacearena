@@ -4,7 +4,7 @@ package ru.spacearena.engine.geometry.shapes;
  * @author Vyacheslav Mayorov
  * @since 2014-13-03
  */
-public class Polygon2FP extends AbstractPolyShape2F {
+public class Polygon2F extends AbstractPolyShape2F {
 
     private float[] points;
     private int start;
@@ -14,7 +14,7 @@ public class Polygon2FP extends AbstractPolyShape2F {
         return start + i * 2;
     }
 
-    public Polygon2FP(float[] points, int start, int count) {
+    public Polygon2F(float[] points, int start, int count) {
         this.points = points;
         this.start = start;
         this.count = count;

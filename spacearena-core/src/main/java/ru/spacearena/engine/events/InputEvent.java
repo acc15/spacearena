@@ -18,9 +18,9 @@ public class InputEvent implements EngineEvent {
         return inputType;
     }
 
-    public MouseEvent asMouseEvent() { return (MouseEvent)this; }
-    public KeyEvent asKeyEvent() { return (KeyEvent)this; }
-    public TouchEvent asTouchEvent() { return (TouchEvent)this; }
+    public MouseEvent asMouseEvent() { return inputType == InputType.MOUSE ? (MouseEvent)this : null; }
+    public KeyEvent asKeyEvent() { return inputType == InputType.KEYBOARD ? (KeyEvent)this : null; }
+    public TouchEvent asTouchEvent() { return inputType == InputType.TOUCH ? (TouchEvent)this : null; }
 
     public void run(Engine engine) {
         engine.onInput(this);

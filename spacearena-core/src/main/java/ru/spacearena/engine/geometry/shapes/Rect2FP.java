@@ -1,5 +1,6 @@
 package ru.spacearena.engine.geometry.shapes;
 
+import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.util.FloatMathUtils
 ;
 
@@ -7,18 +8,18 @@ import ru.spacearena.engine.util.FloatMathUtils
  * @author Vyacheslav Mayorov
  * @since 2014-09-03
  */
-public class Rect2FPP extends AbstractRect2F {
+public class Rect2FP extends AbstractRect2F {
 
-    public float x1, y1, x2, y2;
+    public final Point2F p1 = new Point2F(), p2 = new Point2F();
 
-    public Rect2FPP() {
+    public Rect2FP() {
     }
 
-    public Rect2FPP(float x1, float y1, float x2, float y2) {
+    public Rect2FP(float x1, float y1, float x2, float y2) {
         set(x1, y1, x2, y2);
     }
 
-    public Rect2FPP(BoundingBox2F aabb) {
+    public Rect2FP(BoundingBox2F aabb) {
         set(aabb);
     }
 
@@ -27,49 +28,43 @@ public class Rect2FPP extends AbstractRect2F {
     }
 
     public void set(float x1, float y1, float x2, float y2) {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+        p1.set(x1,y1);
+        p2.set(x2,y2);
     }
 
     public void offset(float dx, float dy) {
-        this.x1 += dx;
-        this.y1 += dy;
-        this.x2 += dx;
-        this.y2 += dy;
+        p1.add(dx, dy);
+        p2.add(dx, dy);
     }
 
     public float getCenterX() {
-        return FloatMathUtils.center(x1, x2);
+        return FloatMathUtils.center(p1.x, p2.x);
     }
 
     public float getCenterY() {
-        return FloatMathUtils.center(y1, y2);
+        return FloatMathUtils.center(p1.y,p2.y);
     }
 
     public float getWidth() {
-        return FloatMathUtils.size(x1, x2);
+        return FloatMathUtils.size(p1.x, p2.x);
     }
 
     public float getHeight() {
-        return FloatMathUtils.size(y1, y2);
+        return FloatMathUtils.size(p1.y, p2.y);
     }
 
     public float getHalfWidth() {
-        return FloatMathUtils.halfSize(x1, x2);
+        return FloatMathUtils.halfSize(p1.x, p2.x);
     }
 
     public float getHalfHeight() {
-        return FloatMathUtils.halfSize(y1, y2);
+        return FloatMathUtils.halfSize(p1.y, p2.y);
     }
 
     public void moveTo(float x, float y) {
         final float cx = getHalfWidth(), cy = getHalfHeight();
-        this.x1 = x - cx;
-        this.x2 = x + cx;
-        this.y1 = y - cy;
-        this.y2 = y + cy;
+        p1.set(x - cx, y - cy);
+        p2.set(x + cx, y + cy);
     }
 
     public void scale(float scaleX, float scaleY) {
@@ -78,49 +73,39 @@ public class Rect2FPP extends AbstractRect2F {
     }
 
     public void inflate(float dx, float dy) {
-        this.x1 -= dx;
-        this.y1 -= dy;
-        this.x2 += dx;
-        this.y2 += dy;
+        this.p1.sub(dx,dy);
+        this.p2.add(dx,dy);
     }
 
     public void extend(float dx, float dy) {
-        if (dx > 0) {
-            x2 += dx;
-        } else {
-            x1 += dx;
-        }
-        if (dy > 0) {
-            y2 += dy;
-        } else {
-            y1 += dy;
-        }
+        (dx > 0 ? p2 : p1).x += dx;
+        (dy > 0 ? p2 : p1).y += dy;
     }
 
     public void computeBoundingBox(float[] pts, int start, int pointCount) {
         for (int i=0; i<pointCount; i++) {
             final float x = pts[i*2+start], y = pts[i*2+start+1];
-            if (x < x1) {
-                x1 = x;
-            } else if (x > x2) {
-                x2 = x;
+            if (x < p1.x) {
+                p1.x = x;
+            } else if (x > p2.x) {
+                p2.x = x;
             }
-            if (y < y1) {
-                y1 = y;
-            } else if (y > y2) {
-                y2 = y;
+            if (y < p1.y) {
+                p1.y = y;
+            } else if (y > p2.y) {
+                p2.y = y;
             }
         }
     }
 
     @Override
     public float getPointX(int i) {
-        return i / 2 % 2 == 0 ? x1 : x2;
+        return i / 2 % 2 == 0 ? p1.x : p2.x;
     }
 
     @Override
     public float getPointY(int i) {
-        return (i+1) / 2 % 2 == 0 ? y1 : y2;
+        return (i+1) / 2 % 2 == 0 ? p1.y : p2.y;
     }
 
     @Override
@@ -129,19 +114,19 @@ public class Rect2FPP extends AbstractRect2F {
     }
 
     public float getMinX() {
-        return x1;
+        return p1.x;
     }
 
     public float getMaxX() {
-        return x2;
+        return p2.x;
     }
 
     public float getMinY() {
-        return y1;
+        return p1.y;
     }
 
     public float getMaxY() {
-        return y2;
+        return p2.y;
     }
 
 }

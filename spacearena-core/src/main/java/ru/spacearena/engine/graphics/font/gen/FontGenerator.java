@@ -151,7 +151,7 @@ public class FontGenerator {
 //            return level;
 //        }
 //
-//        final int iw = image.getWidth(), ih = image.getHeight();
+//        final int iw = image.getWidth(), ih = image.getH();
 //        int w = iw >> 1, h = ih >> 1;
 //        if (w < 1 && h < 1) {
 //            return level;

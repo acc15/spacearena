@@ -4,15 +4,15 @@ package ru.spacearena.engine.geometry.shapes;
  * @author Vyacheslav Mayorov
  * @since 2014-09-03
  */
-public class Ellipse2FCR {
+public class Ellipse2FR {
 
     public float x, y;
     public float rx, ry;
 
-    public Ellipse2FCR() {
+    public Ellipse2FR() {
     }
 
-    public Ellipse2FCR(float x, float y, float vx, float vy) {
+    public Ellipse2FR(float x, float y, float vx, float vy) {
         set(x, y, vx, vy);
     }
 

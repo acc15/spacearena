@@ -4,7 +4,9 @@ import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.events.MouseEvent;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.OpenGL;
@@ -12,6 +14,10 @@ import ru.spacearena.engine.graphics.shaders.PositionColorProgram;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.IntMathUtils;
+import ru.spacearena.engine.util.TempUtils;
+
+import java.util.*;
 
 /**
  * @author Vyacheslav Mayorov
@@ -44,6 +50,67 @@ public class GameFactory implements EngineFactory {
         @Override
         public void onDrawTransformed(DrawContext context) {
             context.drawImage(-10, -6, 10, 6, td);
+        }
+    }
+
+    private static class Rectangle {
+        public int x,y,w,h;
+        public final Color c = new Color();
+
+        private Rectangle(int w, int h, Color c) {
+            this(0,0,w,h,c);
+        }
+
+        private Rectangle(int x, int y, int w, int h, Color c) {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+            this.c.set(c);
+        }
+
+        public void setPosition(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    private static class RectPacker {
+
+        private TreeMap<Integer,TreeSet<Integer>> xMap = new TreeMap<Integer, TreeSet<Integer>>();
+        private TreeMap<Integer,TreeSet<Integer>> yMap = new TreeMap<Integer, TreeSet<Integer>>();
+
+        private List<Rectangle> rectangles = new ArrayList<Rectangle>();
+
+        public boolean hasSpace(int x, int y, int w, int h) {
+
+            final SortedMap<Integer,TreeSet<Integer>> intersectX = xMap.headMap(x+w).tailMap(x);
+
+
+            return false;
+        }
+
+        public void putRect(Rectangle newRect) {
+
+            // can be placed at 0,0
+            //
+//
+//            if (hasSpace(0,0,newRect.w,newRect.h)) {
+//                newRect.setPosition(0,0);
+//            } else {
+//                for (Rectangle r : rectangles) {
+//
+//                }
+//            }
+
+
+            rectangles.add(newRect);
+        }
+
+        public void reset() {
+            xMap.clear();
+            yMap.clear();
+            rectangles.clear();
         }
     }
 
@@ -81,6 +148,53 @@ public class GameFactory implements EngineFactory {
 
             private final VertexBuffer vb = new VertexBuffer();
 
+            private final RectPacker rectPacker = new RectPacker();
+
+            private void initLayout() {
+                rectPacker.reset();
+
+                final List<Rectangle> rectangles = new ArrayList<Rectangle>();
+                final int rectCount = TempUtils.RAND.nextInt(256);
+                for (int i=0; i<rectCount; i++) {
+                    final int width = TempUtils.RAND.nextInt(256);
+                    final int height = TempUtils.RAND.nextInt(256);
+                    final Color color = new Color(
+                            TempUtils.RAND.nextFloatBetween(0.25f, 0.75f),
+                            TempUtils.RAND.nextFloatBetween(0.25f, 0.75f),
+                            TempUtils.RAND.nextFloatBetween(0.25f, 0.75f));
+                    rectangles.add(new Rectangle(width, height, color));
+                }
+                rectangles.sort(new Comparator<Rectangle>() {
+                    public int compare(Rectangle o1, Rectangle o2) {
+                        return -IntMathUtils.compare(o1.w * o1.h, o2.w * o2.h);
+                    }
+                });
+                for (Rectangle r: rectangles) {
+                    rectPacker.putRect(r);
+                }
+            }
+
+            @Override
+            public boolean onInput(InputEvent inputEvent) {
+                MouseEvent me = inputEvent.asMouseEvent();
+                if (me == null) {
+                    return true;
+                }
+                if (me.getAction() != MouseEvent.Action.CLICK) {
+                    return true;
+                }
+                if (me.getButton() != MouseEvent.LEFT_BUTTON) {
+                    return true;
+                }
+                initLayout();
+                return true;
+            }
+
+            @Override
+            public void onAttach(Engine engine) {
+                initLayout();
+            }
+
             private void drawBevelRect(DrawContext dc, float l, float t, float r, float b, float pad, Color color) {
                 vb.reset(PositionColorProgram.LAYOUT_P2C3);
 
@@ -112,7 +226,10 @@ public class GameFactory implements EngineFactory {
             @Override
             public void onDraw(DrawContext context) {
 
-                drawBevelRect(context, 0, 0, 100, 50, 2, Color.LIGHT_GREEN);
+                for (Rectangle r: rectPacker.rectangles) {
+                    drawBevelRect(context, r.x, r.y, r.w, r.h, 2, r.c);
+                }
+
 
             }
         });

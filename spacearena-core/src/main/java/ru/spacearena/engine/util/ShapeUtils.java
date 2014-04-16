@@ -1,7 +1,7 @@
 package ru.spacearena.engine.util;
 
 import ru.spacearena.engine.geometry.shapes.PolyShape2F;
-import ru.spacearena.engine.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Matrix;
 
 /**
@@ -21,7 +21,7 @@ public class ShapeUtils {
         return TempUtils.POINT_BUF;
     }
 
-    public static void computeBoundingBox(PolyShape2F shape, Rect2FPP rect, Matrix matrix) {
+    public static void computeBoundingBox(PolyShape2F shape, Rect2FP rect, Matrix matrix) {
         final int pointCount = shape.getPointCount();
         if (pointCount > 0) {
             final float[] pts = transformShape(shape, matrix);

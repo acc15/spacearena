@@ -10,12 +10,11 @@
  *     </ul></li>
  *     <li>{@code Representation} - abbreviated representation of shape. Possible letters: <ul>
  *         <li>P = Position</li>
- *         <li>C = Center</li>
- *         <li>D = Size (or Diameter)</li>
+ *         <li>D = Diameter (or width, height)</li>
  *         <li>R = Radius (or half-width, half-height)</li></ul>
  *         Examples: <ul>
  *         <li>PP = Position, Position (AABB or Ellipse with left-top and right-bottom points)</li>
- *         <li>PD = Position, Size (AABB with left-top and width, height)</li>
+ *         <li>PD = Position, Diameter (AABB with left-top and width, height)</li>
  *         <li>CR = Center, Radius (AABB with center x,y and halfwidths), circle and ellipse with radius</li>
  *         </ul>
  *     </ul></li>

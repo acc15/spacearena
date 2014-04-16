@@ -4,15 +4,15 @@ package ru.spacearena.engine.geometry.shapes;
  * @author Vyacheslav Mayorov
  * @since 2014-09-03
  */
-public class Circle2FCR {
+public class Circle2FR {
 
     public float x, y;
     public float r;
 
-    public Circle2FCR() {
+    public Circle2FR() {
     }
 
-    public Circle2FCR(float x, float y, float r) {
+    public Circle2FR(float x, float y, float r) {
         this.x = x;
         this.y = y;
         this.r = r;

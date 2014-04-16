@@ -2,7 +2,7 @@ package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
-import ru.spacearena.engine.geometry.shapes.Rect2FPP;
+import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 
@@ -13,7 +13,7 @@ import ru.spacearena.engine.graphics.DrawContext;
 public class Rectangle extends EngineObject {
 
     private final Color color;
-    private final Rect2FPP bounds = new Rect2FPP();
+    private final Rect2FP bounds = new Rect2FP();
 
     public Rectangle() {
         this.color = Color.WHITE;

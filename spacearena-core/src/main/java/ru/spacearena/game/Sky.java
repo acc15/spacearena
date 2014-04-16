@@ -2,7 +2,7 @@ package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
-import ru.spacearena.engine.geometry.shapes.Rect2FPR;
+import ru.spacearena.engine.geometry.shapes.Rect2FR;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -19,7 +19,7 @@ public class Sky extends EngineObject {
 
     private final QRand random = new QRand();
     private final int seed = random.nextInt();
-    private final Rect2FPR bounds = new Rect2FPR();
+    private final Rect2FR bounds = new Rect2FR();
     private final Viewport viewport;
 
     public Sky(Viewport viewport) {
