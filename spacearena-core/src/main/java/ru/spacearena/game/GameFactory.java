@@ -7,17 +7,19 @@ import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.events.MouseEvent;
+import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.shaders.PositionColorProgram;
+import ru.spacearena.engine.graphics.font.gen.pack.RectPacker;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
-import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.IntMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author Vyacheslav Mayorov
@@ -53,66 +55,10 @@ public class GameFactory implements EngineFactory {
         }
     }
 
-    private static class Rectangle {
-        public int x,y,w,h;
+    private static class ColorRect extends Rect2IP {
         public final Color c = new Color();
-
-        private Rectangle(int w, int h, Color c) {
-            this(0,0,w,h,c);
-        }
-
-        private Rectangle(int x, int y, int w, int h, Color c) {
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.h = h;
-            this.c.set(c);
-        }
-
-        public void setPosition(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
     }
 
-    private static class RectPacker {
-
-        private TreeMap<Integer,TreeSet<Integer>> xMap = new TreeMap<Integer, TreeSet<Integer>>();
-        private TreeMap<Integer,TreeSet<Integer>> yMap = new TreeMap<Integer, TreeSet<Integer>>();
-
-        private List<Rectangle> rectangles = new ArrayList<Rectangle>();
-
-        public boolean hasSpace(int x, int y, int w, int h) {
-
-            final SortedMap<Integer,TreeSet<Integer>> intersectX = xMap.headMap(x+w).tailMap(x);
-
-
-            return false;
-        }
-
-        public void putRect(Rectangle newRect) {
-
-            // can be placed at 0,0
-            //
-//
-//            if (hasSpace(0,0,newRect.w,newRect.h)) {
-//                newRect.setPosition(0,0);
-//            } else {
-//                for (Rectangle r : rectangles) {
-//
-//                }
-//            }
-
-
-            rectangles.add(newRect);
-        }
-
-        public void reset() {
-            xMap.clear();
-            yMap.clear();
-            rectangles.clear();
-        }
-    }
 
     public EngineEntity createRoot(final Engine engine) {
 
@@ -146,32 +92,30 @@ public class GameFactory implements EngineFactory {
         root.add(viewport);
         viewport.add(new Transform() {
 
-            private final VertexBuffer vb = new VertexBuffer();
-
             private final RectPacker rectPacker = new RectPacker();
+            private final List<ColorRect> rectangles = new ArrayList<ColorRect>();
 
             private void initLayout() {
                 rectPacker.reset();
+                rectangles.clear();
 
-                final List<Rectangle> rectangles = new ArrayList<Rectangle>();
-                final int rectCount = TempUtils.RAND.nextInt(256);
+                final int rectCount = 256;
                 for (int i=0; i<rectCount; i++) {
-                    final int width = TempUtils.RAND.nextInt(256);
-                    final int height = TempUtils.RAND.nextInt(256);
-                    final Color color = new Color(
-                            TempUtils.RAND.nextFloatBetween(0.25f, 0.75f),
-                            TempUtils.RAND.nextFloatBetween(0.25f, 0.75f),
-                            TempUtils.RAND.nextFloatBetween(0.25f, 0.75f));
-                    rectangles.add(new Rectangle(width, height, color));
+                    final ColorRect r = new ColorRect();
+                    r.r = TempUtils.RAND.nextIntBetween(5, 50);
+                    r.b = TempUtils.RAND.nextIntBetween(5, 50);
+                    r.c.set(TempUtils.RAND.nextFloatBetween(0.25f, 1f),
+                            TempUtils.RAND.nextFloatBetween(0.25f, 1f),
+                            TempUtils.RAND.nextFloatBetween(0.25f, 1f));
+                    rectangles.add(r);
                 }
-                rectangles.sort(new Comparator<Rectangle>() {
-                    public int compare(Rectangle o1, Rectangle o2) {
-                        return -IntMathUtils.compare(o1.w * o1.h, o2.w * o2.h);
+                Collections.sort(rectangles, new Comparator<ColorRect>() {
+                    public int compare(ColorRect o1, ColorRect o2) {
+                        return -IntMathUtils.compare(o1.getWidth() * o1.getHeight(), o2.getWidth() * o2.getHeight());
+//                        return -IntMathUtils.compare(o1.getWidth(), o2.getWidth());
                     }
                 });
-                for (Rectangle r: rectangles) {
-                    rectPacker.putRect(r);
-                }
+                rectPacker.pack(rectangles);
             }
 
             @Override
@@ -195,42 +139,17 @@ public class GameFactory implements EngineFactory {
                 initLayout();
             }
 
-            private void drawBevelRect(DrawContext dc, float l, float t, float r, float b, float pad, Color color) {
-                vb.reset(PositionColorProgram.LAYOUT_P2C3);
-
-                final Color light = color.copy().bright(-0.25f);
-                vb.put(l,t).putRGB(light).
-                   put(l,b).putRGB(light).
-                   put(r,b).putRGB(light);
-
-                final Color dark = color.copy().bright(0.25f);
-                vb.put(l,t).putRGB(dark).
-                   put(r,b).putRGB(dark).
-                   put(r,t).putRGB(dark);
-
-                final float lm = l + pad, tm = t + pad, rm = r - pad, bm = b - pad;
-                vb.put(lm,tm).putRGB(color).
-                   put(lm, bm).putRGB(color).
-                   put(rm, bm).putRGB(color);
-                vb.put(lm,tm).putRGB(color).
-                   put(rm, bm).putRGB(color).
-                   put(rm, tm).putRGB(color);
-
-                dc.use(PositionColorProgram.DEFINITION).
-                        bindAttr(PositionColorProgram.POSITION_ATTR, vb, 0).
-                        bindAttr(PositionColorProgram.COLOR_ATTR, vb, 1).
-                        bindUniform(PositionColorProgram.MATRIX_UNIFORM, dc.getActiveMatrix()).
-                        draw(OpenGL.TRIANGLES);
-            }
 
             @Override
             public void onDraw(DrawContext context) {
-
-                for (Rectangle r: rectPacker.rectangles) {
-                    drawBevelRect(context, r.x, r.y, r.w, r.h, 2, r.c);
+                for (Rect2IP f: rectPacker.getFreeAreas()) {
+                    context.fillRect(f.l, f.t, f.r, f.b, new Color(1,1,1,0.1f));
                 }
-
-
+                for (ColorRect r: rectangles) {
+                    context.fillRect(r.l, r.t, r.r, r.b, r.c);
+                    context.drawRect(r.l, r.t, r.r, r.b, Color.WHITE);
+                }
+                context.drawRect(0,0,rectPacker.getPackWidth(),rectPacker.getPackHeight(), Color.WHITE);
             }
         });
 

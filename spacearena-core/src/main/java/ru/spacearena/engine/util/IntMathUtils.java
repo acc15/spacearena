@@ -22,4 +22,6 @@ public class IntMathUtils {
         return a < b ? -1 : a > b ? 1 : 0;
     }
 
+    public static int abs(int v) { return v < 0 ? -v : v; }
+
 }

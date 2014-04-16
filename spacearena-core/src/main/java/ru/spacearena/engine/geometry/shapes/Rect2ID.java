@@ -4,7 +4,7 @@ package ru.spacearena.engine.geometry.shapes;
  * @author Vyacheslav Mayorov
  * @since 2014-16-04
  */
-public class Rect2ID {
+public class Rect2ID implements BoundingBox2I {
 
     public int x,y,w,h;
 
@@ -28,4 +28,11 @@ public class Rect2ID {
         this.y = y;
     }
 
+    public int getWidth() {
+        return w;
+    }
+
+    public int getHeight() {
+        return h;
+    }
 }
