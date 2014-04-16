@@ -31,4 +31,9 @@ public class IOUtils {
         }
         return sb.toString();
     }
+
+    public static String getExtension(String name) {
+        final int lastDotPos = name.lastIndexOf('.');
+        return lastDotPos >= 0 ? name.substring(lastDotPos+1) : null;
+    }
 }

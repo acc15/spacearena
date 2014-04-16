@@ -12,39 +12,15 @@ import java.net.URL;
  */
 public class FontDefinition implements FontData.Definition {
 
-    public enum Quality {
-        HIGH,
-        MEDIUM,
-        LOW
-    }
-
-
     private final TextureDefinition td;
     private final Class<?> baseClass;
     private final String name;
 
-    public static int getMinFilter(Quality quality) {
-        switch (quality) {
-        case LOW: return OpenGL.NEAREST_MIPMAP_NEAREST;
-        case MEDIUM: return OpenGL.NEAREST_MIPMAP_LINEAR;
-        case HIGH: return OpenGL.LINEAR_MIPMAP_LINEAR;
-        }
-        throw new IllegalArgumentException("unknown quality");
-    }
 
-    public static int getMagFilter(Quality quality) {
-        switch (quality) {
-        case LOW: return OpenGL.NEAREST;
-        case MEDIUM:
-        case HIGH: return OpenGL.LINEAR;
-        }
-        throw new IllegalArgumentException("unknown quality");
-    }
-
-    public FontDefinition(Class<?> baseClass, Quality quality, String fontName) {
+    public FontDefinition(Class<?> baseClass, String fontName) {
         this.baseClass = baseClass;
         this.name = fontName;
-        this.td = new TextureDefinition(getMinFilter(quality), getMagFilter(quality));
+        this.td = new TextureDefinition(OpenGL.LINEAR, OpenGL.LINEAR);
     }
 
     public Texture.Definition getTexture() {
@@ -55,8 +31,8 @@ public class FontDefinition implements FontData.Definition {
         return baseClass.getResource(name + ".fnt");
     }
 
-    public URL getTextureUrl(int level) {
-        return baseClass.getResource(name + level + ".png");
+    public URL getTextureUrl() {
+        return baseClass.getResource(name + ".png");
     }
 
 }

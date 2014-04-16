@@ -4,9 +4,9 @@ package ru.spacearena.engine.geometry.shapes;
  * @author Vyacheslav Mayorov
  * @since 2014-16-04
  */
-public class Rect2IP implements BoundingBox2I {
+public class Rect2IP extends AbstractRect2I {
 
-    public int l = 0,t = 0,r = 0,b = 0;
+    public int l = 0, t = 0, r = 0, b = 0;
 
     public Rect2IP() {
     }
@@ -36,5 +36,21 @@ public class Rect2IP implements BoundingBox2I {
 
     public int getHeight() {
         return b - t;
+    }
+
+    public int getLeft() {
+        return l;
+    }
+
+    public int getTop() {
+        return t;
+    }
+
+    public int getRight() {
+        return r;
+    }
+
+    public int getBottom() {
+        return b;
     }
 }

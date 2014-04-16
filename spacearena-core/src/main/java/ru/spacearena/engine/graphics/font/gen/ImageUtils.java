@@ -1,7 +1,10 @@
 package ru.spacearena.engine.graphics.font.gen;
 
+import ru.spacearena.engine.util.IOUtils;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -11,6 +14,15 @@ import java.net.URL;
  */
 public class ImageUtils {
 
+
+    public static void storeImage(BufferedImage image, File file) {
+        try {
+            final String ext = IOUtils.getExtension(file.getName());
+            ImageIO.write(image, ext, file);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't store image to file: " + file, e);
+        }
+    }
 
     public static BufferedImage loadImage(URL url) {
         try {

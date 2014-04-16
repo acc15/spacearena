@@ -1,7 +1,10 @@
 package ru.spacearena.engine.graphics.font.gen;
 
-import ru.spacearena.engine.graphics.font.CharGlyph;
+import ru.spacearena.engine.geometry.shapes.Rect2I;
+import ru.spacearena.engine.graphics.font.CharData;
 import ru.spacearena.engine.graphics.font.FontData;
+import ru.spacearena.engine.graphics.font.gen.pack.RectPacker;
+import ru.spacearena.engine.util.IntMathUtils;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -10,7 +13,9 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @author Vyacheslav Mayorov
@@ -62,22 +67,29 @@ public class FontGenerator {
         g.setFont(font);
         g.setColor(Color.WHITE);
 
-        final int ascent = g.getFontMetrics().getAscent();
+        final FontMetrics fm = g.getFontMetrics(font);
+
 
         final char[] ch = new char[1];
-        for (Map.Entry<Character, CharGlyph> glyph: fd.getGlyphs().entrySet()) {
-            ch[0] = glyph.getKey();
-            final CharGlyph ci = glyph.getValue();
-            g.drawChars(ch, 0, 1, ci.getX() - ci.getOffset(), ci.getY() + ascent);
+        for (CharData glyph: fd.getGlyphs()) {
+            ch[0] = glyph.getCharacter();
+
+            g.drawChars(ch, 0, 1,
+                    glyph.getX() - glyph.getOffsetX(),
+                    glyph.getY() - glyph.getOffsetY() + fm.getAscent());
         }
         g.dispose();
         return img;
     }
 
-    public static FontData computeFontData(Font font, int maxWidth, int pad, String alphabet) {
+    public static FontData computeFontData(Font font, int pad, int scale, String alphabet) {
+
+        if (font.canDisplayUpTo(alphabet) >= 0) {
+            return null;
+        }
 
         final AffineTransform t = new AffineTransform();
-        final FontRenderContext frc = new FontRenderContext(t, true, true);
+        final FontRenderContext frc = new FontRenderContext(t, false, false);
         final FontData fi = new FontData();
 
         final LineMetrics lm = font.getLineMetrics(alphabet, frc);
@@ -86,59 +98,49 @@ public class FontGenerator {
         fi.setSpaceAdvance(getAsInt(font.getStringBounds(" ", frc).getWidth()));
         fi.setTabAdvance(fi.getSpaceAdvance() * 4);
 
-        int x = 0, y = 0;
+        final ArrayList<CharData> charList = new ArrayList<CharData>();
         for (int i=0; i<alphabet.length(); i++) {
             final TextLayout textLayout = new TextLayout(alphabet.substring(i, i + 1), font, frc);
-
+            final float ascent = textLayout.getAscent();
             final Rectangle2D tr = textLayout.getBounds();
             final Rectangle2D fr = font.getStringBounds(alphabet, i, i + 1, frc);
-            final int advance = getAsInt(fr.getWidth());
-            final int offset = (int)Math.round(tr.getX()) - pad;
-            final int width = getAsInt(tr.getWidth()) + pad * 2;
-
-            if (x + width > maxWidth) {
-                x = 0;
-                y += lineHeight;
-            }
-
-            fi.setCharMetrics(alphabet.charAt(i), x, y, offset, advance, width);
-            x += width;
-
+            final CharData charData = new CharData();
+            charData.setCharacter(alphabet.charAt(i));
+            charData.setAdvance(getAsInt(fr.getWidth()));
+            charData.setWidth(getAsInt(tr.getWidth()) + pad * 2);
+            charData.setHeight(getAsInt(tr.getHeight()) + pad * 2);
+            charData.setOffsetX((int)Math.round(tr.getX()) - pad);
+            charData.setOffsetY((int)Math.round(tr.getY() + ascent) - pad);
+            charList.add(charData);
         }
-        fi.setFontMetrics(maxWidth, pow2RoundUp(y+lineHeight), lineHeight, font.getSize());
+
+        Collections.sort(charList, new Comparator<CharData>() {
+            public int compare(CharData o1, CharData o2) {
+                final Rect2I r1 = o1.getRect(), r2 = o2.getRect();
+                final int m1 = IntMathUtils.max(r1.getWidth(), r1.getHeight());
+                final int m2 = IntMathUtils.max(r2.getWidth(), r2.getHeight());
+                return -IntMathUtils.compare(m1, m2);
+            }
+        });
+
+        final RectPacker packer = new RectPacker();
+        for (CharData cd: charList) {
+            packer.pack(cd.getRect());
+            fi.setCharData(cd.getCharacter(), cd);
+        }
+
+        fi.setFontName(font.getName());
+        fi.setImageWidth(IntMathUtils.pow2RoundUp(packer.getPackWidth()));
+        fi.setImageHeight(IntMathUtils.pow2RoundUp(packer.getPackHeight()));
+        fi.setLineHeight(lineHeight);
+        fi.setFontSize(font.getSize());
+        fi.setFontStyle(font.getStyle());
+        fi.setImageScale(scale);
         return fi;
     }
 
-    public static int pow2RoundUp (int x) {
-        if (x < 0) {
-            return 0;
-        }
-        --x;
-        x |= x >> 1;
-        x |= x >> 2;
-        x |= x >> 4;
-        x |= x >> 8;
-        x |= x >> 16;
-        return x+1;
-    }
 
 
-
-//    private static String suggestFileName(java.awt.Font font) {
-//        final String name = font.getFontName();
-//        final StringBuilder sb = new StringBuilder();
-//        for (int i=0; i<name.length(); i++) {
-//            final char ch = name.charAt(i);
-//            if (Character.isLetter(ch) || Character.isDigit(ch)) {
-//                sb.append(Character.toLowerCase(ch));
-//            }
-//        }
-//        switch (font.getStyle()) {
-//        case java.awt.Font.BOLD: sb.append("_b"); break;
-//        case java.awt.Font.ITALIC: sb.append("_i"); break;
-//        }
-//        return sb.toString();
-//    }
 
 //    public static int storeWithMipMaps(BufferedImage image, Args args, int level, String format) {
 //        try {

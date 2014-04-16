@@ -2,10 +2,8 @@ package ru.spacearena.engine.graphics;
 
 import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.font.CharGlyph;
-import ru.spacearena.engine.graphics.font.FontData;
-import ru.spacearena.engine.graphics.font.FontIO;
-import ru.spacearena.engine.graphics.font.FontProgram;
+import ru.spacearena.engine.geometry.shapes.Rect2I;
+import ru.spacearena.engine.graphics.font.*;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
 import ru.spacearena.engine.graphics.texture.Texture;
@@ -192,10 +190,7 @@ public class DrawContext {
         }
         fontData = FontIO.load(definition.getFontUrl());
         if (!has(definition.getTexture())) {
-            final int maxMipMap = fontData.getMaxMipMap();
-            for (int i=0; i<= maxMipMap; i++) {
-                load(definition.getTexture(), i, definition.getTextureUrl(i));
-            }
+            load(definition.getTexture(), definition.getTextureUrl());
         }
         fonts.put(definition, fontData);
         return fontData;
@@ -220,17 +215,18 @@ public class DrawContext {
         drawImage(x, y, x + t.getWidth(), y + t.getHeight(), texture);
     }
 
-    public void drawImage(float l, float t, float r, float b, Texture.Definition texture) {
+    public void drawImage(float l, float t, float r, float b, Texture.Definition definition) {
+        final Texture texture = getTexture(definition);
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
-                     put(l,t).put(0f,1f).
-                     put(l,b).put(0f,0f).
-                     put(r,b).put(1f,0f).
-                     put(r,t).put(1f,1f);
+                     put(l,t).put(texture.getLeft(), texture.getTop()).
+                     put(l,b).put(texture.getLeft(), texture.getBottom()).
+                     put(r,b).put(texture.getRight(), texture.getBottom()).
+                     put(r,t).put(texture.getRight(), texture.getTop());
         use(TextureProgram.DEFINITION).
                 bindAttr(TextureProgram.POSITION_ATTR, vertexBuffer, 0).
                 bindAttr(TextureProgram.TEXCOORD_ATTR, vertexBuffer, 1).
                 bindUniform(TextureProgram.MATRIX_UNIFORM, activeMatrix).
-                bindUniform(TextureProgram.TEXTURE_UNIFORM, texture, 0).
+                bindUniform(TextureProgram.TEXTURE_UNIFORM, definition, 0).
                 draw(OpenGL.TRIANGLE_FAN);
     }
 
@@ -239,7 +235,9 @@ public class DrawContext {
 
         final FontData f = load(font);
         final Texture t = getTexture(font.getTexture());
-        final float scale = size/f.getOriginalSize() * fontScale;
+
+        final float invSize = 2.4f / f.getFontSize();
+        final float scale = size/f.getFontSize();// * fontScale;
         final float lineHeight = f.getLineHeight() * scale;
 
         float currentX = x, currentY = y;
@@ -263,26 +261,24 @@ public class DrawContext {
 
             default:
 
-                final CharGlyph ci = f.getCharInfo(ch);
-                final float charOffset = ci.getOffset() * scale;
-                final float charWidth = ci.getWidth() * scale;
-                final float charAdvance = ci.getAdvance() * scale;
+                final CharData ci = f.getCharInfo(ch);
+                final Rect2I charRect = ci.getRect();
 
-                // a * x + b * (1-x) = ax + b - bx
+                final float offsetX = ci.getOffsetX() * scale;
+                final float offsetY = ci.getOffsetY() * scale;
+                final float height = charRect.getHeight() * scale;
+                final float width = charRect.getWidth() * scale;
+                final float advance = ci.getAdvance() * scale;
 
-                float tl = (float)ci.getX() / f.getImageWidth();
-                float tt = (float)ci.getY() / f.getImageHeight();
-                float tr = (float)(ci.getX() + ci.getWidth()) / f.getImageWidth();
-                float tb = (float)(ci.getY() + f.getLineHeight()) / f.getImageHeight();
-                if (t.isFlipY()) {
-                    tt = 1 - tt;
-                    tb = 1 - tb;
-                }
+                final float tl = t.computeX((float) charRect.getLeft() / f.getImageWidth()),
+                            tt = t.computeY((float) charRect.getTop() / f.getImageHeight()),
+                            tr = t.computeX((float) charRect.getRight() / f.getImageWidth()),
+                            tb = t.computeY((float) charRect.getBottom() / f.getImageHeight());
 
-                final float ll = currentX + charOffset,
-                        lt = currentY,
-                        lr = ll + charWidth,
-                        lb = lt + lineHeight;
+                final float ll = currentX + offsetX,
+                            lt = currentY + offsetY,
+                            lr = ll + width,
+                            lb = lt + height;
                 vertexBuffer.// first triangle
                         put(ll, lt).put(tl, tt).
                         put(ll, lb).put(tl, tb).
@@ -291,17 +287,18 @@ public class DrawContext {
                         put(ll, lt).put(tl, tt).
                         put(lr, lb).put(tr, tb).
                         put(lr, lt).put(tr, tt);
-                currentX += charAdvance;
+                currentX += advance;
                 break;
             }
         }
 
-        use(FontProgram.DEFINITION).
-                bindAttr(FontProgram.POSITION_ATTR, vertexBuffer, 0).
-                bindAttr(FontProgram.TEXCOORD_ATTR, vertexBuffer, 1).
-                bindUniform(FontProgram.MATRIX_UNIFORM, activeMatrix).
-                bindUniform(FontProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
-                bindUniform(FontProgram.COLOR_UNIFORM, color).
+        use(DistanceFieldProgram.DEFINITION).
+                bindAttr(DistanceFieldProgram.POSITION_ATTR, vertexBuffer, 0).
+                bindAttr(DistanceFieldProgram.TEXCOORD_ATTR, vertexBuffer, 1).
+                bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, activeMatrix).
+                bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
+                bindUniform(DistanceFieldProgram.COLOR_UNIFORM, color).
+                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, 1f/size).
                 draw(OpenGL.TRIANGLES);
     }
 

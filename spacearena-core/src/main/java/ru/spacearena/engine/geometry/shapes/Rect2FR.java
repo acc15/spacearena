@@ -14,7 +14,7 @@ public class Rect2FR extends AbstractRect2F {
     public Rect2FR() {
     }
 
-    public Rect2FR(BoundingBox2F aabb) {
+    public Rect2FR(Rect2F aabb) {
         set(aabb);
     }
 
@@ -22,7 +22,7 @@ public class Rect2FR extends AbstractRect2F {
         set(x, y, rx, ry);
     }
 
-    public void set(BoundingBox2F aabb) {
+    public void set(Rect2F aabb) {
         set(aabb.getCenterX(), aabb.getCenterY(), aabb.getHalfWidth(), aabb.getHalfHeight());
     }
 

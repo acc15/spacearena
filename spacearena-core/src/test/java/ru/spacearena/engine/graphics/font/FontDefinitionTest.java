@@ -11,8 +11,8 @@ public class FontDefinitionTest {
 
     @Test
     public void testFontDef() throws Exception {
-        final FontDefinition fd = new FontDefinition(GameFactory.class, FontDefinition.Quality.HIGH, "test");
+        final FontDefinition fd = new FontDefinition(GameFactory.class, "test");
         System.out.println(fd.getFontUrl());
-        System.out.println(fd.getTextureUrl(0));
+        System.out.println(fd.getTextureUrl());
     }
 }

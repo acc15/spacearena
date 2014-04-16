@@ -4,6 +4,7 @@ import ru.spacearena.engine.graphics.texture.Texture;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,41 +15,40 @@ import java.util.Map;
 public class FontData implements Serializable {
 
 
-    public void setMaxMipMap(int maxMipMap) {
-        this.maxMipMap = maxMipMap;
-    }
-
     public static interface Definition {
         URL getFontUrl();
-        URL getTextureUrl(int level);
+        // TODO remove texture URL.. put texture and mipmap URLs into Texture.Definition
+        URL getTextureUrl();
         Texture.Definition getTexture();
     }
 
-    private int imageWidth,
-                imageHeight;
-    private int maxMipMap = 0;
+    public static final int PLAIN = 0;
+    public static final int BOLD = 1;
+    public static final int ITALIC = 2;
+
+    private int fontStyle;
+    private int imageScale;
+    private int imageWidth, imageHeight;
     private int lineHeight;
-    private int originalSize;
+    private int fontSize;
     private int spaceAdvance;
     private int tabAdvance;
-    private Map<Character, CharGlyph> info = new HashMap<Character, CharGlyph>();
+    private String fontName;
+    private Map<Character, CharData> info = new HashMap<Character, CharData>();
 
-    public void setFontMetrics(int imageWidth, int imageHeight, int lineHeight, int size) {
-        this.imageWidth = imageWidth;
-        this.imageHeight = imageHeight;
-        this.lineHeight = lineHeight;
-        this.originalSize = size;
+    public void setCharData(char ch, CharData data) {
+        info.put(ch, data);
     }
 
-    public void setCharMetrics(char ch, int x, int y, int offset, int advance, int width) {
-        final CharGlyph cm = new CharGlyph();
-        cm.x = x;
-        cm.y = y;
-        cm.width = width;
-        cm.offset = offset;
-        cm.advance = advance;
-        info.put(ch, cm);
+    public CharData getCharInfo(char ch) {
+        final CharData ci = info.get(ch);
+        if (ci == null) {
+            throw new IllegalArgumentException("Character '" + ch +
+                    "' isn't supported by current font and therefore can't be displayed");
+        }
+        return ci;
     }
+
 
     public int getSpaceAdvance() {
         return spaceAdvance;
@@ -69,7 +69,7 @@ public class FontData implements Serializable {
     public int getCharOffset(char ch) {
         switch (ch) {
         case ' ':case '\t':case '\n':case '\r': return 0;
-        default: return getCharInfo(ch).getOffset();
+        default: return getCharInfo(ch).getOffsetX();
         }
     }
 
@@ -82,24 +82,24 @@ public class FontData implements Serializable {
         }
     }
 
-    public int getOriginalSize() {
-        return originalSize;
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public int getFontSize() {
+        return fontSize;
     }
 
     public boolean isSupported(char ch) {
         return info.containsKey(ch);
     }
 
-    public Map<Character, CharGlyph> getGlyphs() {
-        return info;
-    }
-
-    public CharGlyph getCharInfo(char ch) {
-        final CharGlyph ci = info.get(ch);
-        if (ci == null) {
-            throw new IllegalArgumentException("Character '" + ch + "' isn't supported by current font and therefore can't be displayed");
-        }
-        return ci;
+    public Collection<CharData> getGlyphs() {
+        return info.values();
     }
 
     public float getStringWidth(String str) {
@@ -111,18 +111,48 @@ public class FontData implements Serializable {
         return w;
     }
 
-    public int getMaxMipMap() { return maxMipMap; }
-
     public int getLineHeight() {
         return lineHeight;
     }
 
-    public int getImageWidth() {
-        return imageWidth;
+    public void setFontName(String fontName) {
+        this.fontName = fontName;
     }
 
-    public int getImageHeight() {
-        return imageHeight;
+    public String getFontName() {
+        return fontName;
     }
 
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
+    }
+
+    public void setLineHeight(int lineHeight) {
+        this.lineHeight = lineHeight;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public int getFontStyle() {
+        return fontStyle;
+    }
+
+    public void setFontStyle(int fontStyle) {
+        this.fontStyle = fontStyle;
+    }
+
+    public int getImageScale() {
+        return imageScale;
+    }
+
+    public void setImageScale(int imageScale) {
+        this.imageScale = imageScale;
+    }
 }

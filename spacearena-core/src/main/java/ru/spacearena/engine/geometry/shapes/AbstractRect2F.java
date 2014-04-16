@@ -6,7 +6,7 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
  * @author Vyacheslav Mayorov
  * @since 2014-13-03
  */
-public abstract class AbstractRect2F extends AbstractPolyShape2F implements BoundingBox2F {
+public abstract class AbstractRect2F extends AbstractPolyShape2F implements Rect2F {
 
     public float getPointX(int i) {
         return i / 2 % 2 == 0 ? getMinX() : getMaxX();

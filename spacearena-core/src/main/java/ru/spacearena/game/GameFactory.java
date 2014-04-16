@@ -3,23 +3,15 @@ package ru.spacearena.game;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
+import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
-import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
-import ru.spacearena.engine.events.MouseEvent;
 import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.font.gen.pack.RectPacker;
+import ru.spacearena.engine.graphics.font.FontRepository;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.IntMathUtils;
-import ru.spacearena.engine.util.TempUtils;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * @author Vyacheslav Mayorov
@@ -45,13 +37,14 @@ public class GameFactory implements EngineFactory {
         @Override
         public boolean onUpdate(float seconds) {
             rotate(FloatMathUtils.TWO_PI * seconds);
+            //setPivot();
             //scale(-0.1f*seconds, -0.1f*seconds);
             return true;
         }
 
         @Override
         public void onDrawTransformed(DrawContext context) {
-            context.drawImage(-10, -6, 10, 6, td);
+            context.drawImage(0,0,td);
         }
     }
 
@@ -84,12 +77,38 @@ public class GameFactory implements EngineFactory {
         root.add(f);
 
         //final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
-//        viewport.add(new Ship(0, 0));
-//        viewport.add(new Ship(5, 5));
 
 
         final Viewport viewport = new Viewport(new Viewport.RealSizeAdjustStrategy());
         root.add(viewport);
+//
+//        viewport.add(new Ship(100, 100));
+//        viewport.add(new Ship(200, 200));
+
+
+        viewport.add(new EngineObject() {
+
+            private float size = 13f;
+            private float v = 5;
+
+            @Override
+            public boolean onUpdate(float seconds) {
+                v += 5f * seconds;
+                size += v * seconds;
+                if (size > 1000f || size < 1f) {
+                    v = -v;
+                }
+                return true;
+            }
+
+            @Override
+            public void onDraw(DrawContext context) {
+                context.drawText(String.format("FPS: %d", f.getFrameCount()), 0, 0, FontRepository.CALIBRI, size, Color.WHITE);
+
+                //context.drawImage(10,10,FontRepository.SEGOE_UI.getTexture());//FontRepository.SEGOE_UI.getTexture());
+            }
+        });
+        /*
         viewport.add(new Transform() {
 
             private final RectPacker rectPacker = new RectPacker();
@@ -111,7 +130,9 @@ public class GameFactory implements EngineFactory {
                 }
                 Collections.sort(rectangles, new Comparator<ColorRect>() {
                     public int compare(ColorRect o1, ColorRect o2) {
-                        return -IntMathUtils.compare(o1.getWidth() * o1.getHeight(), o2.getWidth() * o2.getHeight());
+                        final int m1 = IntMathUtils.max(o1.getWidth(), o1.getHeight());
+                        final int m2 = IntMathUtils.max(o2.getWidth(), o2.getHeight());
+                        return -IntMathUtils.compare(m1, m2);
 //                        return -IntMathUtils.compare(o1.getWidth(), o2.getWidth());
                     }
                 });
@@ -142,8 +163,8 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public void onDraw(DrawContext context) {
-                for (Rect2IP f: rectPacker.getFreeAreas()) {
-                    context.fillRect(f.l, f.t, f.r, f.b, new Color(1,1,1,0.1f));
+                for (Rect2I f: rectPacker.getFreeAreas()) {
+                    context.fillRect(f.getLeft(), f.getTop(), f.getRight(), f.getBottom(), new Color(1,1,1,0.1f));
                 }
                 for (ColorRect r: rectangles) {
                     context.fillRect(r.l, r.t, r.r, r.b, r.c);
@@ -152,6 +173,7 @@ public class GameFactory implements EngineFactory {
                 context.drawRect(0,0,rectPacker.getPackWidth(),rectPacker.getPackHeight(), Color.WHITE);
             }
         });
+        */
 
         /*
         final MultilineText.Line fpsText = new MultilineText.Line();

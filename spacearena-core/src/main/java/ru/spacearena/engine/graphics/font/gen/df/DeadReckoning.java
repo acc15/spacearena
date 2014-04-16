@@ -172,14 +172,12 @@ public class DeadReckoning {
     public static class SpreadMap implements DistanceMap {
         private float spread;
 
-        public SpreadMap(DistanceField g, int scale) {
-            this.spread = (float)Math.min(g.getWidth(), g.getHeight()) / (1 << scale);
+        public SpreadMap(float spread) {
+            this.spread = spread;
         }
 
         public float mapDistance(float d) {
-            return d < 0
-                    ?        0.5f * (d + spread) / spread
-                    : 0.5f + 0.5f * d / spread;
+            return FloatMathUtils.clamp(0.5f + 0.5f * (d / spread), 0, 1);
         }
     }
 
@@ -193,6 +191,16 @@ public class DeadReckoning {
             }
         }
         return b;
+    }
+
+    public static BufferedImage scaleDownByPow2(BufferedImage image, int pow2) {
+        final int oldWidth = image.getWidth(), oldHeight = image.getHeight();
+        final int newWidth = oldWidth >>> pow2, newHeight = oldHeight >>> pow2;
+        final BufferedImage sized = new BufferedImage(newWidth, newHeight, image.getType());
+        final Graphics2D g2d = FontGenerator.getGraphics(sized, true);
+        g2d.drawImage(image,0,0,newWidth,newHeight,0,0,oldWidth,oldHeight,null);
+        g2d.dispose();
+        return sized;
     }
 
     public static BufferedImage resizeTo(BufferedImage image, float scale) {
@@ -211,7 +219,7 @@ public class DeadReckoning {
 
         final float d = 1;
         final DistanceField g = computeDistanceField(i, d, FloatMathUtils.length(d,d));
-        final BufferedImage df = toImage(g, new ManualMap(16, 20));
+        final BufferedImage df = toImage(g, new SpreadMap(6));
         ImageIO.write(df, "png", new File("df-transform-segoe.png"));
 
         final BufferedImage sf = resizeTo(df, 1/4f);

@@ -1,7 +1,7 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineEntity;
-import ru.spacearena.engine.geometry.shapes.BoundingBox2F;
+import ru.spacearena.engine.geometry.shapes.Rect2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.ShapeUtils;
@@ -97,7 +97,7 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
         adjustStrategy.adjustViewport(width, height, this);
     }
 
-    public BoundingBox2F getBounds() {
+    public Rect2F getBounds() {
         updateMatrixIfNeeded();
         return bounds;
     }

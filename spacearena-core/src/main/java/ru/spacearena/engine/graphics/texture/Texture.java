@@ -40,6 +40,30 @@ public class Texture {
         this.height = height;
     }
 
+    public float getLeft() {
+        return 0;
+    }
+
+    public float getRight() {
+        return 1;
+    }
+
+    public float getTop() {
+        return flipY ? 1 : 0;
+    }
+
+    public float getBottom() {
+        return flipY ? 0 : 1;
+    }
+
+    public float computeX(float x) {
+        return x;
+    }
+
+    public float computeY(float y) {
+        return flipY ? 1-y : y;
+    }
+
     public float getAspectRatio() {
         return (float)width/height;
     }

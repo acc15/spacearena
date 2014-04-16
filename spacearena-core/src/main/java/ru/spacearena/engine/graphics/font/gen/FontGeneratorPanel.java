@@ -1,11 +1,12 @@
 package ru.spacearena.engine.graphics.font.gen;
 
+import ru.spacearena.engine.graphics.font.FontData;
+import ru.spacearena.engine.graphics.font.FontIO;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.NumberFormatter;
@@ -18,7 +19,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -42,12 +45,15 @@ public class FontGeneratorPanel extends JPanel {
     private final JComboBox fontStyleCombobox;
     private final JFormattedTextField fontSizeField;
     private final JFormattedTextField charPadField;
-    private final JSlider distanceFieldOffsetSlider;
-    private final JSlider distanceFieldScaleSlider;
+    private final JFormattedTextField imageScale;
+
+    private final JFormattedTextField spreadField;
+    //private final JSlider distanceFieldScaleSlider;
     private final JCheckBox hqCheckBox;
     private final JLabel statusLabel;
     private final ImagePanel fontImagePane;
     private final ImagePanel dfImagePane;
+    private final JButton saveButton;
 
     private final Timer timer = new Timer(GENERATE_TIMEOUT, new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -62,6 +68,25 @@ public class FontGeneratorPanel extends JPanel {
     // task will be reported as DONE - EVEN if task is still running... looks very bad
     private SwingWorker<?,?> currentWorker;
 
+    private static String suggestFileName(FontData fd) {
+        final String name = fd.getFontName();
+        final StringBuilder sb = new StringBuilder();
+        for (int i=0; i<name.length(); i++) {
+            final char ch = name.charAt(i);
+            if (Character.isLetter(ch) || Character.isDigit(ch)) {
+                sb.append(Character.toLowerCase(ch));
+            }
+        }
+        if ((fd.getFontStyle() & FontData.BOLD) != 0) {
+            sb.append("_b");
+        }
+        if ((fd.getFontStyle() & FontData.ITALIC) != 0) {
+            sb.append("_i");
+        }
+        return sb.toString();
+    }
+
+    @SuppressWarnings("unchecked")
     public FontGeneratorPanel() {
 
         setLayout(new BorderLayout());
@@ -108,6 +133,7 @@ public class FontGeneratorPanel extends JPanel {
         fontStyleCombobox.setFont(fontStyleCombobox.getFont().deriveFont(0));
         fontStyleCombobox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                //noinspection MagicConstant
                 fontStyleCombobox.setFont(
                         fontStyleCombobox.getFont().deriveFont(fontStyleCombobox.getSelectedIndex()));
                 onParameterChange();
@@ -124,25 +150,23 @@ public class FontGeneratorPanel extends JPanel {
         controlPane.add(fontStyleCombobox);
 
         controlPane.add(new JLabel("Font size: "));
-        controlPane.add(fontSizeField = createIntegerTextField(128));
+        controlPane.add(fontSizeField = createIntegerTextField(135));
         controlPane.add(new JLabel("Char pad: "));
-        controlPane.add(charPadField = createIntegerTextField(4));
+        controlPane.add(charPadField = createIntegerTextField(15));
 
-        controlPane.add(new JLabel("Distance field offset: "));
-        controlPane.add(distanceFieldOffsetSlider = new JSlider(-100, 100, 16));
-        distanceFieldOffsetSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                onParameterChange();
-            }
-        });
+        controlPane.add(new JLabel("Image scale (pow 2): "));
+        controlPane.add(imageScale = createIntegerTextField(3));
 
-        controlPane.add(new JLabel("Distance field scale: "));
-        controlPane.add(distanceFieldScaleSlider = new JSlider(1, 100, 20));
-        distanceFieldScaleSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                onParameterChange();
-            }
-        });
+        controlPane.add(new JLabel("Distance field spread: "));
+        controlPane.add(spreadField = createFloatTextField(4));
+
+//        controlPane.add(new JLabel("Distance field scale: "));
+//        controlPane.add(distanceFieldScaleSlider = new JSlider(1, 100, 20));
+//        distanceFieldScaleSlider.addChangeListener(new ChangeListener() {
+//            public void stateChanged(ChangeEvent e) {
+//                onParameterChange();
+//            }
+//        });
 
         controlPane.add(hqCheckBox = new JCheckBox("HQ", true));
         hqCheckBox.setMaximumSize(new Dimension(Short.MAX_VALUE, DEFAULT_COMPONENT_HEIGHT));
@@ -152,8 +176,32 @@ public class FontGeneratorPanel extends JPanel {
             }
         });
 
-        final JButton saveButton = new JButton("Save!");
+        saveButton = new JButton("Save!");
+        saveButton.setEnabled(false);
         saveButton.setMaximumSize(new Dimension(Short.MAX_VALUE, DEFAULT_COMPONENT_HEIGHT));
+        saveButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                final String userDir = System.getProperty("user.dir");
+                final JFileChooser fileChooser = new JFileChooser(userDir);
+                fileChooser.setApproveButtonText("Save");
+                fileChooser.setDialogTitle("Save font texture and date (choose prefix)");
+                fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                final String initialFileName = suggestFileName(lastResult.getFontData());
+                fileChooser.setSelectedFile(new File(initialFileName));
+
+                if (fileChooser.showSaveDialog(FontGeneratorPanel.this) == JFileChooser.APPROVE_OPTION) {
+                    final File baseFile = fileChooser.getSelectedFile();
+                    final String prefixPath = baseFile.getPath();
+                    FontIO.store(lastResult.getFontData(), new File(prefixPath + ".fnt"));
+                    ImageUtils.storeImage(lastResult.getDistanceFieldTexture(), new File(prefixPath + ".png"));
+                }
+
+            }
+        });
+
         controlPane.add(saveButton);
 
         for (int i=0; i<controlPane.getComponentCount(); i++) {
@@ -219,6 +267,7 @@ public class FontGeneratorPanel extends JPanel {
 
     private void onGenerationDone(FontGeneratorResult result) {
         this.lastResult = result;
+        this.saveButton.setEnabled(true);
         this.fontImagePane.setImage(result.getFontTexture());
         this.dfImagePane.setImage(result.getDistanceFieldTexture());
     }
@@ -236,18 +285,19 @@ public class FontGeneratorPanel extends JPanel {
 
     private void startGenerationWorker() {
 
+        saveButton.setEnabled(false);
+
         final FontGeneratorInput input = new FontGeneratorInput();
         input.setAlphabet(alphabetText.getText());
         input.setHq(hqCheckBox.isSelected());
         input.setPad((Integer)charPadField.getValue());
-        input.setImageScale(1f/4);
+        input.setImageScale((Integer)imageScale.getValue());
 
         final String fontName = (String)fontFaceComboBox.getSelectedItem();
         final int fontSize = (Integer)fontSizeField.getValue();
         final int fontStyle = fontStyleCombobox.getSelectedIndex();
         input.setFont(new Font(fontName, fontStyle, fontSize));
-        input.setDistanceFieldOffset(distanceFieldOffsetSlider.getValue());
-        input.setDistanceFieldScale(distanceFieldScaleSlider.getValue());
+        input.setDistanceFieldSpread((Float)spreadField.getValue());
 
         final FontGeneratorWorker worker = new FontGeneratorWorker(input);
         worker.addPropertyChangeListener(new PropertyChangeListener() {
@@ -286,10 +336,10 @@ public class FontGeneratorPanel extends JPanel {
         currentWorker = worker;
     }
 
-    private JFormattedTextField createIntegerTextField(int value) {
-        final NumberFormatter fmt = new NumberFormatter(new DecimalFormat("#"));
+    private JFormattedTextField createNumberTextField(NumberFormat format, Object value) {
+        final NumberFormatter fmt = new NumberFormatter(format);
         fmt.setCommitsOnValidEdit(true);
-        fmt.setValueClass(Integer.class);
+        fmt.setValueClass(value.getClass());
 
         final JFormattedTextField tf = new JFormattedTextField(fmt);
         tf.setHorizontalAlignment(JTextField.RIGHT);
@@ -303,6 +353,15 @@ public class FontGeneratorPanel extends JPanel {
         return tf;
     }
 
+    private JFormattedTextField createFloatTextField(float value) {
+        return createNumberTextField(NumberFormat.getNumberInstance(), value);
+    }
+
+    private JFormattedTextField createIntegerTextField(int value) {
+        return createNumberTextField(new DecimalFormat("#"), value);
+    }
+
+    @SuppressWarnings("unchecked")
     private JComboBox createFontComboBox(Font defaultFont) {
 
         final AffineTransform at = new AffineTransform();
@@ -346,7 +405,8 @@ public class FontGeneratorPanel extends JPanel {
                 label.setOpaque(true);
             }
 
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
                 if (index < 0) {
                     index = list.getSelectedIndex();
                 }

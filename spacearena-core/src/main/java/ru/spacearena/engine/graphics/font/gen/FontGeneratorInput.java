@@ -10,11 +10,12 @@ class FontGeneratorInput {
 
     private Font font;
     private int pad;
-    private float distanceFieldOffset;
-    private float distanceFieldScale;
+    //private float distanceFieldOffset;
+    //private float distanceFieldScale;
+    private float distanceFieldSpread;
     private String alphabet;
     private boolean hq;
-    private float imageScale;
+    private int imageScale;
 
     public Font getFont() {
         return font;
@@ -32,20 +33,12 @@ class FontGeneratorInput {
         this.pad = pad;
     }
 
-    public float getDistanceFieldOffset() {
-        return distanceFieldOffset;
+    public float getDistanceFieldSpread() {
+        return distanceFieldSpread;
     }
 
-    public void setDistanceFieldOffset(float distanceFieldOffset) {
-        this.distanceFieldOffset = distanceFieldOffset;
-    }
-
-    public float getDistanceFieldScale() {
-        return distanceFieldScale;
-    }
-
-    public void setDistanceFieldScale(float distanceFieldScale) {
-        this.distanceFieldScale = distanceFieldScale;
+    public void setDistanceFieldSpread(float distanceFieldSpread) {
+        this.distanceFieldSpread = distanceFieldSpread;
     }
 
     public String getAlphabet() {
@@ -64,11 +57,11 @@ class FontGeneratorInput {
         this.hq = hq;
     }
 
-    public float getImageScale() {
+    public int getImageScale() {
         return imageScale;
     }
 
-    public void setImageScale(float imageScale) {
+    public void setImageScale(int imageScale) {
         this.imageScale = imageScale;
     }
 }

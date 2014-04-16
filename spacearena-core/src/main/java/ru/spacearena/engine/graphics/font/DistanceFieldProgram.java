@@ -19,6 +19,7 @@ public class DistanceFieldProgram extends Program {
     public static final int MATRIX_UNIFORM = 0;
     public static final int TEXTURE_UNIFORM = 1;
     public static final int COLOR_UNIFORM = 2;
+    public static final int SMOOTH_UNIFORM = 3;
 
     private DistanceFieldProgram() {
         shader("df.vert");
@@ -28,5 +29,6 @@ public class DistanceFieldProgram extends Program {
         uniform("u_MVPMatrix");
         uniform("u_Texture");
         uniform("u_Color");
+        uniform("u_Smooth");
     }
 }

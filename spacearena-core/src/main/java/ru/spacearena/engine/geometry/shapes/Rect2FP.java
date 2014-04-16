@@ -19,11 +19,11 @@ public class Rect2FP extends AbstractRect2F {
         set(x1, y1, x2, y2);
     }
 
-    public Rect2FP(BoundingBox2F aabb) {
+    public Rect2FP(Rect2F aabb) {
         set(aabb);
     }
 
-    public void set(BoundingBox2F bb) {
+    public void set(Rect2F bb) {
         set(bb.getMinX(), bb.getMinY(), bb.getMaxX(), bb.getMaxY());
     }
 
