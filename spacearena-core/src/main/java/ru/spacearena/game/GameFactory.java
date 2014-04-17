@@ -10,6 +10,7 @@ import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.font.FontRepository;
+import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -23,15 +24,16 @@ public class GameFactory implements EngineFactory {
 
         private static final TextureDefinition td = new TextureDefinition().url(GameFactory.class, "ship.png");
 
-        public Ship(float x, float y) {
-            setPosition(x, y);
+        @Override
+        public void onInit(DrawContext context) {
+            final Texture t = context.load(td);
+            setPivot(t.getWidth()/3, t.getHeight()/2);
         }
 
         @Override
         public boolean onUpdate(float seconds) {
             rotate(FloatMathUtils.TWO_PI * seconds);
-            //setPivot();
-            //scale(-0.1f*seconds, -0.1f*seconds);
+            //scale(1.01f);
             return true;
         }
 
@@ -75,26 +77,32 @@ public class GameFactory implements EngineFactory {
         final Viewport viewport = new Viewport(new Viewport.RealSizeAdjustStrategy());
         root.add(viewport);
 //
-//        viewport.add(new Ship(100, 100));
-//        viewport.add(new Ship(200, 200));
+        final Ship s1;
+        viewport.add(s1 = new Ship());
+        s1.setPosition(100, 100);
+        s1.setScale(0.5f, 0.5f);
 
+        final Ship s2;
+        viewport.add(s2 = new Ship());
+        s2.setPosition(200, 200);
+        s2.setScale(0.25f, 0.25f);
 
         viewport.add(new EngineObject() {
 
             private float scale = 1;
             private float v = 10f;
-            private float minSmooth = 1;
-            private float maxSmooth = 1000f;
+            private float minScale = 1;
+            private float maxScale = 75f;
 
             @Override
             public boolean onUpdate(float seconds) {
                 v += 50f * seconds;
                 scale += v * seconds;
-                if (scale > maxSmooth) {
-                    scale = maxSmooth;
+                if (scale > maxScale) {
+                    scale = maxScale;
                     v = -v;
-                } else if (scale < minSmooth) {
-                    scale = minSmooth;
+                } else if (scale < minScale) {
+                    scale = minScale;
                     v = -v;
                 }
                 return true;

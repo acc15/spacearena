@@ -181,8 +181,10 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     public void scale(float sx, float sy) {
-        setScale(scaleX + sx, scaleY + sy);
+        setScale(scaleX * sx, scaleY * sy);
     }
+
+    public void scale(float s) { scale(s, s); }
 
     protected void onMatrixUpdate() {
     }

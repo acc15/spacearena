@@ -55,25 +55,6 @@ public class TextureDefinition implements Texture.Definition {
         return this;
     }
 
-
-    public int getWrapS() {
-        return wrapS;
-    }
-
-    public int getWrapT() {
-        return wrapT;
-    }
-
-    public int getMinFilter() {
-        return minFilter;
-    }
-
-    public int getMagFilter() {
-        return magFilter;
-    }
-
-    public URL[] getTextureUrls() { return textureUrls; }
-
     public Texture createTexture(OpenGL gl) {
         final Texture t = new Texture();
         t.setId(gl.genTexture());
