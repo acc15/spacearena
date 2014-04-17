@@ -60,12 +60,9 @@ public class JoglWindow {
         final int sw = screen.getWidth(), sh = screen.getHeight();
         for (MonitorDevice m: screen.getMonitorDevices()) {
             DimensionImmutable di = m.getSizeMM();
-            final float xInch = di.getWidth() * INCH_PER_MM;
-            final float yInch = di.getHeight() * INCH_PER_MM;
-            final float xPPI = sw / xInch;
-            final float yPPI = sh / yInch;
+            final float xInch = di.getWidth() * INCH_PER_MM, yInch = di.getHeight() * INCH_PER_MM;
+            final int xPPI = FloatMathUtils.round(sw / xInch), yPPI = FloatMathUtils.round(sh / yInch);
             maxPPI = FloatMathUtils.max(maxPPI, FloatMathUtils.min(xPPI, yPPI));
-            System.out.println("XDPI: " + xPPI + "; YDPI: " + yPPI);
         }
         return FloatMathUtils.isZero(maxPPI) ? DrawContext.DEFAULT_DENSITY_SCALE : maxPPI/DrawContext.DENSITY_SCALE_PPI;
     }

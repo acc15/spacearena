@@ -4,6 +4,7 @@ import ru.spacearena.engine.geometry.shapes.Rect2I;
 import ru.spacearena.engine.graphics.font.CharData;
 import ru.spacearena.engine.graphics.font.FontData;
 import ru.spacearena.engine.graphics.font.gen.pack.RectPacker;
+import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.IntMathUtils;
 
 import java.awt.*;
@@ -61,15 +62,18 @@ public class FontGenerator {
 //        return p;
 //    }
 
-    public static BufferedImage generateFontImage(Font font, FontData fd, boolean hq) {
+    public static Font createFont(FontGeneratorInput input) {
+        final int pointSize = FloatMathUtils.round((float)input.getFontSize()*4f/3);
+        return new Font(input.getFontName(), input.getFontStyle(), pointSize);
+    }
+
+    public static BufferedImage generateFontImage(Font font, FontGeneratorInput input, FontData fd) {
         final BufferedImage img = new BufferedImage(fd.getImageWidth(), fd.getImageHeight(), BufferedImage.TYPE_BYTE_GRAY);
-        final Graphics2D g = getGraphics(img, hq);
+        final Graphics2D g = getGraphics(img, input.isHq());
         g.setFont(font);
         g.setColor(Color.WHITE);
 
         final FontMetrics fm = g.getFontMetrics(font);
-
-
         final char[] ch = new char[1];
         for (CharData glyph: fd.getGlyphs()) {
             ch[0] = glyph.getCharacter();
@@ -82,8 +86,9 @@ public class FontGenerator {
         return img;
     }
 
-    public static FontData computeFontData(Font font, int pad, int scale, String alphabet) {
+    public static FontData computeFontData(Font font, FontGeneratorInput input) {
 
+        final String alphabet = input.getAlphabet();
         if (font.canDisplayUpTo(alphabet) >= 0) {
             return null;
         }
@@ -92,6 +97,7 @@ public class FontGenerator {
         final FontRenderContext frc = new FontRenderContext(t, false, false);
         final FontData fi = new FontData();
 
+
         final LineMetrics lm = font.getLineMetrics(alphabet, frc);
         final int lineHeight = getAsInt(lm.getHeight());
 
@@ -99,6 +105,7 @@ public class FontGenerator {
         fi.setTabAdvance(fi.getSpaceAdvance() * 4);
 
         final ArrayList<CharData> charList = new ArrayList<CharData>();
+        final int pad = input.getPad();
         for (int i=0; i<alphabet.length(); i++) {
             final TextLayout textLayout = new TextLayout(alphabet.substring(i, i + 1), font, frc);
             final float ascent = textLayout.getAscent();
@@ -133,9 +140,10 @@ public class FontGenerator {
         fi.setImageWidth(IntMathUtils.pow2RoundUp(packer.getPackWidth()));
         fi.setImageHeight(IntMathUtils.pow2RoundUp(packer.getPackHeight()));
         fi.setLineHeight(lineHeight);
-        fi.setFontSize(font.getSize());
+        // font.getSize() returns size in points (it's ~= 4/3 pixels on windows)
+        fi.setFontSize(input.getFontSize());
         fi.setFontStyle(font.getStyle());
-        fi.setImageScale(scale);
+        fi.setImageScale(input.getImageScale());
         return fi;
     }
 

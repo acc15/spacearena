@@ -294,17 +294,16 @@ public class FontGeneratorPanel extends JPanel {
     private void startGenerationWorker() {
 
         saveButton.setEnabled(false);
+        lastResult = null; // reset last result to free memory
 
         final FontGeneratorInput input = new FontGeneratorInput();
         input.setAlphabet(alphabetText.getText());
         input.setHq(hqCheckBox.isSelected());
         input.setPad((Integer)charPadField.getValue());
         input.setImageScale((Integer)imageScale.getValue());
-
-        final String fontName = (String)fontFaceComboBox.getSelectedItem();
-        final int fontSize = (Integer)fontSizeField.getValue();
-        final int fontStyle = fontStyleCombobox.getSelectedIndex();
-        input.setFont(new Font(fontName, fontStyle, fontSize));
+        input.setFontName((String)fontFaceComboBox.getSelectedItem());
+        input.setFontSize((Integer)fontSizeField.getValue());
+        input.setFontStyle(fontStyleCombobox.getSelectedIndex());
         input.setDistanceFieldOffset(distanceFieldOffsetSlider.getValue());
         input.setDistanceFieldScale(distanceFieldScaleSlider.getValue());
 

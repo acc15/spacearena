@@ -30,6 +30,12 @@ public class DrawContext {
     public static final float DEFAULT_FONT_SCALE = 1f;
     public static final float DENSITY_SCALE_PPI = 160f;
 
+    public enum Unit {
+        DP,
+        SP,
+        PX
+    }
+
     private final OpenGL gl;
 
     private final VertexBuffer vertexBuffer = new VertexBuffer();
@@ -230,7 +236,6 @@ public class DrawContext {
                 draw(OpenGL.TRIANGLE_FAN);
     }
 
-
     public void drawText(String text, float x, float y, FontData.Definition font, float size, Color color) {
 
         final FontData f = load(font);
@@ -297,7 +302,7 @@ public class DrawContext {
                 bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, activeMatrix).
                 bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
                 bindUniform(DistanceFieldProgram.COLOR_UNIFORM, color).
-                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, (float)(1<<f.getImageScale())/size).
+                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, (float)(1<<f.getImageScale())/(size)).
                 draw(OpenGL.TRIANGLES);
     }
 

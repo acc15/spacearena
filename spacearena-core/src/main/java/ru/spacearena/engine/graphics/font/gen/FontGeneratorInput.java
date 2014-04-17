@@ -1,29 +1,21 @@
 package ru.spacearena.engine.graphics.font.gen;
 
-import java.awt.*;
-
 /**
 * @author Vyacheslav Mayorov
 * @since 2014-10-04
 */
 class FontGeneratorInput {
 
-    private Font font;
     private int pad;
     private float distanceFieldOffset;
     private float distanceFieldScale;
     private String alphabet;
     private boolean hq;
     private int imageScale;
-
-    public Font getFont() {
-        return font;
-    }
-
-    public void setFont(Font font) {
-        this.font = font;
-    }
-
+    private String fontName;
+    private int fontStyle;
+    private int fontSize;
+    
     public int getPad() {
         return pad;
     }
@@ -70,5 +62,29 @@ class FontGeneratorInput {
 
     public void setImageScale(int imageScale) {
         this.imageScale = imageScale;
+    }
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public void setFontName(String fontName) {
+        this.fontName = fontName;
+    }
+
+    public String getFontName() {
+        return fontName;
+    }
+
+    public int getFontStyle() {
+        return fontStyle;
+    }
+
+    public void setFontStyle(int fontStyle) {
+        this.fontStyle = fontStyle;
     }
 }

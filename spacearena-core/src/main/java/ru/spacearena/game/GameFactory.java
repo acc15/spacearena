@@ -88,36 +88,21 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(new EngineObject() {
 
-            private final Color c = new Color(Color.WHITE);
-
-            private float v = 1f;
-
-            @Override
-            public boolean onUpdate(float seconds) {
-                c.a += v * seconds;
-                if (c.a > 1f) {
-                    c.a = 1f;
-                    v = -v;
-                } else if (c.a < 0) {
-                    c.a = 0;
-                    v = -v;
-                }
-                return true;
-            }
-
             @Override
             public void onDraw(DrawContext context) {
 
-                context.drawText(String.format("FPS: %d",
-                        f.getFrameCount()), 100, 100, FontRepository.SEGOE_UI_LIGHT, 38, c);
+                //context.dpToPx()
+
+//                context.drawText(String.format("FPS: %d",
+//                        f.getFrameCount()), 100, 100, FontRepository.SEGOE_UI_LIGHT, 15, Color.WHITE);
 //
 //
-//                int y = 0;
-//                for (int i=0; i<20; i++) {
-//                    final int size = i * 2 + 4;
-//                    context.drawText(String.format("FPS: %d", f.getFrameCount()), 0, y, FontRepository.CALIBRI, size, Color.WHITE);
-//                    y += size;
-//                }
+                int y = 0;
+                for (int i=0; i<20; i++) {
+                    final int size = i * 2 + 4;
+                    context.drawText(String.format("FPS: %d", f.getFrameCount()), 0, y, FontRepository.SEGOE_UI_LIGHT, size, Color.WHITE);
+                    y += size;
+                }
 //
 //                y = 0;
 //                for (int i=0; i<10; i++) {
