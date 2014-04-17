@@ -34,7 +34,8 @@ class FontGeneratorWorker extends SwingWorker<FontGeneratorResult, Object> {
         final DistanceField df = DeadReckoning.computeDistanceField(fi, d, FloatMathUtils.length(d,d));
 
         firePropertyChange("what", null, "Mapping distance field to image...");
-        final BufferedImage dfi = DeadReckoning.toImage(df, new DeadReckoning.SpreadMap(input.getDistanceFieldSpread()));
+        final BufferedImage dfi = DeadReckoning.toImage(df,
+                new DeadReckoning.ManualMap(input.getDistanceFieldOffset(), input.getDistanceFieldScale()));
 
         firePropertyChange("what", null, "Resizing distance field...");
         final BufferedImage df2 = DeadReckoning.scaleDownByPow2(dfi, input.getImageScale());

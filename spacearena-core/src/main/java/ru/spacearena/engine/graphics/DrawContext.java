@@ -236,7 +236,6 @@ public class DrawContext {
         final FontData f = load(font);
         final Texture t = getTexture(font.getTexture());
 
-        final float invSize = 2.4f / f.getFontSize();
         final float scale = size/f.getFontSize();// * fontScale;
         final float lineHeight = f.getLineHeight() * scale;
 
@@ -298,7 +297,7 @@ public class DrawContext {
                 bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, activeMatrix).
                 bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
                 bindUniform(DistanceFieldProgram.COLOR_UNIFORM, color).
-                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, 1f/size).
+                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, (float)(1<<f.getImageScale())/size).
                 draw(OpenGL.TRIANGLES);
     }
 

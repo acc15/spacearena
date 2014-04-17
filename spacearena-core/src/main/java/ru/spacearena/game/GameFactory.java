@@ -88,14 +88,18 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(new EngineObject() {
 
-            private float size = 13f;
-            private float v = 5;
+            private final Color c = new Color(Color.WHITE);
+
+            private float v = 1f;
 
             @Override
             public boolean onUpdate(float seconds) {
-                v += 5f * seconds;
-                size += v * seconds;
-                if (size > 1000f || size < 1f) {
+                c.a += v * seconds;
+                if (c.a > 1f) {
+                    c.a = 1f;
+                    v = -v;
+                } else if (c.a < 0) {
+                    c.a = 0;
                     v = -v;
                 }
                 return true;
@@ -103,8 +107,24 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public void onDraw(DrawContext context) {
-                context.drawText(String.format("FPS: %d", f.getFrameCount()), 0, 0, FontRepository.CALIBRI, size, Color.WHITE);
 
+                context.drawText(String.format("FPS: %d",
+                        f.getFrameCount()), 100, 100, FontRepository.SEGOE_UI_LIGHT, 38, c);
+//
+//
+//                int y = 0;
+//                for (int i=0; i<20; i++) {
+//                    final int size = i * 2 + 4;
+//                    context.drawText(String.format("FPS: %d", f.getFrameCount()), 0, y, FontRepository.CALIBRI, size, Color.WHITE);
+//                    y += size;
+//                }
+//
+//                y = 0;
+//                for (int i=0; i<10; i++) {
+//                    final int size = i * 2 + 40;
+//                    context.drawText(String.format("FPS: %d", f.getFrameCount()), 200, y, FontRepository.CALIBRI, size, Color.WHITE);
+//                    y += size;
+//                }
                 //context.drawImage(10,10,FontRepository.SEGOE_UI.getTexture());//FontRepository.SEGOE_UI.getTexture());
             }
         });

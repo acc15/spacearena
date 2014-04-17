@@ -8,6 +8,8 @@ public class FontRepository {
 
     public static final FontDefinition SEGOE_UI =
             new FontDefinition(FontRepository.class, "segoeui");
+    public static final FontDefinition SEGOE_UI_LIGHT =
+            new FontDefinition(FontRepository.class, "segoeuilight");
     public static final FontDefinition CALIBRI =
             new FontDefinition(FontRepository.class, "calibri");
 }
