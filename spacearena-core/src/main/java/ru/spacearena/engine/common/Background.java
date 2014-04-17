@@ -20,7 +20,7 @@ public class Background extends EngineObject {
     }
 
     public void onDraw(DrawContext context) {
-        context.clear(color);
+        context.color(color).clear();
     }
 
 }

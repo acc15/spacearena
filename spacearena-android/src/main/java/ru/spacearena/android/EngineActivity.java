@@ -61,7 +61,7 @@ public class EngineActivity extends Activity {
                 }
 
                 final DisplayMetrics metrics = getResources().getDisplayMetrics();
-                drawContext.setDensityScale(metrics.density, metrics.scaledDensity);
+                drawContext.densityScale(metrics.density, metrics.scaledDensity);
                 engine.onInit(drawContext);
                 initialized = true;
             }

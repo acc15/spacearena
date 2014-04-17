@@ -195,7 +195,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
 
     @Override
     public void onDraw(DrawContext context) {
-        context.pushMatrix(getViewMatrix());
+        context.multiplyMatrix(getViewMatrix());
         try {
             onDrawTransformed(context);
         } finally {

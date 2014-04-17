@@ -97,7 +97,7 @@ public class JoglWindow {
         window.addGLEventListener(new GLEventListener() {
             public void init(GLAutoDrawable drawable) {
                 gl.setGL2(drawable.getGL().getGL2());
-                drawContext.setDensityScale(FloatMathUtils.isZero(a.ppi)
+                drawContext.densityScale(FloatMathUtils.isZero(a.ppi)
                         ? computeDensityScale(screen)
                         : a.ppi/DrawContext.DENSITY_SCALE_PPI);
                 engine.onInit(drawContext);

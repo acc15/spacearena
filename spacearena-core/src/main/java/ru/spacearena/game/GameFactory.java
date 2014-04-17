@@ -9,7 +9,6 @@ import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.font.FontRepository;
 import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -77,15 +76,15 @@ public class GameFactory implements EngineFactory {
         final Viewport viewport = new Viewport(new Viewport.RealSizeAdjustStrategy());
         root.add(viewport);
 //
-        final Ship s1;
-        viewport.add(s1 = new Ship());
-        s1.setPosition(100, 100);
-        s1.setScale(0.5f, 0.5f);
-
-        final Ship s2;
-        viewport.add(s2 = new Ship());
-        s2.setPosition(200, 200);
-        s2.setScale(0.25f, 0.25f);
+//        final Ship s1;
+//        viewport.add(s1 = new Ship());
+//        s1.setPosition(100, 100);
+//        s1.setScale(0.5f, 0.5f);
+//
+//        final Ship s2;
+//        viewport.add(s2 = new Ship());
+//        s2.setPosition(200, 200);
+//        s2.setScale(0.25f, 0.25f);
 
         viewport.add(new EngineObject() {
 
@@ -111,19 +110,14 @@ public class GameFactory implements EngineFactory {
             @Override
             public void onDraw(DrawContext context) {
 
+                //context.drawText("abc");fillCircle(100, 100, scale);
+
                 //context.dpToPx()
 
-//                context.drawText(String.format("FPS: %d",
-//                        f.getFrameCount()), 100, 100, FontRepository.SEGOE_UI_LIGHT, 15, Color.WHITE);
+                context.color(Color.WHITE).fontSize(scale).drawText(String.format("FPS: %d", f.getFrameCount()), 0, 0);
+
 //
-//
-                int y = 0;
-                for (int i=0; i<1; i++) {
-                    final int size = i * 2 + 4;
-                    context.drawText(String.format("Time: %1$tH:%1$tM:%1$tS.%1$tL", System.currentTimeMillis()), 0, 0,
-                            FontRepository.CALIBRI, scale, Color.WHITE);
-                    y += size;
-                }
+
 //
 //                y = 0;
 //                for (int i=0; i<10; i++) {

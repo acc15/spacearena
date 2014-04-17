@@ -3,10 +3,7 @@ package ru.spacearena.engine.graphics;
 import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2I;
-import ru.spacearena.engine.graphics.font.CharData;
-import ru.spacearena.engine.graphics.font.DistanceFieldProgram;
-import ru.spacearena.engine.graphics.font.FontData;
-import ru.spacearena.engine.graphics.font.FontIO;
+import ru.spacearena.engine.graphics.font.*;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
 import ru.spacearena.engine.graphics.texture.Texture;
@@ -45,10 +42,8 @@ public class DrawContext {
     private final Matrix activeMatrix = new Matrix();
     private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
 
-    private final HashMap<Program.Definition, Program> programs =
-            new HashMap<Program.Definition, Program>();
-    private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos =
-            new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
+    private final HashMap<Program.Definition, Program> programs = new HashMap<Program.Definition, Program>();
+    private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos = new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
     private final HashMap<Texture.Definition, Texture> textures = new HashMap<Texture.Definition, Texture>();
     private final HashMap<FontData.Definition, FontData> fonts = new HashMap<FontData.Definition, FontData>();
 
@@ -57,14 +52,23 @@ public class DrawContext {
     private float densityScale = DEFAULT_DENSITY_SCALE;
     private float fontScale = DEFAULT_FONT_SCALE;
 
+    private FontData.Definition font = FontRepository.CALIBRI;
+    private float fontSize = 16;
+    private float textAlignX = 0, textAlignY = 0;
+    private Color color = Color.BLACK;
+
     public DrawContext(OpenGL gl) {
         this.gl = gl;
     }
 
-    public void pushMatrix(Matrix m) {
+    public void pushMatrix() {
         final int offset = matrixStack.size();
         matrixStack.setSize(offset + Matrix.ELEMENTS_PER_MATRIX);
         activeMatrix.toArrayCompact(matrixStack.elements(), offset);
+    }
+
+    public void multiplyMatrix(Matrix m) {
+        pushMatrix();
         activeMatrix.postMultiply(m);
     }
 
@@ -77,7 +81,7 @@ public class DrawContext {
         matrixStack.setSize(newSize);
     }
 
-    public void clear(Color color) {
+    public void clear() {
         gl.clearColor(color.r, color.g, color.b, color.a);
         gl.clear(OpenGL.COLOR_BUFFER_BIT);
     }
@@ -129,7 +133,9 @@ public class DrawContext {
         return vbos.containsKey(definition);
     }
 
-    public boolean has(Texture.Definition definition) { return textures.containsKey(definition); }
+    public boolean has(Texture.Definition definition) {
+        return textures.containsKey(definition);
+    }
 
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
         VertexBufferObject vbo = vbos.get(definition);
@@ -192,10 +198,10 @@ public class DrawContext {
     public void drawImage(float l, float t, float r, float b, Texture.Definition definition) {
         final Texture texture = load(definition);
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
-                     put(l,t).put(texture.getLeft(), texture.getTop()).
-                     put(l,b).put(texture.getLeft(), texture.getBottom()).
-                     put(r,b).put(texture.getRight(), texture.getBottom()).
-                     put(r,t).put(texture.getRight(), texture.getTop());
+                put(l, t).put(texture.getLeft(), texture.getTop()).
+                put(l, b).put(texture.getLeft(), texture.getBottom()).
+                put(r, b).put(texture.getRight(), texture.getBottom()).
+                put(r, t).put(texture.getRight(), texture.getTop());
         use(TextureProgram.DEFINITION).
                 bindAttr(TextureProgram.POSITION_ATTR, vertexBuffer, 0).
                 bindAttr(TextureProgram.TEXCOORD_ATTR, vertexBuffer, 1).
@@ -204,63 +210,63 @@ public class DrawContext {
                 draw(OpenGL.TRIANGLE_FAN);
     }
 
-    public void drawText(String text, float x, float y, FontData.Definition font, float size, Color color) {
+    public void drawText(String text, float x, float y) {
 
         final FontData f = load(font);
         final Texture t = load(font.getTexture());
 
-        final float scale = size/f.getFontSize();// * fontScale;
+        final float scale = fontSize / f.getFontSize();// * fontScale;
         final float lineHeight = f.getLineHeight() * scale;
 
         float currentX = x, currentY = y;
 
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2);
-        for (int i=0; i<text.length(); i++) {
+        for (int i = 0; i < text.length(); i++) {
             final char ch = text.charAt(i);
             switch (ch) {
-            case '\n':
-                currentY += lineHeight;
-                currentX = x;
-                break;
+                case '\n':
+                    currentY += lineHeight;
+                    currentX = x;
+                    break;
 
-            case ' ':
-                currentX += f.getSpaceAdvance() * scale;
-                break;
+                case ' ':
+                    currentX += f.getSpaceAdvance() * scale;
+                    break;
 
-            case '\t':
-                currentX += f.getTabAdvance() * scale;
-                break;
+                case '\t':
+                    currentX += f.getTabAdvance() * scale;
+                    break;
 
-            default:
+                default:
 
-                final CharData ci = f.getCharInfo(ch);
-                final Rect2I charRect = ci.getRect();
+                    final CharData ci = f.getCharInfo(ch);
+                    final Rect2I charRect = ci.getRect();
 
-                final float offsetX = ci.getOffsetX() * scale;
-                final float offsetY = ci.getOffsetY() * scale;
-                final float height = charRect.getHeight() * scale;
-                final float width = charRect.getWidth() * scale;
-                final float advance = ci.getAdvance() * scale;
+                    final float offsetX = ci.getOffsetX() * scale;
+                    final float offsetY = ci.getOffsetY() * scale;
+                    final float height = charRect.getHeight() * scale;
+                    final float width = charRect.getWidth() * scale;
+                    final float advance = ci.getAdvance() * scale;
 
-                final float tl = t.computeX((float) charRect.getLeft() / f.getImageWidth()),
+                    final float tl = t.computeX((float) charRect.getLeft() / f.getImageWidth()),
                             tt = t.computeY((float) charRect.getTop() / f.getImageHeight()),
                             tr = t.computeX((float) charRect.getRight() / f.getImageWidth()),
                             tb = t.computeY((float) charRect.getBottom() / f.getImageHeight());
 
-                final float ll = currentX + offsetX,
+                    final float ll = currentX + offsetX,
                             lt = currentY + offsetY,
                             lr = ll + width,
                             lb = lt + height;
-                vertexBuffer.// first triangle
-                        put(ll, lt).put(tl, tt).
-                        put(ll, lb).put(tl, tb).
-                        put(lr, lb).put(tr, tb).
-                        // second triangle
-                        put(ll, lt).put(tl, tt).
-                        put(lr, lb).put(tr, tb).
-                        put(lr, lt).put(tr, tt);
-                currentX += advance;
-                break;
+                    vertexBuffer.// first triangle
+                            put(ll, lt).put(tl, tt).
+                            put(ll, lb).put(tl, tb).
+                            put(lr, lb).put(tr, tb).
+                            // second triangle
+                                    put(ll, lt).put(tl, tt).
+                            put(lr, lb).put(tr, tb).
+                            put(lr, lt).put(tr, tt);
+                    currentX += advance;
+                    break;
             }
         }
 
@@ -270,21 +276,21 @@ public class DrawContext {
                 bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, activeMatrix).
                 bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
                 bindUniform(DistanceFieldProgram.COLOR_UNIFORM, color).
-                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, (float)(1<<f.getImageScale())/(size)).
+                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, (float) (1 << f.getImageScale()) / (fontSize)).
                 draw(OpenGL.TRIANGLES);
     }
 
-    public void fillNGon(int n, float x, float y, float rx, float ry, Color color) {
+    public void fillNGon(int n, float x, float y, float rx, float ry) {
         fillNGonBuf(n, x, y, rx, ry);
         drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
 
-    public void drawNGon(int n, float x, float y, float rx, float ry, Color color) {
+    public void drawNGon(int n, float x, float y, float rx, float ry) {
         fillNGonBuf(n, x, y, rx, ry);
         drawBuf(OpenGL.LINE_LOOP, color);
     }
 
-    public void fillConvexPoly(float[] points, int start, int size, Color color) {
+    public void fillConvexPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
@@ -294,32 +300,29 @@ public class DrawContext {
         drawBuf(OpenGL.LINE_LOOP, color);
     }
 
-    public void drawPoly(float[] points, int start, int size, Color color) {
+    public void drawPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.LINE_LOOP, color);
     }
 
-    public void fillRect(float x1, float y1, float x2, float y2, Color color) {
+    public void fillRect(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
         drawBuf(OpenGL.TRIANGLE_FAN, color);
     }
 
-    public void drawRect(float x1, float y1, float x2, float y2, Color color) {
+    public void drawRect(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
         drawBuf(OpenGL.LINE_LOOP, color);
     }
 
-    public void drawLine(float x1, float y1, float x2, float y2, Color color) {
+    public void drawLine(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
         drawBuf(OpenGL.LINES, color);
     }
 
-    private void renderEllipse(int type, float x, float y, float rx, float ry, Color color) {
+    private void renderEllipse(int type, float x, float y, float rx, float ry) {
         ensureSinCosVBO();
-
-        // storing current matrix on stack... looks very bad but should work
-        final float m0 = activeMatrix.m[0], m1 = activeMatrix.m[1], m4 = activeMatrix.m[4], m5 = activeMatrix.m[5],
-                    m12 = activeMatrix.m[12], m13 = activeMatrix.m[13];
+        pushMatrix();
         try {
             activeMatrix.postTranslate(x, y);
             activeMatrix.postScale(rx, ry);
@@ -329,7 +332,7 @@ public class DrawContext {
                     bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
                     draw(type);
         } finally {
-            activeMatrix.set(m0, m1, m4, m5, m12, m13);
+            popMatrix();
         }
     }
 
@@ -341,46 +344,64 @@ public class DrawContext {
         upload(SIN_COS_VBO, vertexBuffer);
     }
 
-    public void fillEllipse(float x, float y, float rx, float ry, Color color) {
-        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, rx, ry, color);
+    public void fillEllipse(float x, float y, float rx, float ry) {
+        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, rx, ry);
     }
 
-    public void drawEllipse(float x, float y, float rx, float ry, Color color) {
-        renderEllipse(OpenGL.LINE_LOOP, x, y, rx, ry, color);
+    public void drawEllipse(float x, float y, float rx, float ry) {
+        renderEllipse(OpenGL.LINE_LOOP, x, y, rx, ry);
     }
 
-    public void fillCircle(float x, float y, float r, Color color) {
-        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, r, r, color);
+    public void fillCircle(float x, float y, float r) {
+        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, r, r);
     }
 
-    public void drawCircle(float x, float y, float r, Color color) {
-        renderEllipse(OpenGL.LINE_LOOP, x, y, r, r, color);
+    public void drawCircle(float x, float y, float r) {
+        renderEllipse(OpenGL.LINE_LOOP, x, y, r, r);
     }
 
-    public void setLineWidth(float width) {
-        gl.lineWidth(width);
+    public DrawContext font(FontData.Definition definition) {
+        this.font = definition;
+        return this;
     }
 
-    public float getDensityScale() {
-        return densityScale;
-    }
-
-    public void setDensityScale(float densityScale) {
-        this.fontScale *= densityScale / this.densityScale;
-        this.densityScale = densityScale;
-    }
-
-    public void setDensityScale(float densityScale, float fontScale) {
+    public DrawContext densityScale(float densityScale, float fontScale) {
         this.densityScale = densityScale;
         this.fontScale = fontScale;
+        return this;
     }
 
-    public float getFontScale() {
-        return fontScale;
+    public DrawContext densityScale(float densityScale) {
+        final float ratio = densityScale / this.densityScale;
+        this.fontScale *= ratio;
+        this.densityScale = densityScale;
+        return this;
     }
 
-    public void setFontScale(float fontScale) {
+    public DrawContext fontScale(float fontScale) {
         this.fontScale = this.densityScale * fontScale;
+        return this;
+    }
+
+    public DrawContext fontSize(float fontSize) {
+        this.fontSize = fontSize;
+        return this;
+    }
+
+    public DrawContext lineWidth(float width) {
+        gl.lineWidth(width);
+        return this;
+    }
+
+    public DrawContext align(float ax, float ay) {
+        this.textAlignX = ax;
+        this.textAlignY = ay;
+        return this;
+    }
+
+    public DrawContext color(Color color) {
+        this.color = color;
+        return this;
     }
 
     public class Binder {
@@ -446,10 +467,10 @@ public class DrawContext {
 
             final VertexBufferLayout vbl = vbo.getLayout();
             final int size = vbo.getSize(),
-                      stride = vbl.getStride(),
-                      type = vbl.getType(item),
-                      count = VertexBufferLayout.toTypes(vbl.getSize(item), type),
-                      offset = vbl.getOffset(item);
+                    stride = vbl.getStride(),
+                    type = vbl.getType(item),
+                    count = VertexBufferLayout.toTypes(vbl.getSize(item), type),
+                    offset = vbl.getOffset(item);
 
             final int bufferType = definition.getBufferType();
             gl.bindBuffer(bufferType, vbo.getId());
@@ -463,9 +484,9 @@ public class DrawContext {
         public Binder bindAttr(int index, VertexBuffer buffer, int item) {
             final VertexBufferLayout vbl = buffer.getLayout();
             final int size = buffer.getSize(),
-                      stride = vbl.getStride(),
-                      type = vbl.getType(item),
-                      count = VertexBufferLayout.toTypes(vbl.getSize(item), type);
+                    stride = vbl.getStride(),
+                    type = vbl.getType(item),
+                    count = VertexBufferLayout.toTypes(vbl.getSize(item), type);
             gl.vertexAttribPointer(index, count, type, false, stride, buffer.prepareBuffer(item));
             gl.enableVertexAttribArray(index);
             adjustVertexCount(size, stride);
@@ -516,7 +537,7 @@ public class DrawContext {
         if (n < 3) {
             throw new IllegalArgumentException("N-Gon should have at least 3 points");
         }
-        n = Math.min(n,360);
+        n = Math.min(n, 360);
 
         final float a = FloatMathUtils.TWO_PI / n;
         final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);

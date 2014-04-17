@@ -135,7 +135,7 @@ public class Box2dBody extends Box2dObject {
     @Override
     public void onDraw(DrawContext context) {
         try {
-            context.pushMatrix(matrix);
+            context.multiplyMatrix(matrix);
             onDrawTransformed(context);
         } finally {
             context.popMatrix();
