@@ -99,6 +99,44 @@ public class FontData implements Serializable {
     public Collection<CharData> getGlyphs() {
         return info.values();
     }
+//
+//    public Rect2I computeBoundingBox(String str) {
+//        return computeBoundingBox(str, new Rect2IP());
+//    }
+//
+//    public Rect2I computeBoundingBox(String str, Rect2I rect) {
+//        //rect.setBounds();
+//    }
+
+    public static int getLineCount(String str) {
+        if (str.isEmpty()) {
+            return 0;
+        }
+
+        int lc = 1;
+
+        boolean skipLF = false;
+        for (int i=0;i<str.length(); i++) {
+            final char ch = str.charAt(i);
+            if (skipLF && ch != '\r') {
+                skipLF = false;
+                continue;
+            }
+            switch (ch) {
+                case '\r':
+                    skipLF = true;
+
+                case '\n':
+                    ++lc;
+                    break;
+            }
+        }
+        return lc;
+    }
+
+    public int getStringHeight(String str) {
+        return getLineCount(str) * lineHeight;
+    }
 
     public float getStringWidth(String str) {
         int w = 0;

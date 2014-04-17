@@ -4,6 +4,9 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.Viewport;
 import ru.spacearena.engine.geometry.shapes.Rect2FR;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.shaders.PointProgram;
+import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -14,13 +17,15 @@ import ru.spacearena.engine.util.FloatMathUtils;
 public class Sky extends EngineObject {
 
     private float starDistance = 25f;
-    private float minStarSize = 0.05f;
-    private float maxStarSize = 0.1f;
+    private float minStarSize = 1f;
+    private float maxStarSize = 3f;
 
     private final QRand random = new QRand();
     private final int seed = random.nextInt();
     private final Rect2FR bounds = new Rect2FR();
     private final Viewport viewport;
+
+    private final VertexBuffer vb = new VertexBuffer();
 
     public Sky(Viewport viewport) {
         this.viewport = viewport;
@@ -50,12 +55,9 @@ public class Sky extends EngineObject {
         this.maxStarSize = maxStarSize;
     }
 
-    private void drawStarLayer(DrawContext context, float scale) {
+    private void drawStarLayer(float scale) {
 
         final float sd2 = starDistance*2;
-
-        // TODO
-
         bounds.set(viewport.getBounds());
         bounds.halfSize.add(sd2);
         bounds.halfSize.div(scale);
@@ -71,33 +73,27 @@ public class Sky extends EngineObject {
                         Integer.rotateLeft(Float.floatToRawIntBits(scale), 16) ^
                         Integer.rotateLeft(i, 8) ^ j);
 
-                final float dx = random.nextFloatBetween(-sd2, sd2),
-                            dy = random.nextFloatBetween(-sd2, sd2),
-                            halfSize = random.nextFloatBetween(minStarSize, maxStarSize);
-
+                final float dx = random.nextFloatBetween(-sd2, sd2), dy = random.nextFloatBetween(-sd2, sd2);
                 final float x = j * starDistance, y = i * starDistance;
                 final float gx = (x-bounds.position.x)*scale+bounds.position.x,
                             gy = (y-bounds.position.y)*scale+bounds.position.y;
-                final float sx = gx + dx*scale, sy = gy + dy * scale;
-
-//                context.setLineWidth(0f);
-//                context.fillColor(ColorU.argb(1f, scale, scale, scale));
-//                DrawUtils.drawArrow(context, gx, gy, sx, sy,
-//                        DrawUtils.HeadType.CIRCLE, 0.4f,
-//                        DrawUtils.HeadType.ARROW, 1f);
-
-                final int bright = random.nextInt(256);
-                //context.setColor(ColorU.rgb(bright, bright, 0xff));
-                //context.fillRect(sx-halfSize, sy-halfSize, sx+halfSize, sy+halfSize);
+                final float sx = gx + dx*scale, sy = gy + dy*scale;
+                final float bright = random.nextFloat();
+                vb.put(sx, sy).put(bright, bright, 1);
             }
         }
     }
 
     @Override
     public void onDraw(DrawContext context) {
+        vb.reset(PointProgram.LAYOUT_P2C3);
         for (float scale=5; scale>0; scale--) {
-            drawStarLayer(context, 1-scale/10);
+            drawStarLayer(1-scale/10);
         }
+        context.use(PointProgram.DEFINITION).
+                bindAttrs(vb).
+                bindUniform(PointProgram.MATRIX_UNIFORM, context.getActiveMatrix()).
+                draw(OpenGL.POINTS);
     }
 
 }

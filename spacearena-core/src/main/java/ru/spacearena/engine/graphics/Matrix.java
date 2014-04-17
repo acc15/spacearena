@@ -499,7 +499,7 @@ public class Matrix {
             final float dstX = transformPointX(srcX, srcY);
             final float dstY = transformPointY(srcX, srcY);
             dst[i*2+dstOffset] = dstX;
-            dst[i*2+dstOffset] = dstY;
+            dst[i*2+dstOffset+1] = dstY;
         }
     }
 

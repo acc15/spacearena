@@ -13,6 +13,7 @@ import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.IntMathUtils;
 
 import java.util.HashMap;
 
@@ -54,7 +55,6 @@ public class DrawContext {
 
     private FontData.Definition font = FontRepository.CALIBRI;
     private float fontSize = 16;
-    private float textAlignX = 0, textAlignY = 0;
     private Color color = Color.BLACK;
 
     public DrawContext(OpenGL gl) {
@@ -87,6 +87,7 @@ public class DrawContext {
     }
 
     public void init() {
+        //gl.enable(OpenGL.VERTEX_PROGRAM_POINT_SIZE);
         gl.enable(OpenGL.BLEND);
         gl.blendFunc(OpenGL.SRC_ALPHA, OpenGL.ONE_MINUS_SRC_ALPHA);
     }
@@ -101,28 +102,8 @@ public class DrawContext {
         return activeMatrix;
     }
 
-    public Program make(Program.Definition def) {
-        Program p = programs.get(def);
-        if (p != null) {
-            return p;
-        }
-        p = def.createProgram();
-        programs.put(def, p);
-        p.make(gl);
-        return p;
-    }
-
-    public void delete(Program.Definition definition) {
-        final Program p = programs.get(definition);
-        if (p == null) {
-            return;
-        }
-        p.delete(gl);
-        programs.remove(definition);
-    }
-
     public Binder use(Program.Definition definition) {
-        return binder.use(make(definition));
+        return binder.use(get(definition));
     }
 
     public boolean has(Program.Definition definition) {
@@ -148,15 +129,31 @@ public class DrawContext {
     }
 
     public void delete(VertexBufferObject.Definition definition) {
-        final VertexBufferObject vbo = vbos.get(definition);
-        if (vbo == null) {
-            throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists");
-        }
+        final VertexBufferObject vbo = get(definition);
         vbo.delete(gl);
         vbos.remove(definition);
     }
 
-    public Texture load(Texture.Definition definition) {
+    public VertexBufferObject get(VertexBufferObject.Definition definition) {
+        final VertexBufferObject vbo = vbos.get(definition);
+        if (vbo == null) {
+            throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists");
+        }
+        return vbo;
+    }
+
+    public Program get(Program.Definition def) {
+        Program p = programs.get(def);
+        if (p != null) {
+            return p;
+        }
+        p = def.createProgram();
+        programs.put(def, p);
+        p.make(gl);
+        return p;
+    }
+
+    public Texture get(Texture.Definition definition) {
         Texture t = textures.get(definition);
         if (t == null) {
             t = definition.createTexture(gl);
@@ -165,15 +162,24 @@ public class DrawContext {
         return t;
     }
 
-    public FontData load(FontData.Definition definition) {
+    public FontData get(FontData.Definition definition) {
         FontData fontData = fonts.get(definition);
         if (fontData != null) {
             return fontData;
         }
         fontData = FontIO.load(definition.getFontUrl());
-        load(definition.getTexture());
+        get(definition.getTexture());
         fonts.put(definition, fontData);
         return fontData;
+    }
+
+    public void delete(Program.Definition definition) {
+        final Program p = programs.get(definition);
+        if (p == null) {
+            return;
+        }
+        p.delete(gl);
+        programs.remove(definition);
     }
 
     public void delete(FontData.Definition definition) {
@@ -191,20 +197,19 @@ public class DrawContext {
     }
 
     public void drawImage(float x, float y, Texture.Definition texture) {
-        final Texture t = load(texture);
+        final Texture t = get(texture);
         drawImage(x, y, x + t.getWidth(), y + t.getHeight(), texture);
     }
 
     public void drawImage(float l, float t, float r, float b, Texture.Definition definition) {
-        final Texture texture = load(definition);
+        final Texture texture = get(definition);
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
                 put(l, t).put(texture.getLeft(), texture.getTop()).
                 put(l, b).put(texture.getLeft(), texture.getBottom()).
                 put(r, b).put(texture.getRight(), texture.getBottom()).
                 put(r, t).put(texture.getRight(), texture.getTop());
         use(TextureProgram.DEFINITION).
-                bindAttr(TextureProgram.POSITION_ATTR, vertexBuffer, 0).
-                bindAttr(TextureProgram.TEXCOORD_ATTR, vertexBuffer, 1).
+                bindAttrs(vertexBuffer).
                 bindUniform(TextureProgram.MATRIX_UNIFORM, activeMatrix).
                 bindUniform(TextureProgram.TEXTURE_UNIFORM, definition, 0).
                 draw(OpenGL.TRIANGLE_FAN);
@@ -212,8 +217,8 @@ public class DrawContext {
 
     public void drawText(String text, float x, float y) {
 
-        final FontData f = load(font);
-        final Texture t = load(font.getTexture());
+        final FontData f = get(font);
+        final Texture t = get(font.getTexture());
 
         final float scale = fontSize / f.getFontSize();// * fontScale;
         final float lineHeight = f.getLineHeight() * scale;
@@ -221,9 +226,18 @@ public class DrawContext {
         float currentX = x, currentY = y;
 
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2);
+
+        boolean skipLF = false;
         for (int i = 0; i < text.length(); i++) {
             final char ch = text.charAt(i);
+            // to support all possible line end combinations: CR (Mac OS), LF (Unix), CR LF (Windows)
+            if (skipLF && ch == '\n') {
+                skipLF = false;
+                continue;
+            }
             switch (ch) {
+                case '\r':
+                    skipLF = true;
                 case '\n':
                     currentY += lineHeight;
                     currentX = x;
@@ -262,7 +276,7 @@ public class DrawContext {
                             put(ll, lb).put(tl, tb).
                             put(lr, lb).put(tr, tb).
                             // second triangle
-                                    put(ll, lt).put(tl, tt).
+                            put(ll, lt).put(tl, tt).
                             put(lr, lb).put(tr, tb).
                             put(lr, lt).put(tr, tt);
                     currentX += advance;
@@ -271,8 +285,7 @@ public class DrawContext {
         }
 
         use(DistanceFieldProgram.DEFINITION).
-                bindAttr(DistanceFieldProgram.POSITION_ATTR, vertexBuffer, 0).
-                bindAttr(DistanceFieldProgram.TEXCOORD_ATTR, vertexBuffer, 1).
+                bindAttrs(vertexBuffer).
                 bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, activeMatrix).
                 bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
                 bindUniform(DistanceFieldProgram.COLOR_UNIFORM, color).
@@ -327,7 +340,7 @@ public class DrawContext {
             activeMatrix.postTranslate(x, y);
             activeMatrix.postScale(rx, ry);
             use(PositionProgram.DEFINITION).
-                    bindAttr(PositionProgram.POSITION_ATTR, SIN_COS_VBO, 0).
+                    bindAttrs(SIN_COS_VBO).
                     bindUniform(PositionProgram.COLOR_UNIFORM, color).
                     bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
                     draw(type);
@@ -360,6 +373,10 @@ public class DrawContext {
         renderEllipse(OpenGL.LINE_LOOP, x, y, r, r);
     }
 
+    public FontData getFont() {
+        return get(font);
+    }
+
     public DrawContext font(FontData.Definition definition) {
         this.font = definition;
         return this;
@@ -372,8 +389,7 @@ public class DrawContext {
     }
 
     public DrawContext densityScale(float densityScale) {
-        final float ratio = densityScale / this.densityScale;
-        this.fontScale *= ratio;
+        this.fontScale *= densityScale / this.densityScale;
         this.densityScale = densityScale;
         return this;
     }
@@ -388,14 +404,25 @@ public class DrawContext {
         return this;
     }
 
-    public DrawContext lineWidth(float width) {
-        gl.lineWidth(width);
+    public float convert(float value, Unit fromUnit, Unit toUnit) {
+        switch (fromUnit) {
+            case DP: value *= densityScale; break;
+            case SP: value *= fontScale; break;
+        }
+        switch (toUnit) {
+            case DP: value /= densityScale; break;
+            case SP: value /= fontScale; break;
+        }
+        return value;
+    }
+
+    public DrawContext fontSize(float fontSize, Unit unit) {
+        this.fontSize = convert(fontSize, unit, Unit.PX);
         return this;
     }
 
-    public DrawContext align(float ax, float ay) {
-        this.textAlignX = ax;
-        this.textAlignY = ay;
+    public DrawContext lineWidth(float width) {
+        gl.lineWidth(width);
         return this;
     }
 
@@ -431,7 +458,7 @@ public class DrawContext {
         }
 
         public Binder bindUniform(int index, Texture.Definition def, int unit) {
-            final Texture t = load(def);
+            final Texture t = get(def);
             if (!texturing) {
                 texturing = true;
                 gl.enable(OpenGL.TEXTURE_2D);
@@ -460,24 +487,32 @@ public class DrawContext {
         }
 
         public Binder bindAttr(int index, VertexBufferObject.Definition definition, int item) {
-            final VertexBufferObject vbo = vbos.get(definition);
-            if (vbo == null) {
-                throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists in current context");
-            }
-
+            final VertexBufferObject vbo = get(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
-            final int size = vbo.getSize(),
-                    stride = vbl.getStride(),
-                    type = vbl.getType(item),
-                    count = VertexBufferLayout.toTypes(vbl.getSize(item), type),
-                    offset = vbl.getOffset(item);
-
-            final int bufferType = definition.getBufferType();
-            gl.bindBuffer(bufferType, vbo.getId());
-            gl.vertexAttribPointer(index, count, type, false, stride, offset);
+            gl.bindBuffer(definition.getBufferType(), vbo.getId());
+            gl.vertexAttribPointer(index, vbl.getCount(item), vbl.getType(item), false, vbl.getStride(), vbl.getOffset(item));
             gl.enableVertexAttribArray(index);
-            gl.bindBuffer(bufferType, 0);
-            adjustVertexCount(size, stride);
+            gl.bindBuffer(definition.getBufferType(), 0);
+            adjustVertexCount(vbo.getSize(), vbl.getStride());
+            return this;
+        }
+
+        public Binder bindAttrs(VertexBufferObject.Definition definition) {
+            return bindAttrs(definition, 0);
+        }
+
+        public Binder bindAttrs(VertexBufferObject.Definition definition, int attrIndexOffset) {
+            final VertexBufferObject vbo = get(definition);
+            final VertexBufferLayout vbl = vbo.getLayout();
+            gl.bindBuffer(definition.getBufferType(), vbo.getId());
+            for (int i=0; i<vbl.getAttrCount(); i++) {
+                final int attrIndex = i + attrIndexOffset;
+                gl.vertexAttribPointer(attrIndex, vbl.getCount(i), vbl.getType(i),
+                        false, vbl.getStride(), vbl.getOffset(i));
+                gl.enableVertexAttribArray(attrIndex);
+            }
+            gl.bindBuffer(definition.getBufferType(), 0);
+            adjustVertexCount(vbo.getSize(), vbl.getStride());
             return this;
         }
 
@@ -490,6 +525,22 @@ public class DrawContext {
             gl.vertexAttribPointer(index, count, type, false, stride, buffer.prepareBuffer(item));
             gl.enableVertexAttribArray(index);
             adjustVertexCount(size, stride);
+            return this;
+        }
+
+        public Binder bindAttrs(VertexBuffer vb) {
+            return bindAttrs(vb, 0);
+        }
+
+        public Binder bindAttrs(VertexBuffer vb, int attrIndexOffset) {
+            final VertexBufferLayout vbl = vb.getLayout();
+            for (int i=0; i<vbl.getAttrCount(); i++) {
+                final int attrIndex = i + attrIndexOffset;
+                gl.vertexAttribPointer(attrIndex, vbl.getCount(i), vbl.getType(i), false, vbl.getStride(),
+                        vb.prepareBuffer(i));
+                gl.enableVertexAttribArray(attrIndex);
+            }
+            adjustVertexCount(vb.getSize(), vbl.getStride());
             return this;
         }
 
@@ -511,7 +562,7 @@ public class DrawContext {
 
         private void adjustVertexCount(int bufferSize, int stride) {
             final int count = bufferSize / stride;
-            vertexCount = (vertexCount < 0 ? count : Math.min(vertexCount, count));
+            vertexCount = (vertexCount < 0 ? count : IntMathUtils.min(vertexCount, count));
         }
 
         public Binder use(Program program) {
@@ -523,11 +574,13 @@ public class DrawContext {
             this.program = program;
             return binder;
         }
+
+
     }
 
     private void drawBuf(int type, Color color) {
         use(PositionProgram.DEFINITION).
-                bindAttr(PositionProgram.POSITION_ATTR, vertexBuffer, 0).
+                bindAttrs(vertexBuffer).
                 bindUniform(PositionProgram.COLOR_UNIFORM, color).
                 bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
                 draw(type);

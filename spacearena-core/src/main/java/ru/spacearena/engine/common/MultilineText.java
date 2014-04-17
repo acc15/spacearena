@@ -2,6 +2,8 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 
 /**
  * @author Vyacheslav Mayorov
@@ -29,11 +31,9 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
         }
     }
 
-    /*
+
     private float x = 0, y = 0;
-    private int color = ColorU.WHITE;
-
-
+    private Color color = Color.WHITE;
 
     public float getX() {
         return x;
@@ -56,24 +56,23 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
         this.y = y;
     }
 
-    public int getColor() {
+    public Color getColor() {
         return color;
     }
 
-    public void setColor(int color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 
     @Override
     public void onDraw(DrawContext context) {
         float y = this.y;
-        context.setColor(color);
-        context.setTextSize(12f);
+        context.color(color).fontSize(32, DrawContext.Unit.SP);
         for (int i=0; i < getChildCount(); i++) {
             final Line line = getChild(i);
             context.drawText(line.text, x, y);
-            y += context.getTextHeight();
+            y += context.getFont().getLineHeight();
         }
     }
-    */
+
 }

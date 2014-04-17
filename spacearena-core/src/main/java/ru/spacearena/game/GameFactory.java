@@ -6,6 +6,7 @@ import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
@@ -25,7 +26,7 @@ public class GameFactory implements EngineFactory {
 
         @Override
         public void onInit(DrawContext context) {
-            final Texture t = context.load(td);
+            final Texture t = context.get(td);
             setPivot(t.getWidth()/3, t.getHeight()/2);
         }
 
@@ -57,175 +58,54 @@ public class GameFactory implements EngineFactory {
         engine.enableInput(InputType.TOUCH);
 
         final GenericContainer root = new GenericContainer();
-        root.add(new Background());
 
-        final FPSCounter f = new FPSCounter() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                if (computeFPS(seconds)) {
-                    System.out.println(getFps());
-                }
-                return true;
-            }
-        };
-        root.add(f);
-
-        //final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(100));
-
-
-        final Viewport viewport = new Viewport(new Viewport.RealSizeAdjustStrategy());
-        root.add(viewport);
-//
-//        final Ship s1;
-//        viewport.add(s1 = new Ship());
-//        s1.setPosition(100, 100);
-//        s1.setScale(0.5f, 0.5f);
-//
-//        final Ship s2;
-//        viewport.add(s2 = new Ship());
-//        s2.setPosition(200, 200);
-//        s2.setScale(0.25f, 0.25f);
-
-        viewport.add(new EngineObject() {
-
-            private float scale = 1;
-            private float v = 10f;
-            private float minScale = 1;
-            private float maxScale = 75f;
-
-            @Override
-            public boolean onUpdate(float seconds) {
-                v += 50f * seconds;
-                scale += v * seconds;
-                if (scale > maxScale) {
-                    scale = maxScale;
-                    v = -v;
-                } else if (scale < minScale) {
-                    scale = minScale;
-                    v = -v;
-                }
-                return true;
-            }
-
-            @Override
-            public void onDraw(DrawContext context) {
-
-                //context.drawText("abc");fillCircle(100, 100, scale);
-
-                //context.dpToPx()
-
-                context.color(Color.WHITE).fontSize(scale).drawText(String.format("FPS: %d", f.getFrameCount()), 0, 0);
-
-//
-
-//
-//                y = 0;
-//                for (int i=0; i<10; i++) {
-//                    final int size = i * 2 + 40;
-//                    context.drawText(String.format("FPS: %d", f.getFrameCount()), 200, y, FontRepository.CALIBRI, size, Color.WHITE);
-//                    y += size;
-//                }
-                //context.drawImage(10,10,FontRepository.SEGOE_UI.getTexture());//FontRepository.SEGOE_UI.getTexture());
-            }
-        });
-        /*
-        viewport.add(new Transform() {
-
-            private final RectPacker rectPacker = new RectPacker();
-            private final List<ColorRect> rectangles = new ArrayList<ColorRect>();
-
-            private void initLayout() {
-                rectPacker.reset();
-                rectangles.clear();
-
-                final int rectCount = 256;
-                for (int i=0; i<rectCount; i++) {
-                    final ColorRect r = new ColorRect();
-                    r.r = TempUtils.RAND.nextIntBetween(5, 50);
-                    r.b = TempUtils.RAND.nextIntBetween(5, 50);
-                    r.c.set(TempUtils.RAND.nextFloatBetween(0.25f, 1f),
-                            TempUtils.RAND.nextFloatBetween(0.25f, 1f),
-                            TempUtils.RAND.nextFloatBetween(0.25f, 1f));
-                    rectangles.add(r);
-                }
-                Collections.sort(rectangles, new Comparator<ColorRect>() {
-                    public int compare(ColorRect o1, ColorRect o2) {
-                        final int m1 = IntMathUtils.max(o1.getWidth(), o1.getHeight());
-                        final int m2 = IntMathUtils.max(o2.getWidth(), o2.getHeight());
-                        return -IntMathUtils.compare(m1, m2);
-//                        return -IntMathUtils.compare(o1.getWidth(), o2.getWidth());
-                    }
-                });
-                rectPacker.pack(rectangles);
-            }
-
-            @Override
-            public boolean onInput(InputEvent inputEvent) {
-                MouseEvent me = inputEvent.asMouseEvent();
-                if (me == null) {
-                    return true;
-                }
-                if (me.getAction() != MouseEvent.Action.CLICK) {
-                    return true;
-                }
-                if (me.getButton() != MouseEvent.LEFT_BUTTON) {
-                    return true;
-                }
-                initLayout();
-                return true;
-            }
-
-            @Override
-            public void onAttach(Engine engine) {
-                initLayout();
-            }
-
-
-            @Override
-            public void onDraw(DrawContext context) {
-                for (Rect2I f: rectPacker.getFreeAreas()) {
-                    context.fillRect(f.getLeft(), f.getTop(), f.getRight(), f.getBottom(), new Color(1,1,1,0.1f));
-                }
-                for (ColorRect r: rectangles) {
-                    context.fillRect(r.l, r.t, r.r, r.b, r.c);
-                    context.drawRect(r.l, r.t, r.r, r.b, Color.WHITE);
-                }
-                context.drawRect(0,0,rectPacker.getPackWidth(),rectPacker.getPackHeight(), Color.WHITE);
-            }
-        });
-        */
-
-        /*
         final MultilineText.Line fpsText = new MultilineText.Line();
         final MultilineText.Line positionText = new MultilineText.Line();
         final MultilineText.Line viewportText = new MultilineText.Line();
         final MultilineText.Line collisionText = new MultilineText.Line();
+
+
+        root.add(new Background());
+
+        final FPSCounter fpsCounter = new FPSCounter() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                if (!super.onUpdate(seconds)) {
+                    return false;
+                }
+                fpsText.setText(String.format("FPS: %.2f", getFps()));
+                return true;
+            }
+        };
+        root.add(fpsCounter);
+
+
+        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
+        viewport.add(new Sky(viewport));
+        viewport.add(new EngineObject() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                viewport.translate(10f*seconds, 0);
+                return true;
+            }
+        });
+
+        final Rect2FP levelBounds = new Rect2FP(-100f, -100f, 100f, 100f);
+
+
+        root.add(viewport);
+
+        final Viewport screen = new Viewport(new Viewport.RealSizeAdjustStrategy());
 
         final MultilineText multilineText = new MultilineText();
         multilineText.add(fpsText);
         multilineText.add(positionText);
         multilineText.add(viewportText);
         multilineText.add(collisionText);
+        screen.add(multilineText);
 
-        root.add(new Background());
-
-        final FPSCounter fpsCounter = new FPSCounter();
-        root.add(fpsCounter);
-
-        final Timer timer = new Timer(0.5f, true);
-        root.add(timer);
-        timer.add(new EngineObject() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                fpsText.setText(String.format("FPS: %.2f", fpsCounter.getFps()));
-                return true;
-            }
-        });
-
-        final Rect2FPP levelBounds = new Rect2FPP(-100f, -100f, 100f, 100f);
-
-        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
-        viewport.add(new Sky(viewport));
+        root.add(screen);
+        /*
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f));
 
         final GenericContainer fxContainer = new GenericContainer();
@@ -249,7 +129,7 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(box2dWorld);
 
-        root.add(viewport);
+
         root.add(new InputTracker() {
 
             private boolean canShoot = true;

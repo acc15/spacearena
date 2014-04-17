@@ -12,22 +12,15 @@ public class Rect2IP extends AbstractRect2I {
     }
 
     public Rect2IP(int r, int b) {
-        set(0,0,r,b);
+        setBounds(0,0,r,b);
     }
 
     public Rect2IP(int l, int t, int r, int b) {
-        set(l,t,r,b);
-    }
-
-    public void set(int l, int t, int r, int b) {
-        this.l = l;
-        this.t = t;
-        this.r = r;
-        this.b = b;
+        setBounds(l,t,r,b);
     }
 
     public void moveTo(int x, int y) {
-        set(x,y,x+r-l,y+b-t);
+        setBounds(x,y,x+r-l,y+b-t);
     }
 
     public int getWidth() {
@@ -52,5 +45,12 @@ public class Rect2IP extends AbstractRect2I {
 
     public int getBottom() {
         return b;
+    }
+
+    public void setBounds(int l, int t, int r, int b) {
+        this.l = l;
+        this.t = t;
+        this.r = r;
+        this.b = b;
     }
 }

@@ -17,7 +17,6 @@ public class ShapeUtils {
         }
         shape.getPoints(TempUtils.POINT_BUF, 0, pointCount);
         matrix.transformPoints(TempUtils.POINT_BUF, 0, TempUtils.POINT_BUF, 0, pointCount);
-        //matrix.tranmapPoints(TempUtils.POINT_BUF, 0, TempUtils.POINT_BUF, 0, pointCount);
         return TempUtils.POINT_BUF;
     }
 

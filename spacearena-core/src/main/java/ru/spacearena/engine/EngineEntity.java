@@ -17,7 +17,7 @@ public interface EngineEntity {
      * It is a good point to load textures, {@link ru.spacearena.engine.graphics.DrawContext#upload(
      *  ru.spacearena.engine.graphics.vbo.VertexBufferObject.Definition,
      *  ru.spacearena.engine.graphics.vbo.VertexBuffer) upload VBOs} and
-     * {@link ru.spacearena.engine.graphics.DrawContext#make(
+     * {@link ru.spacearena.engine.graphics.DrawContext#get(
      *  ru.spacearena.engine.graphics.shaders.Program.Definition) make programs}.
      *  However you can make this things later - on the fly.
      *  It's just a notification - "i'm ready to start drawing".

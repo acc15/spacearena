@@ -57,4 +57,11 @@ public class Rect2ID extends AbstractRect2I {
         return y + h;
     }
 
+    public void setBounds(int l, int t, int r, int b) {
+        this.x = l;
+        this.y = t;
+        this.w = r - l;
+        this.h = b - t;
+    }
+
 }

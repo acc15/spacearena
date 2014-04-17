@@ -61,6 +61,7 @@ public class VertexBufferLayout {
         return offsets[offsets.length-1];
     }
 
+    public int getAttrCount() { return offsets.length; }
 
     public static int toBytes(int amount, int type) {
         switch (type) {
@@ -110,6 +111,10 @@ public class VertexBufferLayout {
         final int[] dst = new int[size];
         System.arraycopy(src, 0, dst, 0, size);
         return dst;
+    }
+
+    public static Builder create() {
+        return new Builder();
     }
 
     public static final class Builder {

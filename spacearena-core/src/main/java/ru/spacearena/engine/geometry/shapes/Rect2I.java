@@ -18,4 +18,6 @@ public interface Rect2I {
 
     boolean contains(Rect2I r);
 
+    void setBounds(int l, int t, int r, int b);
+
 }

@@ -7,8 +7,6 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.NumberFormatter;
@@ -50,8 +48,8 @@ public class FontGeneratorPanel extends JPanel {
     private final JFormattedTextField imageScale;
 
     //private final JFormattedTextField spreadField;
-    private final JSlider distanceFieldOffsetSlider;
-    private final JSlider distanceFieldScaleSlider;
+    private final JFormattedTextField distanceFieldOffsetSlider;
+    private final JFormattedTextField distanceFieldScaleSlider;
     private final JCheckBox hqCheckBox;
     private final JLabel statusLabel;
     private final ImagePanel fontImagePane;
@@ -161,20 +159,20 @@ public class FontGeneratorPanel extends JPanel {
         controlPane.add(imageScale = createIntegerTextField(3));
 
         controlPane.add(new JLabel("Distance field offset: "));
-        controlPane.add(distanceFieldOffsetSlider = new JSlider(-100, 100, 0));
-        distanceFieldOffsetSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                onParameterChange();
-            }
-        });
+        controlPane.add(distanceFieldOffsetSlider = createFloatTextField(0));
+//        distanceFieldOffsetSlider.addChangeListener(new ChangeListener() {
+//            public void stateChanged(ChangeEvent e) {
+//                onParameterChange();
+//            }
+//        });
 
         controlPane.add(new JLabel("Distance field scale: "));
-        controlPane.add(distanceFieldScaleSlider = new JSlider(1, 100, 20));
-        distanceFieldScaleSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                onParameterChange();
-            }
-        });
+        controlPane.add(distanceFieldScaleSlider = createFloatTextField(20));//new JSlider(1, 100, 20));
+//        distanceFieldScaleSlider.addChangeListener(new ChangeListener() {
+//            public void stateChanged(ChangeEvent e) {
+//                onParameterChange();
+//            }
+//        });
 
         controlPane.add(hqCheckBox = new JCheckBox("HQ", true));
         hqCheckBox.setMaximumSize(new Dimension(Short.MAX_VALUE, DEFAULT_COMPONENT_HEIGHT));
@@ -304,8 +302,8 @@ public class FontGeneratorPanel extends JPanel {
         input.setFontName((String)fontFaceComboBox.getSelectedItem());
         input.setFontSize((Integer)fontSizeField.getValue());
         input.setFontStyle(fontStyleCombobox.getSelectedIndex());
-        input.setDistanceFieldOffset(distanceFieldOffsetSlider.getValue());
-        input.setDistanceFieldScale(distanceFieldScaleSlider.getValue());
+        input.setDistanceFieldOffset((Float)distanceFieldOffsetSlider.getValue());
+        input.setDistanceFieldScale((Float)distanceFieldScaleSlider.getValue());
 
         final FontGeneratorWorker worker = new FontGeneratorWorker(input);
         worker.addPropertyChangeListener(new PropertyChangeListener() {
