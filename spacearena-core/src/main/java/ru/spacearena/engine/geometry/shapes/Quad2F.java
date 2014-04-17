@@ -1,6 +1,7 @@
 package ru.spacearena.engine.geometry.shapes;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.graphics.Matrix;
 
 /**
  * @author Vyacheslav Mayorov
@@ -9,6 +10,24 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
 public class Quad2F extends AbstractPolyShape2F {
 
     public final Point2F p1 = new Point2F(), p2 = new Point2F(), p3 = new Point2F(), p4 = new Point2F();
+
+    public void set(Rect2F rect) {
+        setBounds(rect.getMinX(), rect.getMinY(), rect.getMaxX(), rect.getMaxY());
+    }
+
+    public void setBounds(float l, float t, float r, float b) {
+        p1.set(l,t);
+        p2.set(l,b);
+        p3.set(r,b);
+        p4.set(r,t);
+    }
+
+    public void transform(Matrix matrix) {
+        matrix.transformPoint(p1);
+        matrix.transformPoint(p2);
+        matrix.transformPoint(p3);
+        matrix.transformPoint(p4);
+    }
 
     @Override
     public Point2F getPoint(int i) {

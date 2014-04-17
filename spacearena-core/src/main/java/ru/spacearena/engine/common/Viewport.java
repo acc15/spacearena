@@ -1,10 +1,10 @@
 package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineEntity;
+import ru.spacearena.engine.geometry.shapes.Quad2F;
 import ru.spacearena.engine.geometry.shapes.Rect2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Matrix;
-import ru.spacearena.engine.util.ShapeUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -13,7 +13,8 @@ import ru.spacearena.engine.util.ShapeUtils;
 public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bounded {
 
     private final ViewportAdjustStrategy adjustStrategy;
-    private final Rect2FP bounds = new Rect2FP();
+    private final Quad2F window = new Quad2F();
+    private final Rect2F bounds = new Rect2FP();
     private Matrix localSpace = new Matrix();
 
     public Viewport() {
@@ -102,11 +103,17 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
         return bounds;
     }
 
+    public Quad2F getWindow() {
+        updateMatrixIfNeeded();
+        return window;
+    }
+
     @Override
     protected void onMatrixUpdate() {
         localSpace.inverse(getWorldSpace());
-        bounds.set(-1, 1, 1, -1);
-        ShapeUtils.computeBoundingBox(bounds, bounds, getWorldSpace());
+        window.setBounds(-1, 1, 1, -1);
+        window.transform(getWorldSpace());
+        bounds.computeBoundingBox(window);
     }
 
     public Matrix getLocalSpace() {
