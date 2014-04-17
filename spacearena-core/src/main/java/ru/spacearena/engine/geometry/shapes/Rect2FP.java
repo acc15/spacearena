@@ -10,7 +10,8 @@ import ru.spacearena.engine.util.FloatMathUtils
  */
 public class Rect2FP extends AbstractRect2F {
 
-    public final Point2F p1 = new Point2F(), p2 = new Point2F();
+    public final Point2F p1 = new Point2F();
+    public final Point2F p2 = new Point2F();
 
     public Rect2FP() {
     }
@@ -82,21 +83,11 @@ public class Rect2FP extends AbstractRect2F {
         (dy > 0 ? p2 : p1).y += dy;
     }
 
-    public void computeBoundingBox(float[] pts, int start, int pointCount) {
-        for (int i=0; i<pointCount; i++) {
-            final float x = pts[i*2+start], y = pts[i*2+start+1];
-            if (x < p1.x) {
-                p1.x = x;
-            } else if (x > p2.x) {
-                p2.x = x;
-            }
-            if (y < p1.y) {
-                p1.y = y;
-            } else if (y > p2.y) {
-                p2.y = y;
-            }
-        }
+    public void setBounds(float l, float t, float r, float b) {
+        p1.set(l,t);
+        p2.set(r,b);
     }
+
 
     @Override
     public float getPointX(int i) {

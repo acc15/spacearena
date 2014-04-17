@@ -9,6 +9,7 @@ public enum ShapeType {
     CIRCLE,
     ELLIPSE,
     RECTANGLE,
+    QUAD,
     POLYGON
 
 }

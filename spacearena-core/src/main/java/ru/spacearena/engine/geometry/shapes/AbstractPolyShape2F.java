@@ -2,7 +2,6 @@ package ru.spacearena.engine.geometry.shapes;
 
 import ru.spacearena.engine.geometry.primitives.Line2F;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.geometry.primitives.ProjectionF;
 
 /**
  * @author Vyacheslav Mayorov
@@ -39,22 +38,22 @@ public abstract class AbstractPolyShape2F implements PolyShape2F, Shape2F {
         return pt;
     }
 
-    public void calculateProjection(Point2F axis, ProjectionF projection) {
-        for (int i=0; i<getPointCount(); i++) {
-            final float x = getPointX(i), y = getPointY(i);
-            projection.accumulate(axis.dot(x,y));
-        }
-    }
-
-    public boolean obtainAxis(int n, boolean references, Shape2F shape, Point2F axis) {
-        final int pointCount = getPointCount();
-        if (n >= pointCount) {
-            return false;
-        }
-
-        final float x1 = getPointX(n), y1 = getPointY(n),
-                    x2 = getPointX(n+1), y2 = getPointY(n+1);
-        axis.set(x2 - x1, y2 - y1).rperp().normalize();
-        return true;
-    }
+//    public void calculateProjection(Point2F axis, ProjectionF projection) {
+//        for (int i=0; i<getPointCount(); i++) {
+//            final float x = getPointX(i), y = getPointY(i);
+//            projection.accumulate(axis.dot(x,y));
+//        }
+//    }
+//
+//    public boolean obtainAxis(int n, boolean references, Shape2F shape, Point2F axis) {
+//        final int pointCount = getPointCount();
+//        if (n >= pointCount) {
+//            return false;
+//        }
+//
+//        final float x1 = getPointX(n), y1 = getPointY(n),
+//                    x2 = getPointX(n+1), y2 = getPointY(n+1);
+//        axis.set(x2 - x1, y2 - y1).rperp().normalize();
+//        return true;
+//    }
 }

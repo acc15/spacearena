@@ -1,6 +1,7 @@
 package ru.spacearena.engine.geometry.shapes;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.util.FloatMathUtils;
 
 /**
  * @author Vyacheslav Mayorov
@@ -8,8 +9,8 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
  */
 public class Rect2FR extends AbstractRect2F {
 
-    public Point2F position = new Point2F();
-    public Point2F halfSize = new Point2F();
+    public final Point2F position = new Point2F();
+    public final Point2F halfSize = new Point2F();
 
     public Rect2FR() {
     }
@@ -24,6 +25,11 @@ public class Rect2FR extends AbstractRect2F {
 
     public void set(Rect2F aabb) {
         set(aabb.getCenterX(), aabb.getCenterY(), aabb.getHalfWidth(), aabb.getHalfHeight());
+    }
+
+    public void setBounds(float l, float t, float r, float b) {
+        this.position.set(FloatMathUtils.center(l,r), FloatMathUtils.center(t,b));
+        this.halfSize.set(FloatMathUtils.halfSize(l,r), FloatMathUtils.halfSize(t,b));
     }
 
     public void set(float x, float y, float rx, float ry) {

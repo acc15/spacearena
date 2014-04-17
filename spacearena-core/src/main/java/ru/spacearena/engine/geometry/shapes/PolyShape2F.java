@@ -7,7 +7,7 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
  * @author Vyacheslav Mayorov
  * @since 2014-13-03
  */
-public interface PolyShape2F {
+public interface PolyShape2F extends Shape2F {
 
     void getPoints(float[] points, int start, int pointCount);
 
