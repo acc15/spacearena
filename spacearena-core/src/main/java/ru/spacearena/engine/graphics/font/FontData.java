@@ -17,8 +17,6 @@ public class FontData implements Serializable {
 
     public static interface Definition {
         URL getFontUrl();
-        // TODO remove texture URL.. put texture and mipmap URLs into Texture.Definition
-        URL getTextureUrl();
         Texture.Definition getTexture();
     }
 

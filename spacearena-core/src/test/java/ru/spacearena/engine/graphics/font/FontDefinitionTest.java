@@ -13,6 +13,6 @@ public class FontDefinitionTest {
     public void testFontDef() throws Exception {
         final FontDefinition fd = new FontDefinition(GameFactory.class, "test");
         System.out.println(fd.getFontUrl());
-        System.out.println(fd.getTextureUrl());
+
     }
 }

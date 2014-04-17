@@ -21,17 +21,10 @@ public class GameFactory implements EngineFactory {
 
     private static final class Ship extends Transform {
 
-        private static final TextureDefinition td = new TextureDefinition();
+        private static final TextureDefinition td = new TextureDefinition().url(GameFactory.class, "ship.png");
 
         public Ship(float x, float y) {
             setPosition(x, y);
-        }
-
-        @Override
-        public void onInit(DrawContext context) {
-            if (!context.has(td)) {
-                context.load(td, GameFactory.class.getResource("ship.png"));
-            }
         }
 
         @Override
@@ -88,6 +81,25 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(new EngineObject() {
 
+            private float scale = 1;
+            private float v = 10f;
+            private float minSmooth = 1;
+            private float maxSmooth = 1000f;
+
+            @Override
+            public boolean onUpdate(float seconds) {
+                v += 50f * seconds;
+                scale += v * seconds;
+                if (scale > maxSmooth) {
+                    scale = maxSmooth;
+                    v = -v;
+                } else if (scale < minSmooth) {
+                    scale = minSmooth;
+                    v = -v;
+                }
+                return true;
+            }
+
             @Override
             public void onDraw(DrawContext context) {
 
@@ -98,9 +110,10 @@ public class GameFactory implements EngineFactory {
 //
 //
                 int y = 0;
-                for (int i=0; i<20; i++) {
+                for (int i=0; i<1; i++) {
                     final int size = i * 2 + 4;
-                    context.drawText(String.format("FPS: %d", f.getFrameCount()), 0, y, FontRepository.SEGOE_UI_LIGHT, size, Color.WHITE);
+                    context.drawText(String.format("Time: %1$tH:%1$tM:%1$tS.%1$tL", System.currentTimeMillis()), 0, 0,
+                            FontRepository.CALIBRI, scale, Color.WHITE);
                     y += size;
                 }
 //

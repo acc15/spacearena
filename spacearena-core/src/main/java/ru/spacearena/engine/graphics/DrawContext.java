@@ -3,7 +3,10 @@ package ru.spacearena.engine.graphics;
 import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2I;
-import ru.spacearena.engine.graphics.font.*;
+import ru.spacearena.engine.graphics.font.CharData;
+import ru.spacearena.engine.graphics.font.DistanceFieldProgram;
+import ru.spacearena.engine.graphics.font.FontData;
+import ru.spacearena.engine.graphics.font.FontIO;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.Program;
 import ru.spacearena.engine.graphics.texture.Texture;
@@ -14,7 +17,6 @@ import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
 import ru.spacearena.engine.util.FloatMathUtils;
 
-import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -148,44 +150,12 @@ public class DrawContext {
         vbos.remove(definition);
     }
 
-    public Texture load(Texture.Definition definition, URL url) {
-        return load(definition, 0, url);
-    }
-
-    private Texture prepareTexture(Texture.Definition definition) {
+    public Texture load(Texture.Definition definition) {
         Texture t = textures.get(definition);
         if (t == null) {
-            t = new Texture();
+            t = definition.createTexture(gl);
             textures.put(definition, t);
-            t.setId(gl.genTexture());
-            gl.bindTexture(definition.getType(), t.getId());
-            if (definition.getMinFilter() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MIN_FILTER, definition.getMinFilter());
-            }
-            if (definition.getMagFilter() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_MAG_FILTER, definition.getMagFilter());
-            }
-            if (definition.getWrapS() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_S, definition.getWrapS());
-            }
-            if (definition.getWrapT() != 0) {
-                gl.texParameter(definition.getType(), OpenGL.TEXTURE_WRAP_T, definition.getWrapT());
-            }
-        } else {
-            gl.bindTexture(definition.getType(), t.getId());
         }
-        return t;
-    }
-
-    public Texture load(Texture.Definition definition, int level, int format, int type, URL url) {
-        final Texture t = prepareTexture(definition);
-        gl.texImage2D(t, level, format, type, url);
-        return t;
-    }
-
-    public Texture load(Texture.Definition definition, int level, URL url) {
-        final Texture t = prepareTexture(definition);
-        gl.texImage2D(t, level, url);
         return t;
     }
 
@@ -195,9 +165,7 @@ public class DrawContext {
             return fontData;
         }
         fontData = FontIO.load(definition.getFontUrl());
-        if (!has(definition.getTexture())) {
-            load(definition.getTexture(), definition.getTextureUrl());
-        }
+        load(definition.getTexture());
         fonts.put(definition, fontData);
         return fontData;
     }
@@ -217,12 +185,12 @@ public class DrawContext {
     }
 
     public void drawImage(float x, float y, Texture.Definition texture) {
-        final Texture t = getTexture(texture);
+        final Texture t = load(texture);
         drawImage(x, y, x + t.getWidth(), y + t.getHeight(), texture);
     }
 
     public void drawImage(float l, float t, float r, float b, Texture.Definition definition) {
-        final Texture texture = getTexture(definition);
+        final Texture texture = load(definition);
         vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
                      put(l,t).put(texture.getLeft(), texture.getTop()).
                      put(l,b).put(texture.getLeft(), texture.getBottom()).
@@ -239,7 +207,7 @@ public class DrawContext {
     public void drawText(String text, float x, float y, FontData.Definition font, float size, Color color) {
 
         final FontData f = load(font);
-        final Texture t = getTexture(font.getTexture());
+        final Texture t = load(font.getTexture());
 
         final float scale = size/f.getFontSize();// * fontScale;
         final float lineHeight = f.getLineHeight() * scale;
@@ -393,14 +361,6 @@ public class DrawContext {
         gl.lineWidth(width);
     }
 
-    public Texture getTexture(Texture.Definition definition) {
-        final Texture t = textures.get(definition);
-        if (t == null) {
-            throw new IllegalArgumentException("Texture with definition " + definition + " doesn't exists");
-        }
-        return t;
-    }
-
     public float getDensityScale() {
         return densityScale;
     }
@@ -450,13 +410,13 @@ public class DrawContext {
         }
 
         public Binder bindUniform(int index, Texture.Definition def, int unit) {
-            final Texture t = getTexture(def);
+            final Texture t = load(def);
             if (!texturing) {
                 texturing = true;
                 gl.enable(OpenGL.TEXTURE_2D);
             }
             gl.activeTexture(OpenGL.TEXTURE0 + unit);
-            gl.bindTexture(def.getType(), t.getId());
+            gl.bindTexture(OpenGL.TEXTURE_2D, t.getId());
 
             final int loc = program.getUniformLocation(index);
             gl.uniform(loc, unit);

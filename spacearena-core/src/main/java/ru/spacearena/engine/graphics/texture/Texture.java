@@ -1,5 +1,7 @@
 package ru.spacearena.engine.graphics.texture;
 
+import ru.spacearena.engine.graphics.OpenGL;
+
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-05-04
@@ -7,11 +9,7 @@ package ru.spacearena.engine.graphics.texture;
 public class Texture {
 
     public interface Definition {
-        int getWrapS();
-        int getWrapT();
-        int getMinFilter();
-        int getMagFilter();
-        int getType();
+        Texture createTexture(OpenGL gl);
     }
 
     private int id;
