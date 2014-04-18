@@ -5,7 +5,7 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2I;
 import ru.spacearena.engine.graphics.font.*;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
-import ru.spacearena.engine.graphics.shaders.Program;
+import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureProgram;
 import ru.spacearena.engine.graphics.vbo.VBODefinition;
@@ -52,7 +52,7 @@ public class DrawContext {
     private final Matrix activeMatrix = new Matrix();
     private final FloatArrayList matrixStack = new FloatArrayList(Matrix.ELEMENTS_PER_MATRIX * 5);
 
-    private final HashMap<Program.Definition, Program> programs = new HashMap<Program.Definition, Program>();
+    private final HashMap<ShaderProgram.Definition, ShaderProgram> programs = new HashMap<ShaderProgram.Definition, ShaderProgram>();
     private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos = new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
     private final HashMap<Texture.Definition, Texture> textures = new HashMap<Texture.Definition, Texture>();
     private final HashMap<FontData.Definition, FontData> fonts = new HashMap<FontData.Definition, FontData>();
@@ -112,11 +112,11 @@ public class DrawContext {
         return activeMatrix;
     }
 
-    public Binder use(Program.Definition definition) {
+    public Binder use(ShaderProgram.Definition definition) {
         return binder.use(get(definition));
     }
 
-    public boolean has(Program.Definition definition) {
+    public boolean has(ShaderProgram.Definition definition) {
         return programs.containsKey(definition);
     }
 
@@ -152,8 +152,8 @@ public class DrawContext {
         return vbo;
     }
 
-    public Program get(Program.Definition def) {
-        Program p = programs.get(def);
+    public ShaderProgram get(ShaderProgram.Definition def) {
+        ShaderProgram p = programs.get(def);
         if (p != null) {
             return p;
         }
@@ -183,8 +183,8 @@ public class DrawContext {
         return fontData;
     }
 
-    public void delete(Program.Definition definition) {
-        final Program p = programs.get(definition);
+    public void delete(ShaderProgram.Definition definition) {
+        final ShaderProgram p = programs.get(definition);
         if (p == null) {
             return;
         }
@@ -219,9 +219,9 @@ public class DrawContext {
                 put(r, b).put(texture.getRight(), texture.getBottom()).
                 put(r, t).put(texture.getRight(), texture.getTop());
         use(TextureProgram.DEFINITION).
-                bindAttrs(vertexBuffer).
-                bindUniform(TextureProgram.MATRIX_UNIFORM, activeMatrix).
-                bindUniform(TextureProgram.TEXTURE_UNIFORM, definition, 0).
+                attrs(vertexBuffer).
+                uniform(activeMatrix).
+                uniform(definition, 0).
                 draw(OpenGL.TRIANGLE_FAN);
     }
 
@@ -296,11 +296,11 @@ public class DrawContext {
         }
 
         use(DistanceFieldProgram.DEFINITION).
-                bindAttrs(vertexBuffer).
-                bindUniform(DistanceFieldProgram.MATRIX_UNIFORM, activeMatrix).
-                bindUniform(DistanceFieldProgram.TEXTURE_UNIFORM, font.getTexture(), 0).
-                bindUniform(DistanceFieldProgram.COLOR_UNIFORM, color).
-                bindUniform(DistanceFieldProgram.SMOOTH_UNIFORM, (float) (1 << f.getImageScale()) / (fontSize)).
+                attrs(vertexBuffer).
+                uniform(activeMatrix).
+                uniform(font.getTexture(), 0).
+                uniform(color).
+                uniform((float) (1 << f.getImageScale()) / (fontSize)).
                 draw(OpenGL.TRIANGLES);
     }
 
@@ -317,6 +317,10 @@ public class DrawContext {
     public void fillConvexPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.TRIANGLE_FAN);
+    }
+
+    public VertexBuffer getSharedBuffer() {
+        return vertexBuffer;
     }
 
     public Polygon polygon() {
@@ -406,9 +410,9 @@ public class DrawContext {
             activeMatrix.postTranslate(x, y);
             activeMatrix.postScale(rx, ry);
             use(PositionProgram.DEFINITION).
-                    bindAttrs(SIN_COS_VBO).
-                    bindUniform(PositionProgram.COLOR_UNIFORM, color).
-                    bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
+                    attrs(SIN_COS_VBO).
+                    uniform(color).
+                    uniform(activeMatrix).
                     draw(type);
         } finally {
             popMatrix();
@@ -524,31 +528,41 @@ public class DrawContext {
 
     public class Binder {
 
-        private Program program;
+        private ShaderProgram program;
         private int vertexCount = -1;
+        private int attrIndex = -1;
+        private int uniformIndex = -1;
         private boolean texturing = false;
 
-        public Binder bindUniform(int index, float x) {
-            gl.uniform(program.getUniformLocation(index), x);
+        private int nextUniformLocation() {
+            return program.getUniformLocation(++uniformIndex);
+        }
+
+        private int nextAttrIndex() {
+            return ++attrIndex;
+        }
+
+        public Binder uniform(float x) {
+            gl.uniform(nextUniformLocation(), x);
             return this;
         }
 
-        public Binder bindUniform(int index, float x, float y) {
-            gl.uniform(program.getUniformLocation(index), x, y);
+        public Binder uniform(float x, float y) {
+            gl.uniform(nextUniformLocation(), x, y);
             return this;
         }
 
-        public Binder bindUniform(int index, float x, float y, float z) {
-            gl.uniform(program.getUniformLocation(index), x, y, z);
+        public Binder uniform(float x, float y, float z) {
+            gl.uniform(nextUniformLocation(), x, y, z);
             return this;
         }
 
-        public Binder bindUniform(int index, float x, float y, float z, float w) {
-            gl.uniform(program.getUniformLocation(index), x, y, z, w);
+        public Binder uniform(float x, float y, float z, float w) {
+            gl.uniform(nextUniformLocation(), x, y, z, w);
             return this;
         }
 
-        public Binder bindUniform(int index, Texture.Definition def, int unit) {
+        public Binder uniform(Texture.Definition def, int unit) {
             final Texture t = get(def);
             if (!texturing) {
                 texturing = true;
@@ -557,79 +571,71 @@ public class DrawContext {
             gl.activeTexture(OpenGL.TEXTURE0 + unit);
             gl.bindTexture(OpenGL.TEXTURE_2D, t.getId());
 
-            final int loc = program.getUniformLocation(index);
-            gl.uniform(loc, unit);
+            gl.uniform(nextUniformLocation(), unit);
             return this;
         }
 
-        public Binder bindUniform(int index, Point2F point) {
-            gl.uniform(program.getUniformLocation(index), point.x, point.y);
+        public Binder uniform(Point2F point) {
+            gl.uniform(nextUniformLocation(), point.x, point.y);
             return this;
         }
 
-        public Binder bindUniform(int index, Matrix matrix) {
-            gl.uniformMatrix4(program.getUniformLocation(index), 1, matrix.m, 0);
+        public Binder uniform(Matrix matrix) {
+            gl.uniformMatrix4(nextUniformLocation(), 1, matrix.m, 0);
             return this;
         }
 
-        public Binder bindUniform(int index, Color color) {
-            gl.uniform(program.getUniformLocation(index), color.r, color.g, color.b, color.a);
+        public Binder uniform(Color color) {
+            gl.uniform(nextUniformLocation(), color.r, color.g, color.b, color.a);
             return this;
         }
 
-        public Binder bindAttr(int index, VertexBufferObject.Definition definition, int item) {
+        private void attrPointerBuffer(int attrIndex, int item, VertexBuffer vb) {
+            final VertexBufferLayout vbl = vb.getLayout();
+            gl.vertexAttribPointer(attrIndex, vbl.getCount(item), vbl.getType(item),
+                    false, vbl.getStride(), vb.prepareBuffer(item));
+            gl.enableVertexAttribArray(attrIndex);
+        }
+
+        private void attrPointerOffset(int attrIndex, int item, VertexBufferLayout vbl) {
+            gl.vertexAttribPointer(attrIndex, vbl.getCount(item), vbl.getType(item),
+                    false, vbl.getStride(), vbl.getOffset(item));
+            gl.enableVertexAttribArray(attrIndex);
+        }
+
+        public Binder attr(VertexBufferObject.Definition definition, int item) {
             final VertexBufferObject vbo = get(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.bindBuffer(definition.getBufferType(), vbo.getId());
-            gl.vertexAttribPointer(index, vbl.getCount(item), vbl.getType(item), false, vbl.getStride(), vbl.getOffset(item));
-            gl.enableVertexAttribArray(index);
+            attrPointerOffset(nextAttrIndex(), item, vbl);
             gl.bindBuffer(definition.getBufferType(), 0);
             adjustVertexCount(vbo.getSize(), vbl.getStride());
             return this;
         }
 
-        public Binder bindAttrs(VertexBufferObject.Definition definition) {
-            return bindAttrs(definition, 0);
-        }
-
-        public Binder bindAttrs(VertexBufferObject.Definition definition, int attrIndexOffset) {
+        public Binder attrs(VertexBufferObject.Definition definition) {
             final VertexBufferObject vbo = get(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.bindBuffer(definition.getBufferType(), vbo.getId());
             for (int i=0; i<vbl.getAttrCount(); i++) {
-                final int attrIndex = i + attrIndexOffset;
-                gl.vertexAttribPointer(attrIndex, vbl.getCount(i), vbl.getType(i),
-                        false, vbl.getStride(), vbl.getOffset(i));
-                gl.enableVertexAttribArray(attrIndex);
+                attrPointerOffset(nextAttrIndex(), i, vbl);
             }
             gl.bindBuffer(definition.getBufferType(), 0);
             adjustVertexCount(vbo.getSize(), vbl.getStride());
             return this;
         }
 
-        public Binder bindAttr(int index, VertexBuffer buffer, int item) {
+        public Binder attr(VertexBuffer buffer, int item) {
             final VertexBufferLayout vbl = buffer.getLayout();
-            final int size = buffer.getSize(),
-                    stride = vbl.getStride(),
-                    type = vbl.getType(item),
-                    count = VertexBufferLayout.toTypes(vbl.getSize(item), type);
-            gl.vertexAttribPointer(index, count, type, false, stride, buffer.prepareBuffer(item));
-            gl.enableVertexAttribArray(index);
-            adjustVertexCount(size, stride);
+            attrPointerBuffer(nextAttrIndex(), item, buffer);
+            adjustVertexCount(buffer.getSize(), vbl.getStride());
             return this;
         }
 
-        public Binder bindAttrs(VertexBuffer vb) {
-            return bindAttrs(vb, 0);
-        }
-
-        public Binder bindAttrs(VertexBuffer vb, int attrIndexOffset) {
+        public Binder attrs(VertexBuffer vb) {
             final VertexBufferLayout vbl = vb.getLayout();
             for (int i=0; i<vbl.getAttrCount(); i++) {
-                final int attrIndex = i + attrIndexOffset;
-                gl.vertexAttribPointer(attrIndex, vbl.getCount(i), vbl.getType(i), false, vbl.getStride(),
-                        vb.prepareBuffer(i));
-                gl.enableVertexAttribArray(attrIndex);
+                attrPointerBuffer(nextAttrIndex(), i, vb);
             }
             adjustVertexCount(vb.getSize(), vbl.getStride());
             return this;
@@ -656,8 +662,10 @@ public class DrawContext {
             vertexCount = (vertexCount < 0 ? count : IntMathUtils.min(vertexCount, count));
         }
 
-        public Binder use(Program program) {
+        public Binder use(ShaderProgram program) {
             this.vertexCount = -1;
+            this.attrIndex = -1;
+            this.uniformIndex = -1;
             if (this.program == program) {
                 return binder;
             }
@@ -671,9 +679,9 @@ public class DrawContext {
 
     private void drawBuf(int type) {
         use(PositionProgram.DEFINITION).
-                bindAttrs(vertexBuffer).
-                bindUniform(PositionProgram.COLOR_UNIFORM, color).
-                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
+                attrs(vertexBuffer).
+                uniform(activeMatrix).
+                uniform(color).
                 draw(type);
     }
 

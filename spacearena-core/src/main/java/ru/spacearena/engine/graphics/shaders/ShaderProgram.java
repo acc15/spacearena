@@ -13,10 +13,10 @@ import java.util.List;
 * @author Vyacheslav Mayorov
 * @since 2014-29-03
 */
-public class Program {
+public class ShaderProgram {
 
     public interface Definition {
-        Program createProgram();
+        ShaderProgram createProgram();
     }
 
     private final List<Shader> shaders = new ArrayList<Shader>();
@@ -27,7 +27,7 @@ public class Program {
 
     private int id = 0;
 
-    protected void shader(String resourceName) {
+    public void shader(String resourceName) {
         final int type;
         if (resourceName.endsWith(".vert")) {
             type = OpenGL.VERTEX_SHADER;
@@ -38,7 +38,8 @@ public class Program {
                     "for vertex shaders and '.frag' for fragment): " + resourceName);
         }
 
-        final InputStream i = getClass().getResourceAsStream(resourceName);
+        final Class<?> thisClazz = getClass();
+        final InputStream i = thisClazz.getResourceAsStream(resourceName);
         if (i == null) {
             throw new IllegalArgumentException("Can't find shader resource: " + resourceName);
         }
@@ -51,15 +52,15 @@ public class Program {
         }
     }
 
-    protected void shader(int type, String source) {
+    public void shader(int type, String source) {
         this.shaders.add(new Shader(type, source));
     }
 
-    protected void attribute(String name) {
+    public void attribute(String name) {
         this.attributes.add(name);
     }
 
-    protected void uniform(String name) {
+    public void uniform(String name) {
         this.uniforms.add(name);
     }
 

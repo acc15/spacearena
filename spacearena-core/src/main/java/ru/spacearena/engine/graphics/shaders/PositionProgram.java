@@ -6,10 +6,10 @@ import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 * @author Vyacheslav Mayorov
 * @since 2014-29-03
 */
-public class PositionProgram extends Program {
+public class PositionProgram extends ShaderProgram {
 
     public static final Definition DEFINITION = new Definition() {
-        public Program createProgram() {
+        public ShaderProgram createProgram() {
             return new PositionProgram();
         }
     };

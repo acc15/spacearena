@@ -5,8 +5,9 @@ import ru.spacearena.engine.common.viewport.Viewport;
 import ru.spacearena.engine.geometry.shapes.Rect2FR;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.shaders.PointProgram;
+import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
+import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -87,14 +88,35 @@ public class Sky extends EngineObject {
 
     @Override
     public void onDraw(DrawContext context) {
-        vb.reset(PointProgram.LAYOUT_P2C3S1);
+        vb.reset(SkyProgram.LAYOUT_P2C3S1);
         for (float scale=5; scale>0; scale--) {
             drawStarLayer(1-scale/10);
         }
-        context.use(PointProgram.DEFINITION).
-                bindAttrs(vb).
-                bindUniform(PointProgram.MATRIX_UNIFORM, context.getActiveMatrix()).
+        context.use(SkyProgram.DEFINITION).
+                attrs(vb).
+                uniform(context.getActiveMatrix()).
                 draw(OpenGL.POINTS);
+    }
+
+    public static class SkyProgram extends ShaderProgram {
+
+        public static final ShaderProgram.Definition DEFINITION = new ShaderProgram.Definition() {
+            public ShaderProgram createProgram() {
+                return new SkyProgram();
+            }
+        };
+
+        public static final VertexBufferLayout LAYOUT_P2C3S1 = VertexBufferLayout.create().
+                floats(2).floats(3).floats(1).build();
+
+        private SkyProgram() {
+            shader("sky.vert");
+            shader("sky.frag");
+            attribute("a_Position");
+            attribute("a_Color");
+            attribute("a_PointSize");
+            uniform("u_MVPMatrix");
+        }
     }
 
 }

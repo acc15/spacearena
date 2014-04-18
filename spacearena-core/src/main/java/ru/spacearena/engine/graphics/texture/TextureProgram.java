@@ -1,17 +1,17 @@
 package ru.spacearena.engine.graphics.texture;
 
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.shaders.Program;
+import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-06-04
  */
-public class TextureProgram extends Program {
+public class TextureProgram extends ShaderProgram {
 
-    public static final Program.Definition DEFINITION = new Program.Definition() {
-        public Program createProgram() {
+    public static final ShaderProgram.Definition DEFINITION = new ShaderProgram.Definition() {
+        public ShaderProgram createProgram() {
             return new TextureProgram();
         }
     };

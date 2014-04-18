@@ -18,7 +18,7 @@ public interface EngineEntity {
      *  ru.spacearena.engine.graphics.vbo.VertexBufferObject.Definition,
      *  ru.spacearena.engine.graphics.vbo.VertexBuffer) upload VBOs} and
      * {@link ru.spacearena.engine.graphics.DrawContext#get(
-     *  ru.spacearena.engine.graphics.shaders.Program.Definition) make programs}.
+     *  ru.spacearena.engine.graphics.shaders.ShaderProgram.Definition) make programs}.
      *  However you can make this things later - on the fly.
      *  It's just a notification - "i'm ready to start drawing".
      * @param context an object from which you can get whatever you want.

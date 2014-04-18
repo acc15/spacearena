@@ -1,15 +1,15 @@
 package ru.spacearena.engine.graphics.font;
 
-import ru.spacearena.engine.graphics.shaders.Program;
+import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-08-04
  */
-public class DistanceFieldProgram extends Program {
+public class DistanceFieldProgram extends ShaderProgram {
 
-    public static final Program.Definition DEFINITION = new Program.Definition() {
-        public Program createProgram() {
+    public static final ShaderProgram.Definition DEFINITION = new ShaderProgram.Definition() {
+        public ShaderProgram createProgram() {
             return new DistanceFieldProgram();
         }
     };
