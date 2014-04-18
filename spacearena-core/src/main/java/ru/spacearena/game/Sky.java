@@ -79,14 +79,15 @@ public class Sky extends EngineObject {
                             gy = (y-bounds.position.y)*scale+bounds.position.y;
                 final float sx = gx + dx*scale, sy = gy + dy*scale;
                 final float bright = random.nextFloat();
-                vb.put(sx, sy).put(bright, bright, 1);
+                final int size = random.nextInt(4);
+                vb.put(sx, sy).put(bright, bright, 1).put(size);
             }
         }
     }
 
     @Override
     public void onDraw(DrawContext context) {
-        vb.reset(PointProgram.LAYOUT_P2C3);
+        vb.reset(PointProgram.LAYOUT_P2C3S1);
         for (float scale=5; scale>0; scale--) {
             drawStarLayer(1-scale/10);
         }

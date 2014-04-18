@@ -324,7 +324,7 @@ public interface OpenGL {
     public static final int RENDERBUFFER_BINDING                    = 0x8CA7;
     public static final int MAX_RENDERBUFFER_SIZE                   = 0x84E8;
     public static final int INVALID_FRAMEBUFFER_OPERATION           = 0x0506;
-
+    public static final int VERTEX_PROGRAM_POINT_SIZE = 0x8642;
 
     void lineWidth(float width);
 

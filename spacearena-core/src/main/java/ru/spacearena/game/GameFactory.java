@@ -86,7 +86,7 @@ public class GameFactory implements EngineFactory {
         ship1.setInitialAngle(FloatMathUtils.HALF_PI);
         box2dWorld.add(ship1);
 
-        for (int i=0; i<=10; i++) {
+        for (int i=0; i<=0; i++) {
             for (int j=0; j<=10; j++) {
                 final Ship ship2 = new Ship(fxContainer);
                 ship2.setInitialPosition((j - 5) * 5, (i+1) * 7);

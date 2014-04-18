@@ -97,7 +97,7 @@ public class DrawContext {
     }
 
     public void init() {
-        //gl.enable(OpenGL.VERTEX_PROGRAM_POINT_SIZE);
+        gl.enable(OpenGL.VERTEX_PROGRAM_POINT_SIZE);
         gl.enable(OpenGL.BLEND);
         gl.blendFunc(OpenGL.SRC_ALPHA, OpenGL.ONE_MINUS_SRC_ALPHA);
     }

@@ -94,8 +94,8 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
 
     @Override
     public void onSize(float width, float height) {
-        adjustStrategy.adjustViewport(width, height, this);
         super.onSize(width, height);
+        adjustStrategy.adjustViewport(width, height, this);
     }
 
     public Rect2F getBounds() {
