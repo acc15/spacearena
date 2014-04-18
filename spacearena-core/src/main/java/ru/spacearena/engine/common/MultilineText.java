@@ -67,7 +67,7 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
     @Override
     public void onDraw(DrawContext context) {
         float y = this.y;
-        context.color(color).fontSize(16, DrawContext.Unit.SP);
+        context.color(color).fontSize(20, DrawContext.Unit.SP);
         for (int i=0; i < getChildCount(); i++) {
             final Line line = getChild(i);
             context.drawText(line.text, x, y);

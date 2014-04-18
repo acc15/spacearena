@@ -28,7 +28,6 @@ import javax.media.opengl.GLProfile;
  */
 public class JoglWindow {
 
-    public static final float INCH_PER_MM = 0.0393700787f;
     public static final int DEFAULT_WIDTH = 800;
     public static final int DEFAULT_HEIGHT = 600;
     private final EngineFactory factory;
@@ -55,16 +54,16 @@ public class JoglWindow {
 
     public float computeDensityScale(Screen screen) {
 
-        float maxPPI = 0;
+        float ppi = 0;
 
         final int sw = screen.getWidth(), sh = screen.getHeight();
         for (MonitorDevice m: screen.getMonitorDevices()) {
             DimensionImmutable di = m.getSizeMM();
-            final float xInch = di.getWidth() * INCH_PER_MM, yInch = di.getHeight() * INCH_PER_MM;
-            final int xPPI = FloatMathUtils.round(sw / xInch), yPPI = FloatMathUtils.round(sh / yInch);
-            maxPPI = FloatMathUtils.max(maxPPI, FloatMathUtils.min(xPPI, yPPI));
+            final int xPPI = FloatMathUtils.round(sw / di.getWidth() * DrawContext.INCH_PER_MM),
+                      yPPI = FloatMathUtils.round(sh / di.getHeight() * DrawContext.INCH_PER_MM);
+            ppi = FloatMathUtils.min(ppi, FloatMathUtils.min(xPPI, yPPI));
         }
-        return FloatMathUtils.isZero(maxPPI) ? DrawContext.DEFAULT_DENSITY_SCALE : maxPPI/DrawContext.DENSITY_SCALE_PPI;
+        return FloatMathUtils.isZero(ppi) ? DrawContext.DEFAULT_DENSITY_SCALE : ppi/DrawContext.DENSITY_SCALE_PPI;
     }
 
     public void start(String[] args) {

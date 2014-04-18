@@ -27,11 +27,16 @@ public class DrawContext {
             OpenGL.ARRAY_BUFFER, OpenGL.STATIC_DRAW);
 
     public static final float DEFAULT_DENSITY_SCALE = 1f;
-    public static final float DEFAULT_FONT_SCALE = 1f;
     public static final float DENSITY_SCALE_PPI = 160f;
+    public static final float DEFAULT_FONT_SCALE = 96f/DENSITY_SCALE_PPI; // by default 96 DPI is used
+    public static final float INCH_PER_MM = 0.0393700787f;
 
     private static final float SIN_30 = 0.5f;
     private static final float COS_30 = 0.86602540378f;
+
+    public float getDensityScale() {
+        return densityScale;
+    }
 
 
     public enum Unit {

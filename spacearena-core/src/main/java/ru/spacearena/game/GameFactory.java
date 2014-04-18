@@ -9,6 +9,7 @@ import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 
 /**
@@ -94,6 +95,7 @@ public class GameFactory implements EngineFactory {
         box2dWorld.setFPS(60f);
         box2dWorld.add(new LevelBounds(levelBounds));
         viewport.add(box2dWorld);
+
 
 
         root.add(viewport);
@@ -220,6 +222,14 @@ public class GameFactory implements EngineFactory {
         multilineText.add(viewportText);
         multilineText.add(collisionText);
         screen.add(multilineText);
+
+        screen.add(new EngineObject() {
+            @Override
+            public void onDraw(DrawContext context) {
+                //float ppm = context.getDensityScale()*160*DrawContext.INCH_PER_MM;
+                context.drawRect(100, 100, 100 + 160 * context.getDensityScale(), 100 + 160 * context.getDensityScale());
+            }
+        });
 
         root.add(screen);
 
