@@ -88,35 +88,31 @@ public class Sky extends EngineObject {
 
     @Override
     public void onDraw(DrawContext context) {
-        vb.reset(SkyProgram.LAYOUT_P2C3S1);
+        vb.reset(LAYOUT_P2C3S1);
         for (float scale=5; scale>0; scale--) {
             drawStarLayer(1-scale/10);
         }
-        context.use(SkyProgram.DEFINITION).
+        context.use(SHADER).
                 attrs(vb).
                 uniform(context.getActiveMatrix()).
                 draw(OpenGL.POINTS);
     }
 
-    public static class SkyProgram extends ShaderProgram {
-
-        public static final ShaderProgram.Definition DEFINITION = new ShaderProgram.Definition() {
-            public ShaderProgram createProgram() {
-                return new SkyProgram();
-            }
-        };
-
-        public static final VertexBufferLayout LAYOUT_P2C3S1 = VertexBufferLayout.create().
-                floats(2).floats(3).floats(1).build();
-
-        private SkyProgram() {
-            shader("sky.vert");
-            shader("sky.frag");
-            attribute("a_Position");
-            attribute("a_Color");
-            attribute("a_PointSize");
-            uniform("u_MVPMatrix");
+    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition() {
+        public ShaderProgram createProgram() {
+            final ShaderProgram p = new ShaderProgram();
+            p.shader(Sky.class, "sky.vert");
+            p.shader(Sky.class, "sky.frag");
+            p.attribute("a_Position");
+            p.attribute("a_Color");
+            p.attribute("a_PointSize");
+            p.uniform("u_MVPMatrix");
+            return p;
         }
-    }
+    };
+
+    public static final VertexBufferLayout LAYOUT_P2C3S1 = VertexBufferLayout.create().
+            floats(2).floats(3).floats(1).build();
+
 
 }
