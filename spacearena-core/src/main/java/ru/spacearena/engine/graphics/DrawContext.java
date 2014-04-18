@@ -411,8 +411,8 @@ public class DrawContext {
             activeMatrix.postScale(rx, ry);
             use(PositionProgram.DEFINITION).
                     attrs(SIN_COS_VBO).
-                    uniform(color).
                     uniform(activeMatrix).
+                    uniform(color).
                     draw(type);
         } finally {
             popMatrix();

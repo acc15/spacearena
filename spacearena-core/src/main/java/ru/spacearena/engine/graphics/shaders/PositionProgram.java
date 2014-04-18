@@ -14,10 +14,6 @@ public class PositionProgram extends ShaderProgram {
         }
     };
 
-    public static final int POSITION_ATTR = 0;
-    public static final int MATRIX_UNIFORM = 0;
-    public static final int COLOR_UNIFORM = 1;
-
     public static final VertexBufferLayout LAYOUT_P2 = new VertexBufferLayout.Builder().floats(2).build();
 
     private PositionProgram() {
