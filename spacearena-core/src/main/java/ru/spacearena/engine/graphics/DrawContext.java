@@ -26,9 +26,9 @@ public class DrawContext {
     public static final VBODefinition SIN_COS_VBO = new VBODefinition(
             OpenGL.ARRAY_BUFFER, OpenGL.STATIC_DRAW);
 
-    public static final float DEFAULT_DENSITY_SCALE = 1f;
     public static final float DENSITY_SCALE_PPI = 160f;
-    public static final float DEFAULT_FONT_SCALE = 96f/DENSITY_SCALE_PPI; // by default 96 DPI is used
+    public static final float DEFAULT_DENSITY_SCALE = 96f/DENSITY_SCALE_PPI;
+    public static final float DEFAULT_FONT_SCALE = 1f;//96f/DENSITY_SCALE_PPI; // by default 96 DPI is used
     public static final float INCH_PER_MM = 0.0393700787f;
 
     private static final float SIN_30 = 0.5f;
@@ -60,8 +60,8 @@ public class DrawContext {
     private final Binder binder = new Binder();
     private final Polygon polygon = new Polygon();
 
-    private float densityScale = DEFAULT_DENSITY_SCALE;
-    private float fontScale = DEFAULT_FONT_SCALE;
+    private float densityScale = 1f;
+    private float fontScale = 1f;
 
     private FontData.Definition font = FontRepository.CALIBRI;
     private float fontSize = 16;
@@ -225,53 +225,6 @@ public class DrawContext {
                 draw(OpenGL.TRIANGLE_FAN);
     }
 
-    public void drawArrow(float x1, float y1, float x2, float y2, float size) {
-        final float vx = x2 - x1, vy = y2 - y1;
-        final float l = FloatMathUtils.length(vx, vy);
-        final float nx = vx/l, ny = vy/l;
-        vertexBuffer.put(x1, y1).put(x2, y2);
-        vertexBuffer.put(x2, y2, x2 - (nx * COS_30 - ny * SIN_30) * size, y2 - (ny * COS_30 + nx * SIN_30) * size);
-        vertexBuffer.put(x2, y2, x2 - (nx * COS_30 + ny * SIN_30) * size, y2 - (ny * COS_30 - nx * SIN_30) * size);
-        use(PositionProgram.DEFINITION).
-                bindAttrs(vertexBuffer).
-                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
-                draw(OpenGL.LINES);
-//        drawLine(x1, y1, x2, y2);
-//
-//        float p30x = 0f, p30y = 0f, s30x = 0f, s30y = 0f;
-//        if (head == HeadType.ARROW || tail == HeadType.ARROW) {
-//            final float vx = x2 - x1, vy = y2 - y1;
-//            final float l = FloatMathUtils.length(vx, vy);
-//            final float nx = vx/l, ny = vy/l;
-//            p30x = nx * COS_30 - ny * SIN_30;
-//            p30y = ny * COS_30 + nx * SIN_30;
-//            s30x = nx * COS_30 + ny * SIN_30;
-//            s30y = ny * COS_30 - nx * SIN_30;
-//        }
-//
-//        switch (head) {
-//            case CIRCLE:
-//                context.fillCircle(x1, y1, headSize);
-//                break;
-//
-//            case ARROW:
-//                context.drawLine(x1, y1, x1 + p30x * headSize, y1 + p30y * headSize);
-//                context.drawLine(x1, y1, x1 + s30x * headSize, y1 + s30y * headSize);
-//                break;
-//        }
-//
-//        switch (tail) {
-//            case CIRCLE:
-//                context.fillCircle(x2, y2, headSize);
-//                break;
-//
-//            case ARROW:
-//                context.drawLine(x2, y2, x2 - p30x * tailSize, y2 - p30y * tailSize);
-//                context.drawLine(x2, y2, x2 - s30x * tailSize, y2 - s30y * tailSize);
-//                break;
-//        }
-    }
-
 
     public void drawText(String text, float x, float y) {
 
@@ -394,6 +347,56 @@ public class DrawContext {
     public void drawLine(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
         drawBuf(OpenGL.LINES);
+    }
+
+    public void drawArrow(float x1, float y1, float x2, float y2, float size) {
+
+        final float vx = x2 - x1, vy = y2 - y1;
+        if (FloatMathUtils.isZero(vx, vy)) {
+            return;
+        }
+
+        final float l = FloatMathUtils.length(vx, vy);
+        final float nx = vx/l, ny = vy/l;
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2);
+        vertexBuffer.put(x1, y1).put(x2, y2);
+        vertexBuffer.put(x2, y2, x2 - (nx * COS_30 - ny * SIN_30) * size, y2 - (ny * COS_30 + nx * SIN_30) * size);
+        vertexBuffer.put(x2, y2, x2 - (nx * COS_30 + ny * SIN_30) * size, y2 - (ny * COS_30 - nx * SIN_30) * size);
+        drawBuf(OpenGL.LINES);
+//        drawLine(x1, y1, x2, y2);
+//
+//        float p30x = 0f, p30y = 0f, s30x = 0f, s30y = 0f;
+//        if (head == HeadType.ARROW || tail == HeadType.ARROW) {
+//            final float vx = x2 - x1, vy = y2 - y1;
+//            final float l = FloatMathUtils.length(vx, vy);
+//            final float nx = vx/l, ny = vy/l;
+//            p30x = nx * COS_30 - ny * SIN_30;
+//            p30y = ny * COS_30 + nx * SIN_30;
+//            s30x = nx * COS_30 + ny * SIN_30;
+//            s30y = ny * COS_30 - nx * SIN_30;
+//        }
+//
+//        switch (head) {
+//            case CIRCLE:
+//                context.fillCircle(x1, y1, headSize);
+//                break;
+//
+//            case ARROW:
+//                context.drawLine(x1, y1, x1 + p30x * headSize, y1 + p30y * headSize);
+//                context.drawLine(x1, y1, x1 + s30x * headSize, y1 + s30y * headSize);
+//                break;
+//        }
+//
+//        switch (tail) {
+//            case CIRCLE:
+//                context.fillCircle(x2, y2, headSize);
+//                break;
+//
+//            case ARROW:
+//                context.drawLine(x2, y2, x2 - p30x * tailSize, y2 - p30y * tailSize);
+//                context.drawLine(x2, y2, x2 - s30x * tailSize, y2 - s30y * tailSize);
+//                break;
+//        }
     }
 
     private void renderEllipse(int type, float x, float y, float rx, float ry) {

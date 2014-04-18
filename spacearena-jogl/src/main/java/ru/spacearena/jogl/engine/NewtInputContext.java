@@ -38,9 +38,11 @@ public class NewtInputContext implements InputContext {
         case KEYBOARD:
             window.addKeyListener(new KeyListener() {
                 public void keyPressed(KeyEvent e) {
+                    System.out.println("PRESS!!");
                     addKeyEvent(engine, ru.spacearena.engine.events.KeyEvent.Action.DOWN, e);
                 }
                 public void keyReleased(KeyEvent e) {
+                    System.out.println("RELEASE!!");
                     addKeyEvent(engine, ru.spacearena.engine.events.KeyEvent.Action.UP, e);
                 }
             });

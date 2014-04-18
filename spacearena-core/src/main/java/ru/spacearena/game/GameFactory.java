@@ -6,11 +6,17 @@ import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.events.KeyCode;
+import ru.spacearena.engine.events.trackers.InputTracker;
+import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
-import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
+import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.TempUtils;
+import ru.spacearena.game.ship.Ship;
+
+import java.awt.event.MouseEvent;
 
 /**
  * @author Vyacheslav Mayorov
@@ -18,37 +24,9 @@ import ru.spacearena.engine.integration.box2d.Box2dWorld;
  */
 public class GameFactory implements EngineFactory {
 
-//    private static final class Ship extends Transform {
-//
-//        private static final TextureDefinition td = new TextureDefinition().url(GameFactory.class, "ship.png");
-//
-//        @Override
-//        public void onInit(DrawContext context) {
-//            final Texture t = context.get(td);
-//            setPivot(t.getWidth()/3, t.getHeight()/2);
-//        }
-//
-//        @Override
-//        public boolean onUpdate(float seconds) {
-//            rotate(FloatMathUtils.TWO_PI * seconds);
-//            //scale(1.01f);
-//            return true;
-//        }
-//
-//        @Override
-//        public void onDrawTransformed(DrawContext context) {
-//            context.drawImage(0,0,td);
-//        }
-//    }
-
-    private static class ColorRect extends Rect2IP {
-        public final Color c = new Color();
-    }
-
-
     public EngineEntity createRoot(final Engine engine) {
 
-        //engine.getDebug().setDrawAll(true);
+        engine.getDebug().setDrawAll(true);
 
         engine.setMaxFPS(100);
         engine.enableInput(InputType.KEYBOARD);
@@ -76,106 +54,104 @@ public class GameFactory implements EngineFactory {
         };
         root.add(fpsCounter);
 
+        final Viewport screen = new Viewport(new Viewport.RealSizeAdjustStrategy());
+        root.add(screen);
 
         final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
+        root.add(viewport);
+
         viewport.add(new Sky(viewport));
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f, Color.WHITE));
 
-        viewport.add(new EngineObject() {
-            @Override
-            public boolean onUpdate(float seconds) {
-                viewport.translate(10f*seconds, 0);
-                return true;
-            }
-        });
+//        viewport.add(new EngineObject() {
+//            @Override
+//            public boolean onUpdate(float seconds) {
+//                viewport.translate(10f*seconds, 0);
+//                return true;
+//            }
+//        });
 
         final Rect2FP levelBounds = new Rect2FP(-100f, -100f, 100f, 100f);
 
         final Box2dWorld box2dWorld = new Box2dWorld();
+
+        viewport.add(box2dWorld);
         box2dWorld.setFPS(60f);
         box2dWorld.add(new LevelBounds(levelBounds));
-        viewport.add(box2dWorld);
 
+        final GenericContainer fxContainer = new GenericContainer();
 
+        final Ship ship1 = new Ship(fxContainer);
+        ship1.setInitialPosition(0, -10);
+        ship1.setInitialAngle(FloatMathUtils.HALF_PI);
+        box2dWorld.add(ship1);
 
-        root.add(viewport);
+        for (int i=0; i<=10; i++) {
+            final Ship ship2 = new Ship(fxContainer);
+            ship2.setInitialPosition((i - 5) * 5, 7);
+            ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
+            box2dWorld.add(ship2);
+        }
 
-//
-//
-//        final GenericContainer fxContainer = new GenericContainer();
-//
-//        final Ship ship1 = new Ship(fxContainer);
-//        ship1.setInitialPosition(0, -10);
-//        ship1.setInitialAngle(FloatMathUtils.HALF_PI);
-//        box2dWorld.add(ship1);
-//
-//        for (int i=0; i<=10; i++) {
-//            final Ship ship2 = new Ship(fxContainer);
-//            ship2.setInitialPosition((i - 5) * 5, 7);
-//            ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
-//            box2dWorld.add(ship2);
-//        }
-//
-//
-//
-//        root.add(new InputTracker() {
-//
-//            private boolean canShoot = true;
-//
-//            private Point2F getDirection(Point2F pt) {
-//                pt.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
-//                       getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
-//                if (!pt.isZero()) {
-//                    return pt;
-//                }
-//                if (isMouseKeyPressed(MouseEvent.BUTTON3)) {
-//                    pt.set(getMouseX(), getMouseY());
-//                } else if (isPointerActive(0)) {
-//                    pt.set(getPointerX(0), getPointerY(0));
-//                } else {
-//                    return pt;
-//                }
-//                viewport.getWorldSpace().transformPoint(pt);
-//                pt.sub(ship1.getPositionX(), ship1.getPositionY());
-//                return pt;
-//            }
-//
-//            @Override
-//            public boolean onUpdate(float seconds) {
-//                final Point2F dir = getDirection(TempUtils.POINT_1);
-//                ship1.flyTo(dir.x, dir.y, seconds);
-//
-//                if (isKeyboardKeyPressed(KeyCode.VK_SUBTRACT)) {
-//                    viewport.setScale(viewport.getScaleX() + 0.001f);
-//                } else if (isKeyboardKeyPressed(KeyCode.VK_ADD)) {
-//                    viewport.setScale(viewport.getScaleX() - 0.001f);
-//                }
-//
-//                if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
-//                    if (canShoot) {
-//                        final org.jbox2d.common.Transform tf = ship1.getTransform();
-//                        for (Point2F gun: ship1.getGuns()) {
-//                            final Point2F worldGun = ship1.mapPoint(TempUtils.tempPoint(gun));
-//                            final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, tf.q.c, tf.q.s, ship1.getAngle());
-//                            box2dWorld.add(bullet);
-//                        }
-//                        canShoot = false;
-//                    }
-//                } else {
-//                    canShoot = true;
-//                }
-//
-//                return true;
-//            }
-//        });
-//        root.add(new EngineObject() {
-//            @Override
-//            public boolean onUpdate(float seconds) {
-//                viewport.setPosition(ship1.getPositionX(), ship1.getPositionY());
-//                return true;
-//            }
-//        });
-//        root.add(new BoundChecker(levelBounds, viewport));
+        root.add(new InputTracker() {
+
+            private boolean canShoot = true;
+            private final Point2F pt = new Point2F();
+
+            private Point2F getDirection() {
+                pt.set(getKeyboardDirection(KeyCode.VK_LEFT, KeyCode.VK_RIGHT),
+                       getKeyboardDirection(KeyCode.VK_UP, KeyCode.VK_DOWN));
+                if (!pt.isZero()) {
+                    return pt;
+                }
+                if (isMouseKeyPressed(MouseEvent.BUTTON3)) {
+                    pt.set(getMouseX(), getMouseY());
+                } else if (isPointerActive(0)) {
+                    pt.set(getPointerX(0), getPointerY(0));
+                } else {
+                    return pt;
+                }
+                viewport.getWorldSpace().transformPoint(pt);
+                pt.sub(ship1.getPositionX(), ship1.getPositionY());
+                return pt;
+            }
+
+            @Override
+            public boolean onUpdate(float seconds) {
+                final Point2F dir = getDirection();
+                ship1.flyTo(dir.x, dir.y, seconds);
+
+                if (isKeyboardKeyPressed(KeyCode.VK_SUBTRACT)) {
+                    viewport.setScale(viewport.getScaleX() + 0.001f);
+                } else if (isKeyboardKeyPressed(KeyCode.VK_ADD)) {
+                    viewport.setScale(viewport.getScaleX() - 0.001f);
+                }
+
+                if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
+                    if (canShoot) {
+                        final org.jbox2d.common.Transform tf = ship1.getTransform();
+                        for (Point2F gun: ship1.getGuns()) {
+                            final Point2F worldGun = ship1.mapPoint(TempUtils.tempPoint(gun));
+                            final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, tf.q.c, tf.q.s, ship1.getAngle());
+                            box2dWorld.add(bullet);
+                        }
+                        canShoot = false;
+                    }
+                } else {
+                    canShoot = true;
+                }
+
+                return true;
+            }
+        });
+        root.add(new EngineObject() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                viewport.setPosition(ship1.getPositionX(), ship1.getPositionY());
+                return true;
+            }
+        });
+        root.add(new BoundChecker(levelBounds, viewport));
 //
 //        root.add(new EngineObject() {
 //            private float time;
@@ -214,8 +190,6 @@ public class GameFactory implements EngineFactory {
 //            }
 //        });
 
-        final Viewport screen = new Viewport(new Viewport.RealSizeAdjustStrategy());
-
         final MultilineText multilineText = new MultilineText();
         multilineText.add(fpsText);
         multilineText.add(positionText);
@@ -223,17 +197,8 @@ public class GameFactory implements EngineFactory {
         multilineText.add(collisionText);
         screen.add(multilineText);
 
-        screen.add(new EngineObject() {
-            @Override
-            public void onDraw(DrawContext context) {
-                //float ppm = context.getDensityScale()*160*DrawContext.INCH_PER_MM;
-                context.drawRect(100, 100, 100 + 160 * context.getDensityScale(), 100 + 160 * context.getDensityScale());
-            }
-        });
-
-        root.add(screen);
-
         return root;
+
     }
 
 }
