@@ -39,7 +39,13 @@ public abstract class AbstractTimer implements Timer {
         return time;
     }
 
-    public float getElapsedSeconds() {
-        return toSeconds(getCurrentTime() - time);
+    public float lap() {
+        final long ct = getCurrentTime();
+        if (started) {
+            return toSeconds(ct - time);
+        }
+        time = ct;
+        started = true;
+        return 0;
     }
 }

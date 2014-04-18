@@ -11,7 +11,7 @@ import ru.spacearena.engine.util.FloatMathUtils;
 public class BoundChecker extends EngineObject {
 
     public static interface Bounded {
-        Rect2F getBounds();
+        Rect2F getRect();
         void onOutOfBounds(float dx, float dy);
     }
 
@@ -37,7 +37,7 @@ public class BoundChecker extends EngineObject {
 
     @Override
     public boolean onUpdate(float seconds) {
-        final Rect2F oBounds = object.getBounds();
+        final Rect2F oBounds = object.getRect();
         final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(), oBounds.getMinX(), oBounds.getMaxX());
         final float dy = computeAxisOffset(bounds.getMinY(), bounds.getMaxY(), oBounds.getMinY(), oBounds.getMaxY());
         if (!FloatMathUtils.isZero(dx, dy)) {

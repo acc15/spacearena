@@ -1,7 +1,7 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.common.Viewport;
+import ru.spacearena.engine.common.viewport.Viewport;
 import ru.spacearena.engine.geometry.shapes.Rect2FR;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.OpenGL;
@@ -58,7 +58,7 @@ public class Sky extends EngineObject {
     private void drawStarLayer(float scale) {
 
         final float sd2 = starDistance*2;
-        bounds.set(viewport.getBounds());
+        bounds.set(viewport.getRect());
         bounds.halfSize.add(sd2);
         bounds.halfSize.div(scale);
 

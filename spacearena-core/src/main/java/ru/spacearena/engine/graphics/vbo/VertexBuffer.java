@@ -2,7 +2,7 @@ package ru.spacearena.engine.graphics.vbo;
 
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.vbo.strategies.DefaultGrowShrinkStrategy;
+import ru.spacearena.engine.graphics.vbo.strategies.TimeBasedShrinkStrategy;
 import ru.spacearena.engine.graphics.vbo.strategies.GrowShrinkStrategy;
 
 import java.nio.BufferOverflowException;
@@ -27,7 +27,7 @@ public class VertexBuffer {
     }
 
     public VertexBuffer(int capacity) {
-        this(new DefaultGrowShrinkStrategy(), capacity);
+        this(new TimeBasedShrinkStrategy(), capacity);
     }
 
     public VertexBuffer(GrowShrinkStrategy strategy) {

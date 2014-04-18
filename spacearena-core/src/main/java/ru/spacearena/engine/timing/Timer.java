@@ -8,9 +8,10 @@ public interface Timer {
     boolean isStarted();
     void start();
     void stop();
+
+    float lap();
     float reset();
     long getTimestamp();
     long getCurrentTime();
-    float getElapsedSeconds();
-    float toSeconds(long time);
+    float toSeconds(long diff);
 }

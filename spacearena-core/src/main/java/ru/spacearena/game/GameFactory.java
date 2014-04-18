@@ -5,6 +5,10 @@ import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
+import ru.spacearena.engine.common.viewport.GLViewportArea;
+import ru.spacearena.engine.common.viewport.LargestSideAdjustStrategy;
+import ru.spacearena.engine.common.viewport.RealSizeAdjustStrategy;
+import ru.spacearena.engine.common.viewport.Viewport;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.events.KeyCode;
 import ru.spacearena.engine.events.trackers.InputTracker;
@@ -26,9 +30,9 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
-        //engine.getDebug().setDrawAll(true);
+        engine.getDebug().setDrawAll(true);
 
-        engine.setMaxFPS(100);
+        engine.setMaxFPS(0);
         engine.enableInput(InputType.KEYBOARD);
         engine.enableInput(InputType.MOUSE);
         engine.enableInput(InputType.TOUCH);
@@ -54,11 +58,11 @@ public class GameFactory implements EngineFactory {
         };
         root.add(fpsCounter);
 
-        final Viewport screen = new Viewport(new Viewport.RealSizeAdjustStrategy());
+        final Viewport screen = new Viewport(GLViewportArea.getInstance(), new RealSizeAdjustStrategy());
         root.add(screen);
 
-        final Viewport viewport = new Viewport(new Viewport.LargestSideAdjustStrategy(75f));
-        root.add(viewport);
+        final Viewport viewport = new Viewport(screen, new LargestSideAdjustStrategy(75f));
+        screen.add(viewport);
 
         viewport.add(new Sky(viewport));
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f, Color.WHITE));
@@ -114,7 +118,6 @@ public class GameFactory implements EngineFactory {
                 } else {
                     return pt;
                 }
-                screen.getLocalSpace().transformPoint(pt);
                 viewport.getWorldSpace().transformPoint(pt);
                 pt.sub(ship1.getPositionX(), ship1.getPositionY());
                 return pt;

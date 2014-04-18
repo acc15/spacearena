@@ -171,7 +171,7 @@ public class Ship extends GameBody {
     @Override
     protected void onDrawTransformed(DrawContext context) {
         super.onDrawTransformed(context);
-        context.drawImage(-3f, -2, 5f, 2, SHIP_TEXTURE);
+        context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, SHIP_TEXTURE);
     }
 
 }

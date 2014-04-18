@@ -8,7 +8,7 @@ public class MilliTimer extends AbstractTimer {
     public long getCurrentTime() {
         return System.currentTimeMillis();
     }
-    public float toSeconds(long time) {
-        return (float)time/1000f;
+    public float toSeconds(long diff) {
+        return (float) diff /1000f;
     }
 }

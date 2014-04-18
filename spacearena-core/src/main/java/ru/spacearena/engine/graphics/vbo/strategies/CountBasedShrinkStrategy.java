@@ -1,10 +1,11 @@
 package ru.spacearena.engine.graphics.vbo.strategies;
 
 /**
-* @author Vyacheslav Mayorov
-* @since 2014-14-04
-*/
-public class DefaultGrowShrinkStrategy implements GrowShrinkStrategy {
+ * @author Vyacheslav Mayorov
+ * @since 2014-18-04
+ */
+public class CountBasedShrinkStrategy implements GrowShrinkStrategy {
+
     private final int shrinkQueryCount;
     private final int shrinkCapacityLimit;
     private int queryCount = 0;
@@ -16,11 +17,11 @@ public class DefaultGrowShrinkStrategy implements GrowShrinkStrategy {
         return returnCapacity;
     }
 
-    public DefaultGrowShrinkStrategy() {
+    public CountBasedShrinkStrategy() {
         this(15, 16);
     }
 
-    public DefaultGrowShrinkStrategy(int shrinkQueryCount, int shrinkCapacityLimit) {
+    public CountBasedShrinkStrategy(int shrinkQueryCount, int shrinkCapacityLimit) {
         this.shrinkQueryCount = shrinkQueryCount;
         this.shrinkCapacityLimit = shrinkCapacityLimit;
     }
@@ -39,4 +40,5 @@ public class DefaultGrowShrinkStrategy implements GrowShrinkStrategy {
         }
         return reset(maxRequiredCapacity);
     }
+
 }
