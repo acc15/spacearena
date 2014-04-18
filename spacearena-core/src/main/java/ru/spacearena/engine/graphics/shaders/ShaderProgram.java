@@ -27,7 +27,7 @@ public class ShaderProgram {
 
     private int id = 0;
 
-    public void shader(String resourceName) {
+    public void shader(Class<?> clazz, String resourceName) {
         final int type;
         if (resourceName.endsWith(".vert")) {
             type = OpenGL.VERTEX_SHADER;
@@ -38,18 +38,21 @@ public class ShaderProgram {
                     "for vertex shaders and '.frag' for fragment): " + resourceName);
         }
 
-        final Class<?> thisClazz = getClass();
-        final InputStream i = thisClazz.getResourceAsStream(resourceName);
+        final InputStream i = clazz.getResourceAsStream(resourceName);
         if (i == null) {
             throw new IllegalArgumentException("Can't find shader resource: " + resourceName);
         }
         try {
             shader(type, IOUtils.readStream(i));
         } catch (IOException e) {
-            throw new RuntimeException("Can't read shader source from resource " + getClass() + "." + resourceName, e);
+            throw new RuntimeException("Can't read shader source from resource " + clazz + "." + resourceName, e);
         } finally {
             IOUtils.closeQuietly(i);
         }
+    }
+
+    public void shader(String resourceName) {
+        shader(getClass(), resourceName);
     }
 
     public void shader(int type, String source) {

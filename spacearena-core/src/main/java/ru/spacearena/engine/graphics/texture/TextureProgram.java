@@ -16,11 +16,6 @@ public class TextureProgram extends ShaderProgram {
         }
     };
 
-    public static final int POSITION_ATTR = 0;
-    public static final int TEXCOORD_ATTR = 1;
-    public static final int MATRIX_UNIFORM = 0;
-    public static final int TEXTURE_UNIFORM = 1;
-
     public static final VertexBufferLayout LAYOUT_PT2 = new VertexBufferLayout.Builder().floats(2).floats(2).build();
 
     private TextureProgram() {
