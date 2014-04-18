@@ -6,13 +6,20 @@ import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.events.InputType;
+import ru.spacearena.engine.events.KeyCode;
+import ru.spacearena.engine.events.trackers.InputTracker;
+import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.geometry.shapes.Rect2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
-import ru.spacearena.engine.graphics.texture.Texture;
-import ru.spacearena.engine.graphics.texture.TextureDefinition;
+import ru.spacearena.engine.integration.box2d.Box2dObject;
+import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.engine.util.TempUtils;
+import ru.spacearena.game.ship.Ship;
+
+import java.awt.event.MouseEvent;
 
 /**
  * @author Vyacheslav Mayorov
@@ -20,28 +27,28 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class GameFactory implements EngineFactory {
 
-    private static final class Ship extends Transform {
-
-        private static final TextureDefinition td = new TextureDefinition().url(GameFactory.class, "ship.png");
-
-        @Override
-        public void onInit(DrawContext context) {
-            final Texture t = context.get(td);
-            setPivot(t.getWidth()/3, t.getHeight()/2);
-        }
-
-        @Override
-        public boolean onUpdate(float seconds) {
-            rotate(FloatMathUtils.TWO_PI * seconds);
-            //scale(1.01f);
-            return true;
-        }
-
-        @Override
-        public void onDrawTransformed(DrawContext context) {
-            context.drawImage(0,0,td);
-        }
-    }
+//    private static final class Ship extends Transform {
+//
+//        private static final TextureDefinition td = new TextureDefinition().url(GameFactory.class, "ship.png");
+//
+//        @Override
+//        public void onInit(DrawContext context) {
+//            final Texture t = context.get(td);
+//            setPivot(t.getWidth()/3, t.getHeight()/2);
+//        }
+//
+//        @Override
+//        public boolean onUpdate(float seconds) {
+//            rotate(FloatMathUtils.TWO_PI * seconds);
+//            //scale(1.01f);
+//            return true;
+//        }
+//
+//        @Override
+//        public void onDrawTransformed(DrawContext context) {
+//            context.drawImage(0,0,td);
+//        }
+//    }
 
     private static class ColorRect extends Rect2IP {
         public final Color c = new Color();
@@ -63,7 +70,6 @@ public class GameFactory implements EngineFactory {
         final MultilineText.Line positionText = new MultilineText.Line();
         final MultilineText.Line viewportText = new MultilineText.Line();
         final MultilineText.Line collisionText = new MultilineText.Line();
-
 
         root.add(new Background());
 
@@ -92,28 +98,17 @@ public class GameFactory implements EngineFactory {
 
         final Rect2FP levelBounds = new Rect2FP(-100f, -100f, 100f, 100f);
 
-
-        root.add(viewport);
-
-        final Viewport screen = new Viewport(new Viewport.RealSizeAdjustStrategy());
-
-        final MultilineText multilineText = new MultilineText();
-        multilineText.add(fpsText);
-        multilineText.add(positionText);
-        multilineText.add(viewportText);
-        multilineText.add(collisionText);
-        screen.add(multilineText);
-
-        root.add(screen);
-        /*
-        viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f));
-
-        final GenericContainer fxContainer = new GenericContainer();
-        viewport.add(fxContainer);
-
         final Box2dWorld box2dWorld = new Box2dWorld();
         box2dWorld.setFPS(60f);
         box2dWorld.add(new LevelBounds(levelBounds));
+        viewport.add(box2dWorld);
+
+
+        root.add(viewport);
+
+        viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f, Color.WHITE));
+
+        final GenericContainer fxContainer = new GenericContainer();
 
         final Ship ship1 = new Ship(fxContainer);
         ship1.setInitialPosition(0, -10);
@@ -127,7 +122,6 @@ public class GameFactory implements EngineFactory {
             box2dWorld.add(ship2);
         }
 
-        viewport.add(box2dWorld);
 
 
         root.add(new InputTracker() {
@@ -147,7 +141,7 @@ public class GameFactory implements EngineFactory {
                 } else {
                     return pt;
                 }
-                viewport.getWorldSpace().mapPoint(pt);
+                viewport.getWorldSpace().transformPoint(pt);
                 pt.sub(ship1.getPositionX(), ship1.getPositionY());
                 return pt;
             }
@@ -196,7 +190,7 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public boolean onUpdate(float seconds) {
-                final BoundingBox2F box = viewport.getBounds();
+                final Rect2F box = viewport.getBounds();
                 viewportText.setText(String.format("L: %.2f; T: %.2f; R: %.2f; B: %.2f; X: %.2f; Y: %.2f; SX: %.2f; SY: %.2f",
                         box.getMinX(), box.getMinY(), box.getMaxX(), box.getMaxY(),
                         viewport.getPositionX(), viewport.getPositionY(),
@@ -225,8 +219,18 @@ public class GameFactory implements EngineFactory {
                 return true;
             }
         });
-        root.add(multilineText);
-        */
+
+        final Viewport screen = new Viewport(new Viewport.RealSizeAdjustStrategy());
+
+        final MultilineText multilineText = new MultilineText();
+        multilineText.add(fpsText);
+        multilineText.add(positionText);
+        multilineText.add(viewportText);
+        multilineText.add(collisionText);
+        screen.add(multilineText);
+
+        root.add(screen);
+
         return root;
     }
 

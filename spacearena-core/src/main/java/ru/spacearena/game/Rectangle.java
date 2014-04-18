@@ -1,7 +1,6 @@
 package ru.spacearena.game;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.geometry.shapes.Rect2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
@@ -15,28 +14,13 @@ public class Rectangle extends EngineObject {
     private final Color color;
     private final Rect2FP bounds = new Rect2FP();
 
-    public Rectangle() {
-        this.color = Color.WHITE;
-    }
-
-    public Rectangle(Rect2F aabb, Color color) {
-        this.bounds.set(aabb);
+    public Rectangle(float left, float top, float right, float bottom, Color color) {
+        this.bounds.setBounds(left, top, right, bottom);
         this.color = color;
     }
 
-//    public Rectangle(float left, float top, float right, float bottom, Color color) {
-//        this(left, top, right, bottom, Color.WHITE);
-//    }
-//
-//    public Rectangle(float left, float top, float right, float bottom, int color) {
-//        this.bounds.set(left, top, right, bottom);
-//        this.color = color;
-//    }
-
     @Override
     public void onDraw(DrawContext context) {
-        //context.fill TODO
-//        context.setColor(color);
-//        context.fillRect(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
+        context.color(color).fillRect(bounds.p1.x, bounds.p1.y, bounds.p2.x, bounds.p2.y);
     }
 }

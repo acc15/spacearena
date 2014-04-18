@@ -17,7 +17,7 @@ public class Rect2FP extends AbstractRect2F {
     }
 
     public Rect2FP(float x1, float y1, float x2, float y2) {
-        set(x1, y1, x2, y2);
+        setBounds(x1, y1, x2, y2);
     }
 
     public Rect2FP(Rect2F aabb) {
@@ -25,13 +25,9 @@ public class Rect2FP extends AbstractRect2F {
     }
 
     public void set(Rect2F bb) {
-        set(bb.getMinX(), bb.getMinY(), bb.getMaxX(), bb.getMaxY());
+        setBounds(bb.getMinX(), bb.getMinY(), bb.getMaxX(), bb.getMaxY());
     }
 
-    public void set(float x1, float y1, float x2, float y2) {
-        p1.set(x1,y1);
-        p2.set(x2,y2);
-    }
 
     public void offset(float dx, float dy) {
         p1.add(dx, dy);

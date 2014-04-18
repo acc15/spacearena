@@ -1,8 +1,9 @@
 package ru.spacearena.engine.integration.box2d;
 
 import org.jbox2d.callbacks.ContactImpulse;
-import org.jbox2d.collision.shapes.Shape;
+import org.jbox2d.collision.shapes.*;
 import org.jbox2d.common.Transform;
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.Fixture;
@@ -193,12 +194,10 @@ public class Box2dBody extends Box2dObject {
     protected final void drawBodyShapes(DrawContext context, Color color, boolean fill) {
         for (Fixture f = body.getFixtureList(); f != null; f = f.getNext()) {
             final Shape shape = f.getShape();
-            // TODO
-            //drawShape(context, fill, shape);
+            drawShape(context, fill, shape);
         }
     }
 
-    /*
     protected final void drawShape(DrawContext context, boolean fill, Shape shape) {
         switch (shape.getType()) {
         case EDGE:
@@ -222,11 +221,16 @@ public class Box2dBody extends Box2dObject {
             final int pc = polygon.getVertexCount();
 
             final Vec2 v0 = polygon.getVertex(0);
+            if (fill) {
+                context.fillConvexPoly();
+            } else {
+                context.drawPoly();
+            }
             final Path p = context.preparePath();
             p.moveTo(v0.x, v0.y);
             for (int i=1; i<pc; i++) {
                 final Vec2 v = polygon.getVertex(i);
-                p.lineTo(v.x, v.y);
+                p.lineTo(v.x, v.y );
             }
             p.lineTo(v0.x, v0.y);
 
@@ -250,7 +254,7 @@ public class Box2dBody extends Box2dObject {
     private void drawEdge(DrawContext context, EdgeShape edgeShape) {
         context.drawLine(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y, edgeShape.m_vertex2.x, edgeShape.m_vertex2.y);
     }
-    */
+
 
     public void onCollision(Box2dBody object, boolean isReference, Contact contact, ContactImpulse impulse) {
     }

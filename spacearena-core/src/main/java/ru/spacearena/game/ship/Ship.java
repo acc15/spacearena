@@ -12,11 +12,14 @@ import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.texture.Texture;
+import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.game.GameBody;
+import ru.spacearena.game.GameFactory;
 import ru.spacearena.game.ObjectType;
 
 import java.util.LinkedList;
@@ -45,6 +48,8 @@ public class Ship extends GameBody {
     private final EngineContainer<? super EngineObject> fxContainer;
     private float damageTime = 0f;
     private float health = 1f;
+
+    private static final Texture.Definition SHIP_TEXTURE = new TextureDefinition().url(GameFactory.class, "ship.png");
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
@@ -115,7 +120,6 @@ public class Ship extends GameBody {
 
     @Override
     public void onCollision(Box2dBody object, boolean isReference, Contact contact, ContactImpulse impulse) {
-
         final float d = GameBody.getObjectType(object) == ObjectType.BULLET ? 0.05f : impulse.normalImpulses[0] / 20000f;
         if (d < 0.05f) {
             return;
@@ -163,17 +167,9 @@ public class Ship extends GameBody {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
-        super.onDraw(context);
-        /* TODO
-        final float left = getPositionX() - 2f,
-                    top = getPositionY() - 5f,
-                    right = getPositionX() + 2f,
-                    bottom = getPositionY() - 4.5f;
-        context.setColor(ColorU.WHITE);
-        context.drawRect(left, top, right, bottom);
-        context.setColor(ColorU.GREEN);
-        context.fillRect(left, top, left + (right-left) * health, bottom);
-        */
+    protected void onDrawTransformed(DrawContext context) {
+        super.onDrawTransformed(context);
+        context.drawImage(-2, -2, 4, 2, SHIP_TEXTURE);
     }
+
 }

@@ -4,7 +4,7 @@ package ru.spacearena.engine.geometry.primitives;
 * @author Vyacheslav Mayorov
 * @since 2014-09-03
 */
-public class ProjectionF extends RangeF {
+public class Projection2F extends RangeF {
 
     private boolean initialized = false;
 
