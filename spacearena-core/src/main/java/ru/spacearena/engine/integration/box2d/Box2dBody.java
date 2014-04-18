@@ -120,7 +120,7 @@ public class Box2dBody extends Box2dObject {
     }
 
     @Override
-    public void onSmooth(float dt, float ratio, float prevRatio) {
+    public void onSmooth(float ratio, float prevRatio) {
         final float newX = body.m_xf.p.x * ratio + prevX * prevRatio,
                     newY = body.m_xf.p.y * ratio + prevY * prevRatio,
                     newAngle = FloatMathUtils.normalizeRadians(prevAngle +

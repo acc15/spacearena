@@ -71,7 +71,7 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
         for (int i=0; i < getChildCount(); i++) {
             final Line line = getChild(i);
             context.drawText(line.text, x, y);
-            y += context.getFont().getLineHeight();
+            y += context.getFontLineHeight();
         }
     }
 

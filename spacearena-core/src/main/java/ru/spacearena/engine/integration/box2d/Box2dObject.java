@@ -11,7 +11,7 @@ public class Box2dObject extends GenericContainer {
     public void onCreate(Box2dWorld b2dWorld) {
     }
 
-    public void onSmooth(float dt, float ratio, float prevRatio) {
+    public void onSmooth(float ratio, float prevRatio) {
     }
 
     public void onStep(float dt) {

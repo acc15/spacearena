@@ -13,8 +13,12 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.shaders.ShaderProgram;
+import ru.spacearena.engine.graphics.shaders.TextureProgram;
 import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
+import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -137,11 +141,14 @@ public class Ship extends GameBody {
     }
 
     @Override
-    public void onSmooth(float dt, float ratio, float prevRatio) {
-        super.onSmooth(dt, ratio, prevRatio);
-        damageTime = FloatMathUtils.max(0f, damageTime - dt);
-        //((Sprite)getChild(1)).setAlpha(damageTime/DAMAGE_TIME);
-        // TODO
+    public boolean onUpdate(float seconds) {
+        if (!super.onUpdate(seconds)) {
+            return false;
+        }
+        if (damageTime > 0) {
+            damageTime = FloatMathUtils.max(0f, damageTime - seconds);
+        }
+        return true;
     }
 
     public void onPostCreate(Body body) {
@@ -171,7 +178,39 @@ public class Ship extends GameBody {
     @Override
     protected void onDrawTransformed(DrawContext context) {
         super.onDrawTransformed(context);
-        context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, SHIP_TEXTURE);
+
+        final VertexBuffer vb = context.getSharedBuffer();
+        final Texture texture = context.get(SHIP_TEXTURE);
+
+        final float l = -3.7f, t = -2.3f, r = 5.4f, b = 2.3f;
+        vb.reset(TextureProgram.LAYOUT_PT2).
+                put(l, t).put(texture.getLeft(), texture.getTop()).
+                put(l, b).put(texture.getLeft(), texture.getBottom()).
+                put(r, b).put(texture.getRight(), texture.getBottom()).
+                put(r, t).put(texture.getRight(), texture.getTop());
+        context.use(SHADER).
+                attrs(vb).
+                uniform(context.getActiveMatrix()).
+                uniform(SHIP_TEXTURE, 0).
+                //uniform(Color.RED, false).
+                uniform(damageTime / DAMAGE_TIME).
+                draw(OpenGL.TRIANGLE_FAN);
+        //context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, SHIP_TEXTURE);
     }
+
+    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition() {
+        public ShaderProgram createProgram() {
+            final ShaderProgram p = new ShaderProgram();
+            p.shader(TextureProgram.class, "tex.vert");
+            p.shader(Ship.class, "ship.frag");
+            p.attribute("a_Position");
+            p.attribute("a_TexCoord");
+            p.uniform("u_MVPMatrix");
+            p.uniform("u_Texture");
+            //p.uniform("u_ShadeColor");
+            p.uniform("u_ShadeAmount");
+            return p;
+        }
+    };
 
 }

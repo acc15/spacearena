@@ -143,7 +143,7 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
     public void onSmooth(float ratio) {
         final float prevRatio = 1f - ratio;
         for (Box2dObject b2o: getChildren()) {
-            b2o.onSmooth(accumulator, ratio, prevRatio);
+            b2o.onSmooth(ratio, prevRatio);
         }
     }
 

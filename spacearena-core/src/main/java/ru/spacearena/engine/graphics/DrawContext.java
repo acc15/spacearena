@@ -7,7 +7,7 @@ import ru.spacearena.engine.graphics.font.*;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.texture.Texture;
-import ru.spacearena.engine.graphics.texture.TextureProgram;
+import ru.spacearena.engine.graphics.shaders.TextureProgram;
 import ru.spacearena.engine.graphics.vbo.VBODefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
@@ -226,12 +226,17 @@ public class DrawContext {
     }
 
 
+    public float getFontLineHeight() {
+        final FontData fd = get(font);
+        return fd.getLineHeight() * fontSize / fd.getFontSize();
+    }
+
     public void drawText(String text, float x, float y) {
 
         final FontData f = get(font);
         final Texture t = get(font.getTexture());
 
-        final float scale = fontSize / f.getFontSize();// * fontScale;
+        final float scale = fontSize / f.getFontSize();
         final float lineHeight = f.getLineHeight() * scale;
 
         float currentX = x, currentY = y;
@@ -300,7 +305,7 @@ public class DrawContext {
                 uniform(activeMatrix).
                 uniform(font.getTexture(), 0).
                 uniform(color).
-                uniform((float) (1 << f.getImageScale()) / (fontSize)).
+                uniform((float) (1 << f.getImageScale()) / fontSize).
                 draw(OpenGL.TRIANGLES);
     }
 
@@ -582,6 +587,14 @@ public class DrawContext {
 
         public Binder uniform(Matrix matrix) {
             gl.uniformMatrix4(nextUniformLocation(), 1, matrix.m, 0);
+            return this;
+        }
+
+        public Binder uniform(Color color, boolean useAlpha) {
+            if (useAlpha) {
+                return uniform(color);
+            }
+            gl.uniform(nextUniformLocation(), color.r, color.g, color.b);
             return this;
         }
 

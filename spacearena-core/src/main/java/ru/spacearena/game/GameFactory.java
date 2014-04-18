@@ -30,7 +30,7 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
-        engine.getDebug().setDrawAll(true);
+        //engine.getDebug().setDrawAll(true);
 
         engine.setMaxFPS(0);
         engine.enableInput(InputType.KEYBOARD);
@@ -40,23 +40,26 @@ public class GameFactory implements EngineFactory {
         final GenericContainer root = new GenericContainer();
 
         final MultilineText.Line fpsText = new MultilineText.Line();
-        final MultilineText.Line positionText = new MultilineText.Line();
-        final MultilineText.Line viewportText = new MultilineText.Line();
-        final MultilineText.Line collisionText = new MultilineText.Line();
+        final MultilineText.Line timeText = new MultilineText.Line();
 
         root.add(new Background());
 
-        final FPSCounter fpsCounter = new FPSCounter() {
+        root.add(new FPSCounter() {
             @Override
             public boolean onUpdate(float seconds) {
-                if (!super.onUpdate(seconds)) {
-                    return false;
-                }
+                super.onUpdate(seconds);
                 fpsText.setText(String.format("FPS: %.2f", getFps()));
                 return true;
             }
-        };
-        root.add(fpsCounter);
+        });
+        root.add(new Watch() {
+            @Override
+            public boolean onUpdate(float seconds) {
+                super.onUpdate(seconds);
+                timeText.setText(String.format("Time: %.2f", getTime()));
+                return true;
+            }
+        });
 
         final Viewport screen = new Viewport(GLViewportArea.getInstance(), new RealSizeAdjustStrategy());
         root.add(screen);
@@ -199,9 +202,8 @@ public class GameFactory implements EngineFactory {
 
         final MultilineText multilineText = new MultilineText();
         multilineText.add(fpsText);
-        multilineText.add(positionText);
-        multilineText.add(viewportText);
-        multilineText.add(collisionText);
+        multilineText.add(timeText);
+
         screen.add(multilineText);
 
         return root;
