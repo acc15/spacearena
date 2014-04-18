@@ -12,10 +12,10 @@ public class Quad2F extends AbstractPolyShape2F {
     public final Point2F p1 = new Point2F(), p2 = new Point2F(), p3 = new Point2F(), p4 = new Point2F();
 
     public void set(Rect2F rect) {
-        setBounds(rect.getMinX(), rect.getMinY(), rect.getMaxX(), rect.getMaxY());
+        setRect(rect.getMinX(), rect.getMinY(), rect.getMaxX(), rect.getMaxY());
     }
 
-    public void setBounds(float l, float t, float r, float b) {
+    public void setRect(float l, float t, float r, float b) {
         p1.set(l,t);
         p2.set(l,b);
         p3.set(r,b);

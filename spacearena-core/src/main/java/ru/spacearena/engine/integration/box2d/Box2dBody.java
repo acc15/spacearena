@@ -143,10 +143,7 @@ public class Box2dBody extends Box2dObject {
         }
         if (getEngine().getDebug().isDrawVelocities()) {
             final float vx = body.getLinearVelocity().x, vy = body.getLinearVelocity().y;
-            // TODO
-            //context.color.set(Color.LIGHT_GRAY);
-            //DrawUtils.drawArrow(context, smoothX, smoothY, smoothX + vx, smoothY + vy,
-            //        DrawUtils.HeadType.NONE, 0, DrawUtils.HeadType.ARROW, 1f);
+            context.color(Color.LIGHT_GRAY).drawArrow(smoothX, smoothY, smoothX + vx, smoothY + vy, 1);
         }
     }
 
@@ -192,6 +189,7 @@ public class Box2dBody extends Box2dObject {
     }
 
     protected final void drawBodyShapes(DrawContext context, Color color, boolean fill) {
+        context.color(color);
         for (Fixture f = body.getFixtureList(); f != null; f = f.getNext()) {
             final Shape shape = f.getShape();
             drawShape(context, fill, shape);
@@ -203,7 +201,6 @@ public class Box2dBody extends Box2dObject {
         case EDGE:
             drawEdge(context, (EdgeShape)shape);
             break;
-
 
         case CIRCLE:
             final CircleShape circle = (CircleShape) shape;
@@ -219,25 +216,15 @@ public class Box2dBody extends Box2dObject {
         case POLYGON:
             final PolygonShape polygon = (PolygonShape) shape;
             final int pc = polygon.getVertexCount();
-
-            final Vec2 v0 = polygon.getVertex(0);
-            if (fill) {
-                context.fillConvexPoly();
-            } else {
-                context.drawPoly();
-            }
-            final Path p = context.preparePath();
-            p.moveTo(v0.x, v0.y);
-            for (int i=1; i<pc; i++) {
+            final DrawContext.Polygon p = context.polygon();
+            for (int i=0; i<pc; i++) {
                 final Vec2 v = polygon.getVertex(i);
-                p.lineTo(v.x, v.y );
+                p.put(v.x, v.y);
             }
-            p.lineTo(v0.x, v0.y);
-
             if (fill) {
-                context.fillPath();
+                p.fill();
             } else {
-                context.drawPath();
+                p.draw();
             }
             break;
 

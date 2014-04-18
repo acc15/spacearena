@@ -111,7 +111,7 @@ public class Viewport extends Transform<EngineEntity> implements BoundChecker.Bo
     @Override
     protected void onMatrixUpdate() {
         localSpace.inverse(getWorldSpace());
-        window.setBounds(-1, 1, 1, -1);
+        window.setRect(-1, 1, 1, -1);
         window.transform(getWorldSpace());
         bounds.computeBoundingBox(window);
     }

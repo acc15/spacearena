@@ -30,6 +30,10 @@ public class DrawContext {
     public static final float DEFAULT_FONT_SCALE = 1f;
     public static final float DENSITY_SCALE_PPI = 160f;
 
+    private static final float SIN_30 = 0.5f;
+    private static final float COS_30 = 0.86602540378f;
+
+
     public enum Unit {
         DP,
         SP,
@@ -49,6 +53,7 @@ public class DrawContext {
     private final HashMap<FontData.Definition, FontData> fonts = new HashMap<FontData.Definition, FontData>();
 
     private final Binder binder = new Binder();
+    private final Polygon polygon = new Polygon();
 
     private float densityScale = DEFAULT_DENSITY_SCALE;
     private float fontScale = DEFAULT_FONT_SCALE;
@@ -215,6 +220,54 @@ public class DrawContext {
                 draw(OpenGL.TRIANGLE_FAN);
     }
 
+    public void drawArrow(float x1, float y1, float x2, float y2, float size) {
+        final float vx = x2 - x1, vy = y2 - y1;
+        final float l = FloatMathUtils.length(vx, vy);
+        final float nx = vx/l, ny = vy/l;
+        vertexBuffer.put(x1, y1).put(x2, y2);
+        vertexBuffer.put(x2, y2, x2 - (nx * COS_30 - ny * SIN_30) * size, y2 - (ny * COS_30 + nx * SIN_30) * size);
+        vertexBuffer.put(x2, y2, x2 - (nx * COS_30 + ny * SIN_30) * size, y2 - (ny * COS_30 - nx * SIN_30) * size);
+        use(PositionProgram.DEFINITION).
+                bindAttrs(vertexBuffer).
+                bindUniform(PositionProgram.MATRIX_UNIFORM, activeMatrix).
+                draw(OpenGL.LINES);
+//        drawLine(x1, y1, x2, y2);
+//
+//        float p30x = 0f, p30y = 0f, s30x = 0f, s30y = 0f;
+//        if (head == HeadType.ARROW || tail == HeadType.ARROW) {
+//            final float vx = x2 - x1, vy = y2 - y1;
+//            final float l = FloatMathUtils.length(vx, vy);
+//            final float nx = vx/l, ny = vy/l;
+//            p30x = nx * COS_30 - ny * SIN_30;
+//            p30y = ny * COS_30 + nx * SIN_30;
+//            s30x = nx * COS_30 + ny * SIN_30;
+//            s30y = ny * COS_30 - nx * SIN_30;
+//        }
+//
+//        switch (head) {
+//            case CIRCLE:
+//                context.fillCircle(x1, y1, headSize);
+//                break;
+//
+//            case ARROW:
+//                context.drawLine(x1, y1, x1 + p30x * headSize, y1 + p30y * headSize);
+//                context.drawLine(x1, y1, x1 + s30x * headSize, y1 + s30y * headSize);
+//                break;
+//        }
+//
+//        switch (tail) {
+//            case CIRCLE:
+//                context.fillCircle(x2, y2, headSize);
+//                break;
+//
+//            case ARROW:
+//                context.drawLine(x2, y2, x2 - p30x * tailSize, y2 - p30y * tailSize);
+//                context.drawLine(x2, y2, x2 - s30x * tailSize, y2 - s30y * tailSize);
+//                break;
+//        }
+    }
+
+
     public void drawText(String text, float x, float y) {
 
         final FontData f = get(font);
@@ -295,42 +348,47 @@ public class DrawContext {
 
     public void fillNGon(int n, float x, float y, float rx, float ry) {
         fillNGonBuf(n, x, y, rx, ry);
-        drawBuf(OpenGL.TRIANGLE_FAN, color);
+        drawBuf(OpenGL.TRIANGLE_FAN);
     }
 
     public void drawNGon(int n, float x, float y, float rx, float ry) {
         fillNGonBuf(n, x, y, rx, ry);
-        drawBuf(OpenGL.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP);
     }
 
     public void fillConvexPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
-        drawBuf(OpenGL.TRIANGLE_FAN, color);
+        drawBuf(OpenGL.TRIANGLE_FAN);
     }
 
-    public void drawPoly(float[] points, Color color) {
+    public Polygon polygon() {
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2);
+        return polygon;
+    }
+
+    public void drawPoly(float[] points) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points);
-        drawBuf(OpenGL.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP);
     }
 
     public void drawPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
-        drawBuf(OpenGL.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP);
     }
 
     public void fillRect(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
-        drawBuf(OpenGL.TRIANGLE_FAN, color);
+        drawBuf(OpenGL.TRIANGLE_FAN);
     }
 
     public void drawRect(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
-        drawBuf(OpenGL.LINE_LOOP, color);
+        drawBuf(OpenGL.LINE_LOOP);
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
-        drawBuf(OpenGL.LINES, color);
+        drawBuf(OpenGL.LINES);
     }
 
     private void renderEllipse(int type, float x, float y, float rx, float ry) {
@@ -429,6 +487,31 @@ public class DrawContext {
     public DrawContext color(Color color) {
         this.color = color;
         return this;
+    }
+
+    public class Polygon {
+        public Polygon put(float x, float y) {
+            vertexBuffer.put(x,y);
+            return this;
+        }
+
+        public Polygon put(float[] points, int start, int length) {
+            vertexBuffer.put(points, start, length);
+            return this;
+        }
+
+        public Polygon put(float[] points) {
+            vertexBuffer.put(points);
+            return this;
+        }
+
+        public void draw() {
+            drawBuf(OpenGL.LINE_LOOP);
+        }
+
+        public void fill() {
+            drawBuf(OpenGL.TRIANGLE_FAN);
+        }
     }
 
     public class Binder {
@@ -578,7 +661,7 @@ public class DrawContext {
 
     }
 
-    private void drawBuf(int type, Color color) {
+    private void drawBuf(int type) {
         use(PositionProgram.DEFINITION).
                 bindAttrs(vertexBuffer).
                 bindUniform(PositionProgram.COLOR_UNIFORM, color).

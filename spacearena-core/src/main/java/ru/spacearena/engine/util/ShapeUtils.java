@@ -24,7 +24,7 @@ public class ShapeUtils {
         final int pointCount = shape.getPointCount();
         if (pointCount > 0) {
             final float[] pts = transformShape(shape, matrix);
-            rect.set(pts[0], pts[1], pts[0], pts[1]);
+            rect.setBounds(pts[0], pts[1], pts[0], pts[1]);
             // TODO
             //rect.computeBoundingBox(pts, 2, pointCount-1);
         }

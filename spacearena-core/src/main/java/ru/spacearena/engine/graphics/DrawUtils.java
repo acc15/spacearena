@@ -1,5 +1,7 @@
 package ru.spacearena.engine.graphics;
 
+import ru.spacearena.engine.util.FloatMathUtils;
+
 /**
  * @author Vyacheslav Mayorov
  * @since 2014-12-03
@@ -15,14 +17,10 @@ public class DrawUtils {
     private static final float SIN_30 = 0.5f;
     private static final float COS_30 = 0.86602540378f;
 
-    /*
+
     public static void drawArrow(DrawContext context, float x1, float y1, float x2, float y2,
                                  HeadType head, float headSize,
                                  HeadType tail, float tailSize) {
-
-        if (FloatMathUtils.isEqual(x1, y1, x2, y2)) {
-            return;
-        }
 
         context.drawLine(x1, y1, x2, y2);
 
@@ -61,5 +59,5 @@ public class DrawUtils {
 
 
     }
-    */
+
 }
