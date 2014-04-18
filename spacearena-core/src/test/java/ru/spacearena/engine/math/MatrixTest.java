@@ -1,5 +1,6 @@
 package ru.spacearena.engine.math;
 
+import org.fest.assertions.data.Offset;
 import org.junit.Test;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Matrix;
@@ -91,7 +92,9 @@ public class MatrixTest {
             m2.postScale(1/sx, 1/sy);
 
             m2.invert();
-            assertThat(m2).isEqualTo(m1);
+            for (int j=0; i<m1.m.length; i++) {
+                assertThat(m1.m[i]).as("m[" + i + "]").isEqualTo(m2.m[i], Offset.offset(0.0001f));
+            }
         }
 
     }
