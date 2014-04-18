@@ -11,6 +11,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
@@ -120,7 +121,8 @@ public class Ship extends GameBody {
 
     @Override
     public void onCollision(Box2dBody object, boolean isReference, Contact contact, ContactImpulse impulse) {
-        final float d = GameBody.getObjectType(object) == ObjectType.BULLET ? 0.05f : impulse.normalImpulses[0] / 20000f;
+        final float imp = impulse.normalImpulses[0];
+        final float d = GameBody.getObjectType(object) == ObjectType.BULLET ? 0.05f : imp/20000f;
         if (d < 0.05f) {
             return;
         }
@@ -144,18 +146,6 @@ public class Ship extends GameBody {
 
     public void onPostCreate(Body body) {
 
-        //final Sprite sprite = new Sprite(getEngine().getImage("ship.png"));
-        //final float pivotX = sprite.getWidth() / 3, pivotY = sprite.getH() / 2, scale = 6 / sprite.getWidth();
-
-        //sprite.setPivot(pivotX, pivotY);
-        //sprite.setScale(scale);
-        //add(sprite);
-
-        //final Sprite mask = new Sprite(getEngine().getImage("ship_mask.png"));
-        //mask.setPivot(pivotX, pivotY);
-        //mask.setScale(scale);
-        //add(mask);
-
         final PolygonShape shape = new PolygonShape();
         shape.set(LOCAL_SHAPE, LOCAL_SHAPE.length);
 
@@ -164,6 +154,18 @@ public class Ship extends GameBody {
         fd.density = 10f;
         fd.shape = shape;
         body.createFixture(fd);
+    }
+
+
+    @Override
+    public void onDraw(DrawContext context) {
+        super.onDraw(context);
+        final float left = getPositionX() - 2f,
+                top = getPositionY() - 5f,
+                right = getPositionX() + 2f,
+                bottom = getPositionY() - 4.5f;
+        context.color(Color.GREEN).fillRect(left, top, left + (right-left) * health, bottom);
+        context.color(Color.WHITE).drawRect(left, top, right, bottom);
     }
 
     @Override

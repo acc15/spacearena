@@ -26,7 +26,7 @@ public class GameFactory implements EngineFactory {
 
     public EngineEntity createRoot(final Engine engine) {
 
-        engine.getDebug().setDrawAll(true);
+        //engine.getDebug().setDrawAll(true);
 
         engine.setMaxFPS(100);
         engine.enableInput(InputType.KEYBOARD);
@@ -87,10 +87,13 @@ public class GameFactory implements EngineFactory {
         box2dWorld.add(ship1);
 
         for (int i=0; i<=10; i++) {
-            final Ship ship2 = new Ship(fxContainer);
-            ship2.setInitialPosition((i - 5) * 5, 7);
-            ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
-            box2dWorld.add(ship2);
+            for (int j=0; j<=10; j++) {
+                final Ship ship2 = new Ship(fxContainer);
+                ship2.setInitialPosition((j - 5) * 5, (i+1) * 7);
+                ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
+                box2dWorld.add(ship2);
+            }
+
         }
 
         root.add(new InputTracker() {
@@ -111,6 +114,7 @@ public class GameFactory implements EngineFactory {
                 } else {
                     return pt;
                 }
+                screen.getLocalSpace().transformPoint(pt);
                 viewport.getWorldSpace().transformPoint(pt);
                 pt.sub(ship1.getPositionX(), ship1.getPositionY());
                 return pt;

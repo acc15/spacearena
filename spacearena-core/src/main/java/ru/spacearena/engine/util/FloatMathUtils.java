@@ -226,4 +226,8 @@ public class FloatMathUtils {
     public static float clamp(float v, float min, float max) {
         return v < min ? min : v > max ? max : v;
     }
+
+    public static float zdiv(float v, float d) {
+        return isZero(d) ? 0 : v/d;
+    }
 }

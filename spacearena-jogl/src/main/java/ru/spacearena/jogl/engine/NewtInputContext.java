@@ -23,12 +23,18 @@ public class NewtInputContext implements InputContext {
 
     private void addKeyEvent(Engine engine,
                              ru.spacearena.engine.events.KeyEvent.Action action, KeyEvent keyEvent) {
+        if (keyEvent.isAutoRepeat()) {
+            return;
+        }
         engine.scheduleEvent(
                 new ru.spacearena.engine.events.KeyEvent(action, keyEvent.getKeyCode(), keyEvent.getKeyChar()));
     }
 
     private void addMouseEvent(Engine engine,
                                ru.spacearena.engine.events.MouseEvent.Action action, MouseEvent mouseEvent) {
+        if (mouseEvent.isAutoRepeat()) {
+            return;
+        }
         engine.scheduleEvent(new ru.spacearena.engine.events.MouseEvent(
                 action, mouseEvent.getButton(), mouseEvent.getX(), mouseEvent.getY()));
     }
@@ -38,11 +44,9 @@ public class NewtInputContext implements InputContext {
         case KEYBOARD:
             window.addKeyListener(new KeyListener() {
                 public void keyPressed(KeyEvent e) {
-                    System.out.println("PRESS!!");
                     addKeyEvent(engine, ru.spacearena.engine.events.KeyEvent.Action.DOWN, e);
                 }
                 public void keyReleased(KeyEvent e) {
-                    System.out.println("RELEASE!!");
                     addKeyEvent(engine, ru.spacearena.engine.events.KeyEvent.Action.UP, e);
                 }
             });
