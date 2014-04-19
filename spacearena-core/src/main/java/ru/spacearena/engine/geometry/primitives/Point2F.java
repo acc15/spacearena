@@ -9,6 +9,8 @@ import ru.spacearena.engine.util.FloatMathUtils
  */
 public class Point2F {
 
+    public static final Point2F PT = new Point2F();
+
     public float x = 0, y = 0;
 
     public Point2F() {
@@ -228,6 +230,10 @@ public class Point2F {
     public static Point2F p(float x, float y) {
         return new Point2F(x, y);
     }
+
+    public static Point2F temp(float x, float y) { return PT.set(x,y); }
+
+    public static Point2F temp(Point2F pt) { return PT.set(pt); }
 
     public static float[] toFloatArray(Point2F... points) {
         final float[] pts = new float[points.length*2];

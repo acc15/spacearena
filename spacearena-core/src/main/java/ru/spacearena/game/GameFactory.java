@@ -17,7 +17,6 @@ import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.game.ship.Ship;
 
 import java.awt.event.MouseEvent;
@@ -80,13 +79,14 @@ public class GameFactory implements EngineFactory {
 
         final Rect2FP levelBounds = new Rect2FP(-100f, -100f, 100f, 100f);
 
-        final Box2dWorld box2dWorld = new Box2dWorld();
+        final GenericContainer fxContainer = new GenericContainer();
+        viewport.add(fxContainer);
 
+        final Box2dWorld box2dWorld = new Box2dWorld();
         viewport.add(box2dWorld);
         box2dWorld.setFPS(60f);
         box2dWorld.add(new LevelBounds(levelBounds));
 
-        final GenericContainer fxContainer = new GenericContainer();
 
         final Ship ship1 = new Ship(fxContainer);
         ship1.setInitialPosition(0, -10);
@@ -139,10 +139,9 @@ public class GameFactory implements EngineFactory {
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
                     if (canShoot) {
-                        final org.jbox2d.common.Transform tf = ship1.getTransform();
                         for (Point2F gun: ship1.getGuns()) {
-                            final Point2F worldGun = ship1.mapPoint(TempUtils.tempPoint(gun));
-                            final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, tf.q.c, tf.q.s, ship1.getAngle());
+                            final Point2F worldGun = ship1.mapPoint(Point2F.PT.set(gun));
+                            final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, ship1.getAngle());
                             box2dWorld.add(bullet);
                         }
                         canShoot = false;

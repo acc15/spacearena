@@ -41,10 +41,10 @@ public class Ship extends GameBody {
     private static final float ACCELERATION = 30f;
     private static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI * 2;
 
-    private static final float STEAM_TIME = 0.5f;
+    private static final float STEAM_TIME = 5f;
 
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
-    private static final Point2F LOCAL_ENGINE_POS = p(-1.3f, 0f);
+    private static final Point2F LOCAL_ENGINE_POS = p(-1f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
     public static final float DAMAGE_TIME = 0.2f;
 
@@ -84,29 +84,30 @@ public class Ship extends GameBody {
         final long t = timer.getTimestamp();
 
         FlameParticle particle;
-        while ((particle = engineParticles.peek()) != null && timer.toSeconds(t - particle.timestamp) > STEAM_TIME) {
+        while ((particle = engineParticles.peek()) != null && timer.toSeconds(t - particle.t) > STEAM_TIME) {
             engineParticles.remove();
         }
 
-        final Point2F pt = mapPoint(new Point2F(LOCAL_ENGINE_POS));
         final FlameParticle last = engineParticles.peekLast();
         if (last == null) {
             if (active) {
-                engineParticles.add(new FlameParticle(t, pt, true));
+                engineParticles.add(new FlameParticle(mapPoint(Point2F.temp(LOCAL_ENGINE_POS)), t, true));
             }
             return;
         }
+
+        final Point2F pt = mapPoint(Point2F.temp(LOCAL_ENGINE_POS));
         if (pt.near(last.x, last.y)) {
             if (last.active) {
-                last.timestamp = t;
+                last.t = t;
             }
             last.active = active;
             return;
         }
         if (active || last.active) {
-            final FlameParticle p = new FlameParticle(t, pt, active);
-            //p.l = FloatMathUtils.length()
-            engineParticles.add(new FlameParticle(t, pt, active));
+            final FlameParticle p = new FlameParticle(pt, t, active);
+            last.l = FloatMathUtils.length(p.x - last.x, p.y - last.y);
+            engineParticles.add(new FlameParticle(pt, t, active));
         }
     }
 

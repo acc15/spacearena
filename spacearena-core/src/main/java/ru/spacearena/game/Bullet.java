@@ -9,6 +9,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
+import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.game.ship.Ship;
 
 /**
@@ -21,10 +22,10 @@ public class Bullet extends GameBody {
 
     private Ship owner;
 
-    public Bullet(Ship owner, float x, float y, float rotateX, float rotateY, float angle) {
+    public Bullet(Ship owner, float x, float y, float angle) {
         this.owner = owner;
         setInitialPosition(x, y);
-        setInitialVelocity(rotateX * SPEED, rotateY * SPEED);
+        setInitialVelocity(FloatMathUtils.cos(angle) * SPEED, FloatMathUtils.sin(angle) * SPEED);
         setInitialAngle(angle);
     }
 
