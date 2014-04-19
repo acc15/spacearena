@@ -9,9 +9,8 @@ import org.jbox2d.common.Vec2;
 public class Box2dUtils {
 
     public static Vec2 VEC2_1 = new Vec2();
-    public static Vec2 VEC2_2 = new Vec2();
 
-    public static Vec2 tempVec(float x, float y) {
+    public static Vec2 vec2(float x, float y) {
         VEC2_1.set(x, y);
         return VEC2_1;
     }

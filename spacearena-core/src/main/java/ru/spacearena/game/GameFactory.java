@@ -15,7 +15,6 @@ import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.game.ship.Ship;
@@ -46,18 +45,16 @@ public class GameFactory implements EngineFactory {
 
         root.add(new FPSCounter() {
             @Override
-            public boolean onUpdate(float seconds) {
+            public void onUpdate(float seconds) {
                 super.onUpdate(seconds);
                 fpsText.setText(String.format("FPS: %.2f", getFps()));
-                return true;
             }
         });
         root.add(new Watch() {
             @Override
-            public boolean onUpdate(float seconds) {
+            public void onUpdate(float seconds) {
                 super.onUpdate(seconds);
                 timeText.setText(String.format("Time: %.2f", getTime()));
-                return true;
             }
         });
 
@@ -128,7 +125,7 @@ public class GameFactory implements EngineFactory {
             }
 
             @Override
-            public boolean onUpdate(float seconds) {
+            public void onUpdate(float seconds) {
                 final Point2F dir = getDirection();
                 ship1.flyTo(dir.x, dir.y, seconds);
 
@@ -150,15 +147,12 @@ public class GameFactory implements EngineFactory {
                 } else {
                     canShoot = true;
                 }
-
-                return true;
             }
         });
         root.add(new EngineObject() {
             @Override
-            public boolean onUpdate(float seconds) {
+            public void onUpdate(float seconds) {
                 viewport.setPosition(ship1.getPositionX(), ship1.getPositionY());
-                return true;
             }
         });
         root.add(new BoundChecker(levelBounds, viewport));
@@ -205,14 +199,6 @@ public class GameFactory implements EngineFactory {
         multilineText.add(timeText);
 
         screen.add(multilineText);
-
-        screen.add(new EngineObject() {
-            @Override
-            public void onDraw(DrawContext2f context) {
-                context.color(Color.GREEN).fillRect(100, 100, 200, 200, 0);
-                context.color(Color.RED).fillRect(150, 150, 250, 250, 0.1f);
-            }
-        });
 
         return root;
 

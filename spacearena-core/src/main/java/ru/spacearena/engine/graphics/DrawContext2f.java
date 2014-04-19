@@ -60,6 +60,13 @@ public class DrawContext2f extends GLDrawContext {
         super(gl);
     }
 
+    @Override
+    public void init() {
+        gl.enable(OpenGL.VERTEX_PROGRAM_POINT_SIZE);
+        gl.enable(OpenGL.BLEND);
+        gl.blendFunc(OpenGL.SRC_ALPHA, OpenGL.ONE_MINUS_SRC_ALPHA);
+    }
+
     public void pushMatrix() {
         final int offset = matrixStack.size();
         matrixStack.setSize(offset + Matrix.ELEMENTS_PER_MATRIX);
@@ -81,8 +88,8 @@ public class DrawContext2f extends GLDrawContext {
     }
 
     public void clear() {
-        getGL().clearColor(color.r, color.g, color.b, color.a);
-        getGL().clear(OpenGL.COLOR_BUFFER_BIT | OpenGL.DEPTH_BUFFER_BIT);
+        gl.clearColor(color.r, color.g, color.b, color.a);
+        gl.clear(OpenGL.COLOR_BUFFER_BIT);
     }
 
     public Matrix getActiveMatrix() {

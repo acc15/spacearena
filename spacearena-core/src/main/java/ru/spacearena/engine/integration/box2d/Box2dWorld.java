@@ -104,13 +104,13 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
     }
 
     @Override
-    public boolean onUpdate(float seconds) {
+    public void onUpdate(float seconds) {
         if (timeStep <= 0) {
             doSingleStep(seconds);
         } else {
             doSubSteps(seconds);
         }
-        return super.onUpdate(seconds);
+        super.onUpdate(seconds);
     }
 
     private void doSingleStep(float dt) {
@@ -149,21 +149,12 @@ public class Box2dWorld extends EngineContainer<Box2dObject> {
 
     public void onStep(float dt) {
         for (final Box2dObject b2o: getChildren()) {
-            b2o.onStep(dt);
+            b2o.onBeforeStep(dt);
         }
         world.step(dt, velocityIters, positionIters);
-        super.onUpdate(dt);
+        for (final Box2dObject b2o: getChildren()) {
+            b2o.onAfterStep(dt);
+        }
     }
 
-    /* TODO check
-    @Override
-    public void onDraw(DrawContext context) {
-        final float lw = context.getLineWidth();
-        try {
-            context.setLineWidth(0);
-            super.onDraw(context);
-        } finally {
-            context.setLineWidth(lw);
-        }
-    }*/
 }

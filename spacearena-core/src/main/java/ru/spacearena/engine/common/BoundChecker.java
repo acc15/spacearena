@@ -36,13 +36,12 @@ public class BoundChecker extends EngineObject {
     }
 
     @Override
-    public boolean onUpdate(float seconds) {
+    public void onUpdate(float seconds) {
         final Rect2F oBounds = object.getRect();
         final float dx = computeAxisOffset(bounds.getMinX(), bounds.getMaxX(), oBounds.getMinX(), oBounds.getMaxX());
         final float dy = computeAxisOffset(bounds.getMinY(), bounds.getMaxY(), oBounds.getMinY(), oBounds.getMaxY());
         if (!FloatMathUtils.isZero(dx, dy)) {
             object.onOutOfBounds(dx, dy);
         }
-        return true;
     }
 }

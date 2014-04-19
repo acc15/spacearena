@@ -22,7 +22,7 @@ public class Box2dBody extends Box2dObject {
 
     private final Matrix matrix = new Matrix();
 
-    private boolean live = true;
+//    private boolean live = true;
     private Body body;
 
 
@@ -39,9 +39,9 @@ public class Box2dBody extends Box2dObject {
         return smoothAngle;//body.getAngle();
     }
 
-    public void markDead() {
-        this.live = false;
-    }
+//    public void markDead() {
+//        this.live = false;
+//    }
 
     public Body getBody() {
         return body;
@@ -72,7 +72,7 @@ public class Box2dBody extends Box2dObject {
     }
 
     public void setPosition(float x, float y) {
-        body.setTransform(Box2dUtils.tempVec(x, y), body.getAngle());
+        body.setTransform(Box2dUtils.vec2(x, y), body.getAngle());
     }
 
     public void onCreate(Box2dWorld world) {
@@ -97,29 +97,24 @@ public class Box2dBody extends Box2dObject {
     }
 
     public float mapPointX(float x, float y) {
-        return matrix.transformPointX(x,y);
+        return matrix.transformPointX(x, y);
     }
 
     public float mapPointY(float x, float y) {
         return matrix.transformPointY(x, y);
     }
 
-    @Override
-    public boolean onUpdate(float seconds) {
-        if (!super.onUpdate(seconds)) {
-            return false;
-        }
-        if (!live) {
-            body.getWorld().destroyBody(body);
-            return false;
-        }
-        return true;
-    }
-
-    public void onStep(float dt) {
+    public void onBeforeStep(float dt) {
         prevX = body.m_xf.p.x;
         prevY = body.m_xf.p.y;
         prevAngle = body.m_sweep.a;
+    }
+
+    @Override
+    public void onAfterStep(float dt) {
+        if (!isLive()) {
+            body.getWorld().destroyBody(body);
+        }
     }
 
     @Override
@@ -160,12 +155,12 @@ public class Box2dBody extends Box2dObject {
 
         final float l2 = FloatMathUtils.lengthSquare(velDiffX, velDiffY);
         if (acceleration * acceleration >= l2) {
-            body.setLinearVelocity(Box2dUtils.tempVec(targetVelocityX, targetVelocityY));
+            body.setLinearVelocity(Box2dUtils.vec2(targetVelocityX, targetVelocityY));
             return;
         }
 
         final float l = FloatMathUtils.sqrt(l2);
-        body.setLinearVelocity(Box2dUtils.tempVec(velocityX + velDiffX * acceleration / l, velocityY + velDiffY * acceleration / l));
+        body.setLinearVelocity(Box2dUtils.vec2(velocityX + velDiffX * acceleration / l, velocityY + velDiffY * acceleration / l));
     }
 
     public void rotateTo(float targetAngle, float velocity) {

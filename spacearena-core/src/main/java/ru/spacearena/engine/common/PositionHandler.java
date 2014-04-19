@@ -17,8 +17,7 @@ public class PositionHandler extends EngineObject {
     }
 
     @Override
-    public boolean onUpdate(float seconds) {
+    public void onUpdate(float seconds) {
         target.setPosition(source.getPositionX(), source.getPositionY());
-        return true;
     }
 }

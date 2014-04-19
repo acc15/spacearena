@@ -10,7 +10,7 @@ import java.util.List;
  * @author Vyacheslav Mayorov
  * @since 2014-13-02
  */
-public class EngineContainer<T extends EngineEntity> implements EngineEntity {
+public class EngineContainer<T extends EngineEntity> extends EngineObject {
 
     protected final List<T> children = new ArrayList<T>();
     private Engine engine = null;
@@ -121,11 +121,12 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return false;
     }
 
-    public boolean onUpdate(float seconds) {
+    public void onUpdate(float seconds) {
         int l = 0, r = children.size();
         while (l < r) {
             final T c = children.get(l);
-            if (!c.onUpdate(seconds)) {
+            c.onUpdate(seconds);
+            if (!c.isLive()) {
                 onDetachChild(c);
                 children.remove(l);
                 --r;
@@ -133,12 +134,13 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
                 ++l;
             }
         }
-        return true;
     }
 
     public void onDraw(DrawContext2f context) {
         for (T child : children) {
-            child.onDraw(context);
+            if (child.isVisible()) {
+                child.onDraw(context);
+            }
         }
     }
 }

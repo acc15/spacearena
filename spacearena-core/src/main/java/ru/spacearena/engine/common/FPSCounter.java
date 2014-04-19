@@ -26,22 +26,16 @@ public class FPSCounter extends EngineObject {
         return fps;
     }
 
-    protected boolean computeFPS(float seconds) {
+    public void onUpdate(float seconds) {
         ++frameCount;
         totalTime += seconds;
         if (totalTime <= 1f) {
-            return false;
+            return;
         }
 
         final float fullSeconds = FloatMathUtils.floor(totalTime);
         fps = (float)frameCount / fullSeconds;
         totalTime -= fullSeconds;
         frameCount = 0;
-        return true;
-    }
-
-    public boolean onUpdate(float seconds) {
-        computeFPS(seconds);
-        return true;
     }
 }

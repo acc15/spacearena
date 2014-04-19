@@ -21,13 +21,14 @@ public interface EngineEntity {
      *  ru.spacearena.engine.graphics.shaders.ShaderProgram.Definition) make programs}.
      *  However you can make this things later - on the fly.
      *  It's just a notification - "i'm ready to start drawing".
-     * @param context an object from which you can get whatever you want.
+     * @param context draw context to pre-load some resources
      */
     void onInit(DrawContext2f context);
 
     /**
      * Called when OpenGL subsystem is going down.
-     * @param context an object from which you can get whatever you want.
+     * @param context draw context to .. hmm use cases isn't known (yet?)
+     *                since DrawContext clears all resources automatically
      */
     void onDispose(DrawContext2f context);
 
@@ -48,13 +49,27 @@ public interface EngineEntity {
     /**
      * Called when another frame
      * @param seconds seconds elapsed past previous frame
-     * @return whether this object is live or not. It's a hint for container to remove this object
      */
-    boolean onUpdate(float seconds);
+    void onUpdate(float seconds);
 
     /**
      * Called when another frame should be drawn
      * @param context context to draw graphics
      */
     void onDraw(DrawContext2f context);
+
+    /**
+     * Checks whether this object is visible or not
+     * It's a hint for container to skip draw method for child entity
+     * @return whether this object is visible or not
+     */
+    boolean isVisible();
+
+    /**
+     * Checks whether this object is live or not.
+     * It's a hint for container to remove this object and detach it from engine
+     * @return whether this object is live or not
+     */
+    boolean isLive();
+
 }

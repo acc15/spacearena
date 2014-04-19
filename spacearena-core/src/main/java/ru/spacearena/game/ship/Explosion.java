@@ -56,9 +56,11 @@ public class Explosion extends EngineObject {
 //    }
 
     @Override
-    public boolean onUpdate(float seconds) {
+    public void onUpdate(float seconds) {
         duration += seconds * 2;//(duration + seconds);
-        return duration < 1f;
+        if (duration < 1f) {
+            markDead();
+        }
     }
 
     @Override

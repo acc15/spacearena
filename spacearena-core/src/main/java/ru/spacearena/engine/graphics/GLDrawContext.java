@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public class GLDrawContext {
 
-    private final OpenGL gl;
+    protected final OpenGL gl;
     private final HashMap<ShaderProgram.Definition, ShaderProgram> programs = new HashMap<ShaderProgram.Definition, ShaderProgram>();
     private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos = new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
     private final HashMap<Texture.Definition, Texture> textures = new HashMap<Texture.Definition, Texture>();
@@ -34,11 +34,6 @@ public class GLDrawContext {
     }
 
     public void init() {
-        gl.enable(OpenGL.VERTEX_PROGRAM_POINT_SIZE);
-        gl.enable(OpenGL.BLEND);
-        gl.enable(OpenGL.DEPTH_TEST);
-        gl.depthFunc(OpenGL.LEQUAL);
-        gl.blendFunc(OpenGL.SRC_ALPHA, OpenGL.ONE_MINUS_SRC_ALPHA);
     }
 
     public void dispose() {

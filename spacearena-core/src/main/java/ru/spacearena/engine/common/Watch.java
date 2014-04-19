@@ -15,8 +15,7 @@ public class Watch extends EngineObject {
     }
 
     @Override
-    public boolean onUpdate(float seconds) {
+    public void onUpdate(float seconds) {
         time += seconds;
-        return true;
     }
 }

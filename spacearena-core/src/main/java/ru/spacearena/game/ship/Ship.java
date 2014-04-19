@@ -142,14 +142,10 @@ public class Ship extends GameBody {
     }
 
     @Override
-    public boolean onUpdate(float seconds) {
-        if (!super.onUpdate(seconds)) {
-            return false;
-        }
+    public void onUpdate(float seconds) {
         if (damageTime > 0) {
             damageTime = FloatMathUtils.max(0f, damageTime - seconds);
         }
-        return true;
     }
 
     public void onPostCreate(Body body) {

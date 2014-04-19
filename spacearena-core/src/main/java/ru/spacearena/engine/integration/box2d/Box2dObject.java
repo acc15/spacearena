@@ -14,6 +14,9 @@ public class Box2dObject extends GenericContainer {
     public void onSmooth(float ratio, float prevRatio) {
     }
 
-    public void onStep(float dt) {
+    public void onBeforeStep(float dt) {
+    }
+
+    public void onAfterStep(float dt) {
     }
 }
