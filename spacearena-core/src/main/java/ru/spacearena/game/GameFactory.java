@@ -15,6 +15,7 @@ import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.game.ship.Ship;
@@ -204,6 +205,14 @@ public class GameFactory implements EngineFactory {
         multilineText.add(timeText);
 
         screen.add(multilineText);
+
+        screen.add(new EngineObject() {
+            @Override
+            public void onDraw(DrawContext context) {
+                context.color(Color.GREEN).fillRect(100, 100, 200, 200, 0);
+                context.color(Color.RED).fillRect(150, 150, 250, 250, 0.1f);
+            }
+        });
 
         return root;
 

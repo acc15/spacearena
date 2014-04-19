@@ -459,4 +459,5 @@ public interface OpenGL {
 
     void blendFunc(int sfactor, int dfactor);
 
+    void depthFunc(int func);
 }

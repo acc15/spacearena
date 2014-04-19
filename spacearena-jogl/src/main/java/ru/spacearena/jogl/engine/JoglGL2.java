@@ -466,4 +466,8 @@ public class JoglGL2 implements OpenGL {
     public void blendFunc(int sfactor, int dfactor) {
         gl2.glBlendFunc(sfactor, dfactor);
     }
+
+    public void depthFunc(int func) {
+        gl2.glDepthFunc(func);
+    }
 }

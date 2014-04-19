@@ -4,6 +4,7 @@ import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2I;
 import ru.spacearena.engine.graphics.font.*;
+import ru.spacearena.engine.graphics.shaders.PositionDepthProgram;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.texture.Texture;
@@ -93,12 +94,14 @@ public class DrawContext {
 
     public void clear() {
         gl.clearColor(color.r, color.g, color.b, color.a);
-        gl.clear(OpenGL.COLOR_BUFFER_BIT);
+        gl.clear(OpenGL.COLOR_BUFFER_BIT | OpenGL.DEPTH_BUFFER_BIT);
     }
 
     public void init() {
         gl.enable(OpenGL.VERTEX_PROGRAM_POINT_SIZE);
         gl.enable(OpenGL.BLEND);
+        gl.enable(OpenGL.DEPTH_TEST);
+        gl.depthFunc(OpenGL.LEQUAL);
         gl.blendFunc(OpenGL.SRC_ALPHA, OpenGL.ONE_MINUS_SRC_ALPHA);
     }
 
@@ -341,6 +344,16 @@ public class DrawContext {
     public void drawPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.LINE_LOOP);
+    }
+
+    public void fillRect(float x1, float y1, float x2, float y2, float depth) {
+        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
+        use(PositionDepthProgram.DEFINITION).
+                attrs(vertexBuffer).
+                uniform(activeMatrix).
+                uniform(color).
+                uniform(depth).
+                draw(OpenGL.TRIANGLE_FAN);
     }
 
     public void fillRect(float x1, float y1, float x2, float y2) {

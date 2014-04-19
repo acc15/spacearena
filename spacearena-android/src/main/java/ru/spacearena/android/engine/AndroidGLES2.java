@@ -461,4 +461,8 @@ public class AndroidGLES2 implements OpenGL {
     public void blendFunc(int sfactor, int dfactor) {
         GLES20.glBlendFunc(sfactor, dfactor);
     }
+
+    public void depthFunc(int func) {
+        GLES20.glDepthFunc(func);
+    }
 }
