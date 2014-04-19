@@ -56,7 +56,7 @@ public class Sky extends EngineObject {
         this.maxStarSize = maxStarSize;
     }
 
-    private void drawStarLayer(float scale) {
+    private void drawStarLayer(DrawContext context, float scale) {
 
         final float sd2 = starDistance*2;
         bounds.set(viewport.getRect());
@@ -80,7 +80,7 @@ public class Sky extends EngineObject {
                             gy = (y-bounds.position.y)*scale+bounds.position.y;
                 final float sx = gx + dx*scale, sy = gy + dy*scale;
                 final float bright = random.nextFloat();
-                final int size = random.nextInt(4);
+                final float size = FloatMathUtils.clamp(random.nextFloatBetween(1, 3) * context.getDensityScale(), 1, 4);
                 vb.put(sx, sy).put(bright, bright, 1).put(size);
             }
         }
@@ -90,7 +90,7 @@ public class Sky extends EngineObject {
     public void onDraw(DrawContext context) {
         vb.reset(LAYOUT_P2C3S1);
         for (float scale=5; scale>0; scale--) {
-            drawStarLayer(1-scale/10);
+            drawStarLayer(context, 1-scale/10);
         }
         context.use(SHADER).
                 attrs(vb).
