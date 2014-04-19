@@ -12,7 +12,7 @@ import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.shaders.TextureProgram;
@@ -166,18 +166,18 @@ public class Ship extends GameBody {
 
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         super.onDraw(context);
         final float left = getPositionX() - 2f,
                 top = getPositionY() - 5f,
                 right = getPositionX() + 2f,
                 bottom = getPositionY() - 4.5f;
-        context.color(Color.GREEN).fillRect(left, top, left + (right-left) * health, bottom);
+        context.color(Color.GREEN).fillRect(left, top, left + (right - left) * health, bottom);
         context.color(Color.WHITE).drawRect(left, top, right, bottom);
     }
 
     @Override
-    protected void onDrawTransformed(DrawContext context) {
+    protected void onDrawTransformed(DrawContext2f context) {
         super.onDrawTransformed(context);
 
         final VertexBuffer vb = context.getSharedBuffer();

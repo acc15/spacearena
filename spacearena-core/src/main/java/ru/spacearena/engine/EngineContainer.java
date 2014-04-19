@@ -1,7 +1,7 @@
 package ru.spacearena.engine;
 
 import ru.spacearena.engine.events.InputEvent;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
     private void detach(T entity) {
         onDetachChild(entity);
-        final DrawContext dc = engine.getDrawContext();
+        final DrawContext2f dc = engine.getDrawContext();
         if (dc != null) {
             entity.onDispose(dc);
         }
@@ -48,7 +48,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
 
     private void attach(T entity) {
         entity.onAttach(engine);
-        final DrawContext dc = engine.getDrawContext();
+        final DrawContext2f dc = engine.getDrawContext();
         if (dc != null) {
             entity.onInit(dc);
         }
@@ -94,13 +94,13 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         this.engine = null;
     }
 
-    public void onInit(DrawContext context) {
+    public void onInit(DrawContext2f context) {
         for (T child: children) {
             child.onInit(context);
         }
     }
 
-    public void onDispose(DrawContext context) {
+    public void onDispose(DrawContext2f context) {
         for (T child: children) {
             child.onDispose(context);
         }
@@ -136,7 +136,7 @@ public class EngineContainer<T extends EngineEntity> implements EngineEntity {
         return true;
     }
 
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         for (T child : children) {
             child.onDraw(context);
         }

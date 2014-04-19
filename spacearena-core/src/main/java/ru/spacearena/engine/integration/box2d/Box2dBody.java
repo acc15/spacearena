@@ -10,7 +10,7 @@ import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -101,7 +101,7 @@ public class Box2dBody extends Box2dObject {
     }
 
     public float mapPointY(float x, float y) {
-        return matrix.transformPointY(x,y);
+        return matrix.transformPointY(x, y);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class Box2dBody extends Box2dObject {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         try {
             context.multiplyMatrix(matrix);
             onDrawTransformed(context);
@@ -184,14 +184,14 @@ public class Box2dBody extends Box2dObject {
         setAngle(angle + FloatMathUtils.copySign(velocity, angleDiff));
     }
 
-    protected void onDrawTransformed(DrawContext context) {
+    protected void onDrawTransformed(DrawContext2f context) {
         super.onDraw(context);
         if (getEngine().getDebug().isDrawConvexShapes()) {
             drawBodyShapes(context, Color.GREEN, false);
         }
     }
 
-    protected final void drawBodyShapes(DrawContext context, Color color, boolean fill) {
+    protected final void drawBodyShapes(DrawContext2f context, Color color, boolean fill) {
         context.color(color);
         for (Fixture f = body.getFixtureList(); f != null; f = f.getNext()) {
             final Shape shape = f.getShape();
@@ -199,7 +199,7 @@ public class Box2dBody extends Box2dObject {
         }
     }
 
-    protected final void drawShape(DrawContext context, boolean fill, Shape shape) {
+    protected final void drawShape(DrawContext2f context, boolean fill, Shape shape) {
         switch (shape.getType()) {
         case EDGE:
             drawEdge(context, (EdgeShape)shape);
@@ -219,7 +219,7 @@ public class Box2dBody extends Box2dObject {
         case POLYGON:
             final PolygonShape polygon = (PolygonShape) shape;
             final int pc = polygon.getVertexCount();
-            final DrawContext.Polygon p = context.polygon();
+            final DrawContext2f.Polygon p = context.polygon();
             for (int i=0; i<pc; i++) {
                 final Vec2 v = polygon.getVertex(i);
                 p.put(v.x, v.y);
@@ -241,7 +241,7 @@ public class Box2dBody extends Box2dObject {
         }
     }
 
-    private void drawEdge(DrawContext context, EdgeShape edgeShape) {
+    private void drawEdge(DrawContext2f context, EdgeShape edgeShape) {
         context.drawLine(edgeShape.m_vertex1.x, edgeShape.m_vertex1.y, edgeShape.m_vertex2.x, edgeShape.m_vertex2.y);
     }
 

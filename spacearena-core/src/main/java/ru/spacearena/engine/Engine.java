@@ -6,7 +6,7 @@ import ru.spacearena.engine.events.EngineEvent;
 import ru.spacearena.engine.events.InputContext;
 import ru.spacearena.engine.events.InputEvent;
 import ru.spacearena.engine.events.InputType;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.timing.NanoTimer;
 import ru.spacearena.engine.timing.Timer;
 
@@ -26,7 +26,7 @@ public final class Engine {
     private final EngineFactory factory;
     private final InputContext inputContext;
     private final EngineEntity root;
-    private DrawContext drawContext = null;
+    private DrawContext2f drawContext = null;
 
     private float secondsPerFrame = 0;
     private float compensationTime = 0f;
@@ -47,7 +47,7 @@ public final class Engine {
         return factory;
     }
 
-    public DrawContext getDrawContext() { return drawContext; }
+    public DrawContext2f getDrawContext() { return drawContext; }
 
     private float pauseBeforeNextFrameIfNeeded() {
         if (!timer.isStarted()) {
@@ -107,7 +107,7 @@ public final class Engine {
         return true;
     }
 
-    public void onInit(DrawContext context) {
+    public void onInit(DrawContext2f context) {
         if (this.drawContext != null) {
             throw new IllegalArgumentException("Draw context already initialized");
         }

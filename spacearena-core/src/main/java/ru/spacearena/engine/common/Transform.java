@@ -2,7 +2,7 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineEntity;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.Matrix;
 import ru.spacearena.engine.util.FloatMathUtils;
 
@@ -194,7 +194,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         context.multiplyMatrix(getViewMatrix());
         try {
             onDrawTransformed(context);
@@ -208,7 +208,7 @@ public class Transform<T extends EngineEntity> extends EngineContainer<T> {
         return worldSpace;
     }
 
-    protected void onDrawTransformed(DrawContext context) {
+    protected void onDrawTransformed(DrawContext2f context) {
         super.onDraw(context);
     }
 

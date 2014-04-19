@@ -3,7 +3,7 @@ package ru.spacearena.game;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 
 /**
  * @author Vyacheslav Mayorov
@@ -20,7 +20,7 @@ public class Rectangle extends EngineObject {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         context.color(color).fillRect(bounds.p1.x, bounds.p1.y, bounds.p2.x, bounds.p2.y);
     }
 }

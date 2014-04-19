@@ -1,7 +1,7 @@
 package ru.spacearena.engine;
 
 import ru.spacearena.engine.events.InputEvent;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 
 /**
  * @author Vyacheslav Mayorov
@@ -15,10 +15,10 @@ public class EngineObject implements EngineEntity {
     public void onDetach(Engine engine) {
     }
 
-    public void onInit(DrawContext context) {
+    public void onInit(DrawContext2f context) {
     }
 
-    public void onDispose(DrawContext context) {
+    public void onDispose(DrawContext2f context) {
     }
 
     public void onSize(float width, float height) {
@@ -37,7 +37,7 @@ public class EngineObject implements EngineEntity {
         return true;
     }
 
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
     }
 
 }

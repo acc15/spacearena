@@ -18,7 +18,7 @@ public class DrawUtils {
     private static final float COS_30 = 0.86602540378f;
 
 
-    public static void drawArrow(DrawContext context, float x1, float y1, float x2, float y2,
+    public static void drawArrow(DrawContext2f context, float x1, float y1, float x2, float y2,
                                  HeadType head, float headSize,
                                  HeadType tail, float tailSize) {
 

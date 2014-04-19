@@ -2,7 +2,7 @@ package ru.spacearena.engine.common;
 
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 
 /**
  * @author Vyacheslav Mayorov
@@ -19,7 +19,7 @@ public class Background extends EngineObject {
         this.color = color;
     }
 
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         context.color(color).clear();
     }
 

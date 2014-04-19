@@ -9,7 +9,7 @@ import com.jogamp.opengl.util.Animator;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputContext;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.parse.Arguments;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.game.GameFactory;
@@ -59,11 +59,11 @@ public class JoglWindow {
         final int sw = screen.getWidth(), sh = screen.getHeight();
         for (MonitorDevice m: screen.getMonitorDevices()) {
             DimensionImmutable di = m.getSizeMM();
-            final int xPPI = FloatMathUtils.round(sw / di.getWidth() * DrawContext.INCH_PER_MM),
-                      yPPI = FloatMathUtils.round(sh / di.getHeight() * DrawContext.INCH_PER_MM);
+            final int xPPI = FloatMathUtils.round(sw / di.getWidth() * DrawContext2f.INCH_PER_MM),
+                      yPPI = FloatMathUtils.round(sh / di.getHeight() * DrawContext2f.INCH_PER_MM);
             ppi = FloatMathUtils.min(ppi, FloatMathUtils.min(xPPI, yPPI));
         }
-        return FloatMathUtils.isZero(ppi) ? DrawContext.DEFAULT_DENSITY_SCALE : ppi/DrawContext.DENSITY_SCALE_PPI;
+        return FloatMathUtils.isZero(ppi) ? DrawContext2f.DEFAULT_DENSITY_SCALE : ppi/ DrawContext2f.DENSITY_SCALE_PPI;
     }
 
     public void start(String[] args) {
@@ -91,14 +91,14 @@ public class JoglWindow {
 
         final InputContext inputContext = new NewtInputContext(window);
         final JoglGL2 gl = new JoglGL2();
-        final DrawContext drawContext = new DrawContext(gl);
+        final DrawContext2f drawContext = new DrawContext2f(gl);
         final Engine engine = new Engine(factory, inputContext);
         window.addGLEventListener(new GLEventListener() {
             public void init(GLAutoDrawable drawable) {
                 gl.setGL2(drawable.getGL().getGL2());
                 drawContext.densityScale(FloatMathUtils.isZero(a.ppi)
                         ? computeDensityScale(screen)
-                        : a.ppi/DrawContext.DENSITY_SCALE_PPI);
+                        : a.ppi/ DrawContext2f.DENSITY_SCALE_PPI);
                 engine.onInit(drawContext);
             }
 

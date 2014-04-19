@@ -12,7 +12,7 @@ import ru.spacearena.android.engine.AndroidInputContext;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
 import ru.spacearena.engine.events.InputContext;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.game.GameFactory;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -47,7 +47,7 @@ public class EngineActivity extends Activity {
 
         final GLSurfaceView view = new GLSurfaceView(this);
         final AndroidGLES2 gles2 = new AndroidGLES2();
-        final DrawContext drawContext = new DrawContext(gles2);
+        final DrawContext2f drawContext = new DrawContext2f(gles2);
         final InputContext inputContext = new AndroidInputContext(view);
         final Engine engine = new Engine(factory, inputContext);
         view.setEGLContextClientVersion(2);

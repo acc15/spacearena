@@ -3,7 +3,7 @@ package ru.spacearena.game.ship;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
@@ -27,7 +27,7 @@ public class EngineFlame extends EngineObject {
     public static final Color YELLOW =        new Color(1,0.5f,0,1);
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         final List<FlameParticle> particles = ship.getEngineParticles();
         final VertexBuffer vb = context.getSharedBuffer();
 

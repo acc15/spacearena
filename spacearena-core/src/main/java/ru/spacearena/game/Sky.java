@@ -3,7 +3,7 @@ package ru.spacearena.game;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.viewport.Viewport;
 import ru.spacearena.engine.geometry.shapes.Rect2FR;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
@@ -56,7 +56,7 @@ public class Sky extends EngineObject {
         this.maxStarSize = maxStarSize;
     }
 
-    private void drawStarLayer(DrawContext context, float scale) {
+    private void drawStarLayer(DrawContext2f context, float scale) {
 
         final float sd2 = starDistance*2;
         bounds.set(viewport.getRect());
@@ -87,7 +87,7 @@ public class Sky extends EngineObject {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         vb.reset(LAYOUT_P2C3S1);
         for (float scale=5; scale>0; scale--) {
             drawStarLayer(context, 1-scale/10);

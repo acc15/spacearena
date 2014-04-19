@@ -1,7 +1,7 @@
 package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 
 /**
  * @author Vyacheslav Mayorov
@@ -62,7 +62,7 @@ public class Explosion extends EngineObject {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         /*
         final float lw = context.getLineWidth();
         try {

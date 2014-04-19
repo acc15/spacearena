@@ -1,7 +1,7 @@
 package ru.spacearena.engine;
 
 import ru.spacearena.engine.events.InputEvent;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 
 /**
  * @author Vyacheslav Mayorov
@@ -14,22 +14,22 @@ public interface EngineEntity {
 
     /**
      * Called after OpenGL subsystem was initialized.
-     * It is a good point to load textures, {@link ru.spacearena.engine.graphics.DrawContext#upload(
+     * It is a good point to load textures, {@link ru.spacearena.engine.graphics.DrawContext2f#upload(
      *  ru.spacearena.engine.graphics.vbo.VertexBufferObject.Definition,
      *  ru.spacearena.engine.graphics.vbo.VertexBuffer) upload VBOs} and
-     * {@link ru.spacearena.engine.graphics.DrawContext#get(
+     * {@link ru.spacearena.engine.graphics.DrawContext2f#get(
      *  ru.spacearena.engine.graphics.shaders.ShaderProgram.Definition) make programs}.
      *  However you can make this things later - on the fly.
      *  It's just a notification - "i'm ready to start drawing".
      * @param context an object from which you can get whatever you want.
      */
-    void onInit(DrawContext context);
+    void onInit(DrawContext2f context);
 
     /**
      * Called when OpenGL subsystem is going down.
      * @param context an object from which you can get whatever you want.
      */
-    void onDispose(DrawContext context);
+    void onDispose(DrawContext2f context);
 
     /**
      * Called when rendering area was re-sized
@@ -56,5 +56,5 @@ public interface EngineEntity {
      * Called when another frame should be drawn
      * @param context context to draw graphics
      */
-    void onDraw(DrawContext context);
+    void onDraw(DrawContext2f context);
 }

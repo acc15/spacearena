@@ -3,7 +3,7 @@ package ru.spacearena.engine.common;
 import ru.spacearena.engine.EngineContainer;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext;
+import ru.spacearena.engine.graphics.DrawContext2f;
 
 /**
  * @author Vyacheslav Mayorov
@@ -65,9 +65,9 @@ public class MultilineText extends EngineContainer<MultilineText.Line> {
     }
 
     @Override
-    public void onDraw(DrawContext context) {
+    public void onDraw(DrawContext2f context) {
         float y = this.y;
-        context.color(color).fontSize(20, DrawContext.Unit.SP);
+        context.color(color).fontSize(20, DrawContext2f.Unit.SP);
         for (int i=0; i < getChildCount(); i++) {
             final Line line = getChild(i);
             context.drawText(line.text, x, y);
