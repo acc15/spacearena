@@ -3,7 +3,6 @@ package ru.spacearena.engine.graphics;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.util.FloatMathUtils;
 
-import static ru.spacearena.engine.util.FloatMathUtils.isEqual;
 import static ru.spacearena.engine.util.FloatMathUtils.isZero;
 
 /**
@@ -355,9 +354,9 @@ public class Matrix {
     }
 
     public boolean isCloseTo(Matrix v) {
-        return isEqual(m[0], v.m[0]) && isEqual(m[1], v.m[1]) &&
-                isEqual(m[4], v.m[4]) && isEqual(m[5], v.m[5]) &&
-                isEqual(m[12], v.m[12]) && isEqual(m[13], v.m[13]);
+        return FloatMathUtils.near(m[0], v.m[0]) && FloatMathUtils.near(m[1], v.m[1]) &&
+                FloatMathUtils.near(m[4], v.m[4]) && FloatMathUtils.near(m[5], v.m[5]) &&
+                FloatMathUtils.near(m[12], v.m[12]) && FloatMathUtils.near(m[13], v.m[13]);
     }
 
     @Override

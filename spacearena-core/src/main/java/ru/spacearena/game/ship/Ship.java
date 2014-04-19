@@ -22,7 +22,6 @@ import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.TempUtils;
 import ru.spacearena.game.GameBody;
 import ru.spacearena.game.GameFactory;
 import ru.spacearena.game.ObjectType;
@@ -89,16 +88,15 @@ public class Ship extends GameBody {
             engineParticles.remove();
         }
 
-        final Point2F pt = mapPoint(TempUtils.tempPoint(LOCAL_ENGINE_POS));
+        final Point2F pt = mapPoint(new Point2F(LOCAL_ENGINE_POS));
         final FlameParticle last = engineParticles.peekLast();
-
         if (last == null) {
             if (active) {
                 engineParticles.add(new FlameParticle(t, pt, true));
             }
             return;
         }
-        if (pt.equals(last.x, last.y)) {
+        if (pt.near(last.x, last.y)) {
             if (last.active) {
                 last.timestamp = t;
             }
@@ -106,6 +104,8 @@ public class Ship extends GameBody {
             return;
         }
         if (active || last.active) {
+            final FlameParticle p = new FlameParticle(t, pt, active);
+            //p.l = FloatMathUtils.length()
             engineParticles.add(new FlameParticle(t, pt, active));
         }
     }

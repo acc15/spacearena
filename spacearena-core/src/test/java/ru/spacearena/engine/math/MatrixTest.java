@@ -4,8 +4,8 @@ import org.fest.assertions.data.Offset;
 import org.junit.Test;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.engine.util.TempUtils;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -75,10 +75,10 @@ public class MatrixTest {
         final Matrix m2 = new Matrix();
         for (int i=0; i<100;i++) {
 
-            final float sx = TempUtils.RAND.nextFloatBetween(-10f, 10f),
-                        sy = TempUtils.RAND.nextFloatBetween(-10f, 10f);
-            final float tx = TempUtils.RAND.nextFloatBetween(-10f, 10f),
-                        ty = TempUtils.RAND.nextFloatBetween(-10f, 10f);
+            final float sx = QRand.RAND.nextFloatBetween(-10f, 10f),
+                        sy = QRand.RAND.nextFloatBetween(-10f, 10f);
+            final float tx = QRand.RAND.nextFloatBetween(-10f, 10f),
+                        ty = QRand.RAND.nextFloatBetween(-10f, 10f);
 //            final float nx = TempUtils.RAND.nextFloat(), ny = TempUtils.RAND.nextFloat();
 //            final float kx = TempUtils.RAND.nextFloatBetween(-10f, 10f),
 //                        ky = TempUtils.RAND.nextFloatBetween(-10f, 10f);

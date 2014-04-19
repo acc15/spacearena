@@ -92,13 +92,16 @@ public class Box2dBody extends Box2dObject {
     protected void onPostCreate(Body body) {
     }
 
-    public Point2F mapPoint(Point2F pt, Point2F out) {
-        matrix.transformPoint(pt, out);
-        return out;
+    public Point2F mapPoint(Point2F pt) {
+        return matrix.transformPoint(pt);
     }
 
-    public Point2F mapPoint(Point2F pt) {
-        return mapPoint(pt, pt);
+    public float mapPointX(float x, float y) {
+        return matrix.transformPointX(x,y);
+    }
+
+    public float mapPointY(float x, float y) {
+        return matrix.transformPointY(x,y);
     }
 
     @Override

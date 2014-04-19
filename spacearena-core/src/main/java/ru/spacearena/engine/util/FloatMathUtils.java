@@ -49,22 +49,22 @@ public class FloatMathUtils {
     }
 
     public static boolean isEqual(float x1, float y1, float x2, float y2) {
-        return isEqual(x1, x2) && isEqual(y1, y2);
+        return near(x1, x2) && near(y1, y2);
     }
 
     public static boolean isZero(float v) {
-        return isEqual(v, 0f);
+        return near(v, 0f);
     }
 
     public static boolean isOne(float v) {
-        return isEqual(v, 1f);
+        return near(v, 1f);
     }
 
-    public static boolean isEqual(float v1, float v2) {
-        return isEqual(v1, v2, EPSILON);
+    public static boolean near(float v1, float v2) {
+        return near(v1, v2, EPSILON);
     }
 
-    public static boolean isEqual(float v1, float v2, float epsilon) {
+    public static boolean near(float v1, float v2, float epsilon) {
         return Math.abs(v1 - v2) < epsilon;
     }
 
@@ -111,9 +111,35 @@ public class FloatMathUtils {
         return v < 0 ? -v : v;
     }
 
+    /**
+     * Returns angle of vector in radians. Synonym for {@link #atan2}.
+     *
+     * <pre>
+     *            | -PI/2
+     *            |
+     *            |
+     * -PI        |         0
+     *  ----------|--------->
+     *  PI        |
+     *            |
+     *            |
+     *            | PI/2
+     *            V
+     * </pre>
+     *
+     * @param x v1.x
+     * @param y v1.y
+     * @return angle of vector in radians
+     */
     public static float radians(float x, float y) { return atan2(y, x); }
 
-    public static float angle(float x, float y) {
+    /**
+     * Returns angle of vector in degrees
+     * @param x v1.x
+     * @param y v1.y
+     * @return angle of vector in degrees
+     */
+    public static float degrees(float x, float y) {
         return toDegrees(radians(x,y));
     }
 
@@ -141,8 +167,17 @@ public class FloatMathUtils {
         return v >= min && v <= max;
     }
 
+    /**
+     * Checks whether two vectors are collinear
+     * @param x1 v1.x
+     * @param y1 v1.y
+     * @param x2 v2.x
+     * @param y2 v2.y
+     * @return <code>true</code> if two vectors are collinear or very close to be collinear,
+     *         <code>false</code> otherwise
+     */
     public static boolean isCollinear(float x1, float y1, float x2, float y2) {
-        return isEqual(x1 * y2, x2 * y1);
+        return near(x1 * y2, x2 * y1);
     }
 
     public static float pmod(float v, float m) {

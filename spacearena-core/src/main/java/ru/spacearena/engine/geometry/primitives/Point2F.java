@@ -172,7 +172,7 @@ public class Point2F {
      * @return angle of vector in degrees.
      */
     public float angle() {
-        return FloatMathUtils.angle(x, y);
+        return FloatMathUtils.degrees(x, y);
     }
 
     public float atan2() { return FloatMathUtils.atan2(y, x); }
@@ -269,7 +269,7 @@ public class Point2F {
         return Float.floatToRawIntBits(x) ^ Float.floatToRawIntBits(y);
     }
 
-    public boolean near(float x, float y) { return FloatMathUtils.isEqual(this.x, x) && FloatMathUtils.isEqual(this.y, y); }
+    public boolean near(float x, float y) { return FloatMathUtils.near(this.x, x) && FloatMathUtils.near(this.y, y); }
 
     public boolean near(Point2F pt) { return near(pt.x, pt.y); }
 

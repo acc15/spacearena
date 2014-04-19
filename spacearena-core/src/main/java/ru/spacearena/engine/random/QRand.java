@@ -14,6 +14,7 @@ package ru.spacearena.engine.random;
  */
 public class QRand {
 
+    public static final QRand RAND = new QRand();
     private long u;
     private long v;
     private long w;
