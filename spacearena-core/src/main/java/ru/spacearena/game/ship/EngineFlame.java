@@ -34,8 +34,6 @@ public class EngineFlame extends EngineObject {
         FlameParticle prev = null;
 
         final int l = particles.size();
-
-        boolean first = true;
         for (int i=0; i<l; i++) {
             final FlameParticle p = particles.get(i);
             final float t = (float)(i+1)/l;

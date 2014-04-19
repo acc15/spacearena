@@ -41,7 +41,7 @@ public class Ship extends GameBody {
     private static final float ACCELERATION = 30f;
     private static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI * 2;
 
-    private static final float STEAM_TIME = 5f;
+    private static final float STEAM_TIME = 0.5f;
 
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
     private static final Point2F LOCAL_ENGINE_POS = p(-1f, 0f);
