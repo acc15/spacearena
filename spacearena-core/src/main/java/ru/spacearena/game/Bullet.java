@@ -45,8 +45,8 @@ public class Bullet extends GameBody {
     @Override
     protected void onPostCreate(Body body) {
         final PolygonShape shape = new PolygonShape();
-        shape.setAsBox(2f, 0.2f);
-        body.createFixture(shape, 5f);
+        shape.setAsBox(2f, 0.1f);
+        body.createFixture(shape, 10f);
     }
 
     @Override

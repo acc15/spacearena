@@ -43,7 +43,7 @@ public class Ship extends GameBody {
 
     private static final float STEAM_TIME = 0.5f;
 
-    private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(1f, 1.5f), p(1f, -1.5f)};
+    private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(3f, 1.4f), p(3f, -1.4f)};
     private static final Point2F LOCAL_ENGINE_POS = p(-1f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
     public static final float DAMAGE_TIME = 0.2f;

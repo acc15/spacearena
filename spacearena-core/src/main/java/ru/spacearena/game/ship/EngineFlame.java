@@ -32,16 +32,19 @@ public class EngineFlame extends EngineObject {
         final VertexBuffer vb = context.getSharedBuffer();
 
         FlameParticle prev = null;
+        // TODO remove prev variable
 
         final int l = particles.size();
         for (int i=0; i<l; i++) {
             final FlameParticle p = particles.get(i);
             final float t = (float)(i+1)/l;
 
+
+
             if (prev == null) {
                 vb.reset(LAYOUT_P2E1T1);
             } else {
-                final Point2F pt = Point2F.temp(p.x, p.y).sub(prev.x, prev.y).mul(1 / prev.l).rperp();
+                final Point2F pt = Point2F.temp(p.x, p.y).sub(prev.x, prev.y).mul(t / prev.l).rperp();
                 vb.put(prev.x + pt.x, prev.y + pt.y).put(-1).put(t).
                         put(prev.x - pt.x, prev.y - pt.y).put(1).put(t);
             }
@@ -50,7 +53,7 @@ public class EngineFlame extends EngineObject {
             if (last || !p.active) {
                 if (prev != null) {
 
-                    final Point2F pt = Point2F.temp(p.x, p.y).sub(prev.x, prev.y).mul(1/prev.l);
+                    final Point2F pt = Point2F.temp(p.x, p.y).sub(prev.x, prev.y).mul(t/prev.l);
                     final float el = 1.4f;
                     vb.put(prev.x + pt.x * el + pt.y, prev.y + pt.y * el - pt.x).put(-1).put(0).
                        put(prev.x + pt.x * el - pt.y, prev.y + pt.y * el + pt.x).put(1).put(0);
