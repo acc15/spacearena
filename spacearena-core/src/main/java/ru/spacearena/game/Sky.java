@@ -80,7 +80,7 @@ public class Sky extends EngineObject {
                             gy = (y-bounds.position.y)*scale+bounds.position.y;
                 final float sx = gx + dx*scale, sy = gy + dy*scale;
                 final float bright = random.nextFloat();
-                final float size = FloatMathUtils.clamp(random.nextFloatBetween(1, 3) * context.getDensityScale(), 1, 4);
+                final float size = FloatMathUtils.clamp(random.nextFloat() * 4 * context.getDensityScale(), 1, 4);
                 vb.put(sx, sy).put(bright, bright, 1).put(size);
             }
         }
