@@ -135,7 +135,7 @@ public class Ship extends GameBody {
         health -= d;
         if (health <= 0) {
             fxContainer.add(new Explosion(getPositionX(), getPositionY(), FloatMathUtils.atan2(getVelocityY(), getVelocityX())));
-            markDead();
+            kill();
         } else {
             damageTime = DAMAGE_TIME;
         }

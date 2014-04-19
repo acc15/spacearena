@@ -59,7 +59,7 @@ public class Explosion extends EngineObject {
     public void onUpdate(float seconds) {
         duration += seconds * 2;//(duration + seconds);
         if (duration < 1f) {
-            markDead();
+            kill();
         }
     }
 

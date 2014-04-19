@@ -12,8 +12,8 @@ public class EngineObject implements EngineEntity {
 
     private int state = VISIBLE | LIVE;
 
-    public static final int VISIBLE = 0x01;
-    public static final int LIVE =    0x02;
+    private static final int VISIBLE = 0x01;
+    private static final int LIVE =    0x02;
 
     public void onAttach(Engine engine) {
     }
@@ -48,12 +48,20 @@ public class EngineObject implements EngineEntity {
         return BitUtils.getBit(state, LIVE);
     }
 
-    public void markDead() {
+    public void setVisible(boolean visible) {
+        state = BitUtils.setBit(state, VISIBLE, visible);
+    }
+
+    public void kill() {
         state = BitUtils.setBit(state, LIVE, false);
     }
 
-    public void setVisible(boolean visible) {
-        state = BitUtils.setBit(state, VISIBLE, visible);
+    public void show() {
+        setVisible(true);
+    }
+
+    public void hide() {
+        setVisible(false);
     }
 
 }
