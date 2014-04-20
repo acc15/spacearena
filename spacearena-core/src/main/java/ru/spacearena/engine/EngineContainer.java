@@ -127,7 +127,7 @@ public class EngineContainer<T extends EngineEntity> extends EngineObject {
             final T c = children.get(l);
             c.onUpdate(seconds);
             if (!c.isLive()) {
-                onDetachChild(c);
+                detach(c);
                 children.remove(l);
                 --r;
             } else {

@@ -77,23 +77,25 @@ public class GameFactory implements EngineFactory {
 
         final Rect2FP levelBounds = new Rect2FP(-100f, -100f, 100f, 100f);
 
-        final GenericContainer fxContainer = new GenericContainer();
-        viewport.add(fxContainer);
+        final GenericContainer low = new GenericContainer();
+        viewport.add(low);
 
         final Box2dWorld box2dWorld = new Box2dWorld();
         viewport.add(box2dWorld);
         box2dWorld.setFPS(60f);
         box2dWorld.add(new LevelBounds(levelBounds));
 
+        final GenericContainer high = new GenericContainer();
+        viewport.add(high);
 
-        final Ship ship1 = new Ship(fxContainer);
+        final Ship ship1 = new Ship(low, high);
         ship1.setInitialPosition(0, -10);
         ship1.setInitialAngle(FloatMathUtils.HALF_PI);
         box2dWorld.add(ship1);
 
         for (int i=0; i<=0; i++) {
             for (int j=0; j<=10; j++) {
-                final Ship ship2 = new Ship(fxContainer);
+                final Ship ship2 = new Ship(low, high);
                 ship2.setInitialPosition((j - 5) * 5, (i+1) * 7);
                 ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
                 box2dWorld.add(ship2);

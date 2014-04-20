@@ -9,9 +9,8 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.contacts.Contact;
 import ru.spacearena.engine.EngineContainer;
-import ru.spacearena.engine.EngineObject;
+import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
@@ -43,7 +42,8 @@ public class Ship extends GameBody {
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
     public static final float DAMAGE_TIME = 0.2f;
 
-    private final EngineContainer<? super EngineObject> fxContainer;
+    private final EngineContainer<? super EngineEntity> fxContainer;
+
     private float damageTime = 0f;
     private float health = 1f;
     private boolean active = false;
@@ -54,9 +54,10 @@ public class Ship extends GameBody {
         return LOCAL_GUN_POS;
     }
 
-    public Ship(EngineContainer<? super EngineObject> fxContainer) {
-        this.fxContainer = fxContainer;
-        fxContainer.add(new EngineFlame(this));
+    public Ship(EngineContainer<? super EngineEntity> low, EngineContainer<? super EngineEntity> high) {
+        this.fxContainer = low;
+        low.add(new EngineFlame(this));
+        high.add(new HealthBar(this));
     }
 
     @Override
@@ -76,6 +77,10 @@ public class Ship extends GameBody {
 
     public Point2F getEnginePosition(Point2F pt) {
         return mapPoint(pt.set(LOCAL_ENGINE_POS));
+    }
+
+    public float getHealth() {
+        return health;
     }
 
     public void flyTo(float dx, float dy, float seconds) {
@@ -99,12 +104,13 @@ public class Ship extends GameBody {
         }
 
         health -= d;
-        if (health <= 0) {
-            fxContainer.add(new Explosion(getPositionX(), getPositionY(), FloatMathUtils.atan2(getVelocityY(), getVelocityX())));
-            kill();
-        } else {
+        if (health > 0) {
             damageTime = DAMAGE_TIME;
+            return;
         }
+
+        fxContainer.add(new Explosion(getPositionX(), getPositionY(), FloatMathUtils.atan2(getVelocityY(), getVelocityX())));
+        kill();
     }
 
     @Override
@@ -125,18 +131,6 @@ public class Ship extends GameBody {
         fd.density = 10f;
         fd.shape = shape;
         body.createFixture(fd);
-    }
-
-
-    @Override
-    public void onDraw(DrawContext2f context) {
-        super.onDraw(context);
-        final float left = getPositionX() - 2f,
-                top = getPositionY() - 5f,
-                right = getPositionX() + 2f,
-                bottom = getPositionY() - 4.5f;
-        context.color(Color.GREEN).fillRect(left, top, left + (right - left) * health, bottom);
-        context.color(Color.WHITE).drawRect(left, top, right, bottom);
     }
 
     @Override

@@ -25,7 +25,6 @@ public class EngineFlame extends EngineObject {
 
     private static final float STEAM_TIME = 0.5f;
 
-
     private final LinkedList<FlameParticle> particles = new LinkedList<FlameParticle>();
     private final Ship ship;
 
@@ -41,7 +40,9 @@ public class EngineFlame extends EngineObject {
 
             @Override
             public void onUpdate(float seconds) {
-                addFlameParticle(timer, ship.isEngineActive());
+                if (ship.isLive()) {
+                    addFlameParticle(timer, ship.isEngineActive());
+                }
             }
         });
     }
@@ -74,6 +75,13 @@ public class EngineFlame extends EngineObject {
             final FlameParticle p = new FlameParticle(pt, t, active);
             last.l = FloatMathUtils.length(p.x - last.x, p.y - last.y);
             particles.add(new FlameParticle(pt, t, active));
+        }
+    }
+
+    @Override
+    public void onUpdate(float seconds) {
+        if (!ship.isLive() && particles.isEmpty()) {
+            kill();
         }
     }
 
