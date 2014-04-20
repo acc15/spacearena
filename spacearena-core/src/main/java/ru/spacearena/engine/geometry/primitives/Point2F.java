@@ -275,9 +275,13 @@ public class Point2F {
         return Float.floatToRawIntBits(x) ^ Float.floatToRawIntBits(y);
     }
 
-    public boolean near(float x, float y) { return FloatMathUtils.near(this.x, x) && FloatMathUtils.near(this.y, y); }
+    public boolean near(Point2F pt, float epsilon) { return near(pt.x, pt.y, epsilon); }
 
     public boolean near(Point2F pt) { return near(pt.x, pt.y); }
+
+    public boolean near(float x, float y, float epsilon) { return FloatMathUtils.near(this.x, x, epsilon) && FloatMathUtils.near(this.y, y, epsilon); }
+
+    public boolean near(float x, float y) { return FloatMathUtils.near(this.x, x) && FloatMathUtils.near(this.y, y); }
 
     public boolean equals(float x, float y) { return this.x == x && this.y == y; }
 

@@ -63,7 +63,7 @@ public class EngineFlame extends EngineObject {
             return;
         }
 
-        if (pt.near(last.x, last.y)) {
+        if (pt.near(last.x, last.y, 0.2f)) {
             if (last.active) {
                 last.t = t;
             }
