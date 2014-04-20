@@ -22,7 +22,7 @@ public class FontProgram extends ShaderProgram {
     public static final int COLOR_UNIFORM = 2;
 
     private FontProgram() {
-        shader(OpenGL.VERTEX_SHADER,
+        shader(OpenGL.GL_VERTEX_SHADER,
                 "uniform mat4 u_MVPMatrix;" +
                 "attribute vec4 a_Position;" +
                 "attribute vec2 a_TexCoord;" +
@@ -32,7 +32,7 @@ public class FontProgram extends ShaderProgram {
                 "v_TexCoord = a_TexCoord;" +
                 "gl_Position = u_MVPMatrix * a_Position;" +
                 "}");
-        shader(OpenGL.FRAGMENT_SHADER,
+        shader(OpenGL.GL_FRAGMENT_SHADER,
                 "precision mediump float;" +
                 "varying vec2 v_TexCoord;" +
                 "uniform sampler2D u_Texture;" +

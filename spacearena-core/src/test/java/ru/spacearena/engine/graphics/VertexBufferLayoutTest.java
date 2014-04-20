@@ -26,9 +26,9 @@ public class VertexBufferLayoutTest {
         assertThat(buf.getCount(1)).isEqualTo(3);
         assertThat(buf.getCount(2)).isEqualTo(1);
 
-        assertThat(buf.getType(0)).isEqualTo(OpenGL.UNSIGNED_INT);
-        assertThat(buf.getType(1)).isEqualTo(OpenGL.SHORT);
-        assertThat(buf.getType(2)).isEqualTo(OpenGL.FLOAT);
+        assertThat(buf.getType(0)).isEqualTo(OpenGL.GL_UNSIGNED_INT);
+        assertThat(buf.getType(1)).isEqualTo(OpenGL.GL_SHORT);
+        assertThat(buf.getType(2)).isEqualTo(OpenGL.GL_FLOAT);
 
         assertThat(buf.getOffset(0)).isEqualTo(0);
         assertThat(buf.getOffset(1)).isEqualTo(8);

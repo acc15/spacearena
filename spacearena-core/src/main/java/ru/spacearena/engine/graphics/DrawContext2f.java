@@ -21,7 +21,7 @@ import ru.spacearena.engine.util.FloatMathUtils;
 public class DrawContext2f extends GLDrawContext {
 
     public static final VBODefinition SIN_COS_VBO = new VBODefinition(
-            OpenGL.ARRAY_BUFFER, OpenGL.STATIC_DRAW);
+            OpenGL.GL_ARRAY_BUFFER, OpenGL.GL_STATIC_DRAW);
 
     public static final float DENSITY_SCALE_PPI = 160f;
     public static final float DEFAULT_DENSITY_SCALE = 96f/DENSITY_SCALE_PPI;
@@ -62,9 +62,11 @@ public class DrawContext2f extends GLDrawContext {
 
     @Override
     public void init() {
-        gl.glEnable(OpenGL.VERTEX_PROGRAM_POINT_SIZE);
-        gl.glEnable(OpenGL.BLEND);
-        gl.glBlendFunc(OpenGL.SRC_ALPHA, OpenGL.ONE_MINUS_SRC_ALPHA);
+        gl.glEnable(OpenGL.GL_VERTEX_PROGRAM_POINT_SIZE);
+        gl.glEnable(OpenGL.GL_BLEND);
+        gl.glBlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glDisable(OpenGL.GL_DEPTH_TEST);
+        gl.glDepthMask(false);
     }
 
     public void pushMatrix() {
@@ -89,7 +91,7 @@ public class DrawContext2f extends GLDrawContext {
 
     public void clear() {
         gl.glClearColor(color.r, color.g, color.b, color.a);
-        gl.glClear(OpenGL.COLOR_BUFFER_BIT);
+        gl.glClear(OpenGL.GL_COLOR_BUFFER_BIT);
     }
 
     public Matrix getActiveMatrix() {
@@ -112,7 +114,7 @@ public class DrawContext2f extends GLDrawContext {
                 attrs(vertexBuffer).
                 uniform(activeMatrix).
                 uniform(definition, 0).
-                draw(OpenGL.TRIANGLE_FAN);
+                draw(OpenGL.GL_TRIANGLE_FAN);
     }
 
 
@@ -196,22 +198,22 @@ public class DrawContext2f extends GLDrawContext {
                 uniform(font.getTexture(), 0).
                 uniform(color).
                 uniform((float) (1 << f.getImageScale()) / fontSize).
-                draw(OpenGL.TRIANGLES);
+                draw(OpenGL.GL_TRIANGLES);
     }
 
     public void fillNGon(int n, float x, float y, float rx, float ry) {
         fillNGonBuf(n, x, y, rx, ry);
-        drawBuf(OpenGL.TRIANGLE_FAN);
+        drawBuf(OpenGL.GL_TRIANGLE_FAN);
     }
 
     public void drawNGon(int n, float x, float y, float rx, float ry) {
         fillNGonBuf(n, x, y, rx, ry);
-        drawBuf(OpenGL.LINE_LOOP);
+        drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
     public void fillConvexPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
-        drawBuf(OpenGL.TRIANGLE_FAN);
+        drawBuf(OpenGL.GL_TRIANGLE_FAN);
     }
 
     public VertexBuffer getSharedBuffer() {
@@ -225,12 +227,12 @@ public class DrawContext2f extends GLDrawContext {
 
     public void drawPoly(float[] points) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points);
-        drawBuf(OpenGL.LINE_LOOP);
+        drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
     public void drawPoly(float[] points, int start, int size) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
-        drawBuf(OpenGL.LINE_LOOP);
+        drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
     public void fillRect(float x1, float y1, float x2, float y2, float depth) {
@@ -240,22 +242,22 @@ public class DrawContext2f extends GLDrawContext {
                 uniform(activeMatrix).
                 uniform(color).
                 uniform(depth).
-                draw(OpenGL.TRIANGLE_FAN);
+                draw(OpenGL.GL_TRIANGLE_FAN);
     }
 
     public void fillRect(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
-        drawBuf(OpenGL.TRIANGLE_FAN);
+        drawBuf(OpenGL.GL_TRIANGLE_FAN);
     }
 
     public void drawRect(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
-        drawBuf(OpenGL.LINE_LOOP);
+        drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
-        drawBuf(OpenGL.LINES);
+        drawBuf(OpenGL.GL_LINES);
     }
 
     public void drawArrow(float x1, float y1, float x2, float y2, float size) {
@@ -271,7 +273,7 @@ public class DrawContext2f extends GLDrawContext {
         vertexBuffer.put(x1, y1).put(x2, y2);
         vertexBuffer.put(x2, y2, x2 - (nx * COS_30 - ny * SIN_30) * size, y2 - (ny * COS_30 + nx * SIN_30) * size);
         vertexBuffer.put(x2, y2, x2 - (nx * COS_30 + ny * SIN_30) * size, y2 - (ny * COS_30 - nx * SIN_30) * size);
-        drawBuf(OpenGL.LINES);
+        drawBuf(OpenGL.GL_LINES);
 //        drawLine(x1, y1, x2, y2);
 //
 //        float p30x = 0f, p30y = 0f, s30x = 0f, s30y = 0f;
@@ -333,19 +335,19 @@ public class DrawContext2f extends GLDrawContext {
     }
 
     public void fillEllipse(float x, float y, float rx, float ry) {
-        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, rx, ry);
+        renderEllipse(OpenGL.GL_TRIANGLE_FAN, x, y, rx, ry);
     }
 
     public void drawEllipse(float x, float y, float rx, float ry) {
-        renderEllipse(OpenGL.LINE_LOOP, x, y, rx, ry);
+        renderEllipse(OpenGL.GL_LINE_LOOP, x, y, rx, ry);
     }
 
     public void fillCircle(float x, float y, float r) {
-        renderEllipse(OpenGL.TRIANGLE_FAN, x, y, r, r);
+        renderEllipse(OpenGL.GL_TRIANGLE_FAN, x, y, r, r);
     }
 
     public void drawCircle(float x, float y, float r) {
-        renderEllipse(OpenGL.LINE_LOOP, x, y, r, r);
+        renderEllipse(OpenGL.GL_LINE_LOOP, x, y, r, r);
     }
 
     public FontData getFont() {
@@ -423,11 +425,11 @@ public class DrawContext2f extends GLDrawContext {
         }
 
         public void draw() {
-            drawBuf(OpenGL.LINE_LOOP);
+            drawBuf(OpenGL.GL_LINE_LOOP);
         }
 
         public void fill() {
-            drawBuf(OpenGL.TRIANGLE_FAN);
+            drawBuf(OpenGL.GL_TRIANGLE_FAN);
         }
     }
 

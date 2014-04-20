@@ -96,25 +96,25 @@ public class VertexBuffer {
     }
 
     public VertexBuffer put(float x) {
-        ensureCanStoreMore(VertexBufferLayout.toBytes(1, OpenGL.FLOAT));
+        ensureCanStoreMore(VertexBufferLayout.toBytes(1, OpenGL.GL_FLOAT));
         buffer.putFloat(x);
         return this;
     }
 
     public VertexBuffer put(float x, float y) {
-        ensureCanStoreMore(VertexBufferLayout.toBytes(2, OpenGL.FLOAT));
+        ensureCanStoreMore(VertexBufferLayout.toBytes(2, OpenGL.GL_FLOAT));
         buffer.putFloat(x).putFloat(y);
         return this;
     }
 
     public VertexBuffer put(float x, float y, float z) {
-        ensureCanStoreMore(VertexBufferLayout.toBytes(3, OpenGL.FLOAT));
+        ensureCanStoreMore(VertexBufferLayout.toBytes(3, OpenGL.GL_FLOAT));
         buffer.putFloat(x).putFloat(y).putFloat(z);
         return this;
     }
 
     public VertexBuffer put(float x, float y, float z, float w) {
-        ensureCanStoreMore(VertexBufferLayout.toBytes(4, OpenGL.FLOAT));
+        ensureCanStoreMore(VertexBufferLayout.toBytes(4, OpenGL.GL_FLOAT));
         buffer.putFloat(x).putFloat(y).putFloat(z).putFloat(w);
         return this;
     }
@@ -132,7 +132,7 @@ public class VertexBuffer {
     }
 
     public VertexBuffer put(float[] points, int start, int size) {
-        ensureCanStoreMore(VertexBufferLayout.toBytes(size, OpenGL.FLOAT));
+        ensureCanStoreMore(VertexBufferLayout.toBytes(size, OpenGL.GL_FLOAT));
         for (int i=0; i<size; i++) {
             buffer.putFloat(points[start+i]);
         }

@@ -399,9 +399,9 @@ public class AndroidGLES2 implements OpenGL {
             stream = url.openStream();
             bitmap = BitmapFactory.decodeStream(stream);
             if (format == 0 || type == 0) {
-                GLUtils.texImage2D(TEXTURE_2D, level, bitmap, 0);
+                GLUtils.texImage2D(GL_TEXTURE_2D, level, bitmap, 0);
             } else {
-                GLUtils.texImage2D(TEXTURE_2D, level, format, bitmap, type, 0);
+                GLUtils.texImage2D(GL_TEXTURE_2D, level, format, bitmap, type, 0);
             }
             if (level == 0) {
                 texture.setDimension(bitmap.getWidth(), bitmap.getHeight());
@@ -464,5 +464,85 @@ public class AndroidGLES2 implements OpenGL {
 
     public void glDepthFunc(int func) {
         GLES20.glDepthFunc(func);
+    }
+
+    public void glDepthMask(boolean val) {
+        GLES20.glDepthMask(val);
+    }
+
+    public void glGenRenderbuffers(int length, int[] bufs, int offset) {
+        GLES20.glGenRenderbuffers(length, bufs, offset);
+    }
+
+    public void glDeleteRenderbuffers(int length, int[] bufs, int offset) {
+        GLES20.glDeleteRenderbuffers(length, bufs, offset);
+    }
+
+    public void glGenRenderbuffers(int length, IntBuffer bufs) {
+        GLES20.glGenRenderbuffers(length, bufs);
+    }
+
+    public void glDeleteRenderbuffers(int length, IntBuffer bufs) {
+        GLES20.glDeleteRenderbuffers(length, bufs);
+    }
+
+    public int glGenRenderbuffer() {
+        GLES20.glGenRenderbuffers(1, INT_BUF, 0);
+        return INT_BUF[0];
+    }
+
+    public void glDeleteRenderbuffer(int buf) {
+        INT_BUF[0] = buf;
+        GLES20.glDeleteRenderbuffers(1, INT_BUF, 0);
+    }
+
+    public void glGenFramebuffers(int length, int[] bufs, int offset) {
+        GLES20.glGenFramebuffers(length, bufs, offset);
+    }
+
+    public void glDeleteFramebuffers(int length, int[] bufs, int offset) {
+        GLES20.glDeleteFramebuffers(length, bufs, offset);
+    }
+
+    public void glGenFramebuffers(int length, IntBuffer bufs) {
+        GLES20.glGenFramebuffers(length, bufs);
+    }
+
+    public void glDeleteFramebuffers(int length, IntBuffer bufs) {
+        GLES20.glDeleteFramebuffers(length, bufs);
+    }
+
+    public int glGenFrameBuffer() {
+        GLES20.glGenFramebuffers(1, INT_BUF, 0);
+        return INT_BUF[0];
+    }
+
+    public void glDeleteFrameBuffer(int buf) {
+        INT_BUF[0] = buf;
+        GLES20.glDeleteFramebuffers(1, INT_BUF, 0);
+    }
+
+    public void glBindRenderbuffer(int buf) {
+        GLES20.glBindRenderbuffer(GL_RENDERBUFFER, buf);
+    }
+
+    public void glRenderbufferStorage(int format, int width, int height) {
+        GLES20.glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+    }
+
+    public void glBindFramebuffer(int buf) {
+        GLES20.glBindFramebuffer(GL_FRAMEBUFFER, buf);
+    }
+
+    public void glFramebufferRenderbuffer(int attachment, int renderbuffer) {
+        GLES20.glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderbuffer);
+    }
+
+    public void glFramebufferTexture2D(int attachment, int target, int texture, int level) {
+        GLES20.glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, texture, level);
+    }
+
+    public void glCheckFramebufferStatus() {
+        GLES20.glCheckFramebufferStatus(GL_FRAMEBUFFER);
     }
 }

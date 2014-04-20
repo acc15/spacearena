@@ -54,7 +54,7 @@ public class Shader {
         final int id = gl.glCreateShader(type);
         gl.glShaderSource(id, source);
         gl.glCompileShader(id);
-        if (gl.glGetShaderiv(id, OpenGL.COMPILE_STATUS) == 0) {
+        if (gl.glGetShaderiv(id, OpenGL.GL_COMPILE_STATUS) == 0) {
             final String log = gl.glGetShaderInfoLog(id);
             gl.glDeleteShader(id);
             throw new RuntimeException("Can't compile shader: " + log);

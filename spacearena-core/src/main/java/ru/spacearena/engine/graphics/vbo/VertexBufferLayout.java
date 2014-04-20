@@ -65,18 +65,18 @@ public class VertexBufferLayout {
 
     public static int toBytes(int amount, int type) {
         switch (type) {
-        case OpenGL.BYTE:
-        case OpenGL.UNSIGNED_BYTE:
+        case OpenGL.GL_BYTE:
+        case OpenGL.GL_UNSIGNED_BYTE:
             return amount;
 
-        case OpenGL.SHORT:
-        case OpenGL.UNSIGNED_SHORT:
+        case OpenGL.GL_SHORT:
+        case OpenGL.GL_UNSIGNED_SHORT:
             return amount << 1;
 
-        case OpenGL.FIXED:
-        case OpenGL.FLOAT:
-        case OpenGL.INT:
-        case OpenGL.UNSIGNED_INT:
+        case OpenGL.GL_FIXED:
+        case OpenGL.GL_FLOAT:
+        case OpenGL.GL_INT:
+        case OpenGL.GL_UNSIGNED_INT:
             return amount << 2;
 
         default:
@@ -86,18 +86,18 @@ public class VertexBufferLayout {
 
     public static int toTypes(int bytes, int type) {
         switch (type) {
-        case OpenGL.BYTE:
-        case OpenGL.UNSIGNED_BYTE:
+        case OpenGL.GL_BYTE:
+        case OpenGL.GL_UNSIGNED_BYTE:
             return bytes;
 
-        case OpenGL.SHORT:
-        case OpenGL.UNSIGNED_SHORT:
+        case OpenGL.GL_SHORT:
+        case OpenGL.GL_UNSIGNED_SHORT:
             return bytes >> 1;
 
-        case OpenGL.FIXED:
-        case OpenGL.FLOAT:
-        case OpenGL.INT:
-        case OpenGL.UNSIGNED_INT:
+        case OpenGL.GL_FIXED:
+        case OpenGL.GL_FLOAT:
+        case OpenGL.GL_INT:
+        case OpenGL.GL_UNSIGNED_INT:
             return bytes >> 2;
 
         default:
@@ -123,31 +123,31 @@ public class VertexBufferLayout {
         private final IntArrayList types = new IntArrayList();
 
         public Builder shorts(int amount) {
-            return attr(amount, OpenGL.SHORT);
+            return attr(amount, OpenGL.GL_SHORT);
         }
 
         public Builder ushorts(int amount) {
-            return attr(amount, OpenGL.UNSIGNED_SHORT);
+            return attr(amount, OpenGL.GL_UNSIGNED_SHORT);
         }
 
         public Builder floats(int amount) {
-            return attr(amount, OpenGL.FLOAT);
+            return attr(amount, OpenGL.GL_FLOAT);
         }
 
         public Builder bytes(int bytes) {
-            return attr(bytes, OpenGL.BYTE);
+            return attr(bytes, OpenGL.GL_BYTE);
         }
 
         public Builder ubytes(int ubytes) {
-            return attr(ubytes, OpenGL.UNSIGNED_BYTE);
+            return attr(ubytes, OpenGL.GL_UNSIGNED_BYTE);
         }
 
         public Builder ints(int ints) {
-            return attr(ints, OpenGL.INT);
+            return attr(ints, OpenGL.GL_INT);
         }
 
         public Builder uints(int uints) {
-            return attr(uints, OpenGL.UNSIGNED_INT);
+            return attr(uints, OpenGL.GL_UNSIGNED_INT);
         }
 
         public Builder attr(int amount, int type) {

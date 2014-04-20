@@ -176,10 +176,10 @@ public class GLDrawContext {
             final Texture t = get(def);
             if (!texturing) {
                 texturing = true;
-                gl.glEnable(OpenGL.TEXTURE_2D);
+                gl.glEnable(OpenGL.GL_TEXTURE_2D);
             }
-            gl.glActiveTexture(OpenGL.TEXTURE0 + unit);
-            gl.glBindTexture(OpenGL.TEXTURE_2D, t.getId());
+            gl.glActiveTexture(OpenGL.GL_TEXTURE0 + unit);
+            gl.glBindTexture(OpenGL.GL_TEXTURE_2D, t.getId());
 
             gl.glUniform1i(nextUniformLocation(), unit);
             return this;
@@ -270,7 +270,7 @@ public class GLDrawContext {
         public void draw(int type, int start, int count) {
             gl.glDrawArrays(type, start, count);
             if (texturing) {
-                gl.glDisable(OpenGL.TEXTURE_2D);
+                gl.glDisable(OpenGL.GL_TEXTURE_2D);
                 texturing = false;
             }
         }

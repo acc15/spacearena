@@ -152,7 +152,7 @@ public class Ship extends GameBody {
                 uniform(SHIP_TEXTURE, 0).
                 //glUniform1i(Color.RED, false).
                 uniform(damageTime / DAMAGE_TIME).
-                draw(OpenGL.TRIANGLE_FAN);
+                draw(OpenGL.GL_TRIANGLE_FAN);
         //context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, SHIP_TEXTURE);
     }
 

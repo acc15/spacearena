@@ -30,9 +30,9 @@ public class ShaderProgram {
     public void shader(Class<?> clazz, String resourceName) {
         final int type;
         if (resourceName.endsWith(".vert")) {
-            type = OpenGL.VERTEX_SHADER;
+            type = OpenGL.GL_VERTEX_SHADER;
         } else if (resourceName.endsWith(".frag")) {
-            type = OpenGL.FRAGMENT_SHADER;
+            type = OpenGL.GL_FRAGMENT_SHADER;
         } else {
             throw new IllegalArgumentException("Unknown shader resource (use '.vert' " +
                     "for vertex shaders and '.frag' for fragment): " + resourceName);
@@ -123,13 +123,13 @@ public class ShaderProgram {
             gl.glBindAttribLocation(programId, i, attributeName);
         }
         gl.glLinkProgram(programId);
-        if (gl.getProgram(programId, OpenGL.LINK_STATUS) == 0) {
+        if (gl.getProgram(programId, OpenGL.GL_LINK_STATUS) == 0) {
             final String log = gl.glGetProgramInfoLog(programId);
             doCleanup(gl, programId, shaders.size());
             throw new RuntimeException("Can't link program: " + log);
         }
         gl.glValidateProgram(programId);
-        if (gl.getProgram(programId, OpenGL.VALIDATE_STATUS) == 0) {
+        if (gl.getProgram(programId, OpenGL.GL_VALIDATE_STATUS) == 0) {
             final String log = gl.glGetProgramInfoLog(programId);
             doCleanup(gl, programId, shaders.size());
             throw new RuntimeException("Can't validate program: " + log);

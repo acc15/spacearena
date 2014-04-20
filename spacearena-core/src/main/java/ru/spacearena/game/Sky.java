@@ -95,7 +95,7 @@ public class Sky extends EngineObject {
         context.use(SHADER).
                 attrs(vb).
                 uniform(context.getActiveMatrix()).
-                draw(OpenGL.POINTS);
+                draw(OpenGL.GL_POINTS);
     }
 
     public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition() {

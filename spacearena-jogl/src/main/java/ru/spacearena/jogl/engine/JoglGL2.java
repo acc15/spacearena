@@ -71,7 +71,7 @@ public class JoglGL2 implements OpenGL {
     }
 
     public String glGetShaderInfoLog(int shaderId) {
-        final int l = glGetShaderiv(shaderId, OpenGL.INFO_LOG_LENGTH);
+        final int l = glGetShaderiv(shaderId, OpenGL.GL_INFO_LOG_LENGTH);
         final byte[] buf = new byte[l];
         gl2.glGetShaderInfoLog(shaderId, l, null, 0, buf, 0);
         return new String(buf, 0, l-1);
@@ -107,7 +107,7 @@ public class JoglGL2 implements OpenGL {
     }
 
     public String glGetProgramInfoLog(int programId) {
-        final int l = getProgram(programId, OpenGL.INFO_LOG_LENGTH);
+        final int l = getProgram(programId, OpenGL.GL_INFO_LOG_LENGTH);
         final byte[] buf = new byte[l];
         gl2.glGetProgramInfoLog(programId, l, null, 0, buf, 0);
         return new String(buf, 0, l-1);
@@ -444,7 +444,7 @@ public class JoglGL2 implements OpenGL {
                 pt = type != 0 ? type : td.getPixelType();
         final Buffer buf = td.getBuffer();
         gl2.glPixelStorei(GL2.GL_UNPACK_ALIGNMENT,td.getAlignment());
-        gl2.glTexImage2D(TEXTURE_2D, level, tf, w, h, 0, pf, pt, buf);
+        gl2.glTexImage2D(GL_TEXTURE_2D, level, tf, w, h, 0, pf, pt, buf);
         if (level == 0) {
             t.setDimension(w, h);
             t.setFlipY(true);
@@ -469,6 +469,10 @@ public class JoglGL2 implements OpenGL {
 
     public void glDepthFunc(int func) {
         gl2.glDepthFunc(func);
+    }
+
+    public void glDepthMask(boolean val) {
+        gl2.glDepthMask(val);
     }
 
     public void glGenRenderbuffers(int length, int[] bufs, int offset) {
@@ -522,4 +526,30 @@ public class JoglGL2 implements OpenGL {
         INT_BUF[0] = buf;
         gl2.glDeleteFramebuffers(1, INT_BUF, 0);
     }
+
+    public void glBindRenderbuffer(int buf) {
+        gl2.glBindRenderbuffer(GL_RENDERBUFFER, buf);
+    }
+
+    public void glRenderbufferStorage(int format, int width, int height) {
+        gl2.glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+    }
+
+    public void glBindFramebuffer(int buf) {
+        gl2.glBindFramebuffer(GL_FRAMEBUFFER, buf);
+    }
+
+    public void glFramebufferRenderbuffer(int attachment, int renderbuffer) {
+        gl2.glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderbuffer);
+    }
+
+    public void glFramebufferTexture2D(int attachment, int target, int texture, int level) {
+        gl2.glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, texture, level);
+    }
+
+    public void glCheckFramebufferStatus() {
+        gl2.glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    }
+
+
 }

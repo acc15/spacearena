@@ -123,7 +123,7 @@ public class EngineFlame extends EngineObject {
                         uniform(context.getActiveMatrix()).
                         uniform(CENTER_COLOR).
                         uniform(EDGE_COLOR).
-                        draw(OpenGL.TRIANGLE_STRIP);
+                        draw(OpenGL.GL_TRIANGLE_STRIP);
             }
         }
 

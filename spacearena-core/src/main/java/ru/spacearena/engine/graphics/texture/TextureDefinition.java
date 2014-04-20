@@ -11,7 +11,7 @@ import java.net.URL;
  */
 public class TextureDefinition implements Texture.Definition {
 
-    private int wrapS = 0, wrapT = 0, minFilter = OpenGL.LINEAR, magFilter = OpenGL.LINEAR;
+    private int wrapS = 0, wrapT = 0, minFilter = OpenGL.GL_LINEAR, magFilter = OpenGL.GL_LINEAR;
     private URL[] textureUrls;
 
     public TextureDefinition minFilter(int minFilter) {
@@ -59,19 +59,19 @@ public class TextureDefinition implements Texture.Definition {
         final Texture t = new Texture();
         t.setId(gl.glGenTexture());
 
-        final int type = OpenGL.TEXTURE_2D; // only 2D textures are supported
-        gl.glBindTexture(OpenGL.TEXTURE_2D, t.getId());
+        final int type = OpenGL.GL_TEXTURE_2D; // only 2D textures are supported
+        gl.glBindTexture(OpenGL.GL_TEXTURE_2D, t.getId());
         if (minFilter != 0) {
-            gl.glTexParameter(type, OpenGL.TEXTURE_MIN_FILTER, minFilter);
+            gl.glTexParameter(type, OpenGL.GL_TEXTURE_MIN_FILTER, minFilter);
         }
         if (magFilter != 0) {
-            gl.glTexParameter(type, OpenGL.TEXTURE_MAG_FILTER, magFilter);
+            gl.glTexParameter(type, OpenGL.GL_TEXTURE_MAG_FILTER, magFilter);
         }
         if (wrapS != 0) {
-            gl.glTexParameter(type, OpenGL.TEXTURE_WRAP_S, wrapS);
+            gl.glTexParameter(type, OpenGL.GL_TEXTURE_WRAP_S, wrapS);
         }
         if (wrapT != 0) {
-            gl.glTexParameter(type, OpenGL.TEXTURE_WRAP_T, wrapT);
+            gl.glTexParameter(type, OpenGL.GL_TEXTURE_WRAP_T, wrapT);
         }
         for (int level = 0; level < textureUrls.length; level++) {
             final URL url = textureUrls[level];
