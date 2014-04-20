@@ -20,14 +20,10 @@ import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.texture.TextureDefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
-import ru.spacearena.engine.timing.Timer;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.game.GameBody;
 import ru.spacearena.game.GameFactory;
 import ru.spacearena.game.ObjectType;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import static ru.spacearena.engine.geometry.primitives.Point2F.p;
 
@@ -41,26 +37,21 @@ public class Ship extends GameBody {
     private static final float ACCELERATION = 30f;
     private static final float ANGULAR_VELOCITY = FloatMathUtils.TWO_PI * 2;
 
-    private static final float STEAM_TIME = 0.5f;
 
     private static final Point2F[] LOCAL_GUN_POS = new Point2F[]{p(3f, 1.4f), p(3f, -1.4f)};
-    private static final Point2F LOCAL_ENGINE_POS = p(-1f, 0f);
+    private static final Point2F LOCAL_ENGINE_POS = p(-1.25f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
     public static final float DAMAGE_TIME = 0.2f;
 
-    private final LinkedList<FlameParticle> engineParticles = new LinkedList<FlameParticle>();
     private final EngineContainer<? super EngineObject> fxContainer;
     private float damageTime = 0f;
     private float health = 1f;
+    private boolean active = false;
 
     private static final Texture.Definition SHIP_TEXTURE = new TextureDefinition().url(GameFactory.class, "ship.png");
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
-    }
-
-    public List<FlameParticle> getEngineParticles() {
-        return engineParticles;
     }
 
     public Ship(EngineContainer<? super EngineObject> fxContainer) {
@@ -79,41 +70,16 @@ public class Ship extends GameBody {
         bodyDef.angularDamping = 0.2f;
     }
 
-    private void addFlameParticle(boolean active) {
-        final Timer timer = getEngine().getTimer();
-        final long t = timer.getTimestamp();
+    public boolean isEngineActive() {
+        return active;
+    }
 
-        FlameParticle particle;
-        while ((particle = engineParticles.peek()) != null && timer.toSeconds(t - particle.t) > STEAM_TIME) {
-            engineParticles.remove();
-        }
-
-        final FlameParticle last = engineParticles.peekLast();
-        if (last == null) {
-            if (active) {
-                engineParticles.add(new FlameParticle(mapPoint(Point2F.temp(LOCAL_ENGINE_POS)), t, true));
-            }
-            return;
-        }
-
-        final Point2F pt = mapPoint(Point2F.temp(LOCAL_ENGINE_POS));
-        if (pt.near(last.x, last.y)) {
-            if (last.active) {
-                last.t = t;
-            }
-            last.active = active;
-            return;
-        }
-        if (active || last.active) {
-            final FlameParticle p = new FlameParticle(pt, t, active);
-            last.l = FloatMathUtils.length(p.x - last.x, p.y - last.y);
-            engineParticles.add(new FlameParticle(pt, t, active));
-        }
+    public Point2F getEnginePosition(Point2F pt) {
+        return mapPoint(pt.set(LOCAL_ENGINE_POS));
     }
 
     public void flyTo(float dx, float dy, float seconds) {
-        final boolean active = !FloatMathUtils.isZero(dx, dy);
-        addFlameParticle(active);
+        this.active = !FloatMathUtils.isZero(dx, dy);
         if (!active) {
             return;
         }
@@ -146,6 +112,7 @@ public class Ship extends GameBody {
         if (damageTime > 0) {
             damageTime = FloatMathUtils.max(0f, damageTime - seconds);
         }
+        super.onUpdate(seconds);
     }
 
     public void onPostCreate(Body body) {

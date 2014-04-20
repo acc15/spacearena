@@ -1,5 +1,6 @@
 package ru.spacearena.game.ship;
 
+import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.Color;
@@ -8,8 +9,10 @@ import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
+import ru.spacearena.engine.timing.Timer;
+import ru.spacearena.engine.util.FloatMathUtils;
 
-import java.util.List;
+import java.util.LinkedList;
 
 /**
 * @author Vyacheslav Mayorov
@@ -17,61 +20,104 @@ import java.util.List;
 */
 public class EngineFlame extends EngineObject {
 
-    private Ship ship;
+    public static final Color CENTER_COLOR = new Color(1,0.5f,0,1);
+    public static final Color EDGE_COLOR = new Color(1,0,0,0);
 
-    public EngineFlame(Ship ship) {
+    private static final float STEAM_TIME = 0.5f;
+
+
+    private final LinkedList<FlameParticle> particles = new LinkedList<FlameParticle>();
+    private final Ship ship;
+
+    public EngineFlame(final Ship ship) {
         this.ship = ship;
+        this.ship.add(new EngineObject() {
+            private Timer timer;
+
+            @Override
+            public void onAttach(Engine engine) {
+                timer = engine.getTimer();
+            }
+
+            @Override
+            public void onUpdate(float seconds) {
+                addFlameParticle(timer, ship.isEngineActive());
+            }
+        });
     }
 
-    public static final Color INVISIBLE_RED = new Color(1,0,0,0);
-    public static final Color YELLOW =        new Color(1,0.5f,0,1);
+    private void addFlameParticle(Timer timer, boolean active) {
+        final long t = timer.getTimestamp();
+
+        FlameParticle particle;
+        while ((particle = particles.peek()) != null && timer.toSeconds(t - particle.t) > STEAM_TIME) {
+            particles.remove();
+        }
+
+        final FlameParticle last = particles.peekLast();
+        final Point2F pt = ship.getEnginePosition(Point2F.PT);
+        if (last == null) {
+            if (active) {
+                particles.add(new FlameParticle(pt, t, true));
+            }
+            return;
+        }
+
+        if (pt.near(last.x, last.y)) {
+            if (last.active) {
+                last.t = t;
+            }
+            last.active = active;
+            return;
+        }
+        if (active || last.active) {
+            final FlameParticle p = new FlameParticle(pt, t, active);
+            last.l = FloatMathUtils.length(p.x - last.x, p.y - last.y);
+            particles.add(new FlameParticle(pt, t, active));
+        }
+    }
 
     @Override
     public void onDraw(DrawContext2f context) {
-        final List<FlameParticle> particles = ship.getEngineParticles();
         final VertexBuffer vb = context.getSharedBuffer();
-
-        FlameParticle prev = null;
-        // TODO remove prev variable
 
         final int l = particles.size();
         for (int i=0; i<l; i++) {
-            final FlameParticle p = particles.get(i);
             final float t = (float)(i+1)/l;
 
+            final FlameParticle c = particles.get(i);
 
-
-            if (prev == null) {
-                vb.reset(LAYOUT_P2E1T1);
-            } else {
-                final Point2F pt = Point2F.temp(p.x, p.y).sub(prev.x, prev.y).mul(t / prev.l).rperp();
-                vb.put(prev.x + pt.x, prev.y + pt.y).put(-1).put(t).
-                        put(prev.x - pt.x, prev.y - pt.y).put(1).put(t);
+            FlameParticle p = i > 0 ? particles.get(i-1) : null;
+            if (p != null && !p.active) {
+                p = null;
             }
 
-            boolean last = i == l-1;
-            if (last || !p.active) {
-                if (prev != null) {
+            if (p == null) {
+                vb.reset(LAYOUT_P2E1T1);
+                continue;
+            }
 
-                    final Point2F pt = Point2F.temp(p.x, p.y).sub(prev.x, prev.y).mul(t/prev.l);
-                    final float el = 1.4f;
-                    vb.put(prev.x + pt.x * el + pt.y, prev.y + pt.y * el - pt.x).put(-1).put(0).
-                       put(prev.x + pt.x * el - pt.y, prev.y + pt.y * el + pt.x).put(1).put(0);
+            final float el = 1.4f;
+            final Point2F pt = Point2F.temp(c.x, c.y).sub(p.x, p.y).div(p.l);
+            if (i-2 < 0 || !particles.get(i-2).active) {
+                vb.put(p.x - pt.x * el + pt.y * t, p.y - pt.y * el - pt.x * t).put(-1).put(0);
+                vb.put(p.x - pt.x * el - pt.y * t, p.y - pt.y * el + pt.x * t).put(1).put(0);
+            }
 
-                    context.use(SHADER).
-                            attrs(vb).
-                            uniform(context.getActiveMatrix()).
-                            uniform(YELLOW).
-                            uniform(INVISIBLE_RED).
-                            draw(OpenGL.TRIANGLE_STRIP);
-                    prev = null;
-                }
-            } else {
-                prev = p;
+            vb.put(p.x + pt.y * t, p.y - pt.x * t).put(-1).put(t);
+            vb.put(p.x - pt.y * t, p.y + pt.x * t).put(1).put(t);
+
+            if (i == l-1 || !c.active) {
+                vb.put(p.x + pt.x * el + pt.y * t, p.y + pt.y * el - pt.x * t).put(-1).put(0);
+                vb.put(p.x + pt.x * el - pt.y * t, p.y + pt.y * el + pt.x * t).put(1).put(0);
+                context.use(SHADER).
+                        attrs(vb).
+                        uniform(context.getActiveMatrix()).
+                        uniform(CENTER_COLOR).
+                        uniform(EDGE_COLOR).
+                        draw(OpenGL.TRIANGLE_STRIP);
             }
         }
-
-
 
     }
 
