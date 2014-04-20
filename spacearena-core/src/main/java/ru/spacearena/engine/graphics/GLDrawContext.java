@@ -132,7 +132,7 @@ public class GLDrawContext {
         if (t == null) {
             throw new IllegalArgumentException("Texture with definition " + definition + " doesn't exists");
         }
-        gl.deleteTexture(t.getId());
+        gl.glDeleteTexture(t.getId());
         textures.remove(definition);
     }
 
@@ -153,22 +153,22 @@ public class GLDrawContext {
         }
 
         public DrawContext2f.Binder uniform(float x) {
-            gl.uniform(nextUniformLocation(), x);
+            gl.glUniform1f(nextUniformLocation(), x);
             return this;
         }
 
         public DrawContext2f.Binder uniform(float x, float y) {
-            gl.uniform(nextUniformLocation(), x, y);
+            gl.glUniform2f(nextUniformLocation(), x, y);
             return this;
         }
 
         public DrawContext2f.Binder uniform(float x, float y, float z) {
-            gl.uniform(nextUniformLocation(), x, y, z);
+            gl.glUniform3f(nextUniformLocation(), x, y, z);
             return this;
         }
 
         public DrawContext2f.Binder uniform(float x, float y, float z, float w) {
-            gl.uniform(nextUniformLocation(), x, y, z, w);
+            gl.glUniform4f(nextUniformLocation(), x, y, z, w);
             return this;
         }
 
@@ -176,22 +176,22 @@ public class GLDrawContext {
             final Texture t = get(def);
             if (!texturing) {
                 texturing = true;
-                gl.enable(OpenGL.TEXTURE_2D);
+                gl.glEnable(OpenGL.TEXTURE_2D);
             }
-            gl.activeTexture(OpenGL.TEXTURE0 + unit);
-            gl.bindTexture(OpenGL.TEXTURE_2D, t.getId());
+            gl.glActiveTexture(OpenGL.TEXTURE0 + unit);
+            gl.glBindTexture(OpenGL.TEXTURE_2D, t.getId());
 
-            gl.uniform(nextUniformLocation(), unit);
+            gl.glUniform1i(nextUniformLocation(), unit);
             return this;
         }
 
         public DrawContext2f.Binder uniform(Point2F point) {
-            gl.uniform(nextUniformLocation(), point.x, point.y);
+            gl.glUniform2f(nextUniformLocation(), point.x, point.y);
             return this;
         }
 
         public DrawContext2f.Binder uniform(Matrix matrix) {
-            gl.uniformMatrix4(nextUniformLocation(), 1, matrix.m, 0);
+            gl.glUniformMatrix4fv(nextUniformLocation(), 1, matrix.m, 0);
             return this;
         }
 
@@ -199,34 +199,34 @@ public class GLDrawContext {
             if (useAlpha) {
                 return uniform(color);
             }
-            gl.uniform(nextUniformLocation(), color.r, color.g, color.b);
+            gl.glUniform3f(nextUniformLocation(), color.r, color.g, color.b);
             return this;
         }
 
         public DrawContext2f.Binder uniform(Color color) {
-            gl.uniform(nextUniformLocation(), color.r, color.g, color.b, color.a);
+            gl.glUniform4f(nextUniformLocation(), color.r, color.g, color.b, color.a);
             return this;
         }
 
         private void attrPointerBuffer(int attrIndex, int item, VertexBuffer vb) {
             final VertexBufferLayout vbl = vb.getLayout();
-            gl.vertexAttribPointer(attrIndex, vbl.getCount(item), vbl.getType(item),
+            gl.glVertexAttribPointer(attrIndex, vbl.getCount(item), vbl.getType(item),
                     false, vbl.getStride(), vb.prepareBuffer(item));
-            gl.enableVertexAttribArray(attrIndex);
+            gl.glEnableVertexAttribArray(attrIndex);
         }
 
         private void attrPointerOffset(int attrIndex, int item, VertexBufferLayout vbl) {
-            gl.vertexAttribPointer(attrIndex, vbl.getCount(item), vbl.getType(item),
+            gl.glVertexAttribPointer(attrIndex, vbl.getCount(item), vbl.getType(item),
                     false, vbl.getStride(), vbl.getOffset(item));
-            gl.enableVertexAttribArray(attrIndex);
+            gl.glEnableVertexAttribArray(attrIndex);
         }
 
         public DrawContext2f.Binder attr(VertexBufferObject.Definition definition, int item) {
             final VertexBufferObject vbo = get(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
-            gl.bindBuffer(definition.getBufferType(), vbo.getId());
+            gl.glBindBuffer(definition.getBufferType(), vbo.getId());
             attrPointerOffset(nextAttrIndex(), item, vbl);
-            gl.bindBuffer(definition.getBufferType(), 0);
+            gl.glBindBuffer(definition.getBufferType(), 0);
             adjustVertexCount(vbo.getSize(), vbl.getStride());
             return this;
         }
@@ -234,11 +234,11 @@ public class GLDrawContext {
         public DrawContext2f.Binder attrs(VertexBufferObject.Definition definition) {
             final VertexBufferObject vbo = get(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
-            gl.bindBuffer(definition.getBufferType(), vbo.getId());
+            gl.glBindBuffer(definition.getBufferType(), vbo.getId());
             for (int i=0; i<vbl.getAttrCount(); i++) {
                 attrPointerOffset(nextAttrIndex(), i, vbl);
             }
-            gl.bindBuffer(definition.getBufferType(), 0);
+            gl.glBindBuffer(definition.getBufferType(), 0);
             adjustVertexCount(vbo.getSize(), vbl.getStride());
             return this;
         }
@@ -268,9 +268,9 @@ public class GLDrawContext {
         }
 
         public void draw(int type, int start, int count) {
-            gl.drawArrays(type, start, count);
+            gl.glDrawArrays(type, start, count);
             if (texturing) {
-                gl.disable(OpenGL.TEXTURE_2D);
+                gl.glDisable(OpenGL.TEXTURE_2D);
                 texturing = false;
             }
         }
@@ -287,7 +287,7 @@ public class GLDrawContext {
             if (this.program == program) {
                 return binder;
             }
-            gl.useProgram(program.getId());
+            gl.glUseProgram(program.getId());
             this.program = program;
             return binder;
         }

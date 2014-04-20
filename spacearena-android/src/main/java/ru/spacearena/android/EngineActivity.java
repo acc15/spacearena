@@ -67,7 +67,7 @@ public class EngineActivity extends Activity {
             }
 
             public void onSurfaceChanged(GL10 gl, int width, int height) {
-                gles2.viewport(0,0,width,height);
+                gles2.glViewport(0, 0, width, height);
                 engine.onSize(width, height);
             }
 

@@ -51,19 +51,19 @@ public class Shader {
     }
 
     private int doCompile(OpenGL gl) {
-        final int id = gl.createShader(type);
-        gl.shaderSource(id, source);
-        gl.compileShader(id);
-        if (gl.getShader(id, OpenGL.COMPILE_STATUS) == 0) {
-            final String log = gl.getShaderInfoLog(id);
-            gl.deleteShader(id);
+        final int id = gl.glCreateShader(type);
+        gl.glShaderSource(id, source);
+        gl.glCompileShader(id);
+        if (gl.glGetShaderiv(id, OpenGL.COMPILE_STATUS) == 0) {
+            final String log = gl.glGetShaderInfoLog(id);
+            gl.glDeleteShader(id);
             throw new RuntimeException("Can't compile shader: " + log);
         }
         return id;
     }
 
     private void doDelete(OpenGL gl) {
-        gl.deleteShader(getId());
+        gl.glDeleteShader(getId());
     }
 
 }

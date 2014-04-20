@@ -29,17 +29,17 @@ public class VertexBufferObject {
         this.layout = buffer.getLayout();
         this.size = buffer.getSize();
         if (id == 0) {
-            id = gl.genBuffer();
+            id = gl.glGenBuffer();
         }
         final int bufferType = definition.getBufferType();
-        gl.bindBuffer(bufferType, id);
-        gl.bufferData(bufferType, size, buffer.prepareBuffer(), definition.getBufferUsage());
-        gl.bindBuffer(bufferType, 0);
+        gl.glBindBuffer(bufferType, id);
+        gl.glBufferData(bufferType, size, buffer.prepareBuffer(), definition.getBufferUsage());
+        gl.glBindBuffer(bufferType, 0);
     }
 
     public void delete(OpenGL gl) {
         if (this.id != 0) {
-            gl.deleteBuffer(id);
+            gl.glDeleteBuffer(id);
             reset();
         }
     }

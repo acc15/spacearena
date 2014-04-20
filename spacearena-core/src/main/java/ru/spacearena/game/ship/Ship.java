@@ -150,7 +150,7 @@ public class Ship extends GameBody {
                 attrs(vb).
                 uniform(context.getActiveMatrix()).
                 uniform(SHIP_TEXTURE, 0).
-                //uniform(Color.RED, false).
+                //glUniform1i(Color.RED, false).
                 uniform(damageTime / DAMAGE_TIME).
                 draw(OpenGL.TRIANGLE_FAN);
         //context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, SHIP_TEXTURE);
@@ -165,7 +165,7 @@ public class Ship extends GameBody {
             p.attribute("a_TexCoord");
             p.uniform("u_MVPMatrix");
             p.uniform("u_Texture");
-            //p.uniform("u_ShadeColor");
+            //p.glUniform1i("u_ShadeColor");
             p.uniform("u_ShadeAmount");
             return p;
         }

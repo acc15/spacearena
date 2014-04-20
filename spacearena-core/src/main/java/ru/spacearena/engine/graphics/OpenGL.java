@@ -326,138 +326,159 @@ public interface OpenGL {
     public static final int INVALID_FRAMEBUFFER_OPERATION           = 0x0506;
     public static final int VERTEX_PROGRAM_POINT_SIZE = 0x8642;
 
-    void lineWidth(float width);
+    void glLineWidth(float width);
 
-    void getInteger(int parameter, int[] values, int offset);
-    void getInteger(int parameter, IntBuffer buf);
+    void glGetIntegerv(int parameter, int[] values, int offset);
+    void glGetIntegerv(int parameter, IntBuffer buf);
 
-    void viewport(int x, int y, int width, int height);
+    void glViewport(int x, int y, int width, int height);
 
-    void clearColor(float r, float g, float b, float a);
-    void clear(int mask);
+    void glClearColor(float r, float g, float b, float a);
+    void glClear(int mask);
 
-    int createShader(int type);
-    void shaderSource(int shaderId, String source);
-    void compileShader(int shaderId);
-    int getShader(int shaderId, int param);
-    String getShaderInfoLog(int shaderId);
-    void deleteShader(int shaderId);
+    int glCreateShader(int type);
+    void glShaderSource(int shaderId, String source);
+    void glCompileShader(int shaderId);
+    int glGetShaderiv(int shaderId, int param);
+    String glGetShaderInfoLog(int shaderId);
+    void glDeleteShader(int shaderId);
 
-    int createProgram();
-    void attachShader(int programId, int shaderId);
-    void linkProgram(int programId);
-    void deleteProgram(int programId);
-    void validateProgram(int programId);
+    int glCreateProgram();
+    void glAttachShader(int programId, int shaderId);
+    void glLinkProgram(int programId);
+    void glDeleteProgram(int programId);
+    void glValidateProgram(int programId);
     int getProgram(int programId, int param);
-    String getProgramInfoLog(int programId);
-    void useProgram(int programId);
+    String glGetProgramInfoLog(int programId);
+    void glUseProgram(int programId);
 
-    void bindAttribLocation(int programId, int attrIndex, String attribute);
-    int getAttribLocation(int programId, String attribute);
-    int getUniformLocation(int programId, String uniform);
+    void glBindAttribLocation(int programId, int attrIndex, String attribute);
+    int glGetAttribLocation(int programId, String attribute);
+    int glGetUniformLocation(int programId, String uniform);
 
-    void genBuffers(int length, int[] bufs, int offset);
-    void deleteBuffers(int length, int[] bufs, int offset);
-    void genBuffers(int length, IntBuffer bufs);
-    void deleteBuffers(int length, IntBuffer bufs);
-    int genBuffer();
-    void deleteBuffer(int buf);
+    void glGenBuffers(int length, int[] bufs, int offset);
+    void glDeleteBuffers(int length, int[] bufs, int offset);
+    void glGenBuffers(int length, IntBuffer bufs);
+    void glDeleteBuffers(int length, IntBuffer bufs);
+    int glGenBuffer();
+    void glDeleteBuffer(int buf);
 
-    void bindBuffer(int type, int bufferId);
-    void bufferData(int type, int bufferSize, Buffer buffer, int usage);
+    void glBindBuffer(int type, int bufferId);
+    void glBufferData(int type, int bufferSize, Buffer buffer, int usage);
 
-    void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, Buffer buffer);
-    void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, int offset);
+    void glVertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, Buffer buffer);
+    void glVertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, int offset);
 
-    void vertexAttrib(int attrIndex, float x);
-    void vertexAttrib(int attrIndex, float x, float y);
-    void vertexAttrib(int attrIndex, float x, float y, float z);
-    void vertexAttrib(int attrIndex, float x, float y, float z, float w);
-    void vertexAttrib1(int attrIndex, float[] values, int offset);
-    void vertexAttrib2(int attrIndex, float[] values, int offset);
-    void vertexAttrib3(int attrIndex, float[] values, int offset);
-    void vertexAttrib4(int attrIndex, float[] values, int offset);
-    void vertexAttrib1(int attrIndex, FloatBuffer buffer);
-    void vertexAttrib2(int attrIndex, FloatBuffer buffer);
-    void vertexAttrib3(int attrIndex, FloatBuffer buffer);
-    void vertexAttrib4(int attrIndex, FloatBuffer buffer);
+    void glVertexAttrib1f(int attrIndex, float x);
+    void glVertexAttrib2f(int attrIndex, float x, float y);
+    void glVertexAttrib3f(int attrIndex, float x, float y, float z);
+    void glVertexAttrib4f(int attrIndex, float x, float y, float z, float w);
+    void glVertexAttrib1fv(int attrIndex, float[] values, int offset);
+    void glVertexAttrib2fv(int attrIndex, float[] values, int offset);
+    void glVertexAttrib3fv(int attrIndex, float[] values, int offset);
+    void glVertexAttrib4fv(int attrIndex, float[] values, int offset);
+    void glVertexAttrib1fv(int attrIndex, FloatBuffer buffer);
+    void glVertexAttrib2fv(int attrIndex, FloatBuffer buffer);
+    void glVertexAttrib3fv(int attrIndex, FloatBuffer buffer);
+    void glVertexAttrib4fv(int attrIndex, FloatBuffer buffer);
 
-    void uniformMatrix2(int location, int count, float[] values, int offset);
-    void uniformMatrix3(int location, int count, float[] values, int offset);
-    void uniformMatrix4(int location, int count, float[] values, int offset);
-    void uniformMatrix2(int location, int count, FloatBuffer buffer);
-    void uniformMatrix3(int location, int count, FloatBuffer buffer);
-    void uniformMatrix4(int location, int count, FloatBuffer buffer);
-    void uniform(int location, float x);
-    void uniform(int location, float x, float y);
-    void uniform(int location, float x, float y, float z);
-    void uniform(int location, float x, float y, float z, float w);
-    void uniform1(int location, int count, float[] values, int offset);
-    void uniform2(int location, int count, float[] values, int offset);
-    void uniform3(int location, int count, float[] values, int offset);
-    void uniform4(int location, int count, float[] values, int offset);
-    void uniform1(int location, int count, FloatBuffer buf);
-    void uniform2(int location, int count, FloatBuffer buf);
-    void uniform3(int location, int count, FloatBuffer buf);
-    void uniform4(int location, int count, FloatBuffer buf);
+    void glUniformMatrix2fv(int location, int count, float[] values, int offset);
+    void glUniformMatrix3fv(int location, int count, float[] values, int offset);
+    void glUniformMatrix4fv(int location, int count, float[] values, int offset);
+    void glUniformMatrix2fv(int location, int count, FloatBuffer buffer);
+    void glUniformMatrix3fv(int location, int count, FloatBuffer buffer);
+    void glUniformMatrix4fv(int location, int count, FloatBuffer buffer);
+    void glUniform1f(int location, float x);
+    void glUniform2f(int location, float x, float y);
+    void glUniform3f(int location, float x, float y, float z);
+    void glUniform4f(int location, float x, float y, float z, float w);
+    void glUniform1fv(int location, int count, float[] values, int offset);
+    void glUniform2fv(int location, int count, float[] values, int offset);
+    void glUniform3fv(int location, int count, float[] values, int offset);
+    void glUniform4fv(int location, int count, float[] values, int offset);
+    void glUniform1fv(int location, int count, FloatBuffer buf);
+    void glUniform2fv(int location, int count, FloatBuffer buf);
+    void glUniform3fv(int location, int count, FloatBuffer buf);
+    void glUniform4fv(int location, int count, FloatBuffer buf);
 
-    void uniform(int location, int x);
-    void uniform(int location, int x, int y);
-    void uniform(int location, int x, int y, int z);
-    void uniform(int location, int x, int y, int z, int w);
-    void uniform1(int location, int count, int[] values, int offset);
-    void uniform2(int location, int count, int[] values, int offset);
-    void uniform3(int location, int count, int[] values, int offset);
-    void uniform4(int location, int count, int[] values, int offset);
-    void uniform1(int location, int count, IntBuffer buf);
-    void uniform2(int location, int count, IntBuffer buf);
-    void uniform3(int location, int count, IntBuffer buf);
-    void uniform4(int location, int count, IntBuffer buf);
+    void glUniform1i(int location, int x);
+    void glUniform2i(int location, int x, int y);
+    void glUniform3i(int location, int x, int y, int z);
+    void glUniform4i(int location, int x, int y, int z, int w);
+    void glUniform1iv(int location, int count, int[] values, int offset);
+    void glUniform2iv(int location, int count, int[] values, int offset);
+    void glUniform3iv(int location, int count, int[] values, int offset);
+    void glUniform4iv(int location, int count, int[] values, int offset);
+    void glUniform1iv(int location, int count, IntBuffer buf);
+    void glUniform2iv(int location, int count, IntBuffer buf);
+    void glUniform3iv(int location, int count, IntBuffer buf);
+    void glUniform4iv(int location, int count, IntBuffer buf);
 
 
-    void enableVertexAttribArray(int attrIndex);
-    void disableVertexAttribArray(int attrIndex);
+    void glEnableVertexAttribArray(int attrIndex);
+    void glDisableVertexAttribArray(int attrIndex);
 
-    void drawArrays(int type, int offset, int count);
-    public void drawElements(int type, int count, int indexType, Buffer indices);
-    public void drawElements(int type, int count, int indexType, int indexOffset);
+    void glDrawArrays(int type, int offset, int count);
+    public void glDrawElements(int type, int count, int indexType, Buffer indices);
+    public void glDrawElements(int type, int count, int indexType, int indexOffset);
 
-    void genTextures(int count, IntBuffer buf);
-    void genTextures(int count, int[] textures, int offset);
-    int genTexture();
+    void glGenTextures(int count, IntBuffer buf);
+    void glGenTextures(int count, int[] textures, int offset);
+    int glGenTexture();
 
-    void deleteTextures(int count, int[] textures, int offset);
-    void deleteTextures(int count, IntBuffer buf);
-    void deleteTexture(int id);
+    void glDeleteTextures(int count, int[] textures, int offset);
+    void glDeleteTextures(int count, IntBuffer buf);
+    void glDeleteTexture(int id);
 
-    void texImage2D(int target, int level, int width, int height,
-                    int format, int type, Buffer data);
+    void glTexImage2D(int target, int level, int width, int height,
+                      int format, int type, Buffer data);
 
     /**
      * Not a part of OpenGL interface. Allows to load texture by url
      * @param texture texture
      * @param url url
      */
-    void texImage2D(Texture texture, int level, URL url);
-    void texImage2D(Texture texture, int level, int format, int pixelFormat, URL url);
+    void glTexImage2D(Texture texture, int level, URL url);
+    void glTexImage2D(Texture texture, int level, int format, int pixelFormat, URL url);
 
-    void bindTexture(int type, int id);
+    void glBindTexture(int type, int id);
 
-    void pixelStore(int type, int alignment);
+    void glPixelStore(int type, int alignment);
 
-    void texParameter(int type, int parameter, float[] params, int offset);
-    void texParameter(int type, int parameter, FloatBuffer buf);
-    void texParameter(int type, int parameter, float value);
-    void texParameter(int type, int parameter, int[] params, int offset);
-    void texParameter(int type, int parameter, IntBuffer buf);
-    void texParameter(int type, int parameter, int value);
+    void glTexParameter(int type, int parameter, float[] params, int offset);
+    void glTexParameter(int type, int parameter, FloatBuffer buf);
+    void glTexParameter(int type, int parameter, float value);
+    void glTexParameter(int type, int parameter, int[] params, int offset);
+    void glTexParameter(int type, int parameter, IntBuffer buf);
+    void glTexParameter(int type, int parameter, int value);
 
-    void enable(int what);
-    void disable(int what);
+    void glEnable(int what);
+    void glDisable(int what);
 
-    void activeTexture(int unit);
+    void glActiveTexture(int unit);
 
-    void blendFunc(int sfactor, int dfactor);
+    void glBlendFunc(int sfactor, int dfactor);
 
-    void depthFunc(int func);
+    void glDepthFunc(int func);
+
+    void glGenRenderbuffers(int length, int[] bus, int offset);
+    void glDeleteRenderbuffers(int length, int[] bufs, int offset);
+    void glGenRenderbuffers(int length, IntBuffer bufs);
+    void glDeleteRenderbuffers(int length, IntBuffer bufs);
+    int glGenRenderbuffer();
+    void glDeleteRenderbuffer(int buf);
+
+    void glGenFramebuffers(int length, int[] bufs, int offset);
+    void glDeleteFramebuffers(int length, int[] bufs, int offset);
+    void glGenFramebuffers(int length, IntBuffer bufs);
+    void glDeleteFramebuffers(int length, IntBuffer bufs);
+    int glGenFrameBuffer();
+    void glDeleteFrameBuffer(int buf);
+
+//    void bindRenderbuffer(int target, int buf);
+//    void renderbufferStorage(int target, int format, int width, int height);
+//
+//    void bindFramebuffer(int target, int buf);
+
+
 }

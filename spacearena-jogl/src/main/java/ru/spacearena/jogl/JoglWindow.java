@@ -113,7 +113,7 @@ public class JoglWindow {
             }
 
             public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-                gl.viewport(x,y,width,height);
+                gl.glViewport(x, y, width, height);
                 engine.onSize(width, height);
             }
         });

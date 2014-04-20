@@ -26,72 +26,72 @@ public class AndroidGLES2 implements OpenGL {
 
     private final int[] INT_BUF = new int[1];
 
-    public void getInteger(int parameter, int[] values, int offset) {
+    public void glGetIntegerv(int parameter, int[] values, int offset) {
         GLES20.glGetIntegerv(parameter, values, offset);
     }
 
-    public void getInteger(int parameter, IntBuffer buf) {
+    public void glGetIntegerv(int parameter, IntBuffer buf) {
         GLES20.glGetIntegerv(parameter, buf);
     }
 
-    public void lineWidth(float width) {
+    public void glLineWidth(float width) {
         GLES20.glLineWidth(width);
     }
 
-    public void viewport(int x, int y, int width, int height) {
+    public void glViewport(int x, int y, int width, int height) {
         GLES20.glViewport(x, y, width, height);
     }
 
-    public void clearColor(float r, float g, float b, float a) {
+    public void glClearColor(float r, float g, float b, float a) {
         GLES20.glClearColor(r, g, b, a);
     }
 
-    public void clear(int mask) {
+    public void glClear(int mask) {
         GLES20.glClear(mask);
     }
 
-    public int createShader(int type) {
+    public int glCreateShader(int type) {
         return GLES20.glCreateShader(type);
     }
 
-    public void shaderSource(int shaderId, String source) {
+    public void glShaderSource(int shaderId, String source) {
         GLES20.glShaderSource(shaderId, source);
     }
 
-    public void compileShader(int shaderId) {
+    public void glCompileShader(int shaderId) {
         GLES20.glCompileShader(shaderId);
     }
 
-    public int getShader(int shaderId, int param) {
+    public int glGetShaderiv(int shaderId, int param) {
         GLES20.glGetShaderiv(shaderId, param, INT_BUF, 0);
         return INT_BUF[0];
     }
 
-    public String getShaderInfoLog(int shaderId) {
+    public String glGetShaderInfoLog(int shaderId) {
         return GLES20.glGetShaderInfoLog(shaderId);
     }
 
-    public void deleteShader(int shaderId) {
+    public void glDeleteShader(int shaderId) {
         GLES20.glDeleteShader(shaderId);
     }
 
-    public int createProgram() {
+    public int glCreateProgram() {
         return GLES20.glCreateProgram();
     }
 
-    public void linkProgram(int programId) {
+    public void glLinkProgram(int programId) {
         GLES20.glLinkProgram(programId);
     }
 
-    public void attachShader(int programId, int shaderId) {
+    public void glAttachShader(int programId, int shaderId) {
         GLES20.glAttachShader(programId, shaderId);
     }
 
-    public void deleteProgram(int programId) {
+    public void glDeleteProgram(int programId) {
         GLES20.glDeleteProgram(programId);
     }
 
-    public void validateProgram(int programId) {
+    public void glValidateProgram(int programId) {
         GLES20.glValidateProgram(programId);
     }
 
@@ -100,299 +100,299 @@ public class AndroidGLES2 implements OpenGL {
         return INT_BUF[0];
     }
 
-    public String getProgramInfoLog(int programId) {
+    public String glGetProgramInfoLog(int programId) {
         return GLES20.glGetProgramInfoLog(programId);
     }
 
-    public void useProgram(int programId) {
+    public void glUseProgram(int programId) {
         GLES20.glUseProgram(programId);
     }
 
-    public void bindAttribLocation(int programId, int attrIndex, String attribute) {
+    public void glBindAttribLocation(int programId, int attrIndex, String attribute) {
         GLES20.glBindAttribLocation(programId, attrIndex, attribute);
     }
 
-    public int getAttribLocation(int programId, String attribute) {
+    public int glGetAttribLocation(int programId, String attribute) {
         return GLES20.glGetAttribLocation(programId, attribute);
     }
 
-    public int getUniformLocation(int programId, String uniform) {
+    public int glGetUniformLocation(int programId, String uniform) {
         return GLES20.glGetUniformLocation(programId, uniform);
     }
 
-    public void bindBuffer(int type, int bufferId) {
+    public void glBindBuffer(int type, int bufferId) {
         GLES20.glBindBuffer(type, bufferId);
     }
 
-    public void bufferData(int type, int bufferSize, Buffer buffer, int usage) {
+    public void glBufferData(int type, int bufferSize, Buffer buffer, int usage) {
         GLES20.glBufferData(type, bufferSize, buffer, usage);
     }
 
-    public int genBuffer() {
+    public int glGenBuffer() {
         GLES20.glGenBuffers(1, INT_BUF, 0);
         return INT_BUF[0];
     }
 
-    public void deleteBuffer(int buf) {
+    public void glDeleteBuffer(int buf) {
         INT_BUF[0] = buf;
         GLES20.glDeleteBuffers(1, INT_BUF, 0);
     }
 
-    public void genBuffers(int length, int[] bufs, int offset) {
+    public void glGenBuffers(int length, int[] bufs, int offset) {
         GLES20.glGenBuffers(length, bufs, offset);
     }
 
-    public void deleteBuffers(int length, int[] bufs, int offset) {
+    public void glDeleteBuffers(int length, int[] bufs, int offset) {
         GLES20.glDeleteBuffers(length, bufs, offset);
     }
 
-    public void genBuffers(int length, IntBuffer bufs) {
+    public void glGenBuffers(int length, IntBuffer bufs) {
         GLES20.glGenBuffers(length, bufs);
     }
 
-    public void deleteBuffers(int length, IntBuffer bufs) {
+    public void glDeleteBuffers(int length, IntBuffer bufs) {
         GLES20.glDeleteBuffers(length, bufs);
     }
 
-    public void enableVertexAttribArray(int attrIndex) {
+    public void glEnableVertexAttribArray(int attrIndex) {
         GLES20.glEnableVertexAttribArray(attrIndex);
     }
 
-    public void disableVertexAttribArray(int attrIndex) {
+    public void glDisableVertexAttribArray(int attrIndex) {
         GLES20.glDisableVertexAttribArray(attrIndex);
     }
 
-    public void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, Buffer buffer) {
+    public void glVertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, Buffer buffer) {
         GLES20.glVertexAttribPointer(attrIndex, valueCount, type, normalized, stride, buffer);
     }
 
-    public void vertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, int offset) {
+    public void glVertexAttribPointer(int attrIndex, int valueCount, int type, boolean normalized, int stride, int offset) {
         GLES20.glVertexAttribPointer(attrIndex, valueCount, type, normalized, stride, offset);
     }
 
-    public void vertexAttrib(int attrIndex, float x) {
+    public void glVertexAttrib1f(int attrIndex, float x) {
         GLES20.glVertexAttrib1f(attrIndex, x);
     }
 
-    public void vertexAttrib(int attrIndex, float x, float y) {
+    public void glVertexAttrib2f(int attrIndex, float x, float y) {
         GLES20.glVertexAttrib2f(attrIndex, x, y);
     }
 
-    public void vertexAttrib(int attrIndex, float x, float y, float z) {
+    public void glVertexAttrib3f(int attrIndex, float x, float y, float z) {
         GLES20.glVertexAttrib3f(attrIndex, x, y, z);
     }
 
-    public void vertexAttrib(int attrIndex, float x, float y, float z, float w) {
+    public void glVertexAttrib4f(int attrIndex, float x, float y, float z, float w) {
         GLES20.glVertexAttrib4f(attrIndex, x, y, z, w);
     }
 
-    public void vertexAttrib1(int attrIndex, float[] values, int offset) {
+    public void glVertexAttrib1fv(int attrIndex, float[] values, int offset) {
         GLES20.glVertexAttrib1fv(attrIndex, values, offset);
     }
 
-    public void vertexAttrib2(int attrIndex, float[] values, int offset) {
+    public void glVertexAttrib2fv(int attrIndex, float[] values, int offset) {
         GLES20.glVertexAttrib2fv(attrIndex, values, offset);
     }
 
-    public void vertexAttrib3(int attrIndex, float[] values, int offset) {
+    public void glVertexAttrib3fv(int attrIndex, float[] values, int offset) {
         GLES20.glVertexAttrib3fv(attrIndex, values, offset);
     }
 
-    public void vertexAttrib4(int attrIndex, float[] values, int offset) {
+    public void glVertexAttrib4fv(int attrIndex, float[] values, int offset) {
         GLES20.glVertexAttrib4fv(attrIndex, values, offset);
     }
 
-    public void vertexAttrib1(int attrIndex, FloatBuffer buffer) {
+    public void glVertexAttrib1fv(int attrIndex, FloatBuffer buffer) {
         GLES20.glVertexAttrib1fv(attrIndex, buffer);
     }
 
-    public void vertexAttrib2(int attrIndex, FloatBuffer buffer) {
+    public void glVertexAttrib2fv(int attrIndex, FloatBuffer buffer) {
         GLES20.glVertexAttrib2fv(attrIndex, buffer);
     }
 
-    public void vertexAttrib3(int attrIndex, FloatBuffer buffer) {
+    public void glVertexAttrib3fv(int attrIndex, FloatBuffer buffer) {
         GLES20.glVertexAttrib3fv(attrIndex, buffer);
     }
 
-    public void vertexAttrib4(int attrIndex, FloatBuffer buffer) {
+    public void glVertexAttrib4fv(int attrIndex, FloatBuffer buffer) {
         GLES20.glVertexAttrib4fv(attrIndex, buffer);
     }
 
-    public void uniformMatrix2(int location, int count, float[] values, int offset) {
+    public void glUniformMatrix2fv(int location, int count, float[] values, int offset) {
         GLES20.glUniformMatrix2fv(location, count, false, values, offset);
     }
 
-    public void uniformMatrix3(int location, int count, float[] values, int offset) {
+    public void glUniformMatrix3fv(int location, int count, float[] values, int offset) {
         GLES20.glUniformMatrix3fv(location, count, false, values, offset);
     }
 
-    public void uniformMatrix4(int location, int count, float[] values, int offset) {
+    public void glUniformMatrix4fv(int location, int count, float[] values, int offset) {
         GLES20.glUniformMatrix4fv(location, count, false, values, offset);
     }
 
-    public void uniformMatrix2(int location, int count, FloatBuffer buffer) {
+    public void glUniformMatrix2fv(int location, int count, FloatBuffer buffer) {
         GLES20.glUniformMatrix2fv(location, count, false, buffer);
     }
 
-    public void uniformMatrix3(int location, int count, FloatBuffer buffer) {
+    public void glUniformMatrix3fv(int location, int count, FloatBuffer buffer) {
         GLES20.glUniformMatrix3fv(location, count, false, buffer);
     }
 
-    public void uniformMatrix4(int location, int count, FloatBuffer buffer) {
+    public void glUniformMatrix4fv(int location, int count, FloatBuffer buffer) {
         GLES20.glUniformMatrix4fv(location, count, false, buffer);
     }
 
-    public void uniform(int location, float x) {
+    public void glUniform1f(int location, float x) {
         GLES20.glUniform1f(location, x);
     }
 
-    public void uniform(int location, float x, float y) {
+    public void glUniform2f(int location, float x, float y) {
         GLES20.glUniform2f(location, x, y);
     }
 
-    public void uniform(int location, float x, float y, float z) {
+    public void glUniform3f(int location, float x, float y, float z) {
         GLES20.glUniform3f(location, x, y, z);
     }
 
-    public void uniform(int location, float x, float y, float z, float w) {
+    public void glUniform4f(int location, float x, float y, float z, float w) {
         GLES20.glUniform4f(location, x, y, z, w);
     }
 
-    public void uniform1(int location, int count, float[] values, int offset) {
+    public void glUniform1fv(int location, int count, float[] values, int offset) {
         GLES20.glUniform1fv(location, count, values, offset);
     }
 
-    public void uniform2(int location, int count, float[] values, int offset) {
+    public void glUniform2fv(int location, int count, float[] values, int offset) {
         GLES20.glUniform2fv(location, count, values, offset);
     }
 
-    public void uniform3(int location, int count, float[] values, int offset) {
+    public void glUniform3fv(int location, int count, float[] values, int offset) {
         GLES20.glUniform3fv(location, count, values, offset);
     }
 
-    public void uniform4(int location, int count, float[] values, int offset) {
+    public void glUniform4fv(int location, int count, float[] values, int offset) {
         GLES20.glUniform4fv(location, count, values, offset);
     }
 
-    public void uniform1(int location, int count, FloatBuffer buf) {
+    public void glUniform1fv(int location, int count, FloatBuffer buf) {
         GLES20.glUniform1fv(location, count, buf);
     }
 
-    public void uniform2(int location, int count, FloatBuffer buf) {
+    public void glUniform2fv(int location, int count, FloatBuffer buf) {
         GLES20.glUniform2fv(location, count, buf);
     }
 
-    public void uniform3(int location, int count, FloatBuffer buf) {
+    public void glUniform3fv(int location, int count, FloatBuffer buf) {
         GLES20.glUniform3fv(location, count, buf);
     }
 
-    public void uniform4(int location, int count, FloatBuffer buf) {
+    public void glUniform4fv(int location, int count, FloatBuffer buf) {
         GLES20.glUniform4fv(location, count, buf);
     }
 
-    public void uniform(int location, int x) {
+    public void glUniform1i(int location, int x) {
         GLES20.glUniform1i(location, x);
     }
 
-    public void uniform(int location, int x, int y) {
+    public void glUniform2i(int location, int x, int y) {
         GLES20.glUniform2i(location, x, y);
     }
 
-    public void uniform(int location, int x, int y, int z) {
+    public void glUniform3i(int location, int x, int y, int z) {
         GLES20.glUniform3i(location, x, y, z);
     }
 
-    public void uniform(int location, int x, int y, int z, int w) {
+    public void glUniform4i(int location, int x, int y, int z, int w) {
         GLES20.glUniform4i(location, x, y, z, w);
     }
 
-    public void uniform1(int location, int count, int[] values, int offset) {
+    public void glUniform1iv(int location, int count, int[] values, int offset) {
         GLES20.glUniform1iv(location, count, values, offset);
     }
 
-    public void uniform2(int location, int count, int[] values, int offset) {
+    public void glUniform2iv(int location, int count, int[] values, int offset) {
         GLES20.glUniform2iv(location, count, values, offset);
     }
 
-    public void uniform3(int location, int count, int[] values, int offset) {
+    public void glUniform3iv(int location, int count, int[] values, int offset) {
         GLES20.glUniform3iv(location, count, values, offset);
     }
 
-    public void uniform4(int location, int count, int[] values, int offset) {
+    public void glUniform4iv(int location, int count, int[] values, int offset) {
         GLES20.glUniform4iv(location, count, values, offset);
     }
 
-    public void uniform1(int location, int count, IntBuffer buf) {
+    public void glUniform1iv(int location, int count, IntBuffer buf) {
         GLES20.glUniform1iv(location, count, buf);
     }
 
-    public void uniform2(int location, int count, IntBuffer buf) {
+    public void glUniform2iv(int location, int count, IntBuffer buf) {
         GLES20.glUniform2iv(location, count, buf);
     }
 
-    public void uniform3(int location, int count, IntBuffer buf) {
+    public void glUniform3iv(int location, int count, IntBuffer buf) {
         GLES20.glUniform3iv(location, count, buf);
     }
 
-    public void uniform4(int location, int count, IntBuffer buf) {
+    public void glUniform4iv(int location, int count, IntBuffer buf) {
         GLES20.glUniform4iv(location, count, buf);
     }
 
-    public void drawArrays(int type, int offset, int count) {
+    public void glDrawArrays(int type, int offset, int count) {
         GLES20.glDrawArrays(type, offset, count);
     }
 
-    public void drawElements(int type, int count, int indexType, Buffer indices) {
+    public void glDrawElements(int type, int count, int indexType, Buffer indices) {
         GLES20.glDrawElements(type, count, indexType, indices);
     }
 
-    public void drawElements(int type, int count, int indexType, int indexOffset) {
+    public void glDrawElements(int type, int count, int indexType, int indexOffset) {
         GLES20.glDrawElements(type, count, indexType, indexOffset);
     }
 
-    public void genTextures(int count, IntBuffer buf) {
+    public void glGenTextures(int count, IntBuffer buf) {
         GLES20.glGenTextures(count, buf);
     }
 
-    public void genTextures(int count, int[] textures, int offset) {
+    public void glGenTextures(int count, int[] textures, int offset) {
         GLES20.glGenTextures(count, textures, offset);
     }
 
-    public int genTexture() {
+    public int glGenTexture() {
         GLES20.glGenTextures(1, INT_BUF, 0);
         return INT_BUF[0];
     }
 
-    public void bindTexture(int type, int id) {
+    public void glBindTexture(int type, int id) {
         GLES20.glBindTexture(type, id);
     }
 
-    public void deleteTextures(int count, int[] textures, int offset) {
+    public void glDeleteTextures(int count, int[] textures, int offset) {
         GLES20.glDeleteTextures(count, textures, offset);
     }
 
-    public void deleteTextures(int count, IntBuffer buf) {
+    public void glDeleteTextures(int count, IntBuffer buf) {
         GLES20.glDeleteTextures(count, buf);
     }
 
-    public void deleteTexture(int id) {
+    public void glDeleteTexture(int id) {
         INT_BUF[0] = id;
         GLES20.glDeleteTextures(1, INT_BUF, 0);
     }
 
-    public void pixelStore(int type, int alignment) {
+    public void glPixelStore(int type, int alignment) {
         GLES20.glPixelStorei(type, alignment);
     }
 
-    public void texImage2D(int target, int level, int width, int height, int format, int type, Buffer data) {
+    public void glTexImage2D(int target, int level, int width, int height, int format, int type, Buffer data) {
         GLES20.glTexImage2D(target, level, format, width, height, 0, format, type, data);
     }
 
-    public void texImage2D(Texture texture, int level, URL url) {
-        texImage2D(texture, level, 0, 0, url);
+    public void glTexImage2D(Texture texture, int level, URL url) {
+        glTexImage2D(texture, level, 0, 0, url);
     }
 
-    public void texImage2D(Texture texture, int level, int format, int type, URL url) {
+    public void glTexImage2D(Texture texture, int level, int format, int type, URL url) {
         InputStream stream = null;
         Bitmap bitmap = null;
         try {
@@ -422,47 +422,47 @@ public class AndroidGLES2 implements OpenGL {
         }
     }
 
-    public void texParameter(int type, int parameter, float[] params, int offset) {
+    public void glTexParameter(int type, int parameter, float[] params, int offset) {
         GLES20.glTexParameterfv(type, parameter, params, offset);
     }
 
-    public void texParameter(int type, int parameter, FloatBuffer buf) {
+    public void glTexParameter(int type, int parameter, FloatBuffer buf) {
         GLES20.glTexParameterfv(type, parameter, buf);
     }
 
-    public void texParameter(int type, int parameter, float value) {
+    public void glTexParameter(int type, int parameter, float value) {
         GLES20.glTexParameterf(type, parameter, value);
     }
 
-    public void texParameter(int type, int parameter, int[] params, int offset) {
+    public void glTexParameter(int type, int parameter, int[] params, int offset) {
         GLES20.glTexParameteriv(type, parameter, params, offset);
     }
 
-    public void texParameter(int type, int parameter, IntBuffer buf) {
+    public void glTexParameter(int type, int parameter, IntBuffer buf) {
         GLES20.glTexParameteriv(type, parameter, buf);
     }
 
-    public void texParameter(int type, int parameter, int value) {
+    public void glTexParameter(int type, int parameter, int value) {
         GLES20.glTexParameteri(type, parameter, value);
     }
 
-    public void enable(int what) {
+    public void glEnable(int what) {
         GLES20.glEnable(what);
     }
 
-    public void disable(int what) {
+    public void glDisable(int what) {
         GLES20.glDisable(what);
     }
 
-    public void activeTexture(int unit) {
+    public void glActiveTexture(int unit) {
         GLES20.glActiveTexture(unit);
     }
 
-    public void blendFunc(int sfactor, int dfactor) {
+    public void glBlendFunc(int sfactor, int dfactor) {
         GLES20.glBlendFunc(sfactor, dfactor);
     }
 
-    public void depthFunc(int func) {
+    public void glDepthFunc(int func) {
         GLES20.glDepthFunc(func);
     }
 }

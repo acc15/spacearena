@@ -57,25 +57,25 @@ public class TextureDefinition implements Texture.Definition {
 
     public Texture createTexture(OpenGL gl) {
         final Texture t = new Texture();
-        t.setId(gl.genTexture());
+        t.setId(gl.glGenTexture());
 
         final int type = OpenGL.TEXTURE_2D; // only 2D textures are supported
-        gl.bindTexture(OpenGL.TEXTURE_2D, t.getId());
+        gl.glBindTexture(OpenGL.TEXTURE_2D, t.getId());
         if (minFilter != 0) {
-            gl.texParameter(type, OpenGL.TEXTURE_MIN_FILTER, minFilter);
+            gl.glTexParameter(type, OpenGL.TEXTURE_MIN_FILTER, minFilter);
         }
         if (magFilter != 0) {
-            gl.texParameter(type, OpenGL.TEXTURE_MAG_FILTER, magFilter);
+            gl.glTexParameter(type, OpenGL.TEXTURE_MAG_FILTER, magFilter);
         }
         if (wrapS != 0) {
-            gl.texParameter(type, OpenGL.TEXTURE_WRAP_S, wrapS);
+            gl.glTexParameter(type, OpenGL.TEXTURE_WRAP_S, wrapS);
         }
         if (wrapT != 0) {
-            gl.texParameter(type, OpenGL.TEXTURE_WRAP_T, wrapT);
+            gl.glTexParameter(type, OpenGL.TEXTURE_WRAP_T, wrapT);
         }
         for (int level = 0; level < textureUrls.length; level++) {
             final URL url = textureUrls[level];
-            gl.texImage2D(t, level, url);
+            gl.glTexImage2D(t, level, url);
         }
         return t;
     }

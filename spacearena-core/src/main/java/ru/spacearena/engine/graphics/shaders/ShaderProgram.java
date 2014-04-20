@@ -85,7 +85,7 @@ public class ShaderProgram {
         if (id == 0) {
             throw new IllegalStateException("Attempt to delete shader program which isn't present in GL");
         }
-        gl.deleteProgram(id);
+        gl.glDeleteProgram(id);
         for (Shader shader: shaders) {
             shader.delete(gl);
         }
@@ -97,18 +97,18 @@ public class ShaderProgram {
             final Shader shader = shaders.get(index);
             shader.delete(gl);
         }
-        gl.deleteProgram(id);
+        gl.glDeleteProgram(id);
     }
 
     private int doMake(OpenGL gl) {
-        final int programId = gl.createProgram();
+        final int programId = gl.glCreateProgram();
 
         int shaderIndex = 0;
         try {
             while (shaderIndex < shaders.size()) {
                 final Shader shader = shaders.get(shaderIndex);
                 shader.compile(gl);
-                gl.attachShader(programId, shader.getId());
+                gl.glAttachShader(programId, shader.getId());
                 ++shaderIndex;
             }
         } catch (RuntimeException e) {
@@ -120,22 +120,22 @@ public class ShaderProgram {
         final int l = attributes.size();
         for (int i=0; i<l; i++) {
             final String attributeName = attributes.get(i);
-            gl.bindAttribLocation(programId, i, attributeName);
+            gl.glBindAttribLocation(programId, i, attributeName);
         }
-        gl.linkProgram(programId);
+        gl.glLinkProgram(programId);
         if (gl.getProgram(programId, OpenGL.LINK_STATUS) == 0) {
-            final String log = gl.getProgramInfoLog(programId);
+            final String log = gl.glGetProgramInfoLog(programId);
             doCleanup(gl, programId, shaders.size());
             throw new RuntimeException("Can't link program: " + log);
         }
-        gl.validateProgram(programId);
+        gl.glValidateProgram(programId);
         if (gl.getProgram(programId, OpenGL.VALIDATE_STATUS) == 0) {
-            final String log = gl.getProgramInfoLog(programId);
+            final String log = gl.glGetProgramInfoLog(programId);
             doCleanup(gl, programId, shaders.size());
             throw new RuntimeException("Can't validate program: " + log);
         }
         for (String uniform: uniforms) {
-            final int uniformLoc = gl.getUniformLocation(programId, uniform);
+            final int uniformLoc = gl.glGetUniformLocation(programId, uniform);
             uniformLocations.add(uniformLoc);
         }
         return programId;
