@@ -188,6 +188,10 @@ public class Point2F {
         return FloatMathUtils.angle(x, y, pt.x, pt.y);
     }
 
+    public Point2F rotate(float cos, float sin) {
+        return set(FloatMathUtils.cross(x,y,sin,cos), FloatMathUtils.dot(x,y,sin,cos));
+    }
+
     public Point2F resize(float newMagnitude) {
         return mul(newMagnitude / length());
     }

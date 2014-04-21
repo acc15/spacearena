@@ -1,5 +1,7 @@
 package ru.spacearena.engine.graphics.vbo;
 
+import ru.spacearena.engine.graphics.GLDrawContext;
+import ru.spacearena.engine.graphics.GLObjectDefinition;
 import ru.spacearena.engine.graphics.OpenGL;
 
 /**
@@ -8,14 +10,51 @@ import ru.spacearena.engine.graphics.OpenGL;
 */
 public class VertexBufferObject {
 
-    public static interface Definition {
-        int getBufferType();
-        int getBufferUsage();
+    public static class Definition implements GLObjectDefinition<VertexBufferObject> {
+        private final int bufferType;
+        private final int bufferUsage;
+
+        public int getBufferType() {
+            return bufferType;
+        }
+
+        public int getBufferUsage() {
+            return bufferUsage;
+        }
+
+        public Definition(int bufferType) {
+            this(bufferType, OpenGL.GL_STATIC_DRAW);
+        }
+
+        public Definition(int bufferType, int bufferUsage) {
+            this.bufferType = bufferType;
+            this.bufferUsage = bufferUsage;
+        }
+
+        public VertexBufferObject create(GLDrawContext context) {
+            final VertexBufferObject vbo = new VertexBufferObject(context.getGL().glGenBuffer());
+            init(context, vbo);
+            return vbo;
+        }
+
+        public void reference(GLDrawContext context, VertexBufferObject vbo) {
+        }
+
+        public void delete(GLDrawContext context, VertexBufferObject vbo) {
+            context.getGL().glDeleteBuffer(vbo.id);
+        }
+
+        public void init(GLDrawContext context, VertexBufferObject vbo) {
+        }
     }
 
-    private int id;
+    private final int id;
     private VertexBufferLayout layout = null;
-    private int size = 0;
+    private int size = -1;
+
+    public VertexBufferObject(int id) {
+        this.id = id;
+    }
 
     public VertexBufferLayout getLayout() {
         return layout;
@@ -28,26 +67,9 @@ public class VertexBufferObject {
     public void upload(OpenGL gl, VertexBufferObject.Definition definition, VertexBuffer buffer) {
         this.layout = buffer.getLayout();
         this.size = buffer.getSize();
-        if (id == 0) {
-            id = gl.glGenBuffer();
-        }
-        final int bufferType = definition.getBufferType();
-        gl.glBindBuffer(bufferType, id);
-        gl.glBufferData(bufferType, size, buffer.prepareBuffer(), definition.getBufferUsage());
-        gl.glBindBuffer(bufferType, 0);
-    }
-
-    public void delete(OpenGL gl) {
-        if (this.id != 0) {
-            gl.glDeleteBuffer(id);
-            reset();
-        }
-    }
-
-    public void reset() {
-        this.id = 0;
-        this.size = 0;
-        this.layout = null;
+        gl.glBindBuffer(definition.getBufferType(), id);
+        gl.glBufferData(definition.getBufferType(), size, buffer.prepareBuffer(), definition.getBufferUsage());
+        gl.glBindBuffer(definition.getBufferType(), 0);
     }
 
     public int getId() {

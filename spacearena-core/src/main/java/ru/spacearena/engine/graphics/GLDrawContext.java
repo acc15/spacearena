@@ -18,9 +18,9 @@ import java.util.HashMap;
 public class GLDrawContext {
 
     protected final OpenGL gl;
+    protected final VertexBuffer sharedBuffer = new VertexBuffer();
 
     private final HashMap<GLObjectDefinition<?>, Object> objects = new HashMap<GLObjectDefinition<?>, Object>();
-    private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos = new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
     private final HashMap<FontData.Definition, FontData> fonts = new HashMap<FontData.Definition, FontData>();
     private final Binder binder = new Binder();
 
@@ -36,7 +36,6 @@ public class GLDrawContext {
     }
 
     public void dispose() {
-        vbos.clear();
         objects.clear();
     }
 
@@ -73,31 +72,9 @@ public class GLDrawContext {
         return binder.use(get(definition));
     }
 
-    public boolean has(VertexBufferObject.Definition definition) {
-        return vbos.containsKey(definition);
-    }
-
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
-        VertexBufferObject vbo = vbos.get(definition);
-        if (vbo == null) {
-            vbo = new VertexBufferObject();
-        }
-        vbo.upload(gl, definition, buffer);
-        vbos.put(definition, vbo);
-        return vbo;
-    }
-
-    public void delete(VertexBufferObject.Definition definition) {
         final VertexBufferObject vbo = get(definition);
-        vbo.delete(gl);
-        vbos.remove(definition);
-    }
-
-    public VertexBufferObject get(VertexBufferObject.Definition definition) {
-        final VertexBufferObject vbo = vbos.get(definition);
-        if (vbo == null) {
-            throw new IllegalArgumentException("VBO with definition " + definition + " doesn't exists");
-        }
+        vbo.upload(gl, definition, buffer);
         return vbo;
     }
 
@@ -117,6 +94,9 @@ public class GLDrawContext {
         delete(definition.getTexture());
     }
 
+    public VertexBuffer getSharedBuffer() {
+        return sharedBuffer;
+    }
 
     public class Binder {
 
@@ -134,27 +114,27 @@ public class GLDrawContext {
             return ++attrIndex;
         }
 
-        public DrawContext2f.Binder uniform(float x) {
+        public Binder uniform(float x) {
             gl.glUniform1f(nextUniformLocation(), x);
             return this;
         }
 
-        public DrawContext2f.Binder uniform(float x, float y) {
+        public Binder uniform(float x, float y) {
             gl.glUniform2f(nextUniformLocation(), x, y);
             return this;
         }
 
-        public DrawContext2f.Binder uniform(float x, float y, float z) {
+        public Binder uniform(float x, float y, float z) {
             gl.glUniform3f(nextUniformLocation(), x, y, z);
             return this;
         }
 
-        public DrawContext2f.Binder uniform(float x, float y, float z, float w) {
+        public Binder uniform(float x, float y, float z, float w) {
             gl.glUniform4f(nextUniformLocation(), x, y, z, w);
             return this;
         }
 
-        public DrawContext2f.Binder uniform(Texture.Definition def, int unit) {
+        public Binder uniform(Texture.Definition def, int unit) {
             final Texture t = get(def);
             if (!texturing) {
                 texturing = true;
@@ -167,17 +147,17 @@ public class GLDrawContext {
             return this;
         }
 
-        public DrawContext2f.Binder uniform(Point2F point) {
+        public Binder uniform(Point2F point) {
             gl.glUniform2f(nextUniformLocation(), point.x, point.y);
             return this;
         }
 
-        public DrawContext2f.Binder uniform(Matrix matrix) {
+        public Binder uniform(Matrix matrix) {
             gl.glUniformMatrix4fv(nextUniformLocation(), 1, matrix.m, 0);
             return this;
         }
 
-        public DrawContext2f.Binder uniform(Color color, boolean useAlpha) {
+        public Binder uniform(Color color, boolean useAlpha) {
             if (useAlpha) {
                 return uniform(color);
             }
@@ -185,7 +165,7 @@ public class GLDrawContext {
             return this;
         }
 
-        public DrawContext2f.Binder uniform(Color color) {
+        public Binder uniform(Color color) {
             gl.glUniform4f(nextUniformLocation(), color.r, color.g, color.b, color.a);
             return this;
         }
@@ -203,7 +183,7 @@ public class GLDrawContext {
             gl.glEnableVertexAttribArray(attrIndex);
         }
 
-        public DrawContext2f.Binder attr(VertexBufferObject.Definition definition, int item) {
+        public Binder attr(VertexBufferObject.Definition definition, int item) {
             final VertexBufferObject vbo = get(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.glBindBuffer(definition.getBufferType(), vbo.getId());
@@ -213,7 +193,16 @@ public class GLDrawContext {
             return this;
         }
 
-        public DrawContext2f.Binder attrs(VertexBufferObject.Definition definition) {
+        private VertexBufferObject ensureVBOUploaded(VertexBufferObject.Definition def) {
+            final VertexBufferObject vbo = get(def);
+            if (vbo.getSize() < 0) {
+                throw new IllegalArgumentException("VBO isn't uploaded. You should upload VertexBufferObject data before use");
+            }
+            return vbo;
+
+        }
+
+        public Binder attrs(VertexBufferObject.Definition definition) {
             final VertexBufferObject vbo = get(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.glBindBuffer(definition.getBufferType(), vbo.getId());
@@ -225,14 +214,14 @@ public class GLDrawContext {
             return this;
         }
 
-        public DrawContext2f.Binder attr(VertexBuffer buffer, int item) {
+        public Binder attr(VertexBuffer buffer, int item) {
             final VertexBufferLayout vbl = buffer.getLayout();
             attrPointerBuffer(nextAttrIndex(), item, buffer);
             adjustVertexCount(buffer.getSize(), vbl.getStride());
             return this;
         }
 
-        public DrawContext2f.Binder attrs(VertexBuffer vb) {
+        public Binder attrs(VertexBuffer vb) {
             final VertexBufferLayout vbl = vb.getLayout();
             for (int i=0; i<vbl.getAttrCount(); i++) {
                 attrPointerBuffer(nextAttrIndex(), i, vb);
@@ -262,7 +251,7 @@ public class GLDrawContext {
             vertexCount = (vertexCount < 0 ? count : IntMathUtils.min(vertexCount, count));
         }
 
-        public DrawContext2f.Binder use(ShaderProgram program) {
+        public Binder use(ShaderProgram program) {
             this.vertexCount = -1;
             this.attrIndex = -1;
             this.uniformIndex = -1;

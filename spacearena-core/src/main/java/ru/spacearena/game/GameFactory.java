@@ -15,6 +15,7 @@ import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
+import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.game.ship.Ship;
@@ -66,6 +67,20 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(new Sky(viewport));
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f, Color.WHITE));
+
+        viewport.add(new EngineObject() {
+            private float size = 1;
+
+            @Override
+            public void onUpdate(float seconds) {
+                size += 2f * seconds;
+            }
+
+            @Override
+            public void onDraw(DrawContext2f context) {
+                context.fillCircle(0,0,size);
+            }
+        });
 
 //        viewport.add(new EngineObject() {
 //            @Override
@@ -132,9 +147,9 @@ public class GameFactory implements EngineFactory {
                 ship1.flyTo(dir.x, dir.y, seconds);
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SUBTRACT)) {
-                    viewport.setScale(viewport.getScaleX() + 0.001f);
+                    viewport.setScale(viewport.getScaleX() + 0.00001f);
                 } else if (isKeyboardKeyPressed(KeyCode.VK_ADD)) {
-                    viewport.setScale(viewport.getScaleX() - 0.001f);
+                    viewport.setScale(viewport.getScaleX() - 0.00001f);
                 }
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
