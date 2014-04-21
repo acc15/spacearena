@@ -2,7 +2,10 @@ package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.shapes.Rect2ID;
-import ru.spacearena.engine.graphics.*;
+import ru.spacearena.engine.graphics.DrawContext2f;
+import ru.spacearena.engine.graphics.Matrix;
+import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.Texture;
 import ru.spacearena.engine.graphics.fbo.FrameBufferObject;
 import ru.spacearena.engine.graphics.shaders.DefaultShaders;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
@@ -25,13 +28,8 @@ public class Explosion extends EngineObject {
         shader(Explosion.class, "blur.frag").
         attribute("a_Position").
         attribute("a_TexCoord").
-        uniform("u_MVPMatrix");
-
-    /*
-    uniform mat4 u_MVPMatrix;
-    attribute vec4 a_Position;
-    attribute vec2 a_TexCoord;
-    */
+        uniform("u_MVPMatrix").
+        uniform("u_Texture");
 
 
     private final float x, y;
@@ -55,18 +53,33 @@ public class Explosion extends EngineObject {
 
     @Override
     public void onDraw(DrawContext2f context) {
-        try {
-            context.drawTo(FRAMEBUF);
-            context.getViewport(viewport);
-            context.setViewport(0, 0, 256, 256);
-            context.setMatrix(identity);
-            context.color(Color.BLACK).clear();
-            context.color(Color.RED).fillRect(-0.5f, 0.5f, 0.5f, -0.5f);
-        } finally {
-            context.popMatrix();
-            context.setViewport(viewport);
-            context.drawTo(null);
-        }
-        context.drawImage(x-10, x-10, x+10, x+10, TEXTURE);
+//        try {
+//            context.drawTo(FRAMEBUF);
+//            context.getViewport(viewport);
+//            context.setViewport(0, 0, 256, 256);
+//            context.setMatrix(identity);
+//            context.color(Color.BLACK).clear();
+//            context.color(Color.RED).drawRect(-0.5f, 0.5f, 0.5f, -0.5f);
+//            context.color(Color.GREEN).drawRect(-0.5f, -0.5f, 0, 0);
+//            context.color(Color.YELLOW).drawRect(-0.25f, 0, 0, 0.25f);
+//        } finally {
+//            context.popMatrix();
+//            context.setViewport(viewport);
+//            context.drawTo(null);
+//        }
+//        final Texture t = context.get(TEXTURE);
+//        final VertexBuffer vb = context.getSharedBuffer();
+//        vb.reset(DefaultShaders.LAYOUT_P2T2);
+//        vb.put(x-10, y-10).put(t.getLeft(), t.getTop()).
+//           put(x-10, y+10).put(t.getLeft(), t.getBottom()).
+//           put(x+10, y+10).put(t.getRight(), t.getBottom()).
+//           put(x+10, y-10).put(t.getRight(), t.getTop());
+//        context.use(BLUR_PROGRAM).
+//                attrs(vb).
+//                uniform(context.getActiveMatrix()).
+//                uniform(TEXTURE, 0).
+//                draw(OpenGL.GL_TRIANGLE_FAN);
+
+        //context.drawImage();
     }
 }
