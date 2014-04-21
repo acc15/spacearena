@@ -520,4 +520,7 @@ public class Matrix {
         a[++offset] = m[13];
     }
 
+    public float transformUniform(float v) {
+        return m[0] * v;
+    }
 }

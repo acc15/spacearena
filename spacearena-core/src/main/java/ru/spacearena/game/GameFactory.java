@@ -78,7 +78,7 @@ public class GameFactory implements EngineFactory {
 
             @Override
             public void onDraw(DrawContext2f context) {
-                context.fillCircle(0,0,size);
+                context.fillCircle(0, 0, size);
             }
         });
 
@@ -146,10 +146,11 @@ public class GameFactory implements EngineFactory {
                 final Point2F dir = getDirection();
                 ship1.flyTo(dir.x, dir.y, seconds);
 
+                final float zoomF = seconds;
                 if (isKeyboardKeyPressed(KeyCode.VK_SUBTRACT)) {
-                    viewport.setScale(viewport.getScaleX() + 0.00001f);
+                    viewport.setScale(viewport.getScaleX() * (1+zoomF));
                 } else if (isKeyboardKeyPressed(KeyCode.VK_ADD)) {
-                    viewport.setScale(viewport.getScaleX() - 0.00001f);
+                    viewport.setScale(viewport.getScaleX() * (1-zoomF));
                 }
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {

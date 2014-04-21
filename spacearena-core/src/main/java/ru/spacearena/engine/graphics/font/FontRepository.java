@@ -6,10 +6,10 @@ package ru.spacearena.engine.graphics.font;
  */
 public class FontRepository {
 
-    public static final FontDefinition SEGOE_UI =
-            new FontDefinition(FontRepository.class, "segoeui");
-    public static final FontDefinition SEGOE_UI_LIGHT =
-            new FontDefinition(FontRepository.class, "segoeuilight");
-    public static final FontDefinition CALIBRI =
-            new FontDefinition(FontRepository.class, "calibri");
+    public static final FontData.Definition SEGOE_UI =
+            new FontData.Definition(FontRepository.class, "segoeui");
+    public static final FontData.Definition SEGOE_UI_LIGHT =
+            new FontData.Definition(FontRepository.class, "segoeuilight");
+    public static final FontData.Definition CALIBRI =
+            new FontData.Definition(FontRepository.class, "calibri");
 }

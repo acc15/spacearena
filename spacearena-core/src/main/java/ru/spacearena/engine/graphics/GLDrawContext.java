@@ -1,8 +1,6 @@
 package ru.spacearena.engine.graphics;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.graphics.font.FontData;
-import ru.spacearena.engine.graphics.font.FontIO;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
@@ -21,7 +19,6 @@ public class GLDrawContext {
     protected final VertexBuffer sharedBuffer = new VertexBuffer();
 
     private final HashMap<GLObjectDefinition<?>, Object> objects = new HashMap<GLObjectDefinition<?>, Object>();
-    private final HashMap<FontData.Definition, FontData> fonts = new HashMap<FontData.Definition, FontData>();
     private final Binder binder = new Binder();
 
     public GLDrawContext(OpenGL gl) {
@@ -39,17 +36,52 @@ public class GLDrawContext {
         objects.clear();
     }
 
-
     @SuppressWarnings("unchecked")
     private <T> T getObject(GLObjectDefinition<T> definition) {
         return (T) objects.get(definition);
     }
 
+    /**
+     * Checks whether object is loaded in current context or not
+     * @param definition object definition
+     * @return <code>true</code> if object is loaded, <code>false</code> otherwise
+     */
     public boolean has(GLObjectDefinition<?> definition) {
         return objects.containsKey(definition);
     }
 
+    /**
+     * Loads object by definition <b>only</b> if object doesn't exists yet.
+     * @param definition object definition
+     */
+    public void load(GLObjectDefinition<?> definition) {
+        if (!objects.containsKey(definition)) {
+            objects.put(definition, definition.create(this));
+        }
+    }
+
+    /**
+     * Returns object by definition. If object doesn't exists then exception will be thrown.
+     * @param definition object definition
+     * @param <T> object type
+     * @return object as specified by <code>definition</code>
+     */
     public <T> T get(GLObjectDefinition<T> definition) {
+        T obj = getObject(definition);
+        if (obj == null) {
+            throw new IllegalArgumentException("Object with definition: " + definition + " doesn't exists");
+        }
+        definition.reference(this, obj);
+        return obj;
+    }
+
+    /**
+     * Returns object by definition. If object doesn't exists it will be created and returned
+     * @param definition object definition
+     * @param <T> object type
+     * @return object as specified by <code>definition</code>
+     */
+    public <T> T obtain(GLObjectDefinition<T> definition) {
         T obj = getObject(definition);
         if (obj == null) {
             obj = definition.create(this);
@@ -69,29 +101,13 @@ public class GLDrawContext {
     }
 
     public Binder use(ShaderProgram.Definition definition) {
-        return binder.use(get(definition));
+        return binder.use(obtain(definition));
     }
 
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
-        final VertexBufferObject vbo = get(definition);
+        final VertexBufferObject vbo = obtain(definition);
         vbo.upload(gl, definition, buffer);
         return vbo;
-    }
-
-    public FontData get(FontData.Definition definition) {
-        FontData fontData = fonts.get(definition);
-        if (fontData != null) {
-            return fontData;
-        }
-        fontData = FontIO.load(definition.getFontUrl());
-        get(definition.getTexture());
-        fonts.put(definition, fontData);
-        return fontData;
-    }
-
-    public void delete(FontData.Definition definition) {
-        fonts.remove(definition);
-        delete(definition.getTexture());
     }
 
     public VertexBuffer getSharedBuffer() {
@@ -135,7 +151,7 @@ public class GLDrawContext {
         }
 
         public Binder uniform(Texture.Definition def, int unit) {
-            final Texture t = get(def);
+            final Texture t = obtain(def);
             if (!texturing) {
                 texturing = true;
                 gl.glEnable(OpenGL.GL_TEXTURE_2D);
@@ -184,7 +200,7 @@ public class GLDrawContext {
         }
 
         public Binder attr(VertexBufferObject.Definition definition, int item) {
-            final VertexBufferObject vbo = get(definition);
+            final VertexBufferObject vbo = obtain(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.glBindBuffer(definition.getBufferType(), vbo.getId());
             attrPointerOffset(nextAttrIndex(), item, vbl);
@@ -194,7 +210,7 @@ public class GLDrawContext {
         }
 
         private VertexBufferObject ensureVBOUploaded(VertexBufferObject.Definition def) {
-            final VertexBufferObject vbo = get(def);
+            final VertexBufferObject vbo = obtain(def);
             if (vbo.getSize() < 0) {
                 throw new IllegalArgumentException("VBO isn't uploaded. You should upload VertexBufferObject data before use");
             }
@@ -203,7 +219,7 @@ public class GLDrawContext {
         }
 
         public Binder attrs(VertexBufferObject.Definition definition) {
-            final VertexBufferObject vbo = get(definition);
+            final VertexBufferObject vbo = obtain(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.glBindBuffer(definition.getBufferType(), vbo.getId());
             for (int i=0; i<vbl.getAttrCount(); i++) {
@@ -262,7 +278,5 @@ public class GLDrawContext {
             this.program = program;
             return binder;
         }
-
-
     }
 }

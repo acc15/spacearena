@@ -137,7 +137,7 @@ public class Ship extends GameBody {
         super.onDrawTransformed(context);
 
         final VertexBuffer vb = context.getSharedBuffer();
-        final Texture texture = context.get(SHIP_TEXTURE);
+        final Texture texture = context.obtain(SHIP_TEXTURE);
 
         final float l = -3.7f, t = -2.3f, r = 5.4f, b = 2.3f;
         vb.reset(DefaultShaders.LAYOUT_P2T2).

@@ -112,12 +112,12 @@ public class DrawContext2f extends GLDrawContext {
     }
 
     public void drawImage(float x, float y, Texture.Definition texture) {
-        final Texture t = get(texture);
+        final Texture t = obtain(texture);
         drawImage(x, y, x + t.getWidth(), y + t.getHeight(), texture);
     }
 
     public void drawImage(float l, float t, float r, float b, Texture.Definition definition) {
-        final Texture texture = get(definition);
+        final Texture texture = obtain(definition);
         getSharedBuffer().reset(DefaultShaders.LAYOUT_P2T2).
                 put(l, t).put(texture.getLeft(), texture.getTop()).
                 put(l, b).put(texture.getLeft(), texture.getBottom()).
@@ -132,14 +132,14 @@ public class DrawContext2f extends GLDrawContext {
 
 
     public float getFontLineHeight() {
-        final FontData fd = get(font);
+        final FontData fd = obtain(font);
         return fd.getLineHeight() * fontSize / fd.getFontSize();
     }
 
     public void drawText(String text, float x, float y) {
 
-        final FontData f = get(font);
-        final Texture t = get(font.getTexture());
+        final FontData f = obtain(font);
+        final Texture t = obtain(font.getTexture());
 
         final float scale = fontSize / f.getFontSize();
         final float lineHeight = f.getLineHeight() * scale;
@@ -307,7 +307,7 @@ public class DrawContext2f extends GLDrawContext {
     }
 
     public FontData getFont() {
-        return get(font);
+        return obtain(font);
     }
 
     public DrawContext2f font(FontData.Definition definition) {

@@ -81,7 +81,7 @@ public class ShaderProgram {
             int shaderIndex = 0;
             try {
                 while (shaderIndex < shaders.size()) {
-                    final Shader shader = context.get(shaders.get(shaderIndex));
+                    final Shader shader = context.obtain(shaders.get(shaderIndex));
                     gl.glAttachShader(p.id, shader.getId());
                     ++shaderIndex;
                 }

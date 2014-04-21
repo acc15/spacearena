@@ -1,6 +1,9 @@
 package ru.spacearena.engine.graphics.font;
 
+import ru.spacearena.engine.graphics.GLDrawContext;
+import ru.spacearena.engine.graphics.GLObjectDefinition;
 import ru.spacearena.engine.graphics.Texture;
+import ru.spacearena.engine.util.ResourceUtils;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -14,10 +17,31 @@ import java.util.Map;
 */
 public class FontData implements Serializable {
 
+    public static class Definition implements GLObjectDefinition<FontData> {
+        private final URL fontUrl;
+        private final Texture.Definition texture;
 
-    public static interface Definition {
-        URL getFontUrl();
-        Texture.Definition getTexture();
+        public Definition(Class<?> clazz, String baseUrl) {
+            this.fontUrl = ResourceUtils.getUrl(clazz, baseUrl + ".fnt");
+            this.texture = new Texture.Definition().url(clazz, baseUrl + ".png");
+        }
+
+        public FontData create(GLDrawContext context) {
+            final FontData fd = FontIO.load(fontUrl);
+            context.load(texture);
+            return fd;
+        }
+
+        public void reference(GLDrawContext context, FontData object) {
+        }
+
+        public void delete(GLDrawContext context, FontData object) {
+            context.delete(texture);
+        }
+
+        public Texture.Definition getTexture() {
+            return texture;
+        }
     }
 
     public static final int PLAIN = 0;
@@ -99,14 +123,6 @@ public class FontData implements Serializable {
     public Collection<CharData> getGlyphs() {
         return info.values();
     }
-//
-//    public Rect2I computeBoundingBox(String str) {
-//        return computeBoundingBox(str, new Rect2IP());
-//    }
-//
-//    public Rect2I computeBoundingBox(String str, Rect2I rect) {
-//        //rect.setBounds();
-//    }
 
     public static int getLineCount(String str) {
         if (str.isEmpty()) {
@@ -191,4 +207,5 @@ public class FontData implements Serializable {
     public void setImageScale(int imageScale) {
         this.imageScale = imageScale;
     }
+
 }
