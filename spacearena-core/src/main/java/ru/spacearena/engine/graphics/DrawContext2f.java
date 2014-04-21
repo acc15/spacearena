@@ -6,7 +6,6 @@ import ru.spacearena.engine.graphics.font.CharData;
 import ru.spacearena.engine.graphics.font.DistanceFieldProgram;
 import ru.spacearena.engine.graphics.font.FontData;
 import ru.spacearena.engine.graphics.font.FontRepository;
-import ru.spacearena.engine.graphics.shaders.PositionDepthProgram;
 import ru.spacearena.engine.graphics.shaders.PositionProgram;
 import ru.spacearena.engine.graphics.shaders.TextureProgram;
 import ru.spacearena.engine.graphics.texture.Texture;
@@ -235,16 +234,6 @@ public class DrawContext2f extends GLDrawContext {
         drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
-    public void fillRect(float x1, float y1, float x2, float y2, float depth) {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
-        use(PositionDepthProgram.DEFINITION).
-                attrs(vertexBuffer).
-                uniform(activeMatrix).
-                uniform(color).
-                uniform(depth).
-                draw(OpenGL.GL_TRIANGLE_FAN);
-    }
-
     public void fillRect(float x1, float y1, float x2, float y2) {
         vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
         drawBuf(OpenGL.GL_TRIANGLE_FAN);
@@ -274,40 +263,6 @@ public class DrawContext2f extends GLDrawContext {
         vertexBuffer.put(x2, y2, x2 - (nx * COS_30 - ny * SIN_30) * size, y2 - (ny * COS_30 + nx * SIN_30) * size);
         vertexBuffer.put(x2, y2, x2 - (nx * COS_30 + ny * SIN_30) * size, y2 - (ny * COS_30 - nx * SIN_30) * size);
         drawBuf(OpenGL.GL_LINES);
-//        drawLine(x1, y1, x2, y2);
-//
-//        float p30x = 0f, p30y = 0f, s30x = 0f, s30y = 0f;
-//        if (head == HeadType.ARROW || tail == HeadType.ARROW) {
-//            final float vx = x2 - x1, vy = y2 - y1;
-//            final float l = FloatMathUtils.length(vx, vy);
-//            final float nx = vx/l, ny = vy/l;
-//            p30x = nx * COS_30 - ny * SIN_30;
-//            p30y = ny * COS_30 + nx * SIN_30;
-//            s30x = nx * COS_30 + ny * SIN_30;
-//            s30y = ny * COS_30 - nx * SIN_30;
-//        }
-//
-//        switch (head) {
-//            case CIRCLE:
-//                context.fillCircle(x1, y1, headSize);
-//                break;
-//
-//            case ARROW:
-//                context.drawLine(x1, y1, x1 + p30x * headSize, y1 + p30y * headSize);
-//                context.drawLine(x1, y1, x1 + s30x * headSize, y1 + s30y * headSize);
-//                break;
-//        }
-//
-//        switch (tail) {
-//            case CIRCLE:
-//                context.fillCircle(x2, y2, headSize);
-//                break;
-//
-//            case ARROW:
-//                context.drawLine(x2, y2, x2 - p30x * tailSize, y2 - p30y * tailSize);
-//                context.drawLine(x2, y2, x2 - s30x * tailSize, y2 - s30y * tailSize);
-//                break;
-//        }
     }
 
     private void renderEllipse(int type, float x, float y, float rx, float ry) {

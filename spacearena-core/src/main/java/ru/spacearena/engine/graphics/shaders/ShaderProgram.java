@@ -51,10 +51,6 @@ public class ShaderProgram {
         }
     }
 
-    public void shader(String resourceName) {
-        shader(getClass(), resourceName);
-    }
-
     public void shader(int type, String source) {
         this.shaders.add(new Shader(type, source));
     }

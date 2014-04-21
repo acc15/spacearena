@@ -4,6 +4,8 @@ import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.util.ResourceUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Vyacheslav Mayorov
@@ -12,7 +14,40 @@ import java.net.URL;
 public class TextureDefinition implements Texture.Definition {
 
     private int wrapS = 0, wrapT = 0, minFilter = OpenGL.GL_LINEAR, magFilter = OpenGL.GL_LINEAR;
-    private URL[] textureUrls;
+    private final List<TextureLoader> loaders = new ArrayList<TextureLoader>();
+
+    public static interface TextureLoader {
+        void load(OpenGL gl, Texture t, int level);
+    }
+
+    public static class EmptyTextureLoader implements TextureLoader {
+        private final int width, height, format, type;
+
+        public EmptyTextureLoader(int width, int height, int format, int type) {
+            this.width = width;
+            this.height = height;
+            this.format = format;
+            this.type = type;
+        }
+
+        public void load(OpenGL gl, Texture t, int level) {
+            gl.glTexImage2D(OpenGL.GL_TEXTURE_2D, level, width, height, format, type, null);
+            t.setDimension(width, height);
+        }
+    }
+
+    public static class URLTextureLoader implements TextureLoader {
+
+        private final URL url;
+
+        public URLTextureLoader(URL url) {
+            this.url = url;
+        }
+
+        public void load(OpenGL gl, Texture t, int level) {
+            gl.glTexImage2D(t, level, url);
+        }
+    }
 
     public TextureDefinition minFilter(int minFilter) {
         this.minFilter = minFilter;
@@ -34,24 +69,32 @@ public class TextureDefinition implements Texture.Definition {
         return this;
     }
 
+    public TextureDefinition empty(int width, int height, int format, int type) {
+        this.loaders.add(new EmptyTextureLoader(width, height, format, type));
+        return this;
+    }
+
+    public TextureDefinition url(URL url) {
+        this.loaders.add(new URLTextureLoader(url));
+        return this;
+    }
+
     public TextureDefinition urls(URL... textureUrls) {
-        this.textureUrls = textureUrls;
+        for (URL url: textureUrls) {
+            this.loaders.add(new URLTextureLoader(url));
+        }
         return this;
     }
 
     public TextureDefinition url(Class<?> baseClass, String resourceName) {
-        this.textureUrls = new URL[] {ResourceUtils.getUrl(baseClass, resourceName)};
-        return this;
+        return url(ResourceUtils.getUrl(baseClass, resourceName));
     }
 
     public TextureDefinition urls(Class<?> baseClass, String prefix, String suffix, int count) {
-        final URL[] urls = new URL[count];
         for (int i=0; i<count; i++) {
             final String resourceName = prefix + "_" + i + "." + suffix;
-            final URL url = ResourceUtils.getUrl(baseClass, resourceName);
-            urls[i] = url;
+            this.loaders.add(new URLTextureLoader(ResourceUtils.getUrl(baseClass, resourceName)));
         }
-        this.textureUrls = urls;
         return this;
     }
 
@@ -73,9 +116,8 @@ public class TextureDefinition implements Texture.Definition {
         if (wrapT != 0) {
             gl.glTexParameter(type, OpenGL.GL_TEXTURE_WRAP_T, wrapT);
         }
-        for (int level = 0; level < textureUrls.length; level++) {
-            final URL url = textureUrls[level];
-            gl.glTexImage2D(t, level, url);
+        for (int level = 0; level < loaders.size(); level++) {
+            loaders.get(level).load(gl, t, level);
         }
         return t;
     }

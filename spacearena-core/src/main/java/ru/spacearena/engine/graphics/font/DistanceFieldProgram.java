@@ -22,8 +22,8 @@ public class DistanceFieldProgram extends ShaderProgram {
     public static final int SMOOTH_UNIFORM = 3;
 
     private DistanceFieldProgram() {
-        shader("df.vert");
-        shader("df.frag");
+        shader(DistanceFieldProgram.class, "df.vert");
+        shader(DistanceFieldProgram.class, "df.frag");
         attribute("a_Position");
         attribute("a_TexCoord");
         uniform("u_MVPMatrix");

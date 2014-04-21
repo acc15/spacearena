@@ -17,8 +17,8 @@ public class TextureProgram extends ShaderProgram {
     public static final VertexBufferLayout LAYOUT_PT2 = new VertexBufferLayout.Builder().floats(2).floats(2).build();
 
     private TextureProgram() {
-        shader("tex.vert");
-        shader("tex.frag");
+        shader(TextureProgram.class, "tex.vert");
+        shader(TextureProgram.class, "tex.frag");
         attribute("a_Position");
         attribute("a_TexCoord");
         uniform("u_MVPMatrix");

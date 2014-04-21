@@ -17,8 +17,8 @@ public class PositionProgram extends ShaderProgram {
     public static final VertexBufferLayout LAYOUT_P2 = new VertexBufferLayout.Builder().floats(2).build();
 
     private PositionProgram() {
-        shader("p.vert");
-        shader("p.frag");
+        shader(PositionProgram.class, "p.vert");
+        shader(PositionProgram.class, "p.frag");
         attribute("a_Position");
         uniform("u_MVPMatrix");
         uniform("u_Color");

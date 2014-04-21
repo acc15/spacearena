@@ -25,8 +25,8 @@ public class PositionColorProgram extends ShaderProgram {
             floats(2).floats(4).build();
 
     private PositionColorProgram() {
-        shader("pc.vert");
-        shader("pc.frag");
+        shader(PositionColorProgram.class, "pc.vert");
+        shader(PositionColorProgram.class, "pc.frag");
         attribute("a_Position");
         attribute("a_Color");
         uniform("u_MVPMatrix");
