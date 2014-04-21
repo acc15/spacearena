@@ -7,7 +7,7 @@ import android.opengl.GLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.texture.Texture;
+import ru.spacearena.engine.graphics.Texture;
 
 import java.io.IOException;
 import java.io.InputStream;

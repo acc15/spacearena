@@ -13,10 +13,9 @@ import ru.spacearena.engine.EngineEntity;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.graphics.shaders.DefaultShaders;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
-import ru.spacearena.engine.graphics.shaders.TextureProgram;
-import ru.spacearena.engine.graphics.texture.Texture;
-import ru.spacearena.engine.graphics.texture.TextureDefinition;
+import ru.spacearena.engine.graphics.Texture;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -48,7 +47,7 @@ public class Ship extends GameBody {
     private float health = 1f;
     private boolean active = false;
 
-    private static final Texture.Definition SHIP_TEXTURE = new TextureDefinition().url(GameFactory.class, "ship.png");
+    private static final Texture.Definition SHIP_TEXTURE = new Texture.Definition().url(GameFactory.class, "ship.png");
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
@@ -141,7 +140,7 @@ public class Ship extends GameBody {
         final Texture texture = context.get(SHIP_TEXTURE);
 
         final float l = -3.7f, t = -2.3f, r = 5.4f, b = 2.3f;
-        vb.reset(TextureProgram.LAYOUT_PT2).
+        vb.reset(DefaultShaders.LAYOUT_P2T2).
                 put(l, t).put(texture.getLeft(), texture.getTop()).
                 put(l, b).put(texture.getLeft(), texture.getBottom()).
                 put(r, b).put(texture.getRight(), texture.getBottom()).
@@ -156,19 +155,13 @@ public class Ship extends GameBody {
         //context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, SHIP_TEXTURE);
     }
 
-    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition() {
-        public ShaderProgram createProgram() {
-            final ShaderProgram p = new ShaderProgram();
-            p.shader(TextureProgram.class, "tex.vert");
-            p.shader(Ship.class, "ship.frag");
-            p.attribute("a_Position");
-            p.attribute("a_TexCoord");
-            p.uniform("u_MVPMatrix");
-            p.uniform("u_Texture");
-            //p.glUniform1i("u_ShadeColor");
-            p.uniform("u_ShadeAmount");
-            return p;
-        }
-    };
+    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition().
+            shader(DefaultShaders.class, "tex.vert").
+            shader(Ship.class, "ship.frag").
+            attribute("a_Position").
+            attribute("a_TexCoord").
+            uniform("u_MVPMatrix").
+            uniform("u_Texture").
+            uniform("u_ShadeAmount");
 
 }

@@ -1,7 +1,5 @@
 package ru.spacearena.engine.graphics;
 
-import ru.spacearena.engine.graphics.texture.Texture;
-
 import java.net.URL;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;

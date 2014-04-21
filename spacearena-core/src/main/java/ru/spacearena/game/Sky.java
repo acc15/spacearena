@@ -98,18 +98,13 @@ public class Sky extends EngineObject {
                 draw(OpenGL.GL_POINTS);
     }
 
-    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition() {
-        public ShaderProgram createProgram() {
-            final ShaderProgram p = new ShaderProgram();
-            p.shader(Sky.class, "sky.vert");
-            p.shader(Sky.class, "sky.frag");
-            p.attribute("a_Position");
-            p.attribute("a_Color");
-            p.attribute("a_PointSize");
-            p.uniform("u_MVPMatrix");
-            return p;
-        }
-    };
+    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition().
+            shader(Sky.class, "sky.vert").
+            shader(Sky.class, "sky.frag").
+            attribute("a_Position").
+            attribute("a_Color").
+            attribute("a_PointSize").
+            uniform("u_MVPMatrix");
 
     public static final VertexBufferLayout LAYOUT_P2C3S1 = VertexBufferLayout.create().
             floats(2).floats(3).floats(1).build();

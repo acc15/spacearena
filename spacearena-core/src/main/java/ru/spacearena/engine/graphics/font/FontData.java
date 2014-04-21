@@ -1,6 +1,6 @@
 package ru.spacearena.engine.graphics.font;
 
-import ru.spacearena.engine.graphics.texture.Texture;
+import ru.spacearena.engine.graphics.Texture;
 
 import java.io.Serializable;
 import java.net.URL;

@@ -1,5 +1,7 @@
 package ru.spacearena.engine.graphics.shaders;
 
+import ru.spacearena.engine.graphics.GLDrawContext;
+import ru.spacearena.engine.graphics.GLObjectDefinition;
 import ru.spacearena.engine.graphics.OpenGL;
 
 /**
@@ -8,62 +10,54 @@ import ru.spacearena.engine.graphics.OpenGL;
 */
 public class Shader {
 
-    private final String source;
-    private final int type;
+    public static class Definition implements GLObjectDefinition<Shader> {
 
-    private int id;
-    private int c;
+        private final String source;
+        private final int type;
 
-    public Shader(int type, String source) {
-        this.type = type;
-        this.source = source;
+        public Definition(int type, String source) {
+            this.type = type;
+            this.source = source;
+        }
+
+        public Shader create(GLDrawContext context) {
+            final OpenGL gl = context.getGL();
+
+            final Shader shader = new Shader(gl.glCreateShader(type));
+            gl.glShaderSource(shader.id, source);
+            gl.glCompileShader(shader.id);
+            if (gl.glGetShaderiv(shader.id, OpenGL.GL_COMPILE_STATUS) == 0) {
+                final String log = gl.glGetShaderInfoLog(shader.id);
+                gl.glDeleteShader(shader.id);
+                throw new RuntimeException("Can't compile shader: " + log);
+            }
+            return shader;
+        }
+
+        public void reference(GLDrawContext context, Shader object) {
+            ++object.c;
+        }
+
+        public void delete(GLDrawContext context, Shader object) {
+            if (object.c == 0) {
+                throw new IllegalStateException("Attempt to delete shader which isn't present in GL");
+            }
+            --object.c;
+            if (object.c <= 0) {
+                context.getGL().glDeleteShader(object.id);
+            }
+        }
     }
 
-    public boolean isCompiled() {
-        return c != 0;
+    private final int id;
+    private int c;
+
+    public Shader(int id) {
+        this.id = id;
     }
 
     public int getId() {
         return id;
-    }
-
-    public void compile(OpenGL gl) {
-        if (c == 0) {
-            this.id = doCompile(gl);
-        }
-        ++c;
-    }
-
-    public void delete(OpenGL gl) {
-        if (c == 0) {
-            throw new IllegalStateException("Attempt to delete shader which isn't present in GL");
-        }
-        --c;
-        if (c == 0) {
-            doDelete(gl);
-            this.id = 0;
-        }
-    }
-
-    public void reset() {
-        this.c = 0;
-        this.id = 0;
-    }
-
-    private int doCompile(OpenGL gl) {
-        final int id = gl.glCreateShader(type);
-        gl.glShaderSource(id, source);
-        gl.glCompileShader(id);
-        if (gl.glGetShaderiv(id, OpenGL.GL_COMPILE_STATUS) == 0) {
-            final String log = gl.glGetShaderInfoLog(id);
-            gl.glDeleteShader(id);
-            throw new RuntimeException("Can't compile shader: " + log);
-        }
-        return id;
-    }
-
-    private void doDelete(OpenGL gl) {
-        gl.glDeleteShader(getId());
     }
 
 }

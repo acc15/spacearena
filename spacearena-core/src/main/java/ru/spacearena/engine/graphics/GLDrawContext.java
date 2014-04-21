@@ -4,7 +4,6 @@ import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.graphics.font.FontData;
 import ru.spacearena.engine.graphics.font.FontIO;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
-import ru.spacearena.engine.graphics.texture.Texture;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
@@ -19,9 +18,9 @@ import java.util.HashMap;
 public class GLDrawContext {
 
     protected final OpenGL gl;
-    private final HashMap<ShaderProgram.Definition, ShaderProgram> programs = new HashMap<ShaderProgram.Definition, ShaderProgram>();
+
+    private final HashMap<GLObjectDefinition<?>, Object> objects = new HashMap<GLObjectDefinition<?>, Object>();
     private final HashMap<VertexBufferObject.Definition, VertexBufferObject> vbos = new HashMap<VertexBufferObject.Definition, VertexBufferObject>();
-    private final HashMap<Texture.Definition, Texture> textures = new HashMap<Texture.Definition, Texture>();
     private final HashMap<FontData.Definition, FontData> fonts = new HashMap<FontData.Definition, FontData>();
     private final Binder binder = new Binder();
 
@@ -37,25 +36,45 @@ public class GLDrawContext {
     }
 
     public void dispose() {
-        programs.clear();
         vbos.clear();
-        textures.clear();
+        objects.clear();
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private <T> T getObject(GLObjectDefinition<T> definition) {
+        return (T) objects.get(definition);
+    }
+
+    public boolean has(GLObjectDefinition<?> definition) {
+        return objects.containsKey(definition);
+    }
+
+    public <T> T get(GLObjectDefinition<T> definition) {
+        T obj = getObject(definition);
+        if (obj == null) {
+            obj = definition.create(this);
+            objects.put(definition, obj);
+        }
+        definition.reference(this, obj);
+        return obj;
+    }
+
+    public <T> void delete(GLObjectDefinition<T> definition) {
+        final T obj = getObject(definition);
+        if (obj == null) {
+            throw new IllegalArgumentException("Can't find object by definition: " + definition);
+        }
+        definition.delete(this, obj);
+        objects.remove(definition);
     }
 
     public Binder use(ShaderProgram.Definition definition) {
         return binder.use(get(definition));
     }
 
-    public boolean has(ShaderProgram.Definition definition) {
-        return programs.containsKey(definition);
-    }
-
     public boolean has(VertexBufferObject.Definition definition) {
         return vbos.containsKey(definition);
-    }
-
-    public boolean has(Texture.Definition definition) {
-        return textures.containsKey(definition);
     }
 
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
@@ -82,26 +101,6 @@ public class GLDrawContext {
         return vbo;
     }
 
-    public ShaderProgram get(ShaderProgram.Definition def) {
-        ShaderProgram p = programs.get(def);
-        if (p != null) {
-            return p;
-        }
-        p = def.createProgram();
-        programs.put(def, p);
-        p.make(gl);
-        return p;
-    }
-
-    public Texture get(Texture.Definition definition) {
-        Texture t = textures.get(definition);
-        if (t == null) {
-            t = definition.createTexture(gl);
-            textures.put(definition, t);
-        }
-        return t;
-    }
-
     public FontData get(FontData.Definition definition) {
         FontData fontData = fonts.get(definition);
         if (fontData != null) {
@@ -113,28 +112,11 @@ public class GLDrawContext {
         return fontData;
     }
 
-    public void delete(ShaderProgram.Definition definition) {
-        final ShaderProgram p = programs.get(definition);
-        if (p == null) {
-            return;
-        }
-        p.delete(gl);
-        programs.remove(definition);
-    }
-
     public void delete(FontData.Definition definition) {
         fonts.remove(definition);
         delete(definition.getTexture());
     }
 
-    public void delete(Texture.Definition definition) {
-        final Texture t = textures.get(definition);
-        if (t == null) {
-            throw new IllegalArgumentException("Texture with definition " + definition + " doesn't exists");
-        }
-        gl.glDeleteTexture(t.getId());
-        textures.remove(definition);
-    }
 
     public class Binder {
 

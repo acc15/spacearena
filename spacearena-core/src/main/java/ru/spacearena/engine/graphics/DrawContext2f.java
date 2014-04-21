@@ -3,12 +3,9 @@ package ru.spacearena.engine.graphics;
 import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.shapes.Rect2I;
 import ru.spacearena.engine.graphics.font.CharData;
-import ru.spacearena.engine.graphics.font.DistanceFieldProgram;
 import ru.spacearena.engine.graphics.font.FontData;
 import ru.spacearena.engine.graphics.font.FontRepository;
-import ru.spacearena.engine.graphics.shaders.PositionProgram;
-import ru.spacearena.engine.graphics.shaders.TextureProgram;
-import ru.spacearena.engine.graphics.texture.Texture;
+import ru.spacearena.engine.graphics.shaders.DefaultShaders;
 import ru.spacearena.engine.graphics.vbo.VBODefinition;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.util.FloatMathUtils;
@@ -104,12 +101,12 @@ public class DrawContext2f extends GLDrawContext {
 
     public void drawImage(float l, float t, float r, float b, Texture.Definition definition) {
         final Texture texture = get(definition);
-        vertexBuffer.reset(TextureProgram.LAYOUT_PT2).
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2T2).
                 put(l, t).put(texture.getLeft(), texture.getTop()).
                 put(l, b).put(texture.getLeft(), texture.getBottom()).
                 put(r, b).put(texture.getRight(), texture.getBottom()).
                 put(r, t).put(texture.getRight(), texture.getTop());
-        use(TextureProgram.DEFINITION).
+        use(DefaultShaders.POSITION_TEXTURE_PROGRAM).
                 attrs(vertexBuffer).
                 uniform(activeMatrix).
                 uniform(definition, 0).
@@ -132,7 +129,7 @@ public class DrawContext2f extends GLDrawContext {
 
         float currentX = x, currentY = y;
 
-        vertexBuffer.reset(TextureProgram.LAYOUT_PT2);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2T2);
 
         boolean skipLF = false;
         for (int i = 0; i < text.length(); i++) {
@@ -191,7 +188,7 @@ public class DrawContext2f extends GLDrawContext {
             }
         }
 
-        use(DistanceFieldProgram.DEFINITION).
+        use(DefaultShaders.DISTANCE_FIELD_PROGRAM).
                 attrs(vertexBuffer).
                 uniform(activeMatrix).
                 uniform(font.getTexture(), 0).
@@ -211,7 +208,7 @@ public class DrawContext2f extends GLDrawContext {
     }
 
     public void fillConvexPoly(float[] points, int start, int size) {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.GL_TRIANGLE_FAN);
     }
 
@@ -220,32 +217,32 @@ public class DrawContext2f extends GLDrawContext {
     }
 
     public Polygon polygon() {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2);
         return polygon;
     }
 
     public void drawPoly(float[] points) {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2).put(points);
         drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
     public void drawPoly(float[] points, int start, int size) {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(points, start, size);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2).put(points, start, size);
         drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
     public void fillRect(float x1, float y1, float x2, float y2) {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
         drawBuf(OpenGL.GL_TRIANGLE_FAN);
     }
 
     public void drawRect(float x1, float y1, float x2, float y2) {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2).put(x1, y1).put(x1, y2).put(x2, y2).put(x2, y1);
         drawBuf(OpenGL.GL_LINE_LOOP);
     }
 
     public void drawLine(float x1, float y1, float x2, float y2) {
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2).put(x1, y1).put(x2, y2);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2).put(x1, y1).put(x2, y2);
         drawBuf(OpenGL.GL_LINES);
     }
 
@@ -258,7 +255,7 @@ public class DrawContext2f extends GLDrawContext {
 
         final float l = FloatMathUtils.length(vx, vy);
         final float nx = vx/l, ny = vy/l;
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2);
         vertexBuffer.put(x1, y1).put(x2, y2);
         vertexBuffer.put(x2, y2, x2 - (nx * COS_30 - ny * SIN_30) * size, y2 - (ny * COS_30 + nx * SIN_30) * size);
         vertexBuffer.put(x2, y2, x2 - (nx * COS_30 + ny * SIN_30) * size, y2 - (ny * COS_30 - nx * SIN_30) * size);
@@ -271,7 +268,7 @@ public class DrawContext2f extends GLDrawContext {
         try {
             activeMatrix.postTranslate(x, y);
             activeMatrix.postScale(rx, ry);
-            use(PositionProgram.DEFINITION).
+            use(DefaultShaders.POSITION_PROGRAM).
                     attrs(SIN_COS_VBO).
                     uniform(activeMatrix).
                     uniform(color).
@@ -389,7 +386,7 @@ public class DrawContext2f extends GLDrawContext {
     }
 
     private void drawBuf(int type) {
-        use(PositionProgram.DEFINITION).
+        use(DefaultShaders.POSITION_PROGRAM).
                 attrs(vertexBuffer).
                 uniform(activeMatrix).
                 uniform(color).
@@ -404,7 +401,7 @@ public class DrawContext2f extends GLDrawContext {
 
         final float a = FloatMathUtils.TWO_PI / n;
         final float c = FloatMathUtils.cos(a), s = FloatMathUtils.sin(a);
-        vertexBuffer.reset(PositionProgram.LAYOUT_P2);
+        vertexBuffer.reset(DefaultShaders.LAYOUT_P2);
         float vx = 1, vy = 0;
         for (int i = 0; i < n; i++) {
             vertexBuffer.put(x + vx * rx, y + vy * ry);

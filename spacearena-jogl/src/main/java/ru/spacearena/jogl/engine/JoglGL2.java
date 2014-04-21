@@ -3,7 +3,7 @@ package ru.spacearena.jogl.engine;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import ru.spacearena.engine.graphics.OpenGL;
-import ru.spacearena.engine.graphics.texture.Texture;
+import ru.spacearena.engine.graphics.Texture;
 
 import javax.media.opengl.GL2;
 import java.io.IOException;

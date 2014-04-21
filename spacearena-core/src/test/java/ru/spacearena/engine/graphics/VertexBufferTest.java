@@ -1,7 +1,7 @@
 package ru.spacearena.engine.graphics;
 
 import org.junit.Test;
-import ru.spacearena.engine.graphics.shaders.PositionProgram;
+import ru.spacearena.engine.graphics.shaders.DefaultShaders;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 
@@ -52,7 +52,7 @@ public class VertexBufferTest {
     public void testBufferMustGrow() throws Exception {
 
         final VertexBuffer vb = new VertexBuffer(4);
-        vb.reset(PositionProgram.LAYOUT_P2);
+        vb.reset(DefaultShaders.LAYOUT_P2);
 
         vb.put(1);
         vb.put(1,2,3,4);

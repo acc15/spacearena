@@ -131,18 +131,13 @@ public class EngineFlame extends EngineObject {
 
     public static final VertexBufferLayout LAYOUT_P2E1T1 = VertexBufferLayout.create().floats(2).floats(1).floats(1).build();
 
-    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition() {
-        public ShaderProgram createProgram() {
-            final ShaderProgram p = new ShaderProgram();
-            p.shader(EngineFlame.class, "flame.vert");
-            p.shader(EngineFlame.class, "flame.frag");
-            p.attribute("a_Position");
-            p.attribute("a_Edge");
-            p.attribute("a_Time");
-            p.uniform("u_MVPMatrix");
-            p.uniform("u_CenterColor");
-            p.uniform("u_EdgeColor");
-            return p;
-        }
-    };
+    public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition().
+            shader(EngineFlame.class, "flame.vert").
+            shader(EngineFlame.class, "flame.frag").
+            attribute("a_Position").
+            attribute("a_Edge").
+            attribute("a_Time").
+            uniform("u_MVPMatrix").
+            uniform("u_CenterColor").
+            uniform("u_EdgeColor");
 }
