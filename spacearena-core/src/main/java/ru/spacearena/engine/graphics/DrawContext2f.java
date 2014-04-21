@@ -2,7 +2,6 @@ package ru.spacearena.engine.graphics;
 
 import cern.colt.list.FloatArrayList;
 import ru.spacearena.engine.geometry.primitives.Point2F;
-import ru.spacearena.engine.geometry.shapes.Rect2I;
 import ru.spacearena.engine.graphics.font.CharData;
 import ru.spacearena.engine.graphics.font.FontData;
 import ru.spacearena.engine.graphics.font.FontRepository;
@@ -143,11 +142,11 @@ public class DrawContext2f extends GLDrawContext {
 
     public void drawText(String text, float x, float y) {
 
-        final FontData f = obtain(font);
-        final Texture t = obtain(font.getTexture());
+        final FontData font = obtain(this.font);
+        final Texture texture = obtain(this.font.getTexture());
 
-        final float scale = fontSize / f.getFontSize();
-        final float lineHeight = f.getLineHeight() * scale;
+        final float scale = fontSize / font.getFontSize();
+        final float lineHeight = font.getLineHeight() * scale;
 
         float currentX = x, currentY = y;
 
@@ -170,33 +169,32 @@ public class DrawContext2f extends GLDrawContext {
                     break;
 
                 case ' ':
-                    currentX += f.getSpaceAdvance() * scale;
+                    currentX += font.getSpaceAdvance() * scale;
                     break;
 
                 case '\t':
-                    currentX += f.getTabAdvance() * scale;
+                    currentX += font.getTabAdvance() * scale;
                     break;
 
                 default:
 
-                    final CharData ci = f.getCharInfo(ch);
-                    final Rect2I charRect = ci.getRect();
-
+                    final CharData ci = font.getCharInfo(ch);
                     final float offsetX = ci.getOffsetX() * scale;
                     final float offsetY = ci.getOffsetY() * scale;
-                    final float height = charRect.getHeight() * scale;
-                    final float width = charRect.getWidth() * scale;
+                    final float height = ci.getHeight() * scale;
+                    final float width = ci.getWidth() * scale;
                     final float advance = ci.getAdvance() * scale;
 
-                    final float tl = t.computeX((float) charRect.getLeft() / f.getImageWidth()),
-                            tt = t.computeY((float) charRect.getTop() / f.getImageHeight()),
-                            tr = t.computeX((float) charRect.getRight() / f.getImageWidth()),
-                            tb = t.computeY((float) charRect.getBottom() / f.getImageHeight());
+                    final float l = ci.getX(), t = ci.getY(), r = l + ci.getWidth(), b = t + ci.getHeight();
+                    final float tl = texture.computeX(l / font.getImageWidth()),
+                                tt = texture.computeY(t / font.getImageHeight()),
+                                tr = texture.computeX(r / font.getImageWidth()),
+                                tb = texture.computeY(b / font.getImageHeight());
 
                     final float ll = currentX + offsetX,
-                            lt = currentY + offsetY,
-                            lr = ll + width,
-                            lb = lt + height;
+                                lt = currentY + offsetY,
+                                lr = ll + width,
+                                lb = lt + height;
                     sharedBuffer.// first triangle
                             put(ll, lt).put(tl, tt).
                             put(ll, lb).put(tl, tb).
@@ -213,9 +211,9 @@ public class DrawContext2f extends GLDrawContext {
         use(DefaultShaders.DISTANCE_FIELD_PROGRAM).
                 attrs(sharedBuffer).
                 uniform(activeMatrix).
-                uniform(font.getTexture(), 0).
+                uniform(this.font.getTexture(), 0).
                 uniform(color).
-                uniform((float) (1 << f.getImageScale()) / fontSize).
+                uniform((float) (1 << font.getImageScale()) / fontSize).
                 draw(OpenGL.GL_TRIANGLES);
     }
 

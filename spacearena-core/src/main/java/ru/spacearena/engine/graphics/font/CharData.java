@@ -1,6 +1,6 @@
 package ru.spacearena.engine.graphics.font;
 
-import ru.spacearena.engine.geometry.shapes.Rect2ID;
+import ru.spacearena.engine.geometry.shapes.PackedRect2I;
 
 import java.io.Serializable;
 
@@ -8,15 +8,11 @@ import java.io.Serializable;
 * @author Vyacheslav Mayorov
 * @since 2014-07-04
 */
-public final class CharData implements Serializable {
-    private final Rect2ID rect = new Rect2ID();
+public final class CharData implements PackedRect2I, Serializable {
+    private int x,y,w,h;
     private int offsetY, offsetX;
     private int advance;
     private char character;
-
-    public Rect2ID getRect() {
-        return rect;
-    }
 
     public int getOffsetY() {
         return offsetY;
@@ -51,34 +47,28 @@ public final class CharData implements Serializable {
     }
 
     public int getX() {
-        return rect.x;
+        return x;
     }
 
     public int getY() {
-        return rect.y;
-    }
-
-    public void setX(int x) {
-        rect.x = x;
-    }
-
-    public void setY(int y) {
-        rect.y = y;
+        return y;
     }
 
     public int getWidth() {
-        return rect.w;
+        return w;
     }
 
     public int getHeight() {
-        return rect.h;
+        return h;
     }
 
-    public void setWidth(int width) {
-        rect.w = width;
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public void setHeight(int height) {
-        rect.h = height;
+    public void setDimension(int width, int height) {
+        this.w = width;
+        this.h = height;
     }
 }

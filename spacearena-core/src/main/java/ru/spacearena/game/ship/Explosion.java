@@ -4,6 +4,8 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.geometry.shapes.Rect2ID;
 import ru.spacearena.engine.graphics.*;
 import ru.spacearena.engine.graphics.fbo.FrameBufferObject;
+import ru.spacearena.engine.graphics.shaders.DefaultShaders;
+import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 
 /**
  * @author Vyacheslav Mayorov
@@ -17,6 +19,19 @@ public class Explosion extends EngineObject {
     public static final Texture.Definition TEXTURE = new Texture.Definition().empty(256, 256,
             OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_INT);
     public static final FrameBufferObject.Definition FRAMEBUF = new FrameBufferObject.Definition().attach(TEXTURE);
+
+    public static final ShaderProgram.Definition BLUR_PROGRAM = new ShaderProgram.Definition().
+        shader(DefaultShaders.class, "tex.vert").
+        shader(Explosion.class, "blur.frag").
+        attribute("a_Position").
+        attribute("a_TexCoord").
+        uniform("u_MVPMatrix");
+
+    /*
+    uniform mat4 u_MVPMatrix;
+    attribute vec4 a_Position;
+    attribute vec2 a_TexCoord;
+    */
 
 
     private final float x, y;
@@ -43,7 +58,7 @@ public class Explosion extends EngineObject {
         try {
             context.drawTo(FRAMEBUF);
             context.getViewport(viewport);
-            context.setViewport(0,0,256,256);
+            context.setViewport(0, 0, 256, 256);
             context.setMatrix(identity);
             context.color(Color.BLACK).clear();
             context.color(Color.RED).fillRect(-0.5f, 0.5f, 0.5f, -0.5f);
@@ -52,6 +67,6 @@ public class Explosion extends EngineObject {
             context.setViewport(viewport);
             context.drawTo(null);
         }
-        context.drawImage(-10, -10, 10, 10, TEXTURE);
+        context.drawImage(x-10, x-10, x+10, x+10, TEXTURE);
     }
 }

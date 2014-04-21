@@ -1,5 +1,6 @@
 package ru.spacearena.engine.graphics.font.gen.pack;
 
+import ru.spacearena.engine.geometry.shapes.PackedRect2I;
 import ru.spacearena.engine.geometry.shapes.Rect2I;
 import ru.spacearena.engine.geometry.shapes.Rect2IP;
 import ru.spacearena.engine.util.IntMathUtils;
@@ -40,41 +41,42 @@ public class RectPacker {
     }
 
 
-    public static void splitRect(Rect2I f, Rect2I r, List<Rect2I> l) {
-        if (r.getRight() <= f.getLeft()
-         || r.getBottom() <= f.getTop()
-         || r.getLeft() >= f.getRight()
-         || r.getTop() >= f.getBottom()) {
+    public static void splitRect(Rect2I free, PackedRect2I rect, List<Rect2I> list) {
+        final int l = rect.getX(), t = rect.getY(), r = l + rect.getWidth(), b = t + rect.getHeight();
+        if (r <= free.getLeft()
+         || b <= free.getTop()
+         || l >= free.getRight()
+         || t >= free.getBottom()) {
             // nothing to split.. rectangles don't intersect, add "as is"
-            l.add(f);
+            list.add(free);
             return;
         }
         // left
-        if (r.getLeft() > f.getLeft()) {
-            l.add(new Rect2IP(f.getLeft(), f.getTop(), r.getLeft(), f.getBottom()));
+        if (l > free.getLeft()) {
+            list.add(new Rect2IP(free.getLeft(), free.getTop(), l, free.getBottom()));
         }
         // top
-        if (r.getTop() > f.getTop()) {
-            l.add(new Rect2IP(f.getLeft(), f.getTop(), f.getRight(), r.getTop()));
+        if (t > free.getTop()) {
+            list.add(new Rect2IP(free.getLeft(), free.getTop(), free.getRight(), t));
         }
         // right
-        if (r.getRight() < f.getRight()) {
-            l.add(new Rect2IP(r.getRight(), f.getTop(), f.getRight(), f.getBottom()));
+        if (r < free.getRight()) {
+            list.add(new Rect2IP(r, free.getTop(), free.getRight(), free.getBottom()));
         }
         // bottom
-        if (r.getBottom() < f.getBottom()) {
-            l.add(new Rect2IP(f.getLeft(), r.getBottom(), f.getRight(), f.getBottom()));
+        if (b < free.getBottom()) {
+            list.add(new Rect2IP(free.getLeft(), b, free.getRight(), free.getBottom()));
         }
     }
 
-    private static Rect2I findFreeArea(List<Rect2I> areas, int w, int h) {
+    private static Rect2I findFreeArea(List<Rect2I> areas, PackedRect2I rect) {
 
         Rect2I bestArea = null;
         int minDim = Integer.MAX_VALUE;
         for (final Rect2I f : areas) {
 
             final int fw = f.getWidth(), fh = f.getHeight();
-            if (w > fw || h > fh) {
+            if (rect.getWidth() > fw || rect.getHeight() > fh) {
                 continue;
             }
 
@@ -96,15 +98,15 @@ public class RectPacker {
         return true;
     }
 
-    public boolean pack(Rect2I r) {
-        final Rect2I f = findFreeArea(freeAreas, r.getWidth(), r.getHeight());
+    public boolean pack(PackedRect2I r) {
+        final Rect2I f = findFreeArea(freeAreas, r);
         if (f == null) {
             return false;
         }
 
-        r.moveTo(f.getLeft(), f.getTop());
-        packWidth = IntMathUtils.max(packWidth, r.getRight());
-        packHeight = IntMathUtils.max(packHeight, r.getBottom());
+        r.setPosition(f.getLeft(), f.getTop());
+        packWidth = IntMathUtils.max(packWidth, f.getLeft() + r.getWidth());
+        packHeight = IntMathUtils.max(packHeight, f.getTop() + r.getHeight());
 
         final int l = freeAreas.size();
         for (int i=0; i<l; i++) {

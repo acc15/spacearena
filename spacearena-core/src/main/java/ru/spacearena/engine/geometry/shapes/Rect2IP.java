@@ -19,7 +19,7 @@ public class Rect2IP extends AbstractRect2I {
         setBounds(l,t,r,b);
     }
 
-    public void moveTo(int x, int y) {
+    public void setPosition(int x, int y) {
         setBounds(x,y,x+r-l,y+b-t);
     }
 

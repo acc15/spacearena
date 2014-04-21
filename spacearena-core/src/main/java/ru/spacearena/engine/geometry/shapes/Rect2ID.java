@@ -23,11 +23,6 @@ public class Rect2ID extends AbstractRect2I {
         this.h = h;
     }
 
-    public void setPosition(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
     public int getWidth() {
         return w;
     }
@@ -36,7 +31,7 @@ public class Rect2ID extends AbstractRect2I {
         return h;
     }
 
-    public void moveTo(int x, int y) {
+    public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
