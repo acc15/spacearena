@@ -482,6 +482,6 @@ public interface OpenGL {
     void glFramebufferRenderbuffer(int attachment, int renderbuffer);
     void glFramebufferTexture2D(int attachment, int target, int texture, int level);
 
-    void glCheckFramebufferStatus();
+    int glCheckFramebufferStatus();
 
 }

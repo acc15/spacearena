@@ -1,6 +1,8 @@
 package ru.spacearena.engine.graphics;
 
 import ru.spacearena.engine.geometry.primitives.Point2F;
+import ru.spacearena.engine.geometry.shapes.Rect2ID;
+import ru.spacearena.engine.graphics.fbo.FrameBufferObject;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
@@ -100,8 +102,12 @@ public class GLDrawContext {
         objects.remove(definition);
     }
 
-    public Binder use(ShaderProgram.Definition definition) {
-        return binder.use(obtain(definition));
+    public Binder use(ShaderProgram.Definition shader) {
+        return binder.use(obtain(shader));
+    }
+
+    public void drawTo(FrameBufferObject.Definition fbo) {
+        gl.glBindFramebuffer(fbo != null ? obtain(fbo).getId() : 0);
     }
 
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
@@ -112,6 +118,26 @@ public class GLDrawContext {
 
     public VertexBuffer getSharedBuffer() {
         return sharedBuffer;
+    }
+
+    public static final int[] VIEWPORT_BUF = new int[4];
+
+    public Rect2ID getViewport(Rect2ID rect) {
+        gl.glGetIntegerv(OpenGL.GL_VIEWPORT, VIEWPORT_BUF, 0);
+        // todo incompatible font serial version
+        rect.x = VIEWPORT_BUF[0];
+        rect.y = VIEWPORT_BUF[1];
+        rect.w = VIEWPORT_BUF[2];
+        rect.h = VIEWPORT_BUF[3];
+        return rect;
+    }
+
+    public void setViewport(int x, int y, int width, int height) {
+        gl.glViewport(x,y,width,height);
+    }
+
+    public void setViewport(Rect2ID rect) {
+        setViewport(rect.x, rect.y, rect.w, rect.h);
     }
 
     public class Binder {

@@ -542,7 +542,7 @@ public class AndroidGLES2 implements OpenGL {
         GLES20.glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, texture, level);
     }
 
-    public void glCheckFramebufferStatus() {
-        GLES20.glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    public int glCheckFramebufferStatus() {
+        return GLES20.glCheckFramebufferStatus(GL_FRAMEBUFFER);
     }
 }

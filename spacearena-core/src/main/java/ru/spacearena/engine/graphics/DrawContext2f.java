@@ -88,6 +88,11 @@ public class DrawContext2f extends GLDrawContext {
         activeMatrix.toArrayCompact(matrixStack.elements(), offset);
     }
 
+    public void setMatrix(Matrix m) {
+        pushMatrix();
+        activeMatrix.set(m);
+    }
+
     public void multiplyMatrix(Matrix m) {
         pushMatrix();
         activeMatrix.postMultiply(m);

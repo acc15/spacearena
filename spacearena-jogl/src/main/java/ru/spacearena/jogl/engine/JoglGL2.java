@@ -547,8 +547,8 @@ public class JoglGL2 implements OpenGL {
         gl2.glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, target, texture, level);
     }
 
-    public void glCheckFramebufferStatus() {
-        gl2.glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    public int glCheckFramebufferStatus() {
+        return gl2.glCheckFramebufferStatus(GL_FRAMEBUFFER);
     }
 
 

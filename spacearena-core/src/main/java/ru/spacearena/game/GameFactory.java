@@ -15,9 +15,9 @@ import ru.spacearena.engine.events.trackers.InputTracker;
 import ru.spacearena.engine.geometry.primitives.Point2F;
 import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
-import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.game.ship.Explosion;
 import ru.spacearena.game.ship.Ship;
 
 import java.awt.event.MouseEvent;
@@ -67,28 +67,6 @@ public class GameFactory implements EngineFactory {
 
         viewport.add(new Sky(viewport));
         viewport.add(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f, Color.WHITE));
-
-        viewport.add(new EngineObject() {
-            private float size = 1;
-
-            @Override
-            public void onUpdate(float seconds) {
-                size += 2f * seconds;
-            }
-
-            @Override
-            public void onDraw(DrawContext2f context) {
-                context.fillCircle(0, 0, size);
-            }
-        });
-
-//        viewport.add(new EngineObject() {
-//            @Override
-//            public boolean onUpdate(float seconds) {
-//                viewport.translate(10f*seconds, 0);
-//                return true;
-//            }
-//        });
 
         final Rect2FP levelBounds = new Rect2FP(-100f, -100f, 100f, 100f);
 
@@ -155,6 +133,7 @@ public class GameFactory implements EngineFactory {
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
                     if (canShoot) {
+                        viewport.add(new Explosion(0,0,0));
                         for (Point2F gun: ship1.getGuns()) {
                             final Point2F worldGun = ship1.mapPoint(Point2F.PT.set(gun));
                             final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, ship1.getAngle());
