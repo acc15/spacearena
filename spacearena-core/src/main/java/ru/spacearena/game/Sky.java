@@ -73,6 +73,10 @@ public class Sky extends EngineObject {
                 random.setSeed(seed ^
                         Integer.rotateLeft(Float.floatToRawIntBits(scale), 16) ^
                         Integer.rotateLeft(i, 8) ^ j);
+                final float size = viewport.getLocalSpace().transformUniform(random.nextFloat() * 0.3f);
+                if (size < 0.1f) {
+                    continue;
+                }
 
                 final float dx = random.nextFloatBetween(-sd2, sd2), dy = random.nextFloatBetween(-sd2, sd2);
                 final float x = j * starDistance, y = i * starDistance;
@@ -80,8 +84,7 @@ public class Sky extends EngineObject {
                             gy = (y-bounds.position.y)*scale+bounds.position.y;
                 final float sx = gx + dx*scale, sy = gy + dy*scale;
                 final float bright = random.nextFloat();
-                final float size = viewport.getLocalSpace().transformUniform(random.nextFloat() * 0.3f);
-                vb.put(sx, sy).put(bright, bright, 1).put(size < 0.5f ? 0 : size);
+                vb.put(sx, sy).put(bright, bright, 1).put(size);
             }
         }
     }
