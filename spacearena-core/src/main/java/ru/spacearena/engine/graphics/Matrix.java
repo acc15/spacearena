@@ -27,6 +27,8 @@ public class Matrix {
 
     public static final int ELEMENTS_PER_MATRIX = 6;
 
+    public static final Matrix IDENTITY = new Matrix();
+
     public final float[] m = new float[] {
         1,0,0,0,
         0,1,0,0,

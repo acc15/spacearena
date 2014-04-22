@@ -124,11 +124,7 @@ public class GLDrawContext {
 
     public Rect2ID getViewport(Rect2ID rect) {
         gl.glGetIntegerv(OpenGL.GL_VIEWPORT, VIEWPORT_BUF, 0);
-        // todo incompatible font serial version
-        rect.x = VIEWPORT_BUF[0];
-        rect.y = VIEWPORT_BUF[1];
-        rect.w = VIEWPORT_BUF[2];
-        rect.h = VIEWPORT_BUF[3];
+        rect.setRect(VIEWPORT_BUF[0], VIEWPORT_BUF[1], VIEWPORT_BUF[2], VIEWPORT_BUF[3]);
         return rect;
     }
 
@@ -146,6 +142,7 @@ public class GLDrawContext {
         private int vertexCount = -1;
         private int attrIndex = -1;
         private int uniformIndex = -1;
+        private int unitIndex = -1;
         private boolean texturing = false;
 
         private int nextUniformLocation() {
@@ -155,6 +152,8 @@ public class GLDrawContext {
         private int nextAttrIndex() {
             return ++attrIndex;
         }
+
+        private int nextUnitIndex() { return ++unitIndex; }
 
         public Binder uniform(float x) {
             gl.glUniform1f(nextUniformLocation(), x);
@@ -176,15 +175,16 @@ public class GLDrawContext {
             return this;
         }
 
-        public Binder uniform(Texture.Definition def, int unit) {
+        public Binder uniform(Texture.Definition def) {
             final Texture t = obtain(def);
             if (!texturing) {
                 texturing = true;
                 gl.glEnable(OpenGL.GL_TEXTURE_2D);
             }
+
+            final int unit = nextUnitIndex();
             gl.glActiveTexture(OpenGL.GL_TEXTURE0 + unit);
             gl.glBindTexture(OpenGL.GL_TEXTURE_2D, t.getId());
-
             gl.glUniform1i(nextUniformLocation(), unit);
             return this;
         }
@@ -297,6 +297,7 @@ public class GLDrawContext {
             this.vertexCount = -1;
             this.attrIndex = -1;
             this.uniformIndex = -1;
+            this.unitIndex = -1;
             if (this.program == program) {
                 return binder;
             }

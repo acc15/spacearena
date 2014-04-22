@@ -108,7 +108,7 @@ public class Ship extends GameBody {
             return;
         }
 
-        fxContainer.add(new Explosion(getPositionX(), getPositionY(), FloatMathUtils.atan2(getVelocityY(), getVelocityX())));
+        fxContainer.add(new Explosion(getPositionX(), getPositionY(), getVelocityX(), getVelocityY()));
         kill();
     }
 
@@ -148,7 +148,7 @@ public class Ship extends GameBody {
         context.use(SHADER).
                 attrs(vb).
                 uniform(context.getActiveMatrix()).
-                uniform(SHIP_TEXTURE, 0).
+                uniform(SHIP_TEXTURE).
                 //glUniform1i(Color.RED, false).
                 uniform(damageTime / DAMAGE_TIME).
                 draw(OpenGL.GL_TRIANGLE_FAN);

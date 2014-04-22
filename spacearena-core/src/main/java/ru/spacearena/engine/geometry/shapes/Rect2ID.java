@@ -59,11 +59,11 @@ public class Rect2ID extends AbstractRect2I {
         this.h = b - t;
     }
 
-//    public void setRect(int x, int y, int width, int height) {
-//        this.x = x;
-//        this.y = y;
-//        this.w = width;
-//        this.h = height;
-//    }
+    public void setRect(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.w = width;
+        this.h = height;
+    }
 
 }

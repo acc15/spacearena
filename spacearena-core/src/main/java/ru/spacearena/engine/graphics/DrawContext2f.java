@@ -130,7 +130,7 @@ public class DrawContext2f extends GLDrawContext {
         use(DefaultShaders.POSITION_TEXTURE_PROGRAM).
                 attrs(sharedBuffer).
                 uniform(activeMatrix).
-                uniform(definition, 0).
+                uniform(definition).
                 draw(OpenGL.GL_TRIANGLE_FAN);
     }
 
@@ -211,7 +211,7 @@ public class DrawContext2f extends GLDrawContext {
         use(DefaultShaders.DISTANCE_FIELD_PROGRAM).
                 attrs(sharedBuffer).
                 uniform(activeMatrix).
-                uniform(this.font.getTexture(), 0).
+                uniform(this.font.getTexture()).
                 uniform(color).
                 uniform((float) (1 << font.getImageScale()) / fontSize).
                 draw(OpenGL.GL_TRIANGLES);

@@ -17,6 +17,7 @@ import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.game.ship.Explosion;
 import ru.spacearena.game.ship.Ship;
 
 import java.awt.event.MouseEvent;
@@ -94,6 +95,8 @@ public class GameFactory implements EngineFactory {
             }
 
         }
+
+        viewport.add(new Explosion(0,0,10,10));
 
         root.add(new InputTracker() {
 

@@ -53,4 +53,11 @@ public class Rect2IP extends AbstractRect2I {
         this.r = r;
         this.b = b;
     }
+
+    public void setRect(int x, int y, int w, int h) {
+        this.l = x;
+        this.t = y;
+        this.r = x + w;
+        this.b = y + h;
+    }
 }
