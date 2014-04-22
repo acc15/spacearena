@@ -9,7 +9,5 @@ void main()
             v_Sum += texture2D(u_Texture, vec2(v_TexCoord.x + x/256.0, v_TexCoord.y + y/256.0));
         }
     }
-    v_Sum /= 3;
-
-    gl_FragColor = v_Sum;
+    gl_FragColor = v_Sum / 3;
 }

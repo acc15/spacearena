@@ -96,7 +96,7 @@ public class GameFactory implements EngineFactory {
 
         }
 
-        viewport.add(new Explosion(0,0,10,10));
+        viewport.add(new Explosion(0,0,10,0));
 
         root.add(new InputTracker() {
 

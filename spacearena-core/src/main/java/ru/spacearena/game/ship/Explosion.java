@@ -19,7 +19,7 @@ import ru.spacearena.engine.util.FloatMathUtils;
 public class Explosion extends EngineObject {
 
     public static final float DURATION = 1f;
-    public static final float RADIUS = 3f;
+    public static final float RADIUS = 2f;
 
     public static final Texture.Definition TEXTURE = new Texture.Definition().empty(256, 256,
             OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_INT);
@@ -64,7 +64,8 @@ public class Explosion extends EngineObject {
     public void onUpdate(float seconds) {
         time += seconds;
         if (time > DURATION) {
-            kill();
+            time = 0;
+            //kill();
         }
     }
 
@@ -80,8 +81,10 @@ public class Explosion extends EngineObject {
         for (int i=0; i<particleCount; i++) {
             final float d = QRand.RAND.nextFloat();
             final float dx = vx * d, dy = vy * d;
-            final float rx = QRand.RAND.nextFloatBetween(-1, 1) * r,
-                        ry = FloatMathUtils.sqrt(r*r-rx*rx) * QRand.RAND.nextFloatBetween(-1, 1);
+
+            final float v = i < particleCount/2 ? r+5f : r;
+            final float rx = QRand.RAND.nextFloatBetween(-1, 1) * v,
+                        ry = FloatMathUtils.sqrt(v*v-rx*rx) * QRand.RAND.nextFloatBetween(-1, 1);
             final float ttl = QRand.RAND.nextFloatBetween(0.2f, 1f);
             vb.put(x + dx + rx, y + dy + ry).put(ttl);
         }
