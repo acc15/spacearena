@@ -21,9 +21,11 @@ public class Explosion extends EngineObject {
     public static final float DURATION = 1f;
     public static final float RADIUS = 2f;
 
-    public static final Texture.Definition TEXTURE = new Texture.Definition().empty(256, 256,
-            OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_INT);
-        public static final FrameBufferObject.Definition FRAMEBUF = new FrameBufferObject.Definition().attach(TEXTURE);
+    public static final Texture.Definition TEXTURE = new Texture.Definition().
+            wrapS(OpenGL.GL_CLAMP_TO_EDGE).
+            wrapT(OpenGL.GL_CLAMP_TO_EDGE).
+            empty(256, 256, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE);
+    public static final FrameBufferObject.Definition FRAMEBUF = new FrameBufferObject.Definition().attach(TEXTURE);
     public static final Color INVISIBLE_BLACK = new Color(0,0,0,0);
     public static final Rect2ID RECT = new Rect2ID();
     public static final ShaderProgram.Definition BLUR_PROGRAM = new ShaderProgram.Definition().
@@ -100,8 +102,8 @@ public class Explosion extends EngineObject {
     @Override
     public void onDraw(DrawContext2f context) {
 
-        context.getViewport(RECT);
         context.drawTo(FRAMEBUF);
+        context.getViewport(RECT);
         context.setViewport(0,0,256,256);
         context.color(INVISIBLE_BLACK).clear();
         context.use(PARTICLE_PROGRAM).

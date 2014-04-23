@@ -33,6 +33,7 @@ public class GLDrawContext {
     }
 
     public void init() {
+        gl.glDisable(OpenGL.GL_TEXTURE_2D); // disable texturing by default
     }
 
     public void dispose() {
@@ -107,8 +108,14 @@ public class GLDrawContext {
         return binder.use(shader);
     }
 
-    public void drawTo(FrameBufferObject.Definition fbo) {
-        gl.glBindFramebuffer(fbo != null ? obtain(fbo).getId() : 0);
+    public void drawTo(FrameBufferObject.Definition fboDefinition) {
+        if (fboDefinition == null) {
+            gl.glBindFramebuffer(0);
+            return;
+        }
+
+        final FrameBufferObject fbo = obtain(fboDefinition);
+        gl.glBindFramebuffer(fbo.getId());
     }
 
     public VertexBufferObject upload(VertexBufferObject.Definition definition, VertexBuffer buffer) {
@@ -185,9 +192,10 @@ public class GLDrawContext {
             }
 
             final int unit = nextUnitIndex();
-            gl.glActiveTexture(OpenGL.GL_TEXTURE0 + unit);
             gl.glBindTexture(OpenGL.GL_TEXTURE_2D, t.getId());
+            gl.glActiveTexture(OpenGL.GL_TEXTURE0 + unit);
             gl.glUniform1i(nextUniformLocation(), unit);
+            //gl.glBindTexture(OpenGL.GL_TEXTURE_2D, 0);
             return this;
         }
 
@@ -348,6 +356,7 @@ public class GLDrawContext {
 
         private void reset() {
             if (texturing) {
+                gl.glBindTexture(OpenGL.GL_TEXTURE_2D, 0);
                 gl.glDisable(OpenGL.GL_TEXTURE_2D);
                 texturing = false;
             }

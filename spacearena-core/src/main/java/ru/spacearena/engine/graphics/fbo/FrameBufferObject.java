@@ -37,11 +37,11 @@ public class FrameBufferObject {
             }
 
             public TextureAttachment(Texture.Definition texture, int attachment) {
-                this(texture, attachment,OpenGL.GL_TEXTURE_2D);
+                this(texture, attachment, OpenGL.GL_TEXTURE_2D);
             }
 
             public TextureAttachment(Texture.Definition texture, int attachment, int target) {
-                this(texture,attachment,target, 0);
+                this(texture, attachment, target, 0);
             }
 
             public TextureAttachment(Texture.Definition texture, int attachment, int target, int level) {
@@ -52,7 +52,8 @@ public class FrameBufferObject {
             }
 
             public void attach(GLDrawContext dc, int id) {
-                dc.getGL().glFramebufferTexture2D(attachment, target, dc.obtain(texture).getId(), level);
+                final Texture t = dc.obtain(texture);
+                dc.getGL().glFramebufferTexture2D(attachment, target, t.getId(), level);
             }
         }
 
@@ -75,6 +76,7 @@ public class FrameBufferObject {
             final int completeness = context.getGL().glCheckFramebufferStatus();
             gl.glBindFramebuffer(0);
             if (completeness != OpenGL.GL_FRAMEBUFFER_COMPLETE) {
+                gl.glDeleteFrameBuffer(fbo.id);
                 switch (completeness) {
                     case OpenGL.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
                         throw new IllegalStateException("Not all framebuffer attachment points are framebuffer attachment complete. " +

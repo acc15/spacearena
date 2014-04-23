@@ -106,7 +106,7 @@ public class Texture {
             t.setId(gl.glGenTexture());
 
             final int type = OpenGL.GL_TEXTURE_2D; // only 2D textures are supported
-            gl.glBindTexture(OpenGL.GL_TEXTURE_2D, t.getId());
+            gl.glBindTexture(type, t.getId());
             if (minFilter != 0) {
                 gl.glTexParameter(type, OpenGL.GL_TEXTURE_MIN_FILTER, minFilter);
             }
@@ -122,6 +122,7 @@ public class Texture {
             for (int level = 0; level < loaders.size(); level++) {
                 loaders.get(level).load(gl, t, level);
             }
+            gl.glBindTexture(type, 0);
             return t;
         }
 
