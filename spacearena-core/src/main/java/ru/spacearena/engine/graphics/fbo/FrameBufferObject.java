@@ -4,6 +4,7 @@ import ru.spacearena.engine.graphics.GLDrawContext;
 import ru.spacearena.engine.graphics.GLObjectDefinition;
 import ru.spacearena.engine.graphics.OpenGL;
 import ru.spacearena.engine.graphics.Texture;
+import ru.spacearena.engine.util.IntMathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class FrameBufferObject {
         private final List<Attachment> attachments = new ArrayList<Attachment>();
 
         public static interface Attachment {
-            void attach(GLDrawContext dc, int id);
+            void attach(GLDrawContext dc, FrameBufferObject fbo);
         }
 
         public static class TextureAttachment implements Attachment {
@@ -51,9 +52,10 @@ public class FrameBufferObject {
                 this.level = level;
             }
 
-            public void attach(GLDrawContext dc, int id) {
+            public void attach(GLDrawContext dc, FrameBufferObject fbo) {
                 final Texture t = dc.obtain(texture);
                 dc.getGL().glFramebufferTexture2D(attachment, target, t.getId(), level);
+                fbo.onAttachment(t.getWidth(), t.getHeight());
             }
         }
 
@@ -71,7 +73,7 @@ public class FrameBufferObject {
             final OpenGL gl = context.getGL();
             gl.glBindFramebuffer(fbo.id);
             for (Attachment attachment: attachments) {
-                attachment.attach(context, fbo.id);
+                attachment.attach(context, fbo);
             }
             final int completeness = context.getGL().glCheckFramebufferStatus();
             gl.glBindFramebuffer(0);
@@ -114,9 +116,23 @@ public class FrameBufferObject {
         }
     }
 
+    private void onAttachment(int width, int height) {
+        this.width = IntMathUtils.min(this.width, width);
+        this.height = IntMathUtils.min(this.height, height);
+    }
+
     private final int id;
+    private int width = Integer.MAX_VALUE, height = Integer.MAX_VALUE;
 
     public FrameBufferObject(int id) {
         this.id = id;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

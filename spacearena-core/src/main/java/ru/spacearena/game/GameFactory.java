@@ -7,7 +7,7 @@ import ru.spacearena.engine.EngineObject;
 import ru.spacearena.engine.common.*;
 import ru.spacearena.engine.common.viewport.GLViewportArea;
 import ru.spacearena.engine.common.viewport.LargestSideAdjustStrategy;
-import ru.spacearena.engine.common.viewport.RealSizeAdjustStrategy;
+import ru.spacearena.engine.common.viewport.PixelSizeAdjustStrategy;
 import ru.spacearena.engine.common.viewport.Viewport;
 import ru.spacearena.engine.events.InputType;
 import ru.spacearena.engine.events.KeyCode;
@@ -59,7 +59,7 @@ public class GameFactory implements EngineFactory {
             }
         });
 
-        final Viewport screen = new Viewport(GLViewportArea.getInstance(), new RealSizeAdjustStrategy());
+        final Viewport screen = new Viewport(GLViewportArea.getInstance(), new PixelSizeAdjustStrategy());
         root.add(screen);
 
         final Viewport viewport = new Viewport(screen, new LargestSideAdjustStrategy(75f));
@@ -95,8 +95,6 @@ public class GameFactory implements EngineFactory {
             }
 
         }
-
-        viewport.add(new Explosion(0,0,10,0));
 
         root.add(new InputTracker() {
 
@@ -198,6 +196,9 @@ public class GameFactory implements EngineFactory {
         multilineText.add(timeText);
 
         screen.add(multilineText);
+
+        screen.add(new Explosion(0,0,30,0));
+
 
         return root;
 

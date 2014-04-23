@@ -24,6 +24,8 @@ public class GLDrawContext {
     private final HashMap<GLObjectDefinition<?>, Object> objects = new HashMap<GLObjectDefinition<?>, Object>();
     private final Binder binder = new Binder();
 
+    private final int[] viewportRect = new int[] { -1, -1, -1, -1 };
+
     public GLDrawContext(OpenGL gl) {
         this.gl = gl;
     }
@@ -108,13 +110,18 @@ public class GLDrawContext {
         return binder.use(shader);
     }
 
-    public void drawTo(FrameBufferObject.Definition fboDefinition) {
-        if (fboDefinition == null) {
-            gl.glBindFramebuffer(0);
-            return;
-        }
+    public void drawToScreen() {
+        gl.glBindFramebuffer(0);
+        gl.glViewport(viewportRect[0], viewportRect[1], viewportRect[2], viewportRect[3]);
+        viewportRect[2] = -1;
+    }
 
+    public void drawTo(FrameBufferObject.Definition fboDefinition) {
+        if (viewportRect[2] < 0) {
+            gl.glGetIntegerv(OpenGL.GL_VIEWPORT, viewportRect, 0);
+        }
         final FrameBufferObject fbo = obtain(fboDefinition);
+        gl.glViewport(0, 0, fbo.getWidth(), fbo.getHeight());
         gl.glBindFramebuffer(fbo.getId());
     }
 
