@@ -43,9 +43,9 @@ public class VertexBuffer {
         return layout;
     }
 
-    public VertexBuffer reset(VertexBufferLayout l, int requiredCapacity) {
+    public VertexBuffer reset(VertexBufferLayout l, int numVertices) {
         final int currentCapacity = buffer.capacity();
-        final int newCapacity = growShrinkStrategy.computeCapacity(currentCapacity, requiredCapacity);
+        final int newCapacity = growShrinkStrategy.computeCapacity(currentCapacity, l.computeBufferSize(numVertices));
         if (newCapacity != currentCapacity) {
             buffer = allocateBuffer(newCapacity);
         } else {

@@ -63,6 +63,14 @@ public class VertexBufferLayout {
 
     public int getAttrCount() { return offsets.length; }
 
+    public int computeBufferSize(int numVertices) {
+        return numVertices * getStride();
+    }
+
+    public int computeVertexCount(int bufferSize) {
+        return bufferSize / getStride();
+    }
+
     public static int toBytes(int amount, int type) {
         switch (type) {
         case OpenGL.GL_BYTE:

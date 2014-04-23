@@ -125,6 +125,10 @@ public class ShaderProgram {
                 context.delete(shader);
             }
         }
+
+        public int getAttributeCount() {
+            return attributes.size();
+        }
     }
 
     private final IntArrayList uniformLocations = new IntArrayList();

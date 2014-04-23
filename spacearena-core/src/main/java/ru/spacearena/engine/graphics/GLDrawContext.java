@@ -103,7 +103,7 @@ public class GLDrawContext {
     }
 
     public Binder use(ShaderProgram.Definition shader) {
-        return binder.use(obtain(shader));
+        return binder.use(shader);
     }
 
     public void drawTo(FrameBufferObject.Definition fbo) {
@@ -139,6 +139,7 @@ public class GLDrawContext {
     public class Binder {
 
         private ShaderProgram program;
+        private ShaderProgram.Definition programDef;
         private int vertexCount = -1;
         private int attrIndex = -1;
         private int uniformIndex = -1;
@@ -226,12 +227,12 @@ public class GLDrawContext {
         }
 
         public Binder attr(VertexBufferObject.Definition definition, int item) {
-            final VertexBufferObject vbo = obtain(definition);
+            final VertexBufferObject vbo = ensureVBOUploaded(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.glBindBuffer(definition.getBufferType(), vbo.getId());
             attrPointerOffset(nextAttrIndex(), item, vbl);
             gl.glBindBuffer(definition.getBufferType(), 0);
-            adjustVertexCount(vbo.getSize(), vbl.getStride());
+            adjustVertexCount(vbo.getSize(), vbl);
             return this;
         }
 
@@ -241,25 +242,24 @@ public class GLDrawContext {
                 throw new IllegalArgumentException("VBO isn't uploaded. You should upload VertexBufferObject data before use");
             }
             return vbo;
-
         }
 
         public Binder attrs(VertexBufferObject.Definition definition) {
-            final VertexBufferObject vbo = obtain(definition);
+            final VertexBufferObject vbo = ensureVBOUploaded(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
             gl.glBindBuffer(definition.getBufferType(), vbo.getId());
             for (int i=0; i<vbl.getAttrCount(); i++) {
                 attrPointerOffset(nextAttrIndex(), i, vbl);
             }
             gl.glBindBuffer(definition.getBufferType(), 0);
-            adjustVertexCount(vbo.getSize(), vbl.getStride());
+            adjustVertexCount(vbo.getSize(), vbl);
             return this;
         }
 
         public Binder attr(VertexBuffer buffer, int item) {
             final VertexBufferLayout vbl = buffer.getLayout();
             attrPointerBuffer(nextAttrIndex(), item, buffer);
-            adjustVertexCount(buffer.getSize(), vbl.getStride());
+            adjustVertexCount(buffer.getSize(), vbl);
             return this;
         }
 
@@ -268,12 +268,12 @@ public class GLDrawContext {
             for (int i=0; i<vbl.getAttrCount(); i++) {
                 attrPointerBuffer(nextAttrIndex(), i, vb);
             }
-            adjustVertexCount(vb.getSize(), vbl.getStride());
+            adjustVertexCount(vb.getSize(), vbl);
             return this;
         }
 
         public void draw(int type) {
-            draw(type, 0, vertexCount);
+            draw(type, vertexCount);
         }
 
         public void draw(int type, int count) {
@@ -282,27 +282,39 @@ public class GLDrawContext {
 
         public void draw(int type, int start, int count) {
             gl.glDrawArrays(type, start, count);
+            reset();
+        }
+
+        private void reset() {
             if (texturing) {
                 gl.glDisable(OpenGL.GL_TEXTURE_2D);
                 texturing = false;
             }
-        }
-
-        private void adjustVertexCount(int bufferSize, int stride) {
-            final int count = bufferSize / stride;
-            vertexCount = (vertexCount < 0 ? count : IntMathUtils.min(vertexCount, count));
-        }
-
-        public Binder use(ShaderProgram program) {
+            for (int i=0; i<programDef.getAttributeCount(); i++) {
+                // TODO add value attribute and disable vertex attrib array only for buffered attributes
+                gl.glDisableVertexAttribArray(i);
+            }
             this.vertexCount = -1;
             this.attrIndex = -1;
             this.uniformIndex = -1;
             this.unitIndex = -1;
-            if (this.program == program) {
+            this.programDef = null;
+            this.program = null;
+        }
+
+        private void adjustVertexCount(int bufferSize, VertexBufferLayout vbl) {
+            final int count = vbl.computeVertexCount(bufferSize);
+            vertexCount = (vertexCount < 0 ? count : IntMathUtils.min(vertexCount, count));
+        }
+
+        private Binder use(ShaderProgram.Definition definition) {
+            this.programDef = definition;
+            final ShaderProgram p = obtain(definition);
+            if (this.program == p) {
                 return binder;
             }
-            gl.glUseProgram(program.getId());
-            this.program = program;
+            gl.glUseProgram(p.getId());
+            this.program = p;
             return binder;
         }
     }
