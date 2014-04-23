@@ -9,6 +9,7 @@ import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
 import ru.spacearena.engine.util.IntMathUtils;
 
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 
 /**
@@ -139,7 +140,7 @@ public class GLDrawContext {
     public class Binder {
 
         private ShaderProgram program;
-        private ShaderProgram.Definition programDef;
+        private int attrCount = -1;
         private int vertexCount = -1;
         private int attrIndex = -1;
         private int uniformIndex = -1;
@@ -226,6 +227,66 @@ public class GLDrawContext {
             gl.glEnableVertexAttribArray(attrIndex);
         }
 
+        public Binder attr(float x) {
+            gl.glVertexAttrib1f(nextAttrIndex(), x);
+            return this;
+        }
+
+        public Binder attr(float x, float y) {
+            gl.glVertexAttrib2f(nextAttrIndex(), x, y);
+            return this;
+        }
+
+        public Binder attr(float x, float y, float z) {
+            gl.glVertexAttrib3f(nextAttrIndex(), x, y, z);
+            return this;
+        }
+
+        public Binder attr(float x, float y, float z, float w) {
+            gl.glVertexAttrib4f(nextAttrIndex(), x, y, z, w);
+            return this;
+        }
+
+        public Binder attr(float[] v, int offset, int count) {
+            switch (count) {
+                case 1:
+                    gl.glVertexAttrib1fv(nextAttrIndex(), v, offset);
+                    break;
+                case 2:
+                    gl.glVertexAttrib2fv(nextAttrIndex(), v, offset);
+                    break;
+                case 3:
+                    gl.glVertexAttrib3fv(nextAttrIndex(), v, offset);
+                    break;
+                case 4:
+                    gl.glVertexAttrib4fv(nextAttrIndex(), v, offset);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Count must have values from 1 to 4");
+            }
+            return this;
+        }
+
+        public Binder attr(FloatBuffer fb, int count) {
+            switch (count) {
+                case 1:
+                    gl.glVertexAttrib1fv(nextAttrIndex(), fb);
+                    break;
+                case 2:
+                    gl.glVertexAttrib2fv(nextAttrIndex(), fb);
+                    break;
+                case 3:
+                    gl.glVertexAttrib3fv(nextAttrIndex(), fb);
+                    break;
+                case 4:
+                    gl.glVertexAttrib4fv(nextAttrIndex(), fb);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Count must have values from 1 to 4");
+            }
+            return this;
+        }
+
         public Binder attr(VertexBufferObject.Definition definition, int item) {
             final VertexBufferObject vbo = ensureVBOUploaded(definition);
             final VertexBufferLayout vbl = vbo.getLayout();
@@ -290,15 +351,14 @@ public class GLDrawContext {
                 gl.glDisable(OpenGL.GL_TEXTURE_2D);
                 texturing = false;
             }
-            for (int i=0; i<programDef.getAttributeCount(); i++) {
-                // TODO add value attribute and disable vertex attrib array only for buffered attributes
+            for (int i=0; i<attrCount; i++) {
                 gl.glDisableVertexAttribArray(i);
             }
             this.vertexCount = -1;
             this.attrIndex = -1;
             this.uniformIndex = -1;
             this.unitIndex = -1;
-            this.programDef = null;
+            this.attrCount = -1;
             this.program = null;
         }
 
@@ -308,7 +368,7 @@ public class GLDrawContext {
         }
 
         private Binder use(ShaderProgram.Definition definition) {
-            this.programDef = definition;
+            this.attrCount = definition.getAttributeCount();
             final ShaderProgram p = obtain(definition);
             if (this.program == p) {
                 return binder;

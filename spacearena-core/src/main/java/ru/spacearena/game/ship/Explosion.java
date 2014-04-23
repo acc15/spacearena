@@ -1,8 +1,10 @@
 package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.graphics.DrawContext2f;
-import ru.spacearena.engine.graphics.OpenGL;
+import ru.spacearena.engine.geometry.shapes.Rect2ID;
+import ru.spacearena.engine.graphics.*;
+import ru.spacearena.engine.graphics.fbo.FrameBufferObject;
+import ru.spacearena.engine.graphics.shaders.DefaultShaders;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
@@ -19,18 +21,18 @@ public class Explosion extends EngineObject {
     public static final float DURATION = 1f;
     public static final float RADIUS = 2f;
 
-//    public static final Texture.Definition TEXTURE = new Texture.Definition().empty(256, 256,
-//            OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_INT);
-//        public static final FrameBufferObject.Definition FRAMEBUF = new FrameBufferObject.Definition().attach(TEXTURE);
-//    public static final Color INVISIBLE_BLACK = new Color(0,0,0,0);
-//    public static final Rect2ID RECT = new Rect2ID();
-//    public static final ShaderProgram.Definition BLUR_PROGRAM = new ShaderProgram.Definition().
-//        shader(DefaultShaders.class, "tex.vert").
-//        shader(Explosion.class, "blur.frag").
-//        attribute("a_Position").
-//        attribute("a_TexCoord").
-//        uniform("u_MVPMatrix").
-//        uniform("u_Texture");
+    public static final Texture.Definition TEXTURE = new Texture.Definition().empty(256, 256,
+            OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_INT);
+        public static final FrameBufferObject.Definition FRAMEBUF = new FrameBufferObject.Definition().attach(TEXTURE);
+    public static final Color INVISIBLE_BLACK = new Color(0,0,0,0);
+    public static final Rect2ID RECT = new Rect2ID();
+    public static final ShaderProgram.Definition BLUR_PROGRAM = new ShaderProgram.Definition().
+        shader(DefaultShaders.class, "tex.vert").
+        shader(Explosion.class, "blur.frag").
+        attribute("a_Position").
+        attribute("a_TexCoord").
+        uniform("u_MVPMatrix").
+        uniform("u_Texture");
 
 
     public final VertexBufferObject.Definition VBO = new VertexBufferObject.Definition(
@@ -98,31 +100,31 @@ public class Explosion extends EngineObject {
     @Override
     public void onDraw(DrawContext2f context) {
 
-//        context.getViewport(RECT);
-//        context.drawTo(FRAMEBUF);
-//        context.setViewport(0,0,256,256);
-//        context.color(INVISIBLE_BLACK).clear();
+        context.getViewport(RECT);
+        context.drawTo(FRAMEBUF);
+        context.setViewport(0,0,256,256);
+        context.color(INVISIBLE_BLACK).clear();
         context.use(PARTICLE_PROGRAM).
                 attrs(VBO).
                 uniform(context.getActiveMatrix()).
                 uniform(x, y).
                 uniform(time / DURATION).
                 draw(OpenGL.GL_POINTS);
-//        context.drawTo(null);
-//        context.setViewport(RECT);
-//
-//        final VertexBuffer vb = context.getSharedBuffer();
-//        final Texture texture = context.get(TEXTURE);
-//        vb.reset(DefaultShaders.LAYOUT_P2T2).
-//                put(-1, -1).put(texture.getLeft(), texture.getTop()).
-//                put(-1, 1).put(texture.getLeft(), texture.getBottom()).
-//                put(1, 1).put(texture.getRight(), texture.getBottom()).
-//                put(1, -1).put(texture.getRight(), texture.getTop());
-//        context.use(BLUR_PROGRAM).
-//                attrs(vb).
-//                uniform(Matrix.IDENTITY).
-//                uniform(TEXTURE).
-//                draw(OpenGL.GL_TRIANGLE_FAN);
+        context.drawTo(null);
+        context.setViewport(RECT);
+
+        final VertexBuffer vb = context.getSharedBuffer();
+        final Texture texture = context.get(TEXTURE);
+        vb.reset(DefaultShaders.LAYOUT_P2T2).
+                put(-1, -1).put(texture.getLeft(), texture.getTop()).
+                put(-1, 1).put(texture.getLeft(), texture.getBottom()).
+                put(1, 1).put(texture.getRight(), texture.getBottom()).
+                put(1, -1).put(texture.getRight(), texture.getTop());
+        context.use(BLUR_PROGRAM).
+                attrs(vb).
+                uniform(Matrix.IDENTITY).
+                uniform(TEXTURE).
+                draw(OpenGL.GL_TRIANGLE_FAN);
 
     }
 }
