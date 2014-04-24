@@ -8,7 +8,7 @@ varying float v_Time;
 
 void main()
 {
-    v_Edge = a_Edge;
-    v_Time = a_Time;
+    v_Edge = a_Edge * 1.5;
+    v_Time = a_Time * a_Time;
     gl_Position = u_MVPMatrix * a_Position;
 }

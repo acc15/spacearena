@@ -17,7 +17,6 @@ import ru.spacearena.engine.geometry.shapes.Rect2FP;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.integration.box2d.Box2dWorld;
 import ru.spacearena.engine.util.FloatMathUtils;
-import ru.spacearena.game.ship.Explosion;
 import ru.spacearena.game.ship.Ship;
 
 import java.awt.event.MouseEvent;
@@ -88,7 +87,16 @@ public class GameFactory implements EngineFactory {
 
         for (int i=0; i<=0; i++) {
             for (int j=0; j<=10; j++) {
-                final Ship ship2 = new Ship(low, high);
+                final Ship ship2 = new Ship(low, high) {
+                    Point2F p = new Point2F(1.0f, 0.0f), q = new Point2F(FloatMathUtils.cos(1f), FloatMathUtils.sin(1f));
+
+                    @Override
+                    public void onUpdate(float seconds) {
+                        super.onUpdate(seconds);
+                        flyTo(p.x,p.y, seconds);
+                        p.rotate(seconds);
+                    }
+                };
                 ship2.setInitialPosition((j - 5) * 5, (i+1) * 7);
                 ship2.setInitialAngle(-FloatMathUtils.HALF_PI);
                 box2dWorld.add(ship2);
@@ -133,7 +141,6 @@ public class GameFactory implements EngineFactory {
 
                 if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
                     if (canShoot) {
-                        //viewport.add(new Explosion(0,0,0));
                         for (Point2F gun: ship1.getGuns()) {
                             final Point2F worldGun = ship1.mapPoint(Point2F.PT.set(gun));
                             final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, ship1.getAngle());

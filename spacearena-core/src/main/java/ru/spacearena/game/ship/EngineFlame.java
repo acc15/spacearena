@@ -28,26 +28,18 @@ public class EngineFlame extends EngineObject {
     private final LinkedList<FlameParticle> particles = new LinkedList<FlameParticle>();
     private final Ship ship;
 
-    public EngineFlame(final Ship ship) {
-        this.ship = ship;
-        this.ship.add(new EngineObject() {
-            private Timer timer;
+    private Timer timer;
 
-            @Override
-            public void onAttach(Engine engine) {
-                timer = engine.getTimer();
-            }
-
-            @Override
-            public void onUpdate(float seconds) {
-                if (ship.isLive()) {
-                    addFlameParticle(timer, ship.isEngineActive());
-                }
-            }
-        });
+    @Override
+    public void onAttach(Engine engine) {
+        this.timer = engine.getTimer();
     }
 
-    private void addFlameParticle(Timer timer, boolean active) {
+    public EngineFlame(final Ship ship) {
+        this.ship = ship;
+    }
+
+    private void updateFlame(boolean active) {
         final long t = timer.getTimestamp();
 
         FlameParticle particle;
@@ -80,6 +72,7 @@ public class EngineFlame extends EngineObject {
 
     @Override
     public void onUpdate(float seconds) {
+        updateFlame(ship.isEngineActive());
         if (!ship.isLive() && particles.isEmpty()) {
             kill();
         }
