@@ -23,7 +23,7 @@ public class Explosion extends EngineObject {
     public static final float PARTICLE_SIZE = 0.3f; // particle size in meters
 
     public static final float DURATION = 1f;
-    public static final float RADIUS = 2f;
+    public static final float RADIUS = 3f;
 
     public static final int TEXTURE_WIDTH = 64;
     public static final int TEXTURE_HEIGHT = 32;
@@ -75,7 +75,7 @@ public class Explosion extends EngineObject {
         time += seconds;
         if (time > DURATION) {
             time = 0;
-            //kill();
+            kill();
         }
     }
 

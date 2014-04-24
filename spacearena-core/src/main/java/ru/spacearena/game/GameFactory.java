@@ -96,8 +96,6 @@ public class GameFactory implements EngineFactory {
 
         }
 
-        viewport.add(new Explosion(0,0,30,0));
-
         root.add(new InputTracker() {
 
             private boolean canShoot = true;
