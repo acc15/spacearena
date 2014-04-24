@@ -26,8 +26,6 @@ public class Sky extends EngineObject {
     private final Rect2FR bounds = new Rect2FR();
     private final Viewport viewport;
 
-    private final VertexBuffer vb = new VertexBuffer();
-
     public Sky(Viewport viewport) {
         this.viewport = viewport;
     }
@@ -56,7 +54,7 @@ public class Sky extends EngineObject {
         this.maxStarSize = maxStarSize;
     }
 
-    private void drawStarLayer(DrawContext2f context, float scale) {
+    private void drawStarLayer(VertexBuffer vb, float scale) {
 
         final float sd2 = starDistance*2;
         bounds.set(viewport.getRect());
@@ -91,9 +89,10 @@ public class Sky extends EngineObject {
 
     @Override
     public void onDraw(DrawContext2f context) {
+        final VertexBuffer vb = context.getSharedBuffer();
         vb.reset(LAYOUT_P2C3S1);
         for (float scale=5; scale>0; scale--) {
-            drawStarLayer(context, 1-scale/10);
+            drawStarLayer(vb, 1-scale/10);
         }
         context.use(SHADER).
                 attrs(vb).

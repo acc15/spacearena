@@ -96,6 +96,8 @@ public class GameFactory implements EngineFactory {
 
         }
 
+        viewport.add(new Explosion(0,0,30,0));
+
         root.add(new InputTracker() {
 
             private boolean canShoot = true;
@@ -197,8 +199,34 @@ public class GameFactory implements EngineFactory {
 
         screen.add(multilineText);
 
-        screen.add(new Explosion(0,0,30,0));
-
+//        screen.add(new EngineObject() {
+//
+//            public final Texture.Definition IMAGE = new Texture.Definition().url(GameFactory.class, "tw.png");
+//
+//            private float blur = 1.0f;
+//
+//            @Override
+//            public void onUpdate(float seconds) {
+//                blur += seconds;
+//            }
+//
+//            @Override
+//            public void onDraw(DrawContext2f context) {
+//                final VertexBuffer vb = context.getSharedBuffer();
+//                final Texture t = context.obtain(IMAGE);
+//                vb.reset(DefaultShaders.LAYOUT_P2T2);
+//                vb.put(0,0).put(t.getLeft(), t.getTop()).
+//                   put(0, t.getHeight()).put(t.getLeft(), t.getBottom()).
+//                   put(t.getWidth(), t.getHeight()).put(t.getRight(), t.getBottom()).
+//                   put(t.getWidth(), 0).put(t.getRight(), t.getTop());
+//                context.use(Explosion.BLUR_PROGRAM).
+//                        attrs(vb).
+//                        uniform(context.getActiveMatrix()).
+//                        uniform(IMAGE).
+//                        uniform(blur / t.getWidth(), blur / t.getHeight()).
+//                        draw(OpenGL.GL_TRIANGLE_FAN);
+//            }
+//        });
 
         return root;
 

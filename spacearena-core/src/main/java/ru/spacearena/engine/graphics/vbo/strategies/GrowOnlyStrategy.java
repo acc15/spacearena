@@ -6,6 +6,6 @@ package ru.spacearena.engine.graphics.vbo.strategies;
  */
 public class GrowOnlyStrategy implements GrowShrinkStrategy {
     public int computeCapacity(int currentCapacity, int requiredCapacity) {
-        return requiredCapacity > currentCapacity ? requiredCapacity : currentCapacity;
+        return requiredCapacity > currentCapacity ? requiredCapacity * 4 / 3 : currentCapacity;
     }
 }

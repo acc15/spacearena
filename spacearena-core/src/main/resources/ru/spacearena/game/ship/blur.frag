@@ -1,15 +1,14 @@
 precision mediump float;
-varying vec2 v_TexCoord;
 uniform sampler2D u_Texture;
+varying vec2 v_TexCoords[5];
+
 void main()
 {
     vec4 v_Sum = vec4(0.0,0.0,0.0,0.0);
-    for (int y=-1; y <= 1; y += 1) {
-        for (int x=-1; x <= 1; x += 1) {
-            float tx = float(x) / 128.0, ty = float(y) / 64.0;
-            vec2 texCoord = vec2(v_TexCoord.x + tx, v_TexCoord.y + ty);
-            v_Sum += texture2D(u_Texture, texCoord);
-        }
-    }
-    gl_FragColor = v_Sum / 3.0;
+    v_Sum += texture2D(u_Texture, v_TexCoords[0]) * 0.204164;
+    v_Sum += texture2D(u_Texture, v_TexCoords[1]) * 0.304005;
+    v_Sum += texture2D(u_Texture, v_TexCoords[2]) * 0.304005;
+    v_Sum += texture2D(u_Texture, v_TexCoords[3]) * 0.093913;
+    v_Sum += texture2D(u_Texture, v_TexCoords[4]) * 0.093913;
+    gl_FragColor = v_Sum;
 }

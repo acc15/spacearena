@@ -7,6 +7,7 @@ import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.graphics.vbo.VertexBufferLayout;
 import ru.spacearena.engine.graphics.vbo.VertexBufferObject;
+import ru.spacearena.engine.graphics.vbo.strategies.GrowOnlyStrategy;
 import ru.spacearena.engine.util.IntMathUtils;
 
 import java.nio.FloatBuffer;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 public class GLDrawContext {
 
     protected final OpenGL gl;
-    protected final VertexBuffer sharedBuffer = new VertexBuffer();
+    protected final VertexBuffer sharedBuffer = new VertexBuffer(new GrowOnlyStrategy());
 
     private final HashMap<GLObjectDefinition<?>, Object> objects = new HashMap<GLObjectDefinition<?>, Object>();
     private final Binder binder = new Binder();

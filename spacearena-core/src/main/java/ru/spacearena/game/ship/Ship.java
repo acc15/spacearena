@@ -47,7 +47,7 @@ public class Ship extends GameBody {
     private float health = 1f;
     private boolean active = false;
 
-    private static final Texture.Definition SHIP_TEXTURE = new Texture.Definition().url(GameFactory.class, "ship.png");
+    public static final Texture.Definition TEXTURE = new Texture.Definition().url(GameFactory.class, "ship.png");
 
     public Point2F[] getGuns() {
         return LOCAL_GUN_POS;
@@ -137,7 +137,7 @@ public class Ship extends GameBody {
         super.onDrawTransformed(context);
 
         final VertexBuffer vb = context.getSharedBuffer();
-        final Texture texture = context.obtain(SHIP_TEXTURE);
+        final Texture texture = context.obtain(TEXTURE);
 
         final float l = -3.7f, t = -2.3f, r = 5.4f, b = 2.3f;
         vb.reset(DefaultShaders.LAYOUT_P2T2).
@@ -148,11 +148,11 @@ public class Ship extends GameBody {
         context.use(SHADER).
                 attrs(vb).
                 uniform(context.getActiveMatrix()).
-                uniform(SHIP_TEXTURE).
+                uniform(TEXTURE).
                 //glUniform1i(Color.RED, false).
                 uniform(damageTime / DAMAGE_TIME).
                 draw(OpenGL.GL_TRIANGLE_FAN);
-        //context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, SHIP_TEXTURE);
+        //context.drawImage(-3.7f, -2.3f, 5.4f, 2.3f, TEXTURE);
     }
 
     public static final ShaderProgram.Definition SHADER = new ShaderProgram.Definition().

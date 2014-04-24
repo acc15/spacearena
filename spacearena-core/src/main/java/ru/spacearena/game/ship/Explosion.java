@@ -1,7 +1,6 @@
 package ru.spacearena.game.ship;
 
 import ru.spacearena.engine.EngineObject;
-import ru.spacearena.engine.geometry.shapes.Rect2ID;
 import ru.spacearena.engine.graphics.Color;
 import ru.spacearena.engine.graphics.DrawContext2f;
 import ru.spacearena.engine.graphics.OpenGL;
@@ -21,13 +20,13 @@ import ru.spacearena.engine.util.FloatMathUtils;
  */
 public class Explosion extends EngineObject {
 
-    public static final float PARTICLE_SIZE = 0.4f; // particle size in meters
+    public static final float PARTICLE_SIZE = 0.3f; // particle size in meters
 
     public static final float DURATION = 1f;
     public static final float RADIUS = 2f;
 
-    public static final int TEXTURE_WIDTH = 128;
-    public static final int TEXTURE_HEIGHT = 64;
+    public static final int TEXTURE_WIDTH = 64;
+    public static final int TEXTURE_HEIGHT = 32;
 
     public static final Texture.Definition TEXTURE = new Texture.Definition().
             wrapS(OpenGL.GL_CLAMP_TO_EDGE).
@@ -35,14 +34,14 @@ public class Explosion extends EngineObject {
             empty(TEXTURE_WIDTH, TEXTURE_HEIGHT, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE);
     public static final FrameBufferObject.Definition FRAMEBUF = new FrameBufferObject.Definition().attach(TEXTURE);
     public static final Color INVISIBLE_BLACK = new Color(0,0,0,0);
-    public static final Rect2ID RECT = new Rect2ID();
     public static final ShaderProgram.Definition BLUR_PROGRAM = new ShaderProgram.Definition().
-        shader(DefaultShaders.class, "tex.vert").
-        shader(Explosion.class, "blur.frag").
+        shader(Explosion.class, "explosion_blur.vert").
+        shader(Explosion.class, "explosion_blur.frag").
         attribute("a_Position").
         attribute("a_TexCoord").
         uniform("u_MVPMatrix").
-        uniform("u_Texture");
+        uniform("u_Texture").
+        uniform("u_Offset");
 
 
     public final VertexBufferObject.Definition VBO = new VertexBufferObject.Definition(
@@ -61,8 +60,7 @@ public class Explosion extends EngineObject {
     private final float x, y, vx, vy, r;
     private float time = 0;
     private float pointSize, startX, startY;
-    private float s, t;
-
+    private float s, t, l;
 
     public Explosion(float x, float y, float vx, float vy) {
         this.x = x;
@@ -87,7 +85,7 @@ public class Explosion extends EngineObject {
 
     private int computeParticleCount(float length) {
         final float area = FloatMathUtils.PI*r*r + length*2*r;
-        final float density = 15;
+        final float density = 5;
         return (int)FloatMathUtils.ceil(area * density);
     }
 
@@ -96,10 +94,10 @@ public class Explosion extends EngineObject {
 
         final VertexBuffer vb = context.getSharedBuffer();
 
-        final float mLength = FloatMathUtils.length(this.vx, this.vy);
+        this.l = FloatMathUtils.length(this.vx, this.vy);
 
         final float meterHeight = 2 * getSpreadRadius();
-        final float meterWidth = meterHeight + mLength;
+        final float meterWidth = meterHeight + l;
 
         final Texture texture = context.obtain(TEXTURE);
 
@@ -108,17 +106,15 @@ public class Explosion extends EngineObject {
         final float tWidth = texture.getWidth() / meterScale, tHeight = texture.getHeight() / meterScale;
         final float xScale = 2 / tWidth, yScale = 2 / tHeight, xOff = -1, yOff = -1;
 
-        //final float l = 0, t = 0, r = meterWidth * xScale + xOff, b = meterHeight * yScale + yOff;
-
-        this.s = meterWidth * xScale + xOff;
-        this.t = meterHeight * yScale + yOff;
+        this.s = meterWidth / tWidth;
+        this.t = meterHeight / tHeight;
         this.pointSize = PARTICLE_SIZE * meterScale;
 
-        final float sLength = mLength * xScale;
+        final float sLength = l * xScale;
         this.startX = getSpreadRadius() * xScale + xOff;
         this.startY = getSpreadRadius() * yScale + yOff;
 
-        final int particleCount = computeParticleCount(mLength);
+        final int particleCount = computeParticleCount(l);
 
         vb.reset(LAYOUT_P2T1, particleCount);
         for (int i=0; i<particleCount; i++) {
@@ -156,25 +152,24 @@ public class Explosion extends EngineObject {
                 draw(OpenGL.GL_POINTS);
         context.drawToScreen();
 
-        final float tx = TEXTURE_WIDTH*2, ty = TEXTURE_HEIGHT*2;
+        final float r2 = getSpreadRadius();
+        final float rx = vx / l * r2, ry = vy / l * r2;
 
-        context.drawImage(0, ty, tx, ty+ty, TEXTURE);
-
-//
         final VertexBuffer vb = context.getSharedBuffer();
+
+        final Texture texture = context.get(TEXTURE);
         vb.reset(DefaultShaders.LAYOUT_P2T2).
-                put(0, 0).put(0,0).
-                put(0, ty).put(0,1).
-                put(tx, ty).put(1,1).
-                put(tx, 0).put(1,0);
+                put(x - rx + ry, y - ry - rx).put(0,0).
+                put(x - rx - ry, y - ry + rx).put(0,t).
+                put(x + vx + rx - ry, y + vy + ry + rx).put(s,t).
+                put(x + vx + rx + ry, y + vy + ry - rx).put(s,0);
+        final float blurAmount = 1f;
         context.use(BLUR_PROGRAM).
                 attrs(vb).
                 uniform(context.getActiveMatrix()).
                 uniform(TEXTURE).
+                uniform(blurAmount / texture.getWidth(), blurAmount / texture.getHeight()).
                 draw(OpenGL.GL_TRIANGLE_FAN);
-
-        context.color(Color.WHITE).drawRect(0, 0, tx, ty);
-        context.color(Color.WHITE).drawRect(0, ty, tx, ty+ty);
 
     }
 }
