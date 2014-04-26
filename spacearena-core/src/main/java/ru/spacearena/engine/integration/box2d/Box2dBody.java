@@ -22,14 +22,12 @@ public class Box2dBody extends Box2dObject {
 
     private final Matrix matrix = new Matrix();
 
-//    private boolean live = true;
     private Body body;
-
 
     private float smoothX, smoothY, smoothAngle;
     private float prevX, prevY, prevAngle;
-
     private final BodyDef bodyDef = new BodyDef();
+    private boolean dead = false;
 
     public Transform getTransform() {
         return body.getTransform();
@@ -38,10 +36,6 @@ public class Box2dBody extends Box2dObject {
     public float getAngle() {
         return smoothAngle;//body.getAngle();
     }
-
-//    public void markDead() {
-//        this.live = false;
-//    }
 
     public Body getBody() {
         return body;
@@ -105,6 +99,9 @@ public class Box2dBody extends Box2dObject {
     }
 
     public void onBeforeStep(float dt) {
+        if (body == null) {
+            return;
+        }
         prevX = body.m_xf.p.x;
         prevY = body.m_xf.p.y;
         prevAngle = body.m_sweep.a;
@@ -112,13 +109,33 @@ public class Box2dBody extends Box2dObject {
 
     @Override
     public void onAfterStep(float dt) {
-        if (!isLive()) {
+        if (dead && body != null) {
             body.getWorld().destroyBody(body);
+            onDestroyBody(body);
+            body = null;
         }
+    }
+
+    public void onDestroyBody(Body body) {
+    }
+
+    public void kill() {
+        dead = true;
+    }
+
+    public void revive() {
+        this.dead = false;
+    }
+
+    public boolean isDead() {
+        return this.dead || isDeleted();
     }
 
     @Override
     public void onSmooth(float ratio, float prevRatio) {
+        if (body == null) {
+            return;
+        }
         final float newX = body.m_xf.p.x * ratio + prevX * prevRatio,
                     newY = body.m_xf.p.y * ratio + prevY * prevRatio,
                     newAngle = FloatMathUtils.normalizeRadians(prevAngle +

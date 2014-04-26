@@ -80,21 +80,32 @@ public class GameFactory implements EngineFactory {
         final GenericContainer high = new GenericContainer();
         viewport.add(high);
 
-        final Ship ship1 = new Ship(low, high);
+        final Ship ship1 = new Ship(box2dWorld, low, high);
         ship1.setInitialPosition(0, -10);
         ship1.setInitialAngle(FloatMathUtils.HALF_PI);
+        ship1.setAcceleration(100f);
+        ship1.setMaxSpeed(100f);
         box2dWorld.add(ship1);
 
         for (int i=0; i<=0; i++) {
             for (int j=0; j<=10; j++) {
-                final Ship ship2 = new Ship(low, high) {
-                    Point2F p = new Point2F(1.0f, 0.0f), q = new Point2F(FloatMathUtils.cos(1f), FloatMathUtils.sin(1f));
+                final Ship ship2 = new Ship(box2dWorld, low, high) {
+
+                    private final float fireInterval = 0.5f;
+                    private float fireTimer = fireInterval;
 
                     @Override
                     public void onUpdate(float seconds) {
                         super.onUpdate(seconds);
-                        flyTo(p.x,p.y, seconds);
-                        p.rotate(seconds);
+                        final float px = ship1.getPositionX() - getPositionX(), py = ship1.getPositionY() - getPositionY();
+                        flyTo(px, py, seconds);
+//
+//                        fireTimer -= seconds;
+//                        if (fireTimer < 0) {
+//                            fire(true);
+//                            fire(false);
+//                            fireTimer = fireInterval;
+//                        }
                     }
                 };
                 ship2.setInitialPosition((j - 5) * 5, (i+1) * 7);
@@ -106,7 +117,6 @@ public class GameFactory implements EngineFactory {
 
         root.add(new InputTracker() {
 
-            private boolean canShoot = true;
             private final Point2F pt = new Point2F();
 
             private Point2F getDirection() {
@@ -139,18 +149,7 @@ public class GameFactory implements EngineFactory {
                     viewport.setScale(viewport.getScaleX() * (1-zoomF));
                 }
 
-                if (isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1)) {
-                    if (canShoot) {
-                        for (Point2F gun: ship1.getGuns()) {
-                            final Point2F worldGun = ship1.mapPoint(Point2F.PT.set(gun));
-                            final Bullet bullet = new Bullet(ship1, worldGun.x, worldGun.y, ship1.getAngle());
-                            box2dWorld.add(bullet);
-                        }
-                        canShoot = false;
-                    }
-                } else {
-                    canShoot = true;
-                }
+                ship1.fire(isKeyboardKeyPressed(KeyCode.VK_SPACE) || isMouseKeyPressed(MouseEvent.BUTTON1) || isPointerActive(1));
             }
         });
         root.add(new EngineObject() {

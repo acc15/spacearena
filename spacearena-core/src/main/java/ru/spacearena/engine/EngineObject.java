@@ -10,10 +10,10 @@ import ru.spacearena.engine.util.BitUtils;
  */
 public class EngineObject implements EngineEntity {
 
-    private int state = VISIBLE | LIVE;
+    private int state = 0;
 
-    private static final int VISIBLE = 0x01;
-    private static final int LIVE =    0x02;
+    private static final int HIDDEN = 0x01;
+    private static final int DELETED = 0x02;
 
     public void onAttach(Engine engine) {
     }
@@ -40,20 +40,24 @@ public class EngineObject implements EngineEntity {
     public void onDraw(DrawContext2f context) {
     }
 
-    public boolean isVisible() {
-        return BitUtils.getBit(state, VISIBLE);
+    public boolean isHidden() {
+        return BitUtils.getBit(state, HIDDEN);
     }
 
-    public boolean isLive() {
-        return BitUtils.getBit(state, LIVE);
+    public boolean isDeleted() {
+        return BitUtils.getBit(state, DELETED);
+    }
+
+    public void setHidden(boolean hidden) {
+        state = BitUtils.setBit(state, HIDDEN, hidden);
     }
 
     public void setVisible(boolean visible) {
-        state = BitUtils.setBit(state, VISIBLE, visible);
+        setHidden(!visible);
     }
 
-    public void kill() {
-        state = BitUtils.setBit(state, LIVE, false);
+    public void delete() {
+        state = BitUtils.setBit(state, DELETED, true);
     }
 
     public void show() {

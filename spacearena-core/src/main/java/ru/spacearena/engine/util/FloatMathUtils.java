@@ -88,6 +88,7 @@ public class FloatMathUtils {
         return sqrt(lengthSquare(x, y));
     }
 
+    public static float scaledLength(float l, float x, float y) { return l / length(x,y); }
 
     public static float radDiff(float a, float b) {
         final float d = a - b;

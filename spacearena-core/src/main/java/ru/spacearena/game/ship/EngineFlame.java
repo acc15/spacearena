@@ -73,8 +73,8 @@ public class EngineFlame extends EngineObject {
     @Override
     public void onUpdate(float seconds) {
         updateFlame(ship.isEngineActive());
-        if (!ship.isLive() && particles.isEmpty()) {
-            kill();
+        if (ship.isDeleted() && particles.isEmpty()) {
+            delete();
         }
     }
 

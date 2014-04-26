@@ -59,7 +59,7 @@ public class Bullet extends GameBody {
 
     @Override
     public void onCollision(Box2dBody object, boolean reference, Contact contact, ContactImpulse impulse) {
-        kill();
+        delete();
     }
 
     @Override

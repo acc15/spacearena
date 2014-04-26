@@ -75,7 +75,7 @@ public class Explosion extends EngineObject {
         time += seconds;
         if (time > DURATION) {
             time = 0;
-            kill();
+            delete();
         }
     }
 

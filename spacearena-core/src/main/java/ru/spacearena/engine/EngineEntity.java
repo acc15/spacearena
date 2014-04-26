@@ -14,11 +14,10 @@ public interface EngineEntity {
 
     /**
      * Called after OpenGL subsystem was initialized.
-     * It is a good point to load textures, {@link ru.spacearena.engine.graphics.DrawContext2f#upload(
+     * It is a good point to load textures, {@link ru.spacearena.engine.graphics.GLDrawContext#upload(
      *  ru.spacearena.engine.graphics.vbo.VertexBufferObject.Definition,
      *  ru.spacearena.engine.graphics.vbo.VertexBuffer) upload VBOs} and
-     * {@link ru.spacearena.engine.graphics.DrawContext2f#get(
-     *  ru.spacearena.engine.graphics.shaders.ShaderProgram.Definition) make programs}.
+     * {@link ru.spacearena.engine.graphics.GLDrawContext#obtain(ru.spacearena.engine.graphics.GLObjectDefinition) make programs}.
      *  However you can make this things later - on the fly.
      *  It's just a notification - "i'm ready to start drawing".
      * @param context draw context to pre-load some resources
@@ -63,13 +62,13 @@ public interface EngineEntity {
      * It's a hint for container to skip draw method for child entity
      * @return whether this object is visible or not
      */
-    boolean isVisible();
+    boolean isHidden();
 
     /**
      * Checks whether this object is live or not.
      * It's a hint for container to remove this object and detach it from engine
      * @return whether this object is live or not
      */
-    boolean isLive();
+    boolean isDeleted();
 
 }

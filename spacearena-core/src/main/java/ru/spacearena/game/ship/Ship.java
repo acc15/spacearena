@@ -18,7 +18,10 @@ import ru.spacearena.engine.graphics.shaders.DefaultShaders;
 import ru.spacearena.engine.graphics.shaders.ShaderProgram;
 import ru.spacearena.engine.graphics.vbo.VertexBuffer;
 import ru.spacearena.engine.integration.box2d.Box2dBody;
+import ru.spacearena.engine.integration.box2d.Box2dWorld;
+import ru.spacearena.engine.random.QRand;
 import ru.spacearena.engine.util.FloatMathUtils;
+import ru.spacearena.game.Bullet;
 import ru.spacearena.game.GameBody;
 import ru.spacearena.game.GameFactory;
 import ru.spacearena.game.ObjectType;
@@ -40,12 +43,18 @@ public class Ship extends GameBody {
     private static final Point2F LOCAL_ENGINE_POS = p(-1.25f, 0f);
     private static final Vec2[] LOCAL_SHAPE = new Vec2[]{new Vec2(-2, -2), new Vec2(-2, 2), new Vec2(4, 0.3f), new Vec2(4, -0.3f)};
     public static final float DAMAGE_TIME = 0.2f;
+    public static final float SPAWN_TIME = 5f;
 
     private final EngineContainer<? super EngineEntity> fxContainer;
+    private final Box2dWorld world;
 
+    private boolean canFire = true;
     private float damageTime = 0f;
     private float health = 1f;
     private boolean active = false;
+    private float reviveTimeout = SPAWN_TIME;
+
+    private float acceleration = ACCELERATION, maxSpeed = MAX_SPEED, angularVelocity = ANGULAR_VELOCITY;
 
     public static final Texture.Definition TEXTURE = new Texture.Definition().url(GameFactory.class, "ship.png");
 
@@ -53,8 +62,9 @@ public class Ship extends GameBody {
         return LOCAL_GUN_POS;
     }
 
-    public Ship(EngineContainer<? super EngineEntity> low, EngineContainer<? super EngineEntity> high) {
+    public Ship(Box2dWorld world, EngineContainer<? super EngineEntity> low, EngineContainer<? super EngineEntity> high) {
         this.fxContainer = low;
+        this.world = world;
         low.add(new EngineFlame(this));
         high.add(new HealthBar(this));
     }
@@ -64,11 +74,59 @@ public class Ship extends GameBody {
         return ObjectType.SHIP;
     }
 
+    public float getAngularVelocity() {
+        return angularVelocity;
+    }
+
+    public void setAngularVelocity(float angularVelocity) {
+        this.angularVelocity = angularVelocity;
+    }
+
+    public float getMaxSpeed() {
+        return maxSpeed;
+    }
+
+    public void setMaxSpeed(float maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public float getAcceleration() {
+        return acceleration;
+    }
+
+    public void setAcceleration(float acceleration) {
+        this.acceleration = acceleration;
+    }
+
     public void onPreCreate(BodyDef bodyDef) {
         bodyDef.type = BodyType.DYNAMIC;
         bodyDef.linearDamping = 0.2f;
         bodyDef.angularDamping = 0.2f;
+
+        this.health = 1f;
+        this.reviveTimeout = SPAWN_TIME;
+        this.damageTime = 0f;
+        setVisible(true);
     }
+
+
+    public void onPostCreate(Body body) {
+        final PolygonShape shape = new PolygonShape();
+        shape.set(LOCAL_SHAPE, LOCAL_SHAPE.length);
+
+        final FixtureDef fd = new FixtureDef();
+        fd.restitution = 0.1f;
+        fd.density = 10f;
+        fd.shape = shape;
+        body.createFixture(fd);
+    }
+
+    @Override
+    public void onDestroyBody(Body body) {
+        fxContainer.add(new Explosion(getPositionX(), getPositionY(), getVelocityX(), getVelocityY()));
+        setVisible(false);
+    }
+
 
     public boolean isEngineActive() {
         return active;
@@ -82,23 +140,42 @@ public class Ship extends GameBody {
         return health;
     }
 
+
     public void flyTo(float dx, float dy, float seconds) {
-        this.active = !FloatMathUtils.isZero(dx, dy);
-        if (!active) {
+        if (isDead() || FloatMathUtils.isZero(dx, dy)) {
+            active = false;
             return;
         }
 
-        final float vl = Ship.MAX_SPEED/FloatMathUtils.length(dx, dy);
+        active = true;
+
+        final float vl = FloatMathUtils.scaledLength(maxSpeed, dx, dy);
         final float vx = dx * vl, vy = dy * vl;
-        accelerateTo(vx, vy, Ship.ACCELERATION * seconds);
-        rotateTo(FloatMathUtils.atan2(vy, vx), Ship.ANGULAR_VELOCITY * seconds);
+        accelerateTo(vx, vy, acceleration * seconds);
+        rotateTo(FloatMathUtils.atan2(vy, vx), angularVelocity * seconds);
+    }
+
+    public void fire(boolean pressed) {
+        if (isDead() || !pressed) {
+            canFire = true;
+            return;
+        }
+        if (!canFire) {
+            return;
+        }
+        for (Point2F gun: getGuns()) {
+            final Point2F worldGun = mapPoint(Point2F.PT.set(gun));
+            final Bullet bullet = new Bullet(this, worldGun.x, worldGun.y, getAngle());
+            world.add(bullet);
+        }
+        canFire = false;
     }
 
     @Override
     public void onCollision(Box2dBody object, boolean isReference, Contact contact, ContactImpulse impulse) {
         final float imp = impulse.normalImpulses[0];
-        final float d = GameBody.getObjectType(object) == ObjectType.BULLET ? 0.05f : imp/20000f;
-        if (d < 0.05f) {
+        final float d = GameBody.getObjectType(object) == ObjectType.BULLET ? 0.05f : imp/40000f;
+        if (d < 0.025f) {
             return;
         }
 
@@ -107,29 +184,24 @@ public class Ship extends GameBody {
             damageTime = DAMAGE_TIME;
             return;
         }
-
-        fxContainer.add(new Explosion(getPositionX(), getPositionY(), getVelocityX(), getVelocityY()));
         kill();
     }
 
     @Override
     public void onUpdate(float seconds) {
-        if (damageTime > 0) {
+        if (isDead()) {
+            reviveTimeout -= seconds;
+            if (reviveTimeout < 0) {
+                revive();
+                setVisible(true);
+                setInitialPosition(QRand.RAND.nextFloatBetween(-80, 80), QRand.RAND.nextFloatBetween(-80,80));
+                onCreate(world);
+            }
+
+        } else if (damageTime > 0) {
             damageTime = FloatMathUtils.max(0f, damageTime - seconds);
         }
         super.onUpdate(seconds);
-    }
-
-    public void onPostCreate(Body body) {
-
-        final PolygonShape shape = new PolygonShape();
-        shape.set(LOCAL_SHAPE, LOCAL_SHAPE.length);
-
-        final FixtureDef fd = new FixtureDef();
-        fd.restitution = 0.1f;
-        fd.density = 10f;
-        fd.shape = shape;
-        body.createFixture(fd);
     }
 
     @Override

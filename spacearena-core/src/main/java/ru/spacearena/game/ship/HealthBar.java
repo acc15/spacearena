@@ -18,10 +18,12 @@ public class HealthBar extends EngineObject {
 
     @Override
     public void onUpdate(float seconds) {
-        if (!ship.isLive()) {
-            kill();
+        setHidden(ship.isDead());
+        if (ship.isDeleted()) {
+            delete();
         }
     }
+
 
     @Override
     public void onDraw(DrawContext2f context) {

@@ -126,7 +126,7 @@ public class EngineContainer<T extends EngineEntity> extends EngineObject {
         while (l < r) {
             final T c = children.get(l);
             c.onUpdate(seconds);
-            if (!c.isLive()) {
+            if (c.isDeleted()) {
                 detach(c);
                 children.remove(l);
                 --r;
@@ -138,9 +138,10 @@ public class EngineContainer<T extends EngineEntity> extends EngineObject {
 
     public void onDraw(DrawContext2f context) {
         for (T child : children) {
-            if (child.isVisible()) {
-                child.onDraw(context);
+            if (child.isHidden()) {
+                continue;
             }
+            child.onDraw(context);
         }
     }
 }
