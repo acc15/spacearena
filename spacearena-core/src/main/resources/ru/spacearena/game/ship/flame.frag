@@ -1,4 +1,3 @@
-precision mediump float;
 uniform vec4 u_CenterColor;
 uniform vec4 u_EdgeColor;
 varying float v_Edge;
