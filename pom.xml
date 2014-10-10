@@ -12,7 +12,7 @@
     </properties>
 
     <modules>
-        <!--<module>spacearena-android</module>-->
+        <module>spacearena-android</module>
         <module>spacearena-core</module>
         <module>spacearena-jogl</module>
     </modules>

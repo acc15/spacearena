@@ -1,3 +1,4 @@
+precision mediump float;
 varying vec2 v_TexCoord;
 uniform float u_ShadeAmount;
 uniform sampler2D u_Texture;
