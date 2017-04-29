@@ -1,10 +1,15 @@
 package ru.spacearena.jogl;
 
+import com.jogamp.nativewindow.util.DimensionImmutable;
 import com.jogamp.newt.MonitorDevice;
 import com.jogamp.newt.Screen;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.Animator;
 import ru.spacearena.engine.Engine;
 import ru.spacearena.engine.EngineFactory;
@@ -15,12 +20,6 @@ import ru.spacearena.engine.util.FloatMathUtils;
 import ru.spacearena.game.GameFactory;
 import ru.spacearena.jogl.engine.JoglGL2;
 import ru.spacearena.jogl.engine.NewtInputContext;
-
-import javax.media.nativewindow.util.DimensionImmutable;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLProfile;
 
 /**
  * @author Vyacheslav Mayorov
